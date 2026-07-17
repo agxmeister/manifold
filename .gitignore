@@ -1,0 +1,21 @@
+# Exported / generated geometry — these are build output, regenerate from .scad
+*.stl
+*.3mf
+*.amf
+*.obj
+*.off
+*.csg
+*.dxf
+*.svg
+*.png
+
+# OpenSCAD
+*.scad.bak
+
+# Editor / OS cruft
+*~
+*.bak
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
