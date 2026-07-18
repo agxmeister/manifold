@@ -10,12 +10,43 @@ meshes are not (see `.gitignore`).
 
 ## Structure & naming
 
-- **One folder per model** under `models/`, named in `kebab-case`.
-- The primary source file matches the folder name: `models/foo/foo.scad`.
-- Each model folder carries its own `README.md` (part description, tunable
-  parameters, recommended print settings).
-- Shared, reusable geometry goes in `lib/` and is pulled into models with
-  `use <../../lib/...>` or `include <...>`.
+Models are organised **by project** under `projects/`, everything in
+`kebab-case`. Each project has a strict internal layout:
+
+```
+projects/<project>/
+├── README.md      # the ONLY README — documents the project's models,
+│                  #   parts, parameters, and print settings
+├── LICENSE        # the project's own license, governing its models
+├── models/        # one subdirectory per model
+│   └── <model>/       # a model is a folder; its parts are .scad files
+│       ├── <part>.scad    #   one file per separately-printed part
+│       └── <shared>.scad  #   geometry shared between this model's parts
+├── lib/           # geometry shared ACROSS the project's models (e.g. a
+│                  #   common figure base); omit until something needs it
+└── exports/       # generated meshes land here — created on first export,
+                   #   gitignored in full, never committed
+```
+
+- A **model is a folder** under `models/`; its **parts are `.scad` files**
+  inside it. A single-part model has one file matching the folder name
+  (`models/pawn/pawn.scad`); a multi-part model has one file per
+  separately-printed part (`models/board/cell.scad`, `models/board/pin.scad`).
+- A **README lives only at the project level**. Don't add per-model or
+  per-part READMEs.
+- Geometry shared between a model's own parts is another `.scad` file in that
+  model's folder (e.g. `models/board/connector.scad`); geometry shared across
+  models goes in the project's `lib/`. There is no top-level cross-project
+  `lib/`. Pull shared files in with `include <...>` or `use <...>`.
+- **Exports go in the project's `exports/` directory**, named
+  `<model>-<part>.<ext>` — e.g. `board-cell.stl`, `board-pin.stl`. Append a
+  variant suffix where a part has several (`board-cell-d2.stl` for `design=2`).
+  The whole `exports/` directory is gitignored build output — it's created on
+  the first export and never committed.
+- **Licensing is per project.** The catalog root is MIT (`LICENSE` at the repo
+  root); each project carries its own `LICENSE` file governing its models
+  (e.g. `projects/chess/LICENSE` is CC BY-NC 4.0). A new project needs its own
+  `LICENSE` — ask the user which license if it isn't obvious.
 
 ## Authoring conventions
 
@@ -28,8 +59,9 @@ meshes are not (see `.gitignore`).
 ## Exports are build output
 
 - `.stl`, `.3mf`, and other generated formats are gitignored. Never commit them.
-- Regenerate a mesh from source, e.g.
-  `openscad -o out.stl models/<name>/<name>.scad`.
+- Regenerate a mesh from source into the project's `exports/`, named
+  `<model>-<part>.<ext>`, e.g.
+  `openscad -o projects/chess/exports/board-cell.stl projects/chess/models/board/cell.scad`.
 
 ## Working here
 

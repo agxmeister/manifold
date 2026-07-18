@@ -1,4 +1,6 @@
-# Exported / generated geometry — these are build output, regenerate from .scad
+# Exported / generated geometry — these are build output, regenerate from .scad.
+# Each project's exports/ directory is created on first export and never committed.
+exports/
 *.stl
 *.3mf
 *.amf
