@@ -1,27 +1,34 @@
 // cell — one square cell of the puzzle chess board, styled as a smooth
-// battlefield tile. It is one of the two parts of the `board` model (the
-// other is pin.scad).
+// battlefield tile. It is one of the three parts of the `board` model (the
+// others are pin.scad and platform.scad).
 //
-// The top is a gently rolling terrain with a big, flat, ROUND central
-// plateau where a chess piece (round base) stands firm. The ground swells
-// and dips toward the edges, most strongly at the rounded corners. The
-// surface is a heightfield (one height per point), so however it undulates
-// it never creates a downward overhang — the terrain prints support-free.
+// The top is a gently rolling terrain with a round central SOCKET that holds
+// a separately printed platform (platform.scad); the platform's top finishes
+// flush with the surrounding flat plateau, giving a chess piece a firm, level
+// stage. The ground swells and dips toward the edges, most strongly at the
+// rounded corners. The surface is a heightfield (one height per point), so
+// however it undulates it never creates a downward overhang — the terrain
+// prints support-free.
 //
 // `design` (0..7) selects one of eight deterministic terrains, so a board
 // assembled from many cells reads as continuously varied ground. Cells join
-// edge-to-edge with pin.scad connectors, which hold a small gap between
-// neighbours so height mismatches read as natural seams.
+// edge-to-edge with pin.scad connectors that drop in from underneath, holding
+// a small gap between neighbours so height mismatches read as natural seams.
 
 include <connector.scad>
 
 // ---- Terrain parameters ----
 design       = 0;    // 0..7: which of the eight battlefield layouts to build
-grid_n       = 24;   // terrain resolution (grid cells per side)
-ground_level = 10;   // nominal ground height, and the flat plateau height (mm)
-flat_radius  = 9;    // radius of the flat round central plateau (18 mm across)
-blend        = 3;    // width over which terrain eases up out of the plateau
-amp          = 4;    // greatest terrain swing from ground (peaks/dips at corners)
+grid_n       = 32;   // terrain resolution (grid cells per side)
+ground_level = 15;   // nominal ground height, and the flat plateau height (mm).
+                     //   Raised to keep a solid roof of material between the taller
+                     //   pin pocket below and the platform socket floor above.
+flat_radius  = 22;   // radius of the flat round central plateau (44 mm across)
+blend        = 4;    // width over which terrain eases up out of the plateau
+amp          = 5;    // greatest terrain swing from ground (peaks/dips at corners)
+eject_radius = 4;    // radius of the eject hole punched up through the socket floor
+                     //   (8 mm across) so a rod poked in from under the board pushes
+                     //   the platform back out of its socket
 
 half    = cell_size / 2;
 spacing = cell_size / grid_n;
@@ -63,12 +70,16 @@ module cell() {
         intersection() {
             union() {
                 terrain();
-                // Crisp, guaranteed-flat round plateau for the piece to stand on.
+                // Crisp, guaranteed-flat round plateau for the platform to seat in.
                 cylinder(r = flat_radius, h = ground_level);
             }
             rounded_prism();   // rounds the vertical corners & sets the footprint
         }
-        // One groove per side for the connecting pins.
+        // Round central socket for the platform, recessed from the plateau top.
+        socket();
+        // Eject hole up through the socket floor, open at the board bottom.
+        eject_hole();
+        // One dumbbell groove per side, open at the bottom for the pins.
         for (a = [0, 90, 180, 270])
             rotate([0, 0, a])
                 groove();
@@ -104,9 +115,43 @@ module rounded_prism() {
             square(cell_size - 2 * corner_radius, center = true);
 }
 
-// A groove cut into the +Y edge, centred along it, at groove_center_z.
+// Round recess in the plateau centre. Its floor sits socket_depth below the
+// plateau top so the platform's top finishes flush with the terrain plateau.
+module socket() {
+    eps = 0.2;  // break the plateau surface cleanly
+    translate([0, 0, ground_level - socket_depth])
+        cylinder(r = socket_radius, h = socket_depth + eps);
+}
+
+// Small hole punched straight up from the board bottom (z = 0) through the
+// socket floor and into the socket cavity. With the platform seated, its
+// underside spans this hole, so a rod poked in from underneath the board bears
+// on the disc and pushes it back out — no way to lever it from the top.
+module eject_hole() {
+    eps = 0.2;
+    translate([0, 0, -eps])
+        cylinder(r = eject_radius, h = (ground_level - socket_depth) + 2 * eps);
+}
+
+// A dumbbell-half pocket cut into the +Y edge and OPEN AT THE BOTTOM
+// (z = 0). It is a round bulb chamber set groove_depth in from the edge,
+// joined to the edge by a narrow neck slot. The pin's bulb drops up into
+// the chamber from below; the bulb is wider than the neck slot, so the
+// joined cells cannot pull apart. The cell body above the pocket forms the
+// roof the pin bottoms out against.
 module groove() {
-    eps = 0.2;  // poke through the surface so the mouth cuts cleanly
-    translate([0, half - groove_depth / 2 + eps / 2, groove_center_z])
-        cube([groove_width, groove_depth + eps, groove_height], center = true);
+    eps = 0.2;
+    bulb_cy   = half - groove_depth;                 // chamber centre
+    slot_len  = (half + eps) - bulb_cy;              // neck reaches through the edge
+    translate([0, 0, -eps])
+        linear_extrude(groove_height + eps)
+            union() {
+                // Nominal cavity — the pin (pin.scad) carries the clearance by
+                // being shrunk connector_gap on every face. Enlarging it here
+                // too would double the gap and the joint would fall apart.
+                translate([0, bulb_cy])
+                    circle(r = bulb_radius);
+                translate([0, bulb_cy + slot_len / 2])
+                    square([neck_width, slot_len], center = true);
+            }
 }

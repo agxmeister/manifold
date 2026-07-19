@@ -24,8 +24,10 @@ projects/<project>/
 │       └── <shared>.scad  #   geometry shared between this model's parts
 ├── lib/           # geometry shared ACROSS the project's models (e.g. a
 │                  #   common figure base); omit until something needs it
-└── exports/       # generated meshes land here — created on first export,
-                   #   gitignored in full, never committed
+├── exports/       # generated meshes land here — created on first export,
+│                  #   gitignored in full, never committed
+└── previews/      # generated .png previews land here — same hierarchy as
+                   #   exports/, created on first render, gitignored, never committed
 ```
 
 - A **model is a folder** under `models/`; its **parts are `.scad` files**
@@ -43,6 +45,11 @@ projects/<project>/
   variant suffix where a part has several (`board-cell-d2.stl` for `design=2`).
   The whole `exports/` directory is gitignored build output — it's created on
   the first export and never committed.
+- **Previews go in the project's `previews/` directory**, a `.png` sibling of
+  `exports/` with the same naming — `<model>-<part>.png` (e.g.
+  `board-cell.png`), same variant suffixes. Like `exports/`, the whole
+  `previews/` directory is gitignored build output, created on the first render
+  and never committed.
 - **Licensing is per project.** The catalog root is MIT (`LICENSE` at the repo
   root); each project carries its own `LICENSE` file governing its models
   (e.g. `projects/chess/LICENSE` is CC BY-NC 4.0). A new project needs its own
