@@ -8,8 +8,9 @@
 //     head    (per piece)  — the mark on the axis: ball, mitre, coronet, crown,
 //                            crenellated tower
 //     collar  (SHARED)     — collar_pts(): the flared collar bead
-//     neck    (SHARED)     — neck_pts():   the slim straight neck
-//     body    (per piece)  — the piece's own bell / trumpet
+//     body    (per piece)  — body_pts():   the tapering body, a smooth curve
+//                            through the piece's own control points (it absorbs
+//                            the old neck — the curve tapers into the collar)
 //     foot    (SHARED)     — foot_pts():   the two-tier stacked foot on the
 //                            32 mm footprint (base_r = 16), cut flat at z = 0
 //
@@ -91,8 +92,44 @@ _COLLAR = [
     [ 4.27,  0.00 ],  // meets the neck below
 ];
 
-// ---- neck: the slim straight neck between collar and body ----
-// A plain cylinder of radius r and height h, bottom edge at z0, so it spans
-// [z0, z0 + h]. Set r to the collar's bottom radius (4.27 * collar_rs) so the
-// collar seats on the neck without a step; the piece's body attaches below at z0.
+// ---- body: the piece's turned body, a smooth curve through control points ----
+// The body spans from the collar's bottom (its top) down to the foot (its
+// bottom), and is the part that gives each piece its silhouette — a plain
+// flaring skirt (pawn), a swelling belly (bishop), a waisted bell (queen), a
+// concave trumpet (rook). Rather than trace each one, describe it with a few
+// CONTROL POINTS `[t, r]` — `t` the fractional height (1 = top, at the collar;
+// 0 = bottom, at the foot) and `r` the radius there — and let a Catmull-Rom
+// spline draw the smooth curve through them. The body absorbs what used to be a
+// separate neck: the curve simply tapers to its top radius, no cylinder.
+//
+// `cps` runs top-first (t = 1) to bottom (t = 0); its top `r` should equal the
+// collar's bottom radius (4.27 * collar_rs) and its bottom `r` should meet the
+// foot. `h` is the body height and `z0` the bottom (foot-join) z; `seg` sets the
+// samples drawn per control-point segment.
+function body_pts(cps, h, z0, seg = 12) =
+    [ for (p = _cr_curve(cps, seg)) [p[1], p[0] * h + z0] ];
+
+// A uniform Catmull-Rom spline through `cps`, sampled `seg` points per segment
+// (the first and last control points are duplicated as phantom neighbours, so
+// the curve passes through the real endpoints).
+function _cr_curve(cps, seg = 12) =
+    let (n = len(cps))
+    concat(
+        [ for (i = [0 : n - 2], j = [0 : seg - 1])
+            _cr(cps[max(i - 1, 0)], cps[i], cps[i + 1], cps[min(i + 2, n - 1)],
+                j / seg) ],
+        [ cps[n - 1] ]
+    );
+
+// One Catmull-Rom point at parameter s in [0, 1] on the segment p1 -> p2.
+function _cr(p0, p1, p2, p3, s) =
+    0.5 * ( 2 * p1
+          + (p2 - p0) * s
+          + (2 * p0 - 5 * p1 + 4 * p2 - p3) * s * s
+          + (3 * p1 - p0 - 3 * p2 + p3) * s * s * s );
+
+// ---- neck (legacy) ----
+// A plain cylinder of radius r and height h, bottom at z0. Superseded by the
+// control-point body above (which tapers into the collar with no separate neck);
+// kept only for the pieces not yet migrated to body_pts.
 function neck_pts(r, h, z0 = 0) = [ [r, z0 + h], [r, z0] ];
