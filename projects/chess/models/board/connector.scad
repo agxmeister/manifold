@@ -20,15 +20,16 @@ corner_radius = 5;    // radius of the rounded vertical corners
 // double-counts the gap.)
 // connector_gap is the default (platform joint); the pin uses its own pin_gap
 // so the two joints can be tuned independently.
-connector_gap = 0;  // platform disc: nominal (interference) fit, same as the pin.
-                    // Clearances 0.1 / 0.05 / 0.02 per side all printed with
-                    // side-to-side play, so grip on the nominal size instead.
-pin_gap       = 0;     // pin-joint clearance per face — nominal (interference) fit,
-                       // relies on FDM over-extrusion/roughness to grip firmly
+connector_gap = 0.1;   // platform disc: 0.1 mm clearance per face so the disc
+                       // actually slides into the socket (a nominal fit printed
+                       // too tight to connect).
+pin_gap       = 0.1;   // pin-joint clearance per face so the pin drops into the
+                       // groove (a nominal fit printed too tight to connect).
 // Deliberate gap left between two joined cells. The dumbbell's waist spans
 // this gap, so small height differences between adjacent battlefield tiles
 // read as natural seams rather than a visible step.
-cell_gap      = 2;
+cell_gap      = 2.5;  // 25% wider than the original 2 mm seam; the pin's waist
+                      //   spans this, so a longer pin holds cells further apart
 
 // ---- Dumbbell connector: cell <-> pin ----
 // A flat dumbbell-shaped tab lies in a pocket that is OPEN AT THE BOTTOM of
