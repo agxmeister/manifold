@@ -8,7 +8,7 @@
 // It prints standing on its head plate — a flat 22 x 12 footprint, with the
 // shaft rising as a plain vertical cylinder.
 
-include <common.scad>
+include <../../lib/common.scad>
 
 pin_len = collar_y + 3;   // through both collar walls, with a little to spare
 

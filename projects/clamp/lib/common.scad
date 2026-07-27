@@ -1,6 +1,6 @@
 // common — every dimension, fit and derived layout number the clamp's five
-// parts share. Include this from a part; it defines variables, functions and
-// two tiny helper modules only, so including it renders nothing on its own.
+// components share. Include this from a model; it defines variables, functions
+// and two tiny helper modules only, so including it renders nothing on its own.
 //
 // Coordinate system ("use orientation", what every clamp_*() module builds):
 //
@@ -9,7 +9,7 @@
 //     +Y = across the bar's width (the thin direction)
 //
 // The bar's cross-section occupies x = [0, bar_x], y = +/- bar_y/2, and its
-// bottom end sits at z = 0. Each part file rotates its module into the
+// bottom end sits at z = 0. Each model file rotates its module into the
 // orientation it actually prints in.
 
 include <BOSL2/std.scad>

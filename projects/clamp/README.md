@@ -18,19 +18,20 @@ actually good at.
 
 ```
 clamp/
-  models/clamp/
-    frame.scad      # part: the bar + fixed jaw, one piece   (print 1)
-    slider.scad     # part: the sliding jaw                  (print 1)
-    screw.scad      # part: the spindle with its tommy lever  (print 1)
-    pad.scad        # part: the swivel pad                   (print 1)
-    pin.scad        # part: the locking pin                  (print 1)
+  models/
+    frame/frame.scad    # the bar + fixed jaw, one piece      (print 1)
+    slider/slider.scad  # the sliding jaw                     (print 1)
+    screw/screw.scad    # the spindle with its tommy lever    (print 1)
+    pad/pad.scad        # the swivel pad                      (print 1)
+    pin/pin.scad        # the locking pin                     (print 1)
+  lib/
     common.scad     # shared dimensions, fits and layout maths (renders nothing)
-  exports/          # generated meshes (gitignored): clamp-frame.stl, ...
+  exports/          # generated meshes (gitignored): frame-frame.stl, ...
 ```
 
-## Parts
+## Components
 
-| Part     | Print size (as exported)   | Prints on                     |
+| Component | Print size (as exported)  | Prints on                     |
 | -------- | -------------------------- | ----------------------------- |
 | `frame`  | 89.0 x 164.6 x 12.0 mm     | its flat profile face         |
 | `slider` | 94.3 x 26.0 x 30.0 mm      | its flat underside            |
@@ -59,7 +60,7 @@ of it is engaged.
 
 ## Parameters
 
-Everything lives in `models/clamp/common.scad`, and the layout is derived
+Everything lives in `lib/common.scad`, and the layout is derived
 rather than hand-placed: change `notch_count`, `notch_pitch`, `throat` or
 `capacity_min` and the bar length, jaw height and hole positions all follow.
 
@@ -77,7 +78,7 @@ than `notch_pitch` or there will be gaps in the range the clamp can reach.
 
 ### Fits
 
-Named once in `common.scad`, applied to both halves of each joint:
+Named once in `lib/common.scad`, applied to both halves of each joint:
 
 | Fit           | Value    | Joint                                     |
 | ------------- | -------- | ----------------------------------------- |

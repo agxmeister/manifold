@@ -20,7 +20,7 @@
 // upward, so the retaining lip becomes a shallow taper rather than a ceiling
 // and all four slots run vertically.
 
-include <common.scad>
+include <../../lib/common.scad>
 
 // Print orientation: flipped, clamping face on the bed.
 translate([0, 0, pad_face_z]) rotate([180, 0, 0]) clamp_pad();

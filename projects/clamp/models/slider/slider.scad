@@ -7,7 +7,7 @@
 // out clean. The one sideways hole — the pin bore through the collar — is a
 // teardrop so its crown does not sag.
 
-include <common.scad>
+include <../../lib/common.scad>
 
 // Print orientation: as used, flat on the bed.
 clamp_slider();

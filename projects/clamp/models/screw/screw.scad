@@ -9,7 +9,7 @@
 // part has an 84 mm flat footprint, the thread's 40-degree flanks self-support
 // all the way up, and the ball on top is the only overhang.
 
-include <common.scad>
+include <../../lib/common.scad>
 
 // Print orientation: as used, standing on the lever.
 clamp_screw();

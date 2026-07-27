@@ -6,7 +6,7 @@
 // which prints lying flat on that profile — every fibre of the bar and jaw
 // runs along a layer, and the pin holes come out as clean vertical bores.
 
-include <common.scad>
+include <../../lib/common.scad>
 
 // Print orientation: profile flat on the bed, bar_y tall.
 translate([0, 0, bar_y / 2]) rotate([-90, 0, 0]) clamp_frame();
