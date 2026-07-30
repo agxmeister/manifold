@@ -21,7 +21,10 @@ chess/
     rook/   rook.scad     # turned Staunton rook    (print 4)
     queen/  queen.scad    # turned Staunton queen   (print 2)
     king/   king.scad     # turned Staunton king + cross (print 2)
-    knight/               # flat horse-head silhouette (planned — WIP)
+    knight/ foot.scad     # knight (2 parts): shared foot + pin (print upright)
+            horse.scad    # knight: horse blade + pin socket (print flat)
+            connector.scad #  shared pin/socket + neck dims (renders nothing)
+            knight.scad   # knight fused into ONE upright piece (compare print)
   lib/
     staunton.scad     # shared Staunton foot, neck & collar (renders nothing)
   exports/            # generated meshes (gitignored): board-cell.stl, pawn-pawn.stl, …
@@ -37,7 +40,7 @@ chess/
 | `rook`            | single              | done    |
 | `queen`           | single              | done    |
 | `king`            | single              | done    |
-| `knight`          | single              | planned |
+| `knight`          | foot, horse         | done    |
 
 Every piece has a **round base** that fits within the 40 mm platform disc, so it
 stands firm on the stage at the centre of each cell.
@@ -50,9 +53,9 @@ pieces, each turned on the axis and built from the same shared parts — a commo
 (`lib/staunton.scad`), scaled per piece — with each piece's own head and body
 traced from the same reference photo. Every piece grows taller by rank and
 stands on the same 32 mm footprint, so the set reads as one army on the terrain
-board. (The **knight** is planned separately in a **medieval / battlefield**
-style — a flat heraldic horse-head blade on a round stone plinth — and is being
-reworked; it isn't part of the shared Staunton family.)
+board. (The **knight** is the set's one non-turned piece — a flat heraldic
+**horse-head blade**, an image-traced 2D silhouette, extruded and edge-beveled,
+standing on the **same shared foot** as the rest of the set.)
 
 - **Pawn** — the classic **Staunton pawn**: a round **ball** head on a thin neck,
   a flared **collar** bead, a bell-shaped flaring body and a **tiered stacked
@@ -111,6 +114,36 @@ reworked; it isn't part of the shared Staunton family.)
   support** underneath (its arm undersides and bottony end-bulbs face down) — the
   deliberate trade for a cross faithful to the photo. About 1.9× the pawn's
   height.
+- **Knight** — the odd one out: **not turned** but a flat **horse-head blade**. Its
+  mark is a precise 2D **silhouette** image-traced from the reference picture — a
+  squared muzzle with its open mouth, a long dished face, the ears, and a **mane
+  rendered as a comb of separated locks** down the curved back of the neck — kept
+  **crisp** so it reads as cut from the picture rather than blurred smooth. It is
+  extruded into a flat slab whose two faces carry a **45° bevel** around the whole
+  outline (about a fifth of the blade's depth on each side), giving it a chiselled,
+  dimensional look rather than a laser-cut slab; the crisp comb teeth and the pointed
+  muzzle are kept flat and full-thickness. It shares only the turned **foot**
+  (`lib/staunton.scad`) — the **same foot the bishop uses** — not the collar or body.
+  (Its face bevel uses the **BOSL2** library — the one piece in the set that needs it
+  installed.) It stands about the bishop's height.
+
+  Unlike the other pieces it is printed as **two parts that clip together**, which
+  makes it the easiest of the set to print well:
+  - **`foot`** — the **shared foot**, with a short **hex pin** on top. Prints upright
+    on its flat base; the pin is self-supporting.
+  - **`horse`** — the flat, bevelled horse-head blade on a short neck, with a **hex
+    socket** bored up its neck. Prints **lying flat on a face** — the whole silhouette
+    flat on the bed, so it needs **no support at all**.
+
+  The pin/socket are **hexagonal** — a hex hole prints far cleaner than a round one
+  (laid on its side, its flat-topped roof bridges instead of sagging). The horse's
+  neck seats flush on the foot's top disc and the hex pin plugs into the socket (a
+  light friction fit — a drop of glue makes it permanent).
+
+  If you would rather not print and glue two parts, **`knight.scad`** fuses the same
+  foot and horse into a **single upright piece** (`knight-knight.stl`). It prints in one
+  go but wants **light support** under the muzzle, jaw and mane undersides — the trade
+  the two-part version avoids by printing the horse lying flat.
 
 Print counts for one set: 8 pawns, 2 knights, 2 bishops, 2 rooks, 1 queen and
 1 king **per side** — so 16 pawns and 4 each of knight/bishop/rook, 2 queens and
@@ -179,10 +212,15 @@ done
 # the dumbbell pin and the platform
 openscad -o projects/chess/exports/board-pin.stl projects/chess/models/board/pin.scad
 openscad -o projects/chess/exports/board-platform.stl projects/chess/models/board/platform.scad
-# the pieces (each is single-part, prints upright on its base)
+# the turned pieces (each is single-part, prints upright on its base)
 for p in pawn bishop rook queen king; do
   openscad -o projects/chess/exports/$p-$p.stl projects/chess/models/$p/$p.scad
 done
+# the knight is two parts: foot (upright) + horse (exports laid flat)
+openscad -o projects/chess/exports/knight-foot.stl  projects/chess/models/knight/foot.scad
+openscad -o projects/chess/exports/knight-horse.stl projects/chess/models/knight/horse.scad
+# ...or the same knight fused into one upright piece (needs light support)
+openscad -o projects/chess/exports/knight-knight.stl projects/chess/models/knight/knight.scad
 ```
 
 All five Staunton pieces print **upright on their base**. The **pawn**,
@@ -196,6 +234,15 @@ solid material behind or below them). The one piece that truly needs support is
 the **king's cross**, whose arm undersides and bottony end-bulbs face down: it
 wants **light support** under the cross alone (the turned body below it prints
 clean) — the trade for a cross faithful to the photo.
+
+The **knight**, the one non-turned piece, is printed as **two parts** to avoid
+support entirely: its **foot** prints upright on its flat base (the hex pin is
+self-supporting), and its **horse** blade prints **lying flat on a face** — the whole
+silhouette flat on the bed, so it needs **no support at all**. Clip the horse's neck
+socket onto the foot's pin (a light friction fit; glue to make it permanent).
+Alternatively `knight-knight.stl` fuses the two into one upright piece, which prints in
+one go but wants **light support** under the muzzle, jaw and mane undersides — the
+flat-blade trade the two-part version sidesteps.
 
 ## License
 
