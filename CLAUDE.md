@@ -34,6 +34,16 @@ projects/<project>/
   inside it. A single-part model has one file matching the folder name
   (`models/pawn/pawn.scad`); a multi-part model has one file per
   separately-printed part (`models/board/cell.scad`, `models/board/pin.scad`).
+- **One component, one model.** A model is a single component of the product —
+  not the whole product. When several distinct components assemble into one
+  object, **each gets its own model folder**, even though they only make sense
+  together: a launcher's rotor, handle and rod are `models/rotor/`,
+  `models/handle/` and `models/rod/`, never one `models/launcher/` holding all
+  of them. Only split a component into several `.scad` **parts** when the *same*
+  component has to be printed in more than one piece — a rod too tall for the
+  bed becomes `models/rod/{lower,middle,upper}.scad`. So: different component →
+  different model; one component printed in pieces → one model, several parts.
+  The dimensions tying the components together live in the project's `lib/`.
 - A **README lives only at the project level**. Don't add per-model or
   per-part READMEs.
 - Geometry shared between a model's own parts is another `.scad` file in that
