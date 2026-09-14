@@ -1,7 +1,16 @@
-// bracelet — a bracelet made of PRINTED 3D FABRIC: a field of small
-// rigid tiles joined by print-in-place HINGES. It comes off the bed as a
-// textile — it drapes, it shears, it wraps a wrist — and nothing is assembled
-// or glued.
+// bracelet — a bracelet made of PRINTED 3D FABRIC: a row of rigid bars
+// joined by print-in-place HINGES. It comes off the bed as a band that rolls
+// up around a wrist, and nothing is assembled or glued.
+//
+// IT HINGES IN ONE AXIS ONLY, and that is deliberate. The band used to be a
+// GRID of tiles, hinged along its length AND across its width. The cross-band
+// hinges never worked: with `rows` = 2 the only one of them runs straight down
+// the middle of the band, end to end — and both clasp yokes are solid plates
+// spanning the full width, so that line is built in at both ends. A hinge
+// clamped at both ends is not a hinge, it is a stiff seam. It cost 30-odd
+// joints' worth of knuckles, bores and welding risk and bought no movement at
+// all. Removed: each column is now ONE BAR spanning the band, and the only
+// articulation is the one the wrist actually asks for.
 //
 // THE RULE THIS DESIGN EXISTS TO OBEY: nothing is cantilevered into air.
 // Every piece of material here either stands on the bed, or is a bridge
@@ -54,26 +63,45 @@ ease    =  12;   // slack on top of the wrist, so the band hangs rather than
                  //   whole columns of `pitch`, and the remainder is spent on
                  //   the keyhole plate's length (see `kh_lock`, below).
 
-rows    =   2;   // tiles across the band. 2 -> a 17.2 mm band. 3 makes a
-                 //   28.4 mm cuff and costs nothing but filament.
+rows    =   2;   // how many tile-widths wide the band is. It no longer means
+                 //   a row of separate tiles — a column is a single bar — but
+                 //   it still sets the width AND the number of hinge knuckle
+                 //   clusters spaced along each joint. 2 -> a 17.6 mm band.
 
-// -------------------------------------------------------------------- tiles
-pitch     = 11.0;         // tile centre to tile centre, both axes
-body      =  6.0;         // the tile slab itself
+// --------------------------------------------------------------------- bars
+pitch_nom = 11.6;         // what bar spacing WANTS to be. The spacing actually
+                          //   used is solved for in the length budget below,
+                          //   within a millimetre of this — see `pitch`.
+body      =  6.0;         // the bar slab, along the band. Also the width of
+                          //   one hinge knuckle cluster, across it.
 h         = body/2;       // 3.0
-corner_r  =  1.0;         // plan-view corner radius of a tile
+row_pitch = 11.6;         // spacing of the knuckle clusters ACROSS the band.
+                          //   Deliberately NOT `pitch`: the band's width must
+                          //   not change when the length solver breathes the
+                          //   joints, so this one is fixed.
+corner_r  =  1.0;         // plan-view corner radius of a bar
 
 ch_run    = 0.5;          // TOP chamfer only. The bottom stays flat and full
-ch_rise   = 0.6;          //   size — unlike the old design, articulation here
-                          //   comes from the hinge, not from clearing the
-                          //   tiles' edges past each other, so there is no
-                          //   reason to spend bed contact on a bottom chamfer.
+ch_rise   = 0.6;          //   size — articulation here comes from the hinge,
+                          //   not from clearing the bars' edges past each
+                          //   other, so there is no reason to spend bed
+                          //   contact on a bottom chamfer.
 
 // -------------------------------------------------------------------- hinge
-fit        = 0.3;               // radial clearance: pin-in-bore, and knuckle
-                                //   against the neighbour's body. Both are
-                                //   well clear of the bed.
-axial_fit  = 0.5;               // clearance ALONG the pin, between a lug and
+fit        = 0.3;               // general clearance: the knuckle against the
+                                //   neighbour's body as it swings, and the
+                                //   clasp's stack-up. Well clear of the bed.
+bore_fit   = 0.45;              // RADIAL clearance of the pin in its bore, and
+                                //   the single number that decides how freely
+                                //   the band moves. It was 0.3, printed, and
+                                //   came off the plate stiff: at 0.3 the bore
+                                //   is only half a layer's worth of play over
+                                //   the pin, so every joint rubs and 3x lost
+                                //   the band's drape. 0.45 leaves the pin
+                                //   visibly loose in the bore and the band
+                                //   falls limp. It costs `rk`, and through
+                                //   that `pitch` — see below.
+axial_fit  = 0.6;               // clearance ALONG the pin, between a lug and
                                 //   the blade beside it. Deliberately larger
                                 //   than `fit`, and it is the one number here
                                 //   that decides whether the hinge works: a
@@ -83,18 +111,20 @@ axial_fit  = 0.5;               // clearance ALONG the pin, between a lug and
                                 //   0.4 mm beads spread into each other and
                                 //   weld the joint solid on layer one, and no
                                 //   amount of flexing afterwards frees it.
+                                //   Raised from 0.5 with the bore, so the lug
+                                //   faces stop rubbing the blade's as well.
 pin_d      = 2.0;               // the pin — the entire load path of the band
 pin_r      = pin_d/2;
-bore_r     = pin_r + fit;       // 1.2
+bore_r     = pin_r + bore_fit;  // 1.45
 knuck_wall = 0.9;               // material around the bore
-rk         = bore_r + knuck_wall;   // 2.1 — the knuckle's outer radius, and
+rk         = bore_r + knuck_wall;   // 2.35 — the knuckle's outer radius, and
                                     //   the radius everything sweeps through
                                     //   when the hinge turns
-pin_z      = 2.0;               // pin axis height. NOT free: see the two
+pin_z      = 2.1;               // pin axis height. NOT free: see the two
                                 //   asserts below — it is squeezed between
                                 //   needing floor under the bore and needing
                                 //   the knuckle to reach the bed.
-thick      = pin_z + rk;        // 4.0 — the knuckle's top IS the band's top
+thick      = pin_z + rk;        // 4.45 — the knuckle's top IS the band's top
 
 pin_flat   = 0.2;   // the pin's underside is cut flat this far above where a
                     //   full cylinder would have been tangent. A cylinder
@@ -106,7 +136,7 @@ pin_flat   = 0.2;   // the pin's underside is cut flat this far above where a
                     //   round, so the flat only ever adds clearance.
 
 blade_w = 2.0;                                // the middle knuckle (tile B's)
-lug_w   = (body - blade_w - 2*axial_fit)/2;   // 1.5 — the two outer (A's)
+lug_w   = (body - blade_w - 2*axial_fit)/2;   // 1.4 — the two outer (A's)
 
 // How far the cap still reaches past the pin axis where it meets the bed.
 // (Not the whole footprint: the arm carries the rest of it.) If this goes to
@@ -124,10 +154,8 @@ assert(knuck_foot >= 0.6,
            " mm past the pin at the bed"));
 assert(pin_z - bore_r >= 0.6,
        str("too little floor under the bore: ", pin_z - bore_r));
-// Room to swing: nothing of the neighbour may sit inside the knuckle's radius.
-assert(h + rk + fit <= pitch/2,
-       str("tiles too close for the knuckles to turn: ", pitch/2 - h - rk - fit));
 assert(lug_w >= 1.2, str("lugs too narrow: ", lug_w));
+assert(bore_fit > fit, "the bore is the joint's play — keep it the loosest fit");
 assert(axial_fit >= 0.45,
        str("lug and blade feet will weld on the first layer: ", axial_fit));
 assert(pin_flat < pin_r, "pin flattened away to nothing");
@@ -175,6 +203,7 @@ leaf_free = 2.5;                   //   beside the main slot. Without it the
                                    //   a click you can feel and undo.
                                    //   leaf_w is a FLEXURE, and is meant to be
                                    //   under the 1.2 mm wall threshold.
+det_off   = 1.8;                   // seat -> detent, along the slot
 kh_w      = 9.0;                   // keyhole plate width
 tip_wall  = 1.8;                   // plate left beyond the seat — this is what
                                    //   the post pulls against, so it carries
@@ -198,36 +227,74 @@ assert(det_r > (post_d - det_gap)/2, "detent bump too small to pinch");
 assert(x_entry + 1.0 - (x_det - leaf_free) > leaf_free,
        "relief slot does not reach the entry hole - the leaf is built in at
         both ends and the detent becomes a jam");
+// ...but the DETENT itself must stay well OUT of the entry hole. The entry is
+// 6 mm across and the seat is only `det_off` + travel from its centre, so on a
+// short plate the hole swallows the bumps: they come off the plate as two
+// loose 1 mm crumbs and the clasp has no detent at all. The only symptom is
+// two extra shells in the export, which is easy to read as "a tile came free".
+// This bit the design at travel = 3 and went unnoticed because the default
+// size never landed there.
+assert(norm([x_entry - x_det, det_gap/2 + det_r]) >= entry_d/2 + det_r + 0.1,
+       str("the entry hole is eating the detent bumps: centres ",
+           norm([x_entry - x_det, det_gap/2 + det_r]), " apart, need ",
+           entry_d/2 + det_r + 0.1));
 
 // ------------------------------------------------------------ length budget
-// Clasped, the loop runs: post axis -> keyhole plate -> yoke -> fabric ->
-// yoke -> stud plate -> post axis. The fabric only comes in whole columns, so
-// `cols` is the most that fit and the remainder lengthens the keyhole plate.
-// That is why the loop lands exactly on wrist+ease at every size.
-stud_ext = 8.0;                        // last tile's face -> post axis
-kh_entry = yoke_len + entry_d/2 + 1.0; // first tile's face -> entry hole
-span     = function (n) (n - 1) * pitch + body;
+// Clasped, the loop runs: post axis -> keyhole plate -> yoke -> band -> yoke
+// -> stud plate -> post axis.
+//
+// THE BUCKLE IS AS SHORT AS IT WORKS, AND FIXED. It used to be the part that
+// absorbed the sizing remainder — the band came in whole bars, so whatever was
+// left over lengthened the keyhole plate, and on a small wrist that left a
+// 27 mm slab of flat plate hanging off the end of a 149 mm bracelet. Now the
+// plate is cut to the shortest slot the clasp can actually use and the BAND
+// makes up the difference instead.
+//
+// Which moves the remainder problem, so: the number of bars is chosen to land
+// closest to `pitch_nom`, and then the joints are all stretched or squeezed
+// equally — by a fraction of a millimetre each — so the loop still comes out
+// exactly on wrist+ease. Nothing about a bar changes; only the gaps do, and
+// they have about a millimetre of room between the knuckles binding and the
+// band looking gappy.
+stud_ext = 8.0;                        // last bar's face -> post axis
+kh_entry = yoke_len + entry_d/2 + 1.0; // first bar's face -> entry hole
+// Shortest usable slot: the seated post has to sit far enough from the entry
+// hole that the hole does not reach the detent bumps (see the assert above).
+kh_travel_min = det_off + entry_d/2 + det_r + 0.2;   // 5.5
+kh_lock  = kh_entry + kh_travel_min;                 // 12.5, at every size
 
-cols     = floor((wrist + ease - body - stud_ext - (kh_entry + 3)) / pitch) + 1;
-chain    = span(cols);
-kh_lock  = wrist + ease - chain - stud_ext;   // face -> the seated post
+// What the band has to span, tip face to tip face.
+band_run  = wrist + ease - stud_ext - kh_lock;
+// The knuckles bind below `pitch_min` — that is the swing clearance, the same
+// limit that used to be asserted against a constant. Above `pitch_max` the
+// gaps just look wrong; the range is what makes an exact fit reachable.
+pitch_min = 2*(h + rk + fit);            // 11.30
+pitch_max = pitch_min + 1.4;             // 12.70
+joints_lo = ceil((band_run - body) / pitch_max);
+joints_hi = floor((band_run - body) / pitch_min);
+assert(joints_lo <= joints_hi,
+       str("no bar count spans ", band_run, " mm at a legal pitch"));
+joints   = min(joints_hi, max(joints_lo,
+                              round((band_run - body) / pitch_nom)));
+pitch    = (band_run - body) / joints;   // the gaps take up the remainder
+cols     = joints + 1;
 
-assert(kh_lock >= kh_entry + 3,
-       str("keyhole plate too short to hold the post: ", kh_lock));
-assert(kh_lock < kh_entry + 3 + pitch,
-       str("a whole column was missed: ", kh_lock));
+assert(pitch >= pitch_min,
+       str("bars too close for the knuckles to turn: ", pitch/2 - h - rk - fit));
+assert(pitch <= pitch_max, str("joints stretched too far: ", pitch));
 
-band_w  = (rows - 1) * pitch + body;
-band_cy = (rows - 1) * pitch / 2;
-x_l     = -h;                      // fabric's -x face
-x_r     = (cols-1)*pitch + h;      // fabric's +x face
+band_w  = (rows - 1) * row_pitch + body;
+band_cy = (rows - 1) * row_pitch / 2;
+x_l     = -h;                      // band's -x face
+x_r     = (cols-1)*pitch + h;      // band's +x face
 x_stud  = x_r + stud_ext;
 x_entry = x_l - kh_entry;
 x_lock  = x_l - kh_lock;
-x_det   = x_lock + 1.8;
+x_det   = x_lock + det_off;
 
 echo(str("cols=", cols, " rows=", rows,
-         "  loop=", chain + stud_ext + kh_lock,
+         "  loop=", band_run + stud_ext + kh_lock,
+         "  pitch=", pitch, " (gap ", pitch - body, ")",
          "  keyhole travel=", kh_lock - kh_entry,
          "  footprint=", (x_stud + stud_tip) - (x_lock - kh_tip),
                     " x ", band_w, " x ", post_top + head_h,
@@ -237,13 +304,18 @@ echo(str("cols=", cols, " rows=", rows,
          "  pin first layer=", pin_flat_w));
 
 // ------------------------------------------------------------------ modules
-module rrect(s) offset(r = corner_r) square(s - 2*corner_r, center = true);
+module rrect(s) offset(r = corner_r)
+    square([s[0] - 2*corner_r, s[1] - 2*corner_r], center = true);
 
-// A tile slab: flat on the bed, chamfered only at the top.
-module tile_body() {
+// One bar: `body` along the band, the WHOLE band width across it. Flat on the
+// bed, chamfered only at the top. This slab is what replaced a row of separate
+// tiles once the cross-band hinges came out — there is nothing to articulate
+// across the width, so the width is solid.
+module bar_body() {
     hull() {
-        linear_extrude(thick - ch_rise) rrect(body);
-        translate([0, 0, thick - 0.01]) linear_extrude(0.01) rrect(body - 2*ch_run);
+        linear_extrude(thick - ch_rise) rrect([body, band_w]);
+        translate([0, 0, thick - 0.01])
+            linear_extrude(0.01) rrect([body - 2*ch_run, band_w - 2*ch_run]);
     }
 }
 
@@ -322,16 +394,17 @@ module blade() {
     }
 }
 
-// The -y blade and +y fork are the -x/+x ones REFLECTED IN y = x, not
-// rotated: a rotation would send them to the wrong edge.
-module tile(col, row) {
-    translate([col*pitch, row*pitch, 0]) {
-        tile_body();
-        if (col > 0)        blade();
-        if (row > 0)        mirror([1, -1, 0]) blade();
-        if (col < cols - 1) fork();
-        if (row < rows - 1) mirror([1, -1, 0]) fork();
-    }
+// A column of the band: the bar, plus its share of the two joints beside it.
+// The joint is spread into `rows` knuckle clusters along the bar — one at each
+// old tile centre — so a wide band is held by several knuckles rather than
+// one, and the bar cannot twist about a single pin.
+module bar(col) {
+    translate([col*pitch, band_cy, 0]) bar_body();
+    for (row = [0 : rows - 1])
+        translate([col*pitch, row*row_pitch, 0]) {
+            if (col > 0)        blade();
+            if (col < cols - 1) fork();
+        }
 }
 
 // Fillet the inside corners of a flat clasp plate — a yoke/plate junction is
@@ -386,7 +459,7 @@ module clasp_keyhole() {
 }
 
 module bracelet() {
-    for (c = [0:cols-1], r = [0:rows-1]) tile(c, r);
+    for (c = [0:cols-1]) bar(c);
     clasp_stud();
     clasp_keyhole();
 }
