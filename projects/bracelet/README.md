@@ -10,6 +10,10 @@ short buckle at every size; length is band, not plate.
 
 ![the bracelet as it comes off the bed](previews/bracelet-bracelet.png)
 
+It can also carry **charms**: turn on a few charm stations and the band grows
+ball pins that separately-printed charms snap onto — firmly enough that they do
+not fall off, by hand when you want them to. See [Charms](#charms).
+
 ## It hinges in one axis only
 
 The band used to be a **grid** of small tiles, hinged along its length *and*
@@ -190,21 +194,110 @@ Bed stability: **15 separate contact patches**, 2362 mm² of first layer — one
 per bar, with the two clasp plates fused onto the end bars. Each patch is a
 full-width bar foot, so there is far more of it than the old tile grid had.
 
+## Charms
+
+`charms` bars along the band can grow a **ball pin** out of their top face, and
+a charm snaps onto it. `models/flower-charm` is the first one and the pattern
+for any other.
+
+**A bar's top is the best mounting face in the project**: flat, horizontal,
+5.0 × 16.6 mm inside the chamfer, and solid all the way down to the plate. So
+the pin is a plain vertical stalk. It adds nothing to the footprint, no
+overhang, no layer step — measured, not assumed: with three charms the export
+is still 15 shells and genus 43, still 2338 mm² of first layer across 15
+islands, still 0.00 mm² of downward surface past 45° below z = 0.7, and the
+layer-step raster is **identical** to the plain bracelet's. The rule at the top
+of this README is not even tested by it.
+
+The pin is **fused to its bar, permanently**. Everything here is printed in
+place; the joint that comes apart is the one at the *top* of the pin, where it
+can be made as stiff as you like because nothing has to flex to get it there.
+
+Set `charms` and the stations spread themselves evenly, clear of the two bars
+carrying the clasp yokes. **`charms = 0` is the default, and the export is then
+byte-for-byte the bracelet it always was.**
+
+| `charms` | stations land on bars (of 15) | closest pair |
+|---|---|---|
+| **0 (default)** | — | — |
+| 1 | 7 | — |
+| 3 | 4, 7, 11 | 35.5 mm |
+| 6 (the most that fits) | 2, 4, 6, 8, 10, 12 | 23.6 mm |
+
+Rounding station indices to whole bars makes those gaps uneven, so what the
+file checks is the **smallest** gap, not the average — an average happily
+passes a pair that lands one bar apart.
+
+### The snap, and why it holds
+
+The head is a **4 mm ball on a 2.4 mm neck**; the charm's socket is a **4.4 mm
+cavity behind a 3.5 mm mouth**, split by four slits. The mouth is 0.25 mm
+narrower per side than the ball it has to swallow, so putting a charm on means
+spreading four jaws — a firm push with a click. Seated, the ball has 0.2 mm all
+round: the charm **spins freely and tilts about 14°**, and there is no
+interference at all until you start pulling it off.
+
+That is measured rather than hoped for. Walking the charm along the pin in the
+pull-off direction and intersecting the two solids: nothing at all up to
+0.3 mm of travel, overlap appearing at 0.6 mm, peaking around 1.6 mm at 0.16 mm
+of characteristic thickness, and **four separate pieces the whole way** — one
+per jaw, so all four are working.
+
+**Printed and confirmed.** `charm_grip` = 0.25 is a proven number, not a
+guess — if you change it, you are re-opening a settled fit. If some future
+charm will not clip on, or clips on too easily, that is the one number to
+touch, in `lib/charm-pin.scad`.
+
+A mounted flower clears the five bars around it on a flat band, and the hinge
+still swings free to ±100° and binds at 110° with a pin on the bar — the same
+readings as without one.
+
+### Neither half is a sphere on a stalk
+
+Both halves are shaped by what FDM can print, and neither shape is the obvious
+one:
+
+- Below its 45° latitude a **ball** leans past what the nozzle holds up. The cap
+  is removed by hulling the ball down to a disc the width of the neck, which
+  leaves a 21° skirt under it and the full 4 mm equator — the part that does the
+  retaining — untouched.
+- The **socket prints mouth up**, so its cavity closes in on itself as the
+  nozzle climbs, exactly like the roof of a horizontal hole. That is why the
+  charm prints face down and is flipped to wear: the mouth is on its back, and
+  the back has to point at the ceiling.
+
+Neither half needs support, and neither bridges.
+
+### The flower
+
+16 mm across, 7.2 mm tall printed, one flat 131 mm² island on the plate. Six
+petals, a countersunk eye, and the socket boss on the back. The face is
+**engraved rather than embossed**, and the engraving is only the eye — a groove
+that opens onto the bed splits the first layer into islands, and there is no
+room on a flower this size for one that also clears the boss.
+
+To make another charm: `include <../../lib/charm-pin.scad>`, union
+`charm_socket(<your plate thickness>)` onto the back of a flat shape, and print
+it face down. The socket brings its own asserts.
+
 ## Models and parts
 
 ```
 projects/bracelet/
+├── lib/charm-pin.scad                    # the ball-and-socket every charm shares
 └── models/
-    └── bracelet/bracelet.scad   # the whole bracelet — one printed object
+    ├── bracelet/bracelet.scad            # the whole bracelet — one printed object
+    └── flower-charm/flower-charm.scad    # one charm, printed separately
 ```
 
-One model, one part, one print. It exports as **15 separate shells** — one per
-bar, with the clasp plates fused onto the two end bars. They are not supposed
-to touch.
+The bracelet exports as **15 separate shells** — one per bar, with the clasp
+plates fused onto the two end bars. They are not supposed to touch. Every charm
+exports as one piece.
 
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
-| `bracelet` | `bracelet` | 199.0 × 17.6 × 5.0 mm | all 15 bars' own flat feet |
+| `bracelet` | `bracelet` | 199.0 × 17.6 × 5.0 mm (10.25 with charm pins) | all 15 bars' own flat feet |
+| `flower-charm` | `flower-charm` | 16.0 × 14.3 × 7.2 mm | its own face, 131 mm² in one piece |
 
 ## Sizing
 
@@ -221,6 +314,9 @@ nearest the nominal 11.6 mm spacing, then stretches or squeezes **every joint
 equally**, by a fraction of a millimetre, to hit the length exactly. Bars never
 change; only the gaps do, and they have about a millimetre of room between the
 knuckles binding (11.3 mm) and the band looking gappy (12.7 mm).
+
+`charms` is independent of all of it — it does not touch the length budget, and
+the stations are placed on whatever bar count the solver lands on.
 
 `rows` widens the band, adds a knuckle cluster to every joint, and costs
 nothing but filament. It spaces those clusters on its own fixed `row_pitch`, so
@@ -256,6 +352,11 @@ underside, asserted at ≤ 40°), and the clasp's `det_gap` / `leaf_w` /
 ```sh
 openscad -o projects/bracelet/exports/bracelet-bracelet.stl \
          projects/bracelet/models/bracelet/bracelet.scad
+openscad -D charms=3 \
+         -o projects/bracelet/exports/bracelet-bracelet-c3.stl \
+         projects/bracelet/models/bracelet/bracelet.scad
+openscad -o projects/bracelet/exports/flower-charm-flower-charm.stl \
+         projects/bracelet/models/flower-charm/flower-charm.scad
 ```
 
 - **Lay it flat, exactly as modelled.** No rotation, no supports.
@@ -276,6 +377,22 @@ openscad -o projects/bracelet/exports/bracelet-bracelet.stl \
 - To fasten: drop the stud's head through the round entry hole, then slide the
   ends apart until the post snaps past the detent and seats. To release, push
   it back past the detent and lift the head out.
+
+### Charms
+
+- The **flower prints face down, boss up, exactly as modelled** — no supports,
+  no brim, one flat 131 mm² island. It is a five-minute print; print several.
+- Print charms in the **same material and on the same settings** as the band.
+  The snap is 0.25 mm of interference per side, which is inside the range a
+  change of filament moves a fit by.
+- The one thing to get right is the boss: **three perimeters, cooling on**. The
+  jaws between the four slits are about 0.9 mm of wall each, and they are what
+  has to spring.
+- Charm pins on the band change nothing about how the band prints — same first
+  layer, same bridges, same no-brim rule.
+- To clip a charm on, hold the bar, press the charm straight down onto the ball
+  until it clicks, then check it spins. To take one off, pull it straight off —
+  it should need a deliberate tug, not a fingernail.
 
 ## License
 

@@ -23,12 +23,19 @@ bought nothing.
 **knuckle clusters** spaced along each joint, which is what stops a wide bar
 twisting about a single pin.
 
-## One model, one file, `cols` shells
+## Two models, one library, `cols` shells
 
-`models/bracelet/bracelet.scad` is the whole project. Every dimension is at the
-top of it; there is no `lib/`.
+`models/bracelet/bracelet.scad` is the bracelet, and every dimension of the band
+is at the top of it. `lib/charm-pin.scad` holds the ball-and-socket that ties
+the bracelet to its charms, and `models/flower-charm` is the first charm. The
+lib draws nothing — variables and modules only — so both models `include` it.
 
-The export must be **`cols` shells** — 15 at the default size — one per bar,
+**Everything the lib defines is named `charm_*` / `ball_*` / `neck_*` / `cav_*`
+/ `mouth_*` / `sock_*`.** That is not tidiness: this file already has a `pin_d`,
+`pin_r`, `pin_z` and `pin_flat`, and they are the HINGE pin. A second thing
+called a pin in the same namespace is how a silent shadowing bug gets written.
+
+The bracelet export must be **`cols` shells** — 15 at the default size — one per bar,
 with the two clasp plates fused onto the end bars. Anything else means a piece
 came free; see the detent trap below.
 
@@ -51,6 +58,110 @@ detent leaves have silently become rigid ribs.
 A connectivity checker reporting "15 disconnected pieces ... will NOT print as
 one solid object" is the **expected, correct** result. This is a print-in-place
 band; the pieces are the bars.
+
+## Charms: what must stay true
+
+**Printed and confirmed on a real plate on 2026-09-16** ("It was printed
+well"), on the same print as the band. So `charm_grip` = 0.25 per side, the
+four 0.9 mm jaws, the 0.2 mm seated clearance and the mouth-up socket are all
+proven, exactly as the hinge's `bore_fit` and `axial_fit` are. Treat them the
+same way: do not move them without a reason.
+
+A charm pin stands on a bar's top face, entirely above z = `thick`, and is fused
+to its bar. It is the cheapest feature in the project to verify, because almost
+everything must come out **unchanged**:
+
+- **`charms = 0` must export byte-for-byte the file the printed bracelet came
+  from.** `cmp` it against `exports/bracelet-bracelet.stl`. Cheapest regression
+  test here.
+- **Shell count `cols` and genus 43 are unchanged at any `charms`.** A pin adds
+  no piece and no hole. 15 + n shells means a pin missed its bar.
+- **The first layer is unchanged** — 2338 mm² across 15 islands.
+- **The downward-face scan below z = 0.7 is unchanged** — 331.6 mm² downward,
+  0.00 mm² past 45°.
+- **The layer-step raster is unchanged**, byte for byte in its output. Verified
+  at `charms = 3`.
+- **`check_wall_thickness.py` gains no thin point.** Above z = `thick` there are
+  exactly 6 flagged samples with or without charms, all of them the stud head's
+  top-rim edge artifact.
+- **The swing and displacement tests read the same with a pin on the bar**:
+  free to ±100°, binds at 110°; first contact dx 0.5, dy 0.6, dz 0.45–0.65.
+
+**One control changes, and it will trip you up.** §1's control is "a vertical
+through a bar centre must read exactly `thick` = 4.450". On a *charmed* bar that
+probe now reads **`SOLID 10.244`** — one unbroken run from the plate to the top
+of the ball, which is itself the proof the stalk is fused and continuous. Probe
+a bar that has no station, or probe off the band's centreline, when you want the
+4.450 control.
+
+Charm spacing is checked on the **smallest** gap between stations, not the
+average: rounding station indices to whole bars makes the gaps uneven, and the
+average passes a pair that lands one bar apart. Six is the most that fits at the
+default size.
+
+## The ball joint: two no-ops that both export a plain sphere
+
+Everything about the head of the pin is about not leaning past 45 degrees, and
+the two obvious ways to write it are silent no-ops. Both were written, both
+exported clean, and both were caught only by `check_overhangs.py` still
+reporting **56 degrees from vertical, 3.0 area units, under each ball** — the
+same three numbers twice, which is the tell.
+
+1. **Intersecting the ball with the TANGENT 45-degree cone removes nothing.**
+   The tangent cone is the *smallest* 45-degree cone that CONTAINS the sphere;
+   it touches on one circle and lies outside everywhere else. Reads like a
+   chamfer, exports a ball.
+2. **`hull()` down to a disc that sits inside the ball removes nothing either.**
+   The disc has to be below `neck_min`, the depth at which the ball is already
+   as narrow as the neck. Above it the disc is interior and the hull is the ball
+   again. Asserted now.
+
+What is there is a hull from the ball down to a neck-wide disc `neck_gap` below
+its centre: a 21-degree skirt, full 4 mm equator intact. Do not "simplify" it
+back into a cone.
+
+**Three surfaces through one edge mesh as a zero-thickness sliver.** The
+socket's cavity, its mouth bore and the top face of the boss all wanted to meet
+on the same circle, and the wall check read the result as a 0.00 mm wall, a
+hundred sampled points of it. `sock_lip` is what keeps them apart, and it earns
+its keep twice — it is also the surface that holds the ball in.
+
+**Decoration on a charm is not free.** A groove that opens onto the bed face
+splits the FIRST LAYER into islands: the flower's outline groove turned one
+131 mm² island into twelve, four of them 0.0 mm², and `check_bed_stability.py`
+called it unprintable. The same groove ran under the socket boss and left a
+0.05 mm sliver of wall. Keep engraving clear of `sock_od/2`, or keep it to a
+countersunk dimple, which is all the flower has.
+
+**Verify the snap by walking it apart, not by one empty export.** This is the
+only deliberate interference in the project, and at the seated position it is
+correctly empty — which proves nothing on its own.
+
+```scad
+include <ABSOLUTE/lib/charm-pin.scad>
+use <ABSOLUTE/models/flower-charm/flower-charm.scad>
+dz = 0;
+intersection() {
+    charm_station(0);
+    translate([0, band_cy, thick + charm_rise + cav_z + dz])
+        rotate([180, 0, 0]) flower_charm();
+}
+```
+
+- `dz` 0 and 0.3 must export **empty** — seated, the charm swivels and spins.
+- `dz` 0.6 to 2.2 must export **solid in four pieces**, one per jaw; fewer means
+  a jaw is not engaging. Characteristic thickness peaks near 0.16 mm.
+- `dz = 6` must export **empty** again. That is the control: it proves the
+  harness can still produce a solid, so an empty result means clearance rather
+  than a broken file.
+
+**And the harness lies in one more way here.** `include <../../lib/...>` is
+relative to the *source file*, so a scratch copy of `bracelet.scad` written into
+the scratchpad cannot find the lib — and OpenSCAD only **warns**. Every lib
+variable becomes `undef`, `charm_pin` becomes an unknown module, and the
+`intersection()` exports empty, which reads exactly like a perfect clearance.
+Rewrite the include to an absolute path when copying the file, and treat any
+`WARNING` in the output as a failed run.
 
 ## Why the joint is a hinge
 
@@ -285,6 +396,9 @@ test can detect anything at all. A wrist needs 24°.
 
 ## Verifying a change
 
+0. If charms were touched: `cmp` the `charms = 0` export against the committed
+   one, and re-run steps 1–6 at `charms = 3` — every number must be identical
+   except the echoed height (10.25) and the centre-line probe (see above).
 1. Export; read **genus (43)** and the **shell count (15)** — and confirm the
    formula still holds at `rows = 3` and across a `wrist` sweep. The sweep also
    checks the pitch solver: every size must echo `loop` = `wrist + ease`

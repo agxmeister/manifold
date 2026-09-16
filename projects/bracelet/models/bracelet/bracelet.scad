@@ -56,6 +56,12 @@
 $fa = 2;
 $fs = 0.3;
 
+// The ball pin every charm clips onto, and the socket that clips onto it.
+// Variables and modules only — including it draws nothing. Everything it
+// defines is named `charm_*` / `ball_*` / `neck_*` / `cav_*` / `mouth_*` /
+// `sock_*`, so nothing in it shadows the HINGE pin's `pin_d` / `pin_z`.
+include <../../lib/charm-pin.scad>
+
 // ------------------------------------------------------------------- sizing
 wrist   = 180;   // wrist circumference in mm. 180 adult, 140 child.
 ease    =  12;   // slack on top of the wrist, so the band hangs rather than
@@ -292,16 +298,57 @@ x_entry = x_l - kh_entry;
 x_lock  = x_l - kh_lock;
 x_det   = x_lock + det_off;
 
+// --------------------------------------------------------------- the charms
+// OPTIONAL. `charms` bars along the band grow a ball pin out of their top
+// face, and a charm (models/flower-charm) snaps onto it. Leave it at 0 and the
+// bracelet is exactly the bracelet it was.
+//
+// A bar's top is the best mounting face in the whole project: flat, horizontal,
+// 5.0 x 16.6 mm inside the chamfer, and solid all the way to the plate. The pin
+// is therefore a plain vertical stalk — it adds nothing to the footprint, no
+// overhang, and no layer step, and the rule at the top of this file is not even
+// tested by it. It sits at the bar's centre, on the band's centreline.
+//
+// The pin is FUSED to its bar, permanently. Everything in this print is
+// print-in-place; the joint that comes apart is the one at the TOP of the pin,
+// where it can be made as stiff as it likes without anything having to flex to
+// get it there.
+charms      = 0;     // how many charm stations. 0 = none.
+charm_reach = 16;    // the widest charm this spacing has to keep apart —
+                     //   models/flower-charm is 16 mm across.
+
+function charm_col(i) = round((i + 1) * (cols - 1) / (charms + 1));
+charm_ix    = [for (i = [0 : charms - 1]) charm_col(i)];
+
+// Spacing is checked on the SMALLEST gap between consecutive stations, not on
+// the average. Rounding station indices to whole bars makes the gaps uneven,
+// and the average happily passes a pair that lands one bar apart.
+charm_sep   = charms < 2 ? cols
+            : min([for (i = [0 : charms - 2]) charm_ix[i+1] - charm_ix[i]]);
+assert(charms == 0 || charm_sep * pitch >= charm_reach,
+       "two charms would land closer together than a charm is wide — lower `charms`");
+assert(charms == 0 || (charm_ix[0] >= 1 && charm_ix[charms-1] <= cols - 2),
+       "a charm landed on an end bar, where the clasp yoke is");
+
+// The pin outgrows the stud, so it sets the print height once there is one.
+top_z       = charms > 0 ? max(post_top + head_h, thick + charm_rise + charm_ball/2)
+                         : post_top + head_h;
+
 echo(str("cols=", cols, " rows=", rows,
          "  loop=", band_run + stud_ext + kh_lock,
          "  pitch=", pitch, " (gap ", pitch - body, ")",
          "  keyhole travel=", kh_lock - kh_entry,
          "  footprint=", (x_stud + stud_tip) - (x_lock - kh_tip),
-                    " x ", band_w, " x ", post_top + head_h,
+                    " x ", band_w, " x ", top_z,
          "  band thick=", thick,
          "  knuckle cap at bed=", knuck_foot,
          "  knuckle underside=", knuck_slope, "deg",
          "  pin first layer=", pin_flat_w));
+if (charms > 0)
+    echo(str(charms, " charm pin(s) on bar(s) ", charm_ix, " of ", cols,
+             " — ball d", charm_ball, " standing ", charm_rise + charm_ball/2,
+             " mm off the band", charms < 2 ? ""
+                 : str(", closest pair ", charm_sep * pitch, " mm apart")));
 
 // ------------------------------------------------------------------ modules
 module rrect(s) offset(r = corner_r)
@@ -458,8 +505,16 @@ module clasp_keyhole() {
     }
 }
 
+// A charm station: the ball pin, standing on the flat top of bar `col`, on the
+// band's centreline. Sunk `charm_sink` into the bar so the two solids genuinely
+// merge rather than meeting on a coincident face.
+module charm_station(col) {
+    translate([col*pitch, band_cy, thick]) charm_pin();
+}
+
 module bracelet() {
     for (c = [0:cols-1]) bar(c);
+    for (c = charm_ix) charm_station(c);
     clasp_stud();
     clasp_keyhole();
 }
