@@ -130,3 +130,56 @@ module charm_socket(floor_z) {
                     cube([sock_od, sock_slit_w, sock_h - floor_z + 1]);
     }
 }
+
+// --------------------------------------------------------------- engraving
+// Decoration on a charm is CUT, never raised. The decorated face lies on the
+// bed (that is forced: the socket's mouth has to point up, and the mouth is on
+// the charm's back), so anything embossed would lift the plate off the plate.
+//
+// Both cutters below are 45-degree wedges with their WIDE end at the face, so
+// the void they leave closes in on itself as the nozzle climbs — the same
+// reason the socket prints mouth up. Neither is run to a true apex or a true
+// knife edge: `charm_cut_tip` leaves a real flat at the bottom, because a cone
+// or wedge run to nothing meshes into slivers there and the wall check reads
+// those as 0.00 mm.
+//
+// What limits a cut is how much material is left ABOVE it. Two different
+// thicknesses are available depending on where the cut lands, and
+// `charm_cut_max` takes the smaller so one number governs everywhere:
+//
+//   * out on the open plate, `plate` mm of it;
+//   * under the socket, `cav_bottom` mm — the cavity floor, which is thicker
+//     than the plate, so a cut is actually freer there, not tighter.
+//
+// The constraint that is NOT expressed here, because it depends on the
+// silhouette: a cut must stay a printable wall clear of the charm's outline,
+// and clear of the next cut. Two cuts 0.1 mm apart leave a 0.1 mm rib, and
+// two cuts that merge are fine — it is the near miss that fails. And no cut
+// may close a LOOP: a ring-shaped groove cuts the first layer into islands
+// (see models/flower-charm for the 12-island version of that mistake).
+charm_cut_tip = 0.8;   // default flat at the bottom of a cut
+
+function charm_cut_max(plate)        = min(plate, cav_bottom) - 1.2;
+function charm_cut_depth(d, tip = charm_cut_tip) = (d - tip)/2;
+
+// A countersunk round dimple, `d` across at the face. Eyes, noses, nostrils.
+module charm_dimple(d, tip = charm_cut_tip) {
+    h = charm_cut_depth(d, tip);
+    translate([0, 0, -0.01]) cylinder(d1 = d, d2 = tip, h = h + 0.01);
+}
+
+// A tapered slot from `a` to `b`, `w` wide at the face, with rounded ends —
+// a V-groove for a mouth, a whisker, a highlight. hull() of two congruent
+// cones keeps every flank at the same 45 degrees the dimple has.
+module charm_groove(a, b, w, tip = charm_cut_tip) {
+    h = charm_cut_depth(w, tip);
+    hull() {
+        translate([a[0], a[1], -0.01]) cylinder(d1 = w, d2 = tip, h = h + 0.01);
+        translate([b[0], b[1], -0.01]) cylinder(d1 = w, d2 = tip, h = h + 0.01);
+    }
+}
+
+// A polyline of grooves — a smile, a pair of whiskers meeting. Same rules.
+module charm_grooves(pts, w, tip = charm_cut_tip) {
+    for (i = [0 : len(pts) - 2]) charm_groove(pts[i], pts[i+1], w, tip);
+}

@@ -197,8 +197,9 @@ full-width bar foot, so there is far more of it than the old tile grid had.
 ## Charms
 
 `charms` bars along the band can grow a **ball pin** out of their top face, and
-a charm snaps onto it. `models/flower-charm` is the first one and the pattern
-for any other.
+a charm snaps onto it. There are five: a **flower**, a **heart**, a **kitten**,
+a **puppy** and a **frog**. They all use the same ball-and-socket, so any charm
+fits any station, and each one is its own five-minute print.
 
 **A bar's top is the best mounting face in the project**: flat, horizontal,
 5.0 × 16.6 mm inside the chamfer, and solid all the way down to the plate. So
@@ -248,9 +249,13 @@ guess — if you change it, you are re-opening a settled fit. If some future
 charm will not clip on, or clips on too easily, that is the one number to
 touch, in `lib/charm-pin.scad`.
 
-A mounted flower clears the five bars around it on a flat band, and the hinge
+A mounted charm clears the five bars around it on a flat band, and the hinge
 still swings free to ±100° and binds at 110° with a pin on the bar — the same
 readings as without one.
+
+All five charms were walked off the pin the same way and gave the same four
+numbers, which is the point of having one library: the joint is identical, so
+a charm that clips on is a charm that clips on.
 
 ### Neither half is a sphere on a stalk
 
@@ -268,26 +273,112 @@ one:
 
 Neither half needs support, and neither bridges.
 
-### The flower
+### The five charms
 
-16 mm across, 7.2 mm tall printed, one flat 131 mm² island on the plate. Six
-petals, a countersunk eye, and the socket boss on the back. The face is
-**engraved rather than embossed**, and the engraving is only the eye — a groove
-that opens onto the bed splits the first layer into islands, and there is no
-room on a flower this size for one that also clears the boss.
+Every charm is the same idea: a flat plate printed **face down** on the bed,
+its decoration **engraved** into that face, and the socket boss rising from the
+back. Flip it over to wear it.
 
-To make another charm: `include <../../lib/charm-pin.scad>`, union
-`charm_socket(<your plate thickness>)` onto the back of a flat shape, and print
-it face down. The socket brings its own asserts.
+| charm | size, print pose | first layer | the printed face |
+|---|---|---|---|
+| `flower-charm` | 16.0 × 14.3 × 7.2 mm | 131 mm² | six petals, a countersunk eye |
+| `heart-charm` | 15.7 × 13.9 × 7.2 mm | 138 mm² | two gloss streaks on one lobe |
+| `kitten-charm` | 12.0 × 15.6 × 7.2 mm | 126 mm² | eyes, nose, an upturned mouth |
+| `puppy-charm` | 15.0 × 13.9 × 7.2 mm | 138 mm² | eyes, a big nose, a split mouth |
+| `frog-charm` | 15.8 × 13.6 × 7.2 mm | 155 mm² | pupils, nostrils, a wide smile |
+
+Each is **one island on the plate** and one piece in the export, the thinnest
+wall on any of them is 1.30 mm, and none of them needs support.
+
+**The silhouette carries the shape; the cuts only carry the detail.** On a
+16 mm charm that is not a style choice, it is what fits. Ears, a muzzle, a
+frog's bulging eyes are part of the **outline**, where they get to be
+millimetres of real material; eyes, nose and mouth are engraved, where they
+cost nothing to print.
+
+What you cannot have at this size is fine detail, and the kitten is the proof.
+**Whiskers were drawn and taken out twice.** Any whisker that keeps a printable
+wall clear of the head's rim, of the nose and of the next whisker comes out
+about 1.2 mm long — an invisible scratch — and the ones that looked right on
+screen finished 0.2 mm from the rim. The inner-ear crease went the same way.
+Four bold features beat eight faint ones.
+
+Four shapes took a second pass, all for the same reason: the first version was
+geometrically fine and *read* as the wrong thing.
+
+- The **kitten's ears** started as wide lobes on a head hulled from two
+  circles, and rendered as elephant legs — their bases were as far apart as the
+  gap between them, so there was no notch to see, and the skull ran flat across
+  the top. A narrower base brought in towards the middle, a longer taper and a
+  head made from **one** circle fixed it; 3.7 mm of ear now stands clear of the
+  skull.
+- The **kitten's mouth** was a plain V from under the nose out to the cheeks,
+  which is a frown: the arms only ever go down. It needs a third point a side
+  so it can flick back up.
+- The **frog's mouth** was a chevron and read as an arrowhead. Swept along an
+  arc whose centre sits above the face, it is a smile.
+- The **heart** was a spade. The lobes' sides run straight to the tip, so a tip
+  drawn far down gives two long flanks and a point; pulled up until the lobes
+  dominate, the outline goes round again.
+- And the **puppy** was a cloud. Gentle ear bulges on a big round head have no
+  outline to read, so the skull shrank, the ears grew into lobes that hang past
+  it and down to the chin, and a **muzzle** — a third circle — pokes out below.
+  The muzzle also pays for itself: on a plain round head the rim curved up under
+  the mouth and left 0.9 mm of wall beside it.
+
+Each of those is now a named number in the source with an assert on it —
+`ear_notch`, `flank`, `ear_out`, `muzzle_out` — rather than something to
+re-judge by eye next time.
+
+### What an engraved face is allowed to do
+
+`lib/charm-pin.scad` provides the two cutters every charm uses, a countersunk
+`charm_dimple` and a tapered `charm_groove`. Both are 45° wedges with the wide
+end at the face, so the void they leave **closes in on itself** as the nozzle
+climbs — the same reason the socket prints mouth up. Neither runs to a true
+apex: a cone or wedge drawn to nothing meshes into slivers, and the wall check
+reads those as 0.00 mm.
+
+What limits a cut is the material left **above** it, and `charm_cut_max` is
+that number: **1.0 mm** on a 2.2 mm plate. It is the smaller of two
+thicknesses, because a cut under the socket is actually freer than one out on
+the open plate — the cavity floor is 2.87 mm thick, not 2.2.
+
+Two more rules are not in the library, because they depend on the shape:
+
+- **No cut may close a loop.** A ring-shaped groove cuts the first layer into
+  islands. The flower's first version had an outline groove and turned one
+  131 mm² island into twelve, four of them 0.0 mm², which the bed-stability
+  check called unprintable.
+- **Two cuts must either merge or stand a printable wall apart.** The near miss
+  is the failure: two grooves 0.1 mm apart leave a 0.1 mm rib. Merging is free,
+  and the animal charms use it on purpose — the mouth starts *inside* the nose
+  dimple, which is also what a muzzle looks like.
+
+The one overhang any charm reports is the puppy's nose. A 3 mm dimple at 45°
+would be 1.5 mm deep, well past what the plate can spare, so it is truncated on
+a 1.2 mm flat — a 1.2 mm horizontal ceiling at the top of a self-supporting
+cone, which the slicer bridges without noticing. Running the cone to a point
+instead would cut straight through the plate.
+
+To make yet another charm: `include <../../lib/charm-pin.scad>`, union
+`charm_socket(<your plate thickness>)` onto the back of a flat shape, cut the
+face with `charm_dimple` / `charm_groove`, and print it face down. The socket
+brings its own asserts.
 
 ## Models and parts
 
 ```
 projects/bracelet/
-├── lib/charm-pin.scad                    # the ball-and-socket every charm shares
+├── lib/charm-pin.scad                    # the ball-and-socket every charm shares,
+│                                         #   and the two cutters they engrave with
 └── models/
     ├── bracelet/bracelet.scad            # the whole bracelet — one printed object
-    └── flower-charm/flower-charm.scad    # one charm, printed separately
+    ├── flower-charm/flower-charm.scad    # and five charms, each printed separately
+    ├── heart-charm/heart-charm.scad
+    ├── kitten-charm/kitten-charm.scad
+    ├── puppy-charm/puppy-charm.scad
+    └── frog-charm/frog-charm.scad
 ```
 
 The bracelet exports as **15 separate shells** — one per bar, with the clasp
@@ -298,6 +389,14 @@ exports as one piece.
 |---|---|---|---|
 | `bracelet` | `bracelet` | 199.0 × 17.6 × 5.0 mm (10.25 with charm pins) | all 15 bars' own flat feet |
 | `flower-charm` | `flower-charm` | 16.0 × 14.3 × 7.2 mm | its own face, 131 mm² in one piece |
+| `heart-charm` | `heart-charm` | 15.7 × 13.9 × 7.2 mm | its own face, 138 mm² in one piece |
+| `kitten-charm` | `kitten-charm` | 12.0 × 15.6 × 7.2 mm | its own face, 126 mm² in one piece |
+| `puppy-charm` | `puppy-charm` | 15.0 × 13.9 × 7.2 mm | its own face, 138 mm² in one piece |
+| `frog-charm` | `frog-charm` | 15.8 × 13.6 × 7.2 mm | its own face, 155 mm² in one piece |
+
+No charm may exceed **16 mm** in either direction — that is `charm_reach` in
+`bracelet.scad`, the number the station spacing is checked against, and each
+charm asserts its own size against it.
 
 ## Sizing
 
@@ -355,8 +454,10 @@ openscad -o projects/bracelet/exports/bracelet-bracelet.stl \
 openscad -D charms=3 \
          -o projects/bracelet/exports/bracelet-bracelet-c3.stl \
          projects/bracelet/models/bracelet/bracelet.scad
-openscad -o projects/bracelet/exports/flower-charm-flower-charm.stl \
-         projects/bracelet/models/flower-charm/flower-charm.scad
+for c in flower heart kitten puppy frog; do
+  openscad -o "projects/bracelet/exports/$c-charm-$c-charm.stl" \
+           "projects/bracelet/models/$c-charm/$c-charm.scad"
+done
 ```
 
 - **Lay it flat, exactly as modelled.** No rotation, no supports.
@@ -380,8 +481,9 @@ openscad -o projects/bracelet/exports/flower-charm-flower-charm.stl \
 
 ### Charms
 
-- The **flower prints face down, boss up, exactly as modelled** — no supports,
-  no brim, one flat 131 mm² island. It is a five-minute print; print several.
+- **Every charm prints face down, boss up, exactly as modelled** — no supports,
+  no brim, one flat island of 126–155 mm². Each is a five-minute print; print
+  several, and any charm fits any station.
 - Print charms in the **same material and on the same settings** as the band.
   The snap is 0.25 mm of interference per side, which is inside the range a
   change of filament moves a fit by.

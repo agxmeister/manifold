@@ -23,12 +23,26 @@ bought nothing.
 **knuckle clusters** spaced along each joint, which is what stops a wide bar
 twisting about a single pin.
 
-## Two models, one library, `cols` shells
+## Six models, one library, `cols` shells
 
 `models/bracelet/bracelet.scad` is the bracelet, and every dimension of the band
 is at the top of it. `lib/charm-pin.scad` holds the ball-and-socket that ties
-the bracelet to its charms, and `models/flower-charm` is the first charm. The
-lib draws nothing — variables and modules only — so both models `include` it.
+the bracelet to its charms plus the two cutters the charms engrave with, and
+there are five charms — `flower`, `heart`, `kitten`, `puppy`, `frog`, each its
+own model folder. The lib draws nothing — variables, functions and modules only
+— so every model `include`s it.
+
+**The lib is shared with two models that have been printed, so any change to it
+has to prove it changed nothing.** Both of these must come back `IDENTICAL`:
+
+```sh
+openscad -o /tmp/b.stl models/bracelet/bracelet.scad     && cmp /tmp/b.stl exports/bracelet-bracelet.stl
+openscad -o /tmp/f.stl models/flower-charm/flower-charm.scad \
+    && cmp /tmp/f.stl exports/flower-charm-flower-charm.stl
+```
+
+Adding to the lib is fine — a function or a module that nothing calls draws
+nothing. Touching any existing number in it is re-opening a settled fit.
 
 **Everything the lib defines is named `charm_*` / `ball_*` / `neck_*` / `cav_*`
 / `mouth_*` / `sock_*`.** That is not tidiness: this file already has a `pin_d`,
@@ -126,27 +140,66 @@ on the same circle, and the wall check read the result as a 0.00 mm wall, a
 hundred sampled points of it. `sock_lip` is what keeps them apart, and it earns
 its keep twice — it is also the surface that holds the ball in.
 
-**Decoration on a charm is not free.** A groove that opens onto the bed face
-splits the FIRST LAYER into islands: the flower's outline groove turned one
-131 mm² island into twelve, four of them 0.0 mm², and `check_bed_stability.py`
-called it unprintable. The same groove ran under the socket boss and left a
-0.05 mm sliver of wall. Keep engraving clear of `sock_od/2`, or keep it to a
-countersunk dimple, which is all the flower has.
+**Decoration on a charm is not free.** A groove that CLOSES A LOOP splits the
+FIRST LAYER into islands: the flower's outline groove turned one 131 mm² island
+into twelve, four of them 0.0 mm², and `check_bed_stability.py` called it
+unprintable. The same groove ran alongside the socket boss in plan and left a
+0.05 mm sliver of wall.
+
+`charm_dimple` / `charm_groove` / `charm_grooves` in the lib are the cutters to
+use, and `charm_cut_max(plate)` is the depth budget — **1.0 mm** on the 2.2 mm
+plate all five charms use. Three things about that budget are worth knowing
+before re-deriving them:
+
+- It is the smaller of `plate` and `cav_bottom`, both less 1.2 mm. **A cut
+  under the socket is freer, not tighter**, because the cavity floor is 2.87 mm
+  thick. Do not talk yourself into a keep-out ring around the boss: the boss's
+  outer wall only exists above `z = plate`, and a face cut only exists below
+  `charm_cut_max`, so the two never share a z range and there is no sliver
+  between them. That is exactly the wrong conclusion the first draft of these
+  four charms was built on, and it cost a redesign — it pushes every facial
+  feature out into a 2 mm annulus at the rim, where nothing fits.
+- **Depth follows width**, at 45°: `(w - tip)/2`. A 1.0 mm groove with the
+  default 0.8 mm tip is 0.1 mm deep and invisible; a narrow cut needs a narrow
+  `tip` (the frog's nostrils use 0.4) and a wide one needs a wide `tip` (the
+  puppy's 3 mm nose needs 1.2, or it would be 1.5 mm deep).
+- A truncated cone leaves a **flat ceiling** the width of its tip. The puppy's
+  1.2 mm nose flat is the one overhang region any charm reports — a 1.2 mm
+  bridge at the top of a self-supporting cone. Do not "fix" it by running the
+  cone to an apex: that cuts through the plate and meshes into slivers.
+
+**And two cuts must either MERGE or stand 1.2 mm apart.** The near miss is the
+failure mode — two grooves 0.1 mm apart leave a 0.1 mm rib. Merging is free and
+used on purpose: every animal's mouth starts inside its nose dimple.
 
 **Verify the snap by walking it apart, not by one empty export.** This is the
 only deliberate interference in the project, and at the seated position it is
 correctly empty — which proves nothing on its own.
 
+The harness needs no bracelet at all: the charm's boss rim ends up 1.67 mm
+above the bar's top face and its plate 6.67 mm above it, so nothing but the pin
+is ever in reach. A bare `charm_pin()` is both sufficient and far easier —
+`include`-ing `bracelet.scad` drags `bracelet();` in as a second top-level
+object and quietly unions the whole band into your `intersection()`.
+
+**Note `BOSS_Y`.** Only the flower and the heart put the socket on the origin;
+the kitten, puppy and frog offset it (to the head's centre, into the skull,
+below the eye bulges) because that is where the plate has a shoulder. A charm
+flipped by `rotate([180,0,0])` sends its boss from `(0, by)` to `(0, -by)`, so
+the harness has to translate by `+by` to land it back on the pin. Get the sign
+wrong and every `dz` exports empty, which reads exactly like a perfect fit.
+
 ```scad
 include <ABSOLUTE/lib/charm-pin.scad>
-use <ABSOLUTE/models/flower-charm/flower-charm.scad>
-dz = 0;
+use <ABSOLUTE/models/<charm>-charm/<charm>-charm.scad>
 intersection() {
-    charm_station(0);
-    translate([0, band_cy, thick + charm_rise + cav_z + dz])
-        rotate([180, 0, 0]) flower_charm();
+    charm_pin();
+    translate([0, BOSS_Y, charm_rise + cav_z + dz]) rotate([180, 0, 0]) <charm>_charm();
 }
 ```
+
+All five charms give the same four readings, which is the point of having one
+library:
 
 - `dz` 0 and 0.3 must export **empty** — seated, the charm swivels and spins.
 - `dz` 0.6 to 2.2 must export **solid in four pieces**, one per jaw; fewer means
@@ -162,6 +215,41 @@ variable becomes `undef`, `charm_pin` becomes an unknown module, and the
 `intersection()` exports empty, which reads exactly like a perfect clearance.
 Rewrite the include to an absolute path when copying the file, and treat any
 `WARNING` in the output as a failed run.
+
+## A charm's outline: what the asserts are actually for
+
+The four animal/heart charms are built on one rule — **the silhouette carries
+the shape, the cuts carry only the detail** — because at 16 mm nothing else
+fits. Ears, a muzzle, a frog's bulging eyes are circles unioned into the
+outline; eyes, nose and mouth are engraved.
+
+**Do not assert that a lump's centre lies inside the body.** That was the first
+draft's weld test and it is wrong in both directions: it is not necessary (two
+circles can overlap generously with neither centre inside the other) and not
+sufficient. It rejected the frog's eye, which shares a 5.8 mm chord with the
+head. What measures a weld is the **lens** the two circles share along the line
+of centres, `r1 + r2 - d`, and there is an `*_lap >= 1.0` assert per lump now.
+The matching `*_out` asserts say the lump is actually VISIBLE, which is the
+other way to waste filament.
+
+**Outline lumps have the same near-miss problem cuts do.** The puppy's lower
+ear lobe and its muzzle sit side by side; miss by 0.1 mm and you get a notch no
+nozzle fits into, and the silhouette reads as one blob either way. `ear_cheek`
+asserts they overlap instead.
+
+**What a render is for here is the one thing the checks cannot see: whether the
+shape reads as the thing it is meant to be.** Four of these were geometrically
+perfect and plainly wrong — a cat with elephant legs, a cat frowning, a frog
+with an arrowhead for a mouth, a heart that was a spade, a dog that was a
+cloud. Every fix is now a named number with an assert (`ear_notch`, `flank`,
+`ear_out`, `muzzle_out`), so the judgement does not have to be made twice.
+
+**Render them right side up.** The face is on the bed at `z = 0`, so it is the
+BOTTOM view, and `camera = "0,y,0,180,0,0,dist"` renders it upside down —
+which is how the kitten's frown got missed for a round. Add the Z rotation:
+`"0,y,0,180,0,180,dist"`, `projection = ortho`, `viewAll = false`. A scratch
+file that `use`s all five charms and lays them out in a row is the cheapest
+version of this check.
 
 ## Why the joint is a hinge
 
@@ -396,9 +484,15 @@ test can detect anything at all. A wrist needs 24°.
 
 ## Verifying a change
 
-0. If charms were touched: `cmp` the `charms = 0` export against the committed
-   one, and re-run steps 1–6 at `charms = 3` — every number must be identical
-   except the echoed height (10.25) and the centre-line probe (see above).
+0. If `lib/charm-pin.scad` was touched: `cmp` the bracelet and flower exports
+   against the committed ones (see the top of this file) — both must be
+   byte-for-byte. If the bracelet's charm stations were touched: `cmp` the
+   `charms = 0` export against the committed one, and re-run steps 1–6 at
+   `charms = 3` — every number must be identical except the echoed height
+   (10.25) and the centre-line probe (see above). If a charm was added or
+   changed: connectivity (1 piece), wall thickness (≥ 1.30 mm on all five),
+   bed stability (1 island, 126–155 mm²), overhangs (nothing but the puppy's
+   nose flat), the snap walk in §4's charm harness, and a right-side-up render.
 1. Export; read **genus (43)** and the **shell count (15)** — and confirm the
    formula still holds at `rows = 3` and across a `wrist` sweep. The sweep also
    checks the pitch solver: every size must echo `loop` = `wrist + ease`
