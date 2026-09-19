@@ -196,10 +196,25 @@ full-width bar foot, so there is far more of it than the old tile grid had.
 
 ## Charms
 
-`charms` bars along the band can grow a **ball pin** out of their top face, and
-a charm snaps onto it. There are five: a **flower**, a **heart**, a **kitten**,
-a **puppy** and a **frog**. They all use the same ball-and-socket, so any charm
-fits any station, and each one is its own five-minute print.
+`charms` bars along the band carry a charm, and there are **two ways they can
+carry it** — `charm_mount` in `bracelet.scad` picks one for the whole band:
+
+| | `"ball"` (default) | `"screw"` |
+|---|---|---|
+| on the bar | a ball pin **fused** to its top face | a threaded hole **through** it |
+| the charm | clips over the ball and swivels | winds onto a loose double-ended screw |
+| comes apart | charm only; the pin is there forever | charm, screw and all |
+| charms | flower, heart, kitten, puppy, frog | star |
+| proven | printed and worn | printed and confirmed |
+
+The ball mount came first; the screw mount came later and was printed and
+confirmed on 2026-09-19 — screws, star and a threaded band. It is described
+[below](#the-screw-mount).
+
+With `charm_mount = "ball"`, `charms` bars grow a **ball pin** out of their top
+face and a charm snaps onto it. There are five: a **flower**, a **heart**, a
+**kitten**, a **puppy** and a **frog**. They all use the same ball-and-socket,
+so any charm fits any station, and each one is its own five-minute print.
 
 **A bar's top is the best mounting face in the project**: flat, horizontal,
 5.0 × 16.6 mm inside the chamfer, and solid all the way down to the plate. So
@@ -366,19 +381,95 @@ To make yet another charm: `include <../../lib/charm-pin.scad>`, union
 face with `charm_dimple` / `charm_groove`, and print it face down. The socket
 brings its own asserts.
 
+## The screw mount
+
+The ball pin is fused to its bar, so a bar that once carried a charm carries a
+4 mm ball for the rest of its life. The screw mount takes the other road:
+**nothing is fused and nothing springs.** A bar gets a threaded hole straight
+through it, a loose **double-ended screw** winds into that hole until its hex
+collar seats on the bar's top face, and the charm winds onto the other end. Take
+everything off and the bar is a plain bar with a hole in it.
+
+```
+   star-charm        a round pad with a blind threaded bore
+        ║
+   ═════╩═════       its seat face lands on the collar
+      ╔═╧═╗          hex collar: stop, seat, and the bit you grip
+   ───╫───╫───       the bar's top face
+   bar║ ⦀ ║          M3 x 2.2 through the whole 4.45 mm
+   ───╨───╨───       the tip stops 0.25 mm shy of the underside
+```
+
+**The bar is what sets the size, not the screw.** The hole has to pass through
+6.0 mm of bar, and the top chamfer leaves only 5.0 mm of that at the rim — so a
+3.3 mm hole is what fits, leaving **0.85 mm of wall at the rim and 1.35 mm
+below it** (measured on the mesh, not assumed: 1.358 mm through the body,
+narrowing to 0.90 mm just under the face). That fixes the thread at **M3 × 2.2**
+— major 3.0 mm, 0.4 mm deep, a coarse pitch because a fine one on a 0.4 mm
+nozzle smears into a plain cylinder. About 1.5 turns of engagement at each end.
+
+**The screw prints lying down**, which is the whole reason it is a separate
+part. Standing up it would be a 9.5 mm tower on a 3 mm circle with every thread
+crest leaving the layer below at the tangent. Lying down it is a horizontal
+cylinder, and a horizontal cylinder's only real problem is its underside — cut
+off by a flat, exactly as the hinge pin's underside is. The flat lands 1.05 mm
+from the axis, a hair inside the core, so the thread *and* the groove roots both
+reach the bed and the first layer is an unbroken 2.1 mm strip rather than a
+tangent line. The thread is missing over the ~90° of arc the flat eats; the
+other 270° hold, and a charm is not a load.
+
+**The threaded holes print with no overhang at all.** A female thread's groove
+roof is the only surface in the joint that hangs, and it is shaped so that it
+does not: the tooth is asymmetric, slack on the flank that becomes the ceiling
+and steep on the one that becomes the floor, which buys a printable roof for
+about half the pitch a symmetric thread would cost. Measured on the export,
+every ceiling is **31° from vertical**, and the band with three threaded holes
+in it reports exactly the same 56 overhang regions as the plain band.
+
+### What it costs
+
+A screw stops where the thread stops. The charm ends up at whatever angle it
+seats at — give or take the 45° of phase slack the clearance leaves — and is
+held there by friction. **The ball let a charm spin and swing; this one does
+not.** A star has five-fold symmetry and no obvious up, which is why it is the
+charm that got built for this mount; a charm with a face on it would want the
+seat re-thought first.
+
+Both threads are right-handed, so tightening the charm also tightens the screw
+into its bar. Unscrewing the charm tends to bring the screw out with it, which
+is no loss — they then unscrew from each other.
+
+### The star
+
+`star-charm` is the charm built for this mount: a five-pointed star, 16 mm tip
+to tip, printed **face down** like every other charm, with a round 6.1 mm pad on
+its back instead of a socket boss. The face is a dished centre with a crease
+running out into each point — the same engraving rules as the other five, the
+same 1.0 mm cutting budget, and no cut that closes a loop.
+
+It stands 8.0 mm off the bar, against the ball charms' 6.7 mm, and prints
+6.6 mm tall in one 86 mm² island.
+
+All of this printed first time on 2026-09-19 — the screws in a batch of six,
+the star, and a band with three threaded stations — so the 0.15 mm thread
+clearance is a proven fit rather than a calculated one.
+
 ## Models and parts
 
 ```
 projects/bracelet/
-├── lib/charm-pin.scad                    # the ball-and-socket every charm shares,
-│                                         #   and the two cutters they engrave with
+├── lib/charm-pin.scad                    # both mounts — the ball-and-socket, the
+│                                         #   screw and its threads, and the two
+│                                         #   cutters every charm engraves with
 └── models/
     ├── bracelet/bracelet.scad            # the whole bracelet — one printed object
-    ├── flower-charm/flower-charm.scad    # and five charms, each printed separately
+    ├── charm-screw/charm-screw.scad      # the loose double-ended screw
+    ├── flower-charm/flower-charm.scad    # and six charms, each printed separately
     ├── heart-charm/heart-charm.scad
     ├── kitten-charm/kitten-charm.scad
     ├── puppy-charm/puppy-charm.scad
-    └── frog-charm/frog-charm.scad
+    ├── frog-charm/frog-charm.scad
+    └── star-charm/star-charm.scad        # the one that screws on
 ```
 
 The bracelet exports as **15 separate shells** — one per bar, with the clasp
@@ -393,8 +484,11 @@ exports as one piece.
 | `kitten-charm` | `kitten-charm` | 12.0 × 15.6 × 7.2 mm | its own face, 126 mm² in one piece |
 | `puppy-charm` | `puppy-charm` | 15.0 × 13.9 × 7.2 mm | its own face, 138 mm² in one piece |
 | `frog-charm` | `frog-charm` | 15.8 × 13.6 × 7.2 mm | its own face, 155 mm² in one piece |
+| `star-charm` | `star-charm` | 14.7 × 15.3 × 6.6 mm | its own face, 86 mm² in one piece |
+| `charm-screw` | `charm-screw` | 4.8 × 9.5 × 3.2 mm | the flat along its shaft, 20 mm² |
 
-No charm may exceed **16 mm** in either direction — that is `charm_reach` in
+The last two are the screw mount; the five above them are the ball mount. No
+charm may exceed **16 mm** in either direction — that is `charm_reach` in
 `bracelet.scad`, the number the station spacing is checked against, and each
 charm asserts its own size against it.
 
@@ -454,10 +548,18 @@ openscad -o projects/bracelet/exports/bracelet-bracelet.stl \
 openscad -D charms=3 \
          -o projects/bracelet/exports/bracelet-bracelet-c3.stl \
          projects/bracelet/models/bracelet/bracelet.scad
-for c in flower heart kitten puppy frog; do
+for c in flower heart kitten puppy frog star; do
   openscad -o "projects/bracelet/exports/$c-charm-$c-charm.stl" \
            "projects/bracelet/models/$c-charm/$c-charm.scad"
 done
+
+# the screw mount: a band with threaded holes, and a batch of screws
+openscad -D charm_mount='"screw"' -D charms=3 \
+         -o projects/bracelet/exports/bracelet-bracelet-c3-screw.stl \
+         projects/bracelet/models/bracelet/bracelet.scad
+openscad -D copies=6 \
+         -o projects/bracelet/exports/charm-screw-charm-screw.stl \
+         projects/bracelet/models/charm-screw/charm-screw.scad
 ```
 
 - **Lay it flat, exactly as modelled.** No rotation, no supports.
@@ -495,6 +597,23 @@ done
 - To clip a charm on, hold the bar, press the charm straight down onto the ball
   until it clicks, then check it spins. To take one off, pull it straight off —
   it should need a deliberate tug, not a fingernail.
+
+### The screw and the star
+
+- **Print the screw lying down, exactly as modelled** — no rotation, no
+  supports, no brim. It is a 9.5 mm part on a 20 mm² flat, so print a batch:
+  `-D copies=6` lays them out 7 mm apart, and the export is then that many
+  separate shells, which is correct rather than a fault.
+- **Same material and settings as the band.** The thread clearance is 0.15 mm
+  per side, which is well inside the range a change of filament moves a fit by.
+- Three perimeters. The thread crests are 0.45 mm wide at their tips, so they
+  want a nozzle laying a clean single line, not a fat one.
+- To assemble: wind the **long** end of the screw down into the bar until the
+  collar is tight on the bar's top face, then wind the star onto the short end
+  until its pad is tight on the collar. Finger-tight is the whole range — there
+  is nothing to torque against.
+- The star lands at whatever angle it seats at. If it matters, back it off a
+  fraction rather than forcing it round.
 
 ## License
 

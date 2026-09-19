@@ -23,31 +23,43 @@ bought nothing.
 **knuckle clusters** spaced along each joint, which is what stops a wide bar
 twisting about a single pin.
 
-## Six models, one library, `cols` shells
+## Eight models, one library, `cols` shells
 
 `models/bracelet/bracelet.scad` is the bracelet, and every dimension of the band
-is at the top of it. `lib/charm-pin.scad` holds the ball-and-socket that ties
-the bracelet to its charms plus the two cutters the charms engrave with, and
-there are five charms — `flower`, `heart`, `kitten`, `puppy`, `frog`, each its
-own model folder. The lib draws nothing — variables, functions and modules only
-— so every model `include`s it.
+is at the top of it. `lib/charm-pin.scad` holds BOTH charm mounts — the
+ball-and-socket and the screw and its threads — plus the two cutters the charms
+engrave with. There are six charms: `flower`, `heart`, `kitten`, `puppy`, `frog`
+on the ball mount and `star` on the screw mount, each its own model folder, and
+`charm-screw` is the loose screw itself. The lib draws nothing — variables,
+functions and modules only — so every model `include`s it.
 
-**The lib is shared with two models that have been printed, so any change to it
-has to prove it changed nothing.** Both of these must come back `IDENTICAL`:
+**The two mounts are exclusive per band**, chosen by `charm_mount` in
+`bracelet.scad`: `"ball"` (default, and what was printed) grows a fused pin,
+`"screw"` cuts a threaded hole through the bar instead. The `"ball"` branch of
+`module bracelet()` is deliberately written out in full rather than sharing the
+`difference()` the screw branch needs — that is what keeps the default export
+byte-for-byte identical.
+
+**The lib is shared with six models that have been printed, so any change to it
+has to prove it changed nothing.** All of these must come back `IDENTICAL`:
 
 ```sh
-openscad -o /tmp/b.stl models/bracelet/bracelet.scad     && cmp /tmp/b.stl exports/bracelet-bracelet.stl
-openscad -o /tmp/f.stl models/flower-charm/flower-charm.scad \
-    && cmp /tmp/f.stl exports/flower-charm-flower-charm.stl
+openscad -o /tmp/b.stl models/bracelet/bracelet.scad && cmp /tmp/b.stl exports/bracelet-bracelet.stl
+for c in flower heart kitten puppy frog; do
+  openscad -o /tmp/$c.stl models/$c-charm/$c-charm.scad \
+      && cmp /tmp/$c.stl exports/$c-charm-$c-charm.stl && echo "$c IDENTICAL"
+done
 ```
 
 Adding to the lib is fine — a function or a module that nothing calls draws
 nothing. Touching any existing number in it is re-opening a settled fit.
 
 **Everything the lib defines is named `charm_*` / `ball_*` / `neck_*` / `cav_*`
-/ `mouth_*` / `sock_*`.** That is not tidiness: this file already has a `pin_d`,
-`pin_r`, `pin_z` and `pin_flat`, and they are the HINGE pin. A second thing
-called a pin in the same namespace is how a silent shadowing bug gets written.
+/ `mouth_*` / `sock_*` for the ball mount, and `scr_*` for the screw.** That is
+not tidiness: this file already has a `pin_d`, `pin_r`, `pin_z` and `pin_flat`,
+and they are the HINGE pin. A third thing called a pin in the same namespace is
+how a silent shadowing bug gets written — which is why the screw is `scr_*`
+throughout and never `pin_*`.
 
 The bracelet export must be **`cols` shells** — 15 at the default size — one per bar,
 with the two clasp plates fused onto the end bars. Anything else means a piece
@@ -68,6 +80,10 @@ every `wrist` from 120 to 230 and at `rows = 3` (71). Note the last row: **the
 relief slots run into the entry hole**, so the keyhole is one hole, not three.
 One extra hole means a relief has stopped reaching the entry hole and the
 detent leaves have silently become rigid ribs.
+
+**A screw station adds one hole each**, and nothing else: `charm_mount =
+"screw"` with `charms = 3` reads **46**, and the formula holds as `+ charms`
+across the whole `wrist` sweep (31 at cols 10, 61 at cols 20).
 
 A connectivity checker reporting "15 disconnected pieces ... will NOT print as
 one solid object" is the **expected, correct** result. This is a print-in-place
@@ -112,6 +128,105 @@ Charm spacing is checked on the **smallest** gap between stations, not the
 average: rounding station indices to whole bars makes the gaps uneven, and the
 average passes a pair that lands one bar apart. Six is the most that fits at the
 default size.
+
+## The screw mount: what must stay true
+
+**Printed and confirmed on a real plate on 2026-09-19** ("It was printed
+good!"), both rounds — a batch of screws, the star, and a band with three
+threaded holes through it. So `scr_fit` = 0.15 per side, the M3 x 2.2 thread,
+the 31-degree ceiling and the 0.85 mm rim wall beside a bar's hole are all
+proven, exactly as the ball mount's `charm_grip` and the hinge's `bore_fit`
+are. Treat them the same way: do not move them without a reason.
+
+Three parts move together and all three live off the lib: the hole in the bar
+(`charm_screw_hole`), the loose screw (`charm_screw`, laid down for printing in
+`models/charm-screw`) and the charm's pad (`charm_screw_pad`, used by
+`models/star-charm`). The invariants:
+
+- **`charm_mount = "ball"` must export byte-for-byte the committed bracelet at
+  `charms = 0`,** and all five ball charms must stay `IDENTICAL` too. The screw
+  work is additive to the lib; anything else means it was not.
+- **Shell count is still `cols`, genus is `43 + charms`,** and the overhang
+  report is the *same 56 regions* as the ball band — a threaded hole adds no
+  overhang region at all. First layer drops to 2317 mm² (the three holes).
+- **Every female thread measures ~31° from vertical at its ceiling**, and the
+  screw itself reports **no downward surface past 45°** at all.
+- The two joints each pass the `intersection()` walk below, with their controls.
+
+### The five ways this went wrong before it went right
+
+Every one of these exported cleanly and looked right in a render.
+
+1. **A four-point tooth polygon silently re-cuts the flank angle.** Running each
+   flank straight on to the inner edge measures the flank over the whole
+   extension instead of over `scr_depth`: a 31° ceiling exported as **51°**, and
+   the only symptom was `check_overhangs.py` reporting a RAMP that the lib's own
+   assert said could not exist. The tooth has **six** points — the inner tongues
+   are horizontal, at the root's own z. Believe the mesh, not the assert.
+2. **The flank angle you draw is not the angle that prints.** A thread flank is
+   a helicoid, not a cone: it also winds, by the lead angle, and the steepest
+   descent combines the two. `scr_ceil_at(r)` is written out for that reason —
+   `atan(scr_depth/scr_up_f)` is the wrong number to assert on.
+3. **Which way round the tooth's asymmetry goes is not free.** The slack flank
+   must sit on the side of the tooth FACING THE COLLAR, on both ends of the
+   screw, because the bar-end thread is the charm-end thread rotated 180° about
+   x and that swaps its flanks over. Mirror it and every thread still exports,
+   still mates, and prints its groove roofs at 57°.
+4. **Phase has to be referenced to the MOUTH of a hole, not to its floor.**
+   Reference it to the floor — the obvious way — and the threads meet at
+   whatever phase the bore's depth leaves, which is not the phase the collar
+   seats at. The charm then jams a fraction of a turn short of its seat and the
+   only symptom is an `intersection()` that is never empty at ANY rotation.
+5. **A counterbore at the mouth puts two surfaces on one circle.** Giving the
+   collar a flat face to land on by boring the mouth plain at the thread's own
+   major diameter meshes as a zero-thickness sliver — **290 sampled points
+   reading 0.00 mm**, all on that plane. It is `sock_lip`'s lesson arriving by a
+   different door. The thread runs OUT through the mouth instead, and the collar
+   lands on the annulus around it.
+
+### Reading the wall check on a threaded part
+
+It flags ~170 points per band and ~330 on the star, and on this geometry that is
+**mostly ray escape at the thread runout**, not thin material. Do not accept
+that on the report's word — measure it. Slice the mesh horizontally and take the
+minimum distance from the hole's boundary loop to the material around it:
+
+| where | slice | real wall |
+|---|---|---|
+| bar, through the body | z = 0.2 … 3.5 | **1.358 mm** |
+| bar, under the chamfer | z = 4.40 | **0.900 mm** |
+| star's pad, anywhere | z = 2.4 … 6.55 | **1.396 mm** |
+
+What IS genuinely thin, and is meant to be: the female thread's crest, 0.45 mm
+at its tip (`scr_crest_f`, asserted at ≥ 0.4).
+
+### Verifying the two joints
+
+One harness per joint, each `intersection()`-based, each with two controls. Note
+that a screw's position is **two coupled degrees of freedom** — turn it and it
+advances — so there are two different sweeps and they answer different
+questions:
+
+```scad
+// seated: is there a rotation at which the joint closes on its seat?
+translate([0, 0, seat + 0.02]) rotate([0, 0, a]) <the other part>
+// winding: does it run in freely? a coupled to the advance by the pitch
+translate([0, 0, seat + 0.02 + s*scr_pitch*a/360]) rotate([0, 0, a]) ...
+```
+
+- **seated, `s = 0`:** empty for `a` in ±45°, solid from 60° to 320°. The empty
+  band is the thread's phase slack — it is also why a screwed-on charm lands at
+  a slightly random angle. The solid band is the control: it proves the harness
+  can see a collision at all.
+- **winding, `s` = +1 for the charm end and −1 for the bar end:** empty at every
+  `a` out to at least two full turns. **The other sign is the control and must
+  jam.**
+- **The 0.02 mm relief is not optional.** Seated exactly, the collar's top face
+  and the pad's seat face are coincident, and the export is 64 facets of
+  zero-volume sliver that reads as interference.
+- **A failed OpenSCAD run leaves the PREVIOUS STL on disk**, and a harness that
+  reads the file it finds will report the last run's volume for every point of
+  the sweep. `rm -f` the target first and treat a missing file as EMPTY.
 
 ## The ball joint: two no-ops that both export a plain sphere
 
@@ -484,9 +599,10 @@ test can detect anything at all. A wrist needs 24°.
 
 ## Verifying a change
 
-0. If `lib/charm-pin.scad` was touched: `cmp` the bracelet and flower exports
-   against the committed ones (see the top of this file) — both must be
-   byte-for-byte. If the bracelet's charm stations were touched: `cmp` the
+0. If `lib/charm-pin.scad` was touched: `cmp` the bracelet and ALL FIVE ball
+   charms against the committed exports (see the top of this file) — every one
+   byte-for-byte. If the screw mount was touched: re-run the two joint harnesses
+   with their controls, the slice-measured walls, and the star's checks. If the bracelet's charm stations were touched: `cmp` the
    `charms = 0` export against the committed one, and re-run steps 1–6 at
    `charms = 3` — every number must be identical except the echoed height
    (10.25) and the centre-line probe (see above). If a charm was added or

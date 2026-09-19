@@ -317,6 +317,24 @@ charms      = 0;     // how many charm stations. 0 = none.
 charm_reach = 16;    // the widest charm this spacing has to keep apart —
                      //   models/flower-charm is 16 mm across.
 
+// HOW a station carries its charm, and the two are mutually exclusive — a bar
+// is set up for one or the other:
+//
+//   "ball"  — the original. A ball pin FUSED to the bar's top face; the charm
+//             clips over it. Printed and confirmed on a real plate; this is
+//             what `exports/bracelet-bracelet.stl` was cut from, and at
+//             `charms = 0` the export is byte-for-byte that file.
+//   "screw" — a threaded hole straight THROUGH the bar. Nothing is fused: a
+//             loose double-ended screw (models/charm-screw) winds into it and
+//             the charm winds onto the other end, so the charm comes off, the
+//             screw comes off, and the bracelet is left a plain strip with
+//             holes in it. models/star-charm is the charm built for it.
+//
+// The hole is the reason the screw is no fatter than it is: it has to pass
+// through `body` = 6.0 mm of bar, and only 5.0 mm of that survives the top
+// chamfer. See the wall asserts below, and the arithmetic in the lib.
+charm_mount = "ball";
+
 function charm_col(i) = round((i + 1) * (cols - 1) / (charms + 1));
 charm_ix    = [for (i = [0 : charms - 1]) charm_col(i)];
 
@@ -330,9 +348,28 @@ assert(charms == 0 || charm_sep * pitch >= charm_reach,
 assert(charms == 0 || (charm_ix[0] >= 1 && charm_ix[charms-1] <= cols - 2),
        "a charm landed on an end bar, where the clasp yoke is");
 
+assert(charm_mount == "ball" || charm_mount == "screw",
+       "charm_mount is either \"ball\" or \"screw\"");
+
+// The screw mount takes material OUT of a bar instead of adding it, so the two
+// walls it leaves are the things to check. The rim is the thinner of the two —
+// the chamfer has already taken 0.5 mm a side by the time the hole gets there —
+// and it is the thinnest vertical wall the mount adds anywhere.
+scr_wall_body = (body - scr_hole_maj) / 2;              // 1.35
+scr_wall_rim  = (body - 2*ch_run - scr_hole_maj) / 2;   // 0.85
+assert(charm_mount == "ball" || scr_bar == thick,
+       str("the screw's bar thread is ", scr_bar, " but a bar is ", thick,
+           " thick — they have to agree"));
+assert(charm_mount == "ball" || scr_wall_rim >= 0.8,
+       str("only ", scr_wall_rim, " mm of bar left beside the hole at the rim"));
+assert(charm_mount == "ball" || 2*scr_r_out <= body - 2*ch_run,
+       str("the screw's collar is wider than a bar's flat top"));
+
 // The pin outgrows the stud, so it sets the print height once there is one.
-top_z       = charms > 0 ? max(post_top + head_h, thick + charm_rise + charm_ball/2)
-                         : post_top + head_h;
+// A screw station adds no height at all — it is a hole.
+top_z       = (charms > 0 && charm_mount == "ball")
+                ? max(post_top + head_h, thick + charm_rise + charm_ball/2)
+                : post_top + head_h;
 
 echo(str("cols=", cols, " rows=", rows,
          "  loop=", band_run + stud_ext + kh_lock,
@@ -344,10 +381,16 @@ echo(str("cols=", cols, " rows=", rows,
          "  knuckle cap at bed=", knuck_foot,
          "  knuckle underside=", knuck_slope, "deg",
          "  pin first layer=", pin_flat_w));
-if (charms > 0)
+if (charms > 0 && charm_mount == "ball")
     echo(str(charms, " charm pin(s) on bar(s) ", charm_ix, " of ", cols,
              " — ball d", charm_ball, " standing ", charm_rise + charm_ball/2,
              " mm off the band", charms < 2 ? ""
+                 : str(", closest pair ", charm_sep * pitch, " mm apart")));
+if (charms > 0 && charm_mount == "screw")
+    echo(str(charms, " screw hole(s) through bar(s) ", charm_ix, " of ", cols,
+             " — M", scr_maj, " x ", scr_pitch, ", ", scr_hole_maj,
+             " across, wall ", scr_wall_rim, " at the rim / ", scr_wall_body,
+             " below it", charms < 2 ? ""
                  : str(", closest pair ", charm_sep * pitch, " mm apart")));
 
 // ------------------------------------------------------------------ modules
@@ -512,11 +555,33 @@ module charm_station(col) {
     translate([col*pitch, band_cy, thick]) charm_pin();
 }
 
+// A screw station: a threaded hole through bar `col`, mouth at its top face.
+// Cut 0.5 mm past the underside so the cutter's floor is never coincident with
+// the bed — a face lying exactly on z = 0 is how a first layer grows slivers.
+module charm_screw_station(col) {
+    translate([col*pitch, band_cy, thick]) charm_screw_hole(thick + 0.5);
+}
+
+// The `ball` branch below is the band exactly as it was before the screw mount
+// existed, in the same order, deliberately NOT wrapped in the difference() the
+// screw branch needs: at `charms = 0` its export has to stay byte-for-byte the
+// file the printed bracelet was cut from.
 module bracelet() {
-    for (c = [0:cols-1]) bar(c);
-    for (c = charm_ix) charm_station(c);
-    clasp_stud();
-    clasp_keyhole();
+    if (charm_mount == "screw")
+        difference() {
+            union() {
+                for (c = [0:cols-1]) bar(c);
+                clasp_stud();
+                clasp_keyhole();
+            }
+            for (c = charm_ix) charm_screw_station(c);
+        }
+    else {
+        for (c = [0:cols-1]) bar(c);
+        for (c = charm_ix) charm_station(c);
+        clasp_stud();
+        clasp_keyhole();
+    }
 }
 
 bracelet();
