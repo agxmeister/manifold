@@ -199,29 +199,55 @@ module charm_grooves(pts, w, tip = charm_cut_tip) {
 // in the same namespace is how a silent shadowing bug gets written.
 //
 // WHAT SETS THE SIZE, and it is not the screw. The hole has to go through a
-// bar, and a bar is `body` = 6.0 mm along the band and only 5.0 mm across its
-// flat top once the chamfer has taken its 0.5 mm a side. So the hole's major
-// diameter is bounded by the WALL it leaves at that chamfered rim, which is
-// the thinnest vertical wall the screw mount adds:
+// bar, and a bar is `body` = 6.0 mm along the band — but only 5.0 mm of that
+// used to survive the top chamfer, and the hole had to fit inside the 5.0.
+// That is what held the thread to M3 and left 0.85 mm of wall at the
+// chamfered rim against 1.35 mm below it.
 //
-//     major 3.0 + 2 x fit = 3.3 hole -> (5.0 - 3.3)/2 = 0.85 mm at the rim,
-//                                       (6.0 - 3.3)/2 = 1.35 mm below it.
+// THE CHAMFER IS NOW FILLED BACK IN at a charm station. `charm_screw_seat` in
+// bracelet.scad unions a lens of material into the chamfer wedge around the
+// hole, so the bar is square-shouldered and its full 6.0 mm wide everywhere
+// the hole passes through it. That costs nothing to print — the added
+// material's sides are flush with the slab below it, so it adds no overhang,
+// no layer step and no bed contact — and it buys the whole millimetre the
+// chamfer was eating:
 //
-// 0.85 mm is two perimeters at a 0.4 mm nozzle and is deliberately the floor
-// here — `knuck_wall` = 0.9 elsewhere in the band. Do not fatten the thread
-// without shrinking the chamfer or widening the bar; the rim is what pays.
+//     major 4.0 + 2 x fit = 4.3 hole -> (6.0 - 4.3)/2 = 0.85 mm of wall,
+//                                       top to bottom, no thinner rim at all.
 //
-// THE THREAD PROFILE IS ASYMMETRIC ON PURPOSE. A female thread cut into a bar
-// prints with its axis VERTICAL, so one flank of every groove is a CEILING and
-// the other is a floor. Only the ceiling is an overhang, so only the ceiling
-// has to stay inside 45 degrees — and buying that on both flanks would cost
-// roughly twice the pitch. The male's up-facing flank (`scr_up`) is the one
-// that becomes that ceiling, and it is the flank that is slackened.
+// So the wall is the same 0.85 mm the printed version was proven at, and the
+// thread inside it went from M3 to M4 — 78% more cross-section in the shaft,
+// and the same again in the thread that carries it. 0.85 mm is two perimeters
+// at a 0.4 mm nozzle and is deliberately the floor here — `knuck_wall` = 0.9
+// elsewhere in the band. There is now no chamfer left to spend: fattening the
+// thread past M4 means widening the bar.
+//
+// BOTH FLANKS HAVE TO PRINT, and that is a change. A female thread cut into a
+// part prints with its axis VERTICAL, so one flank of every groove is a
+// CEILING and the other is a floor, and WHICH ONE depends on which way up the
+// part goes on the bed. There are two females in this joint and THEY PRINT THE
+// OTHER WAY UP FROM EACH OTHER:
+//
+//   * the BAR's hole is bored down from a face that prints up, so its ceiling
+//     is the flank at the MOUTH end — `scr_up_f`, the slack one;
+//   * the CHARM's socket is entered from the face it STANDS ON (models/
+//     star-charm prints seat-down, see that file), so its ceiling is the other
+//     flank — `scr_dn` grown by the fit.
+//
+// So the tooth is still asymmetric, but no longer as lopsided as it was: the
+// mouth flank keeps the proven 0.65 that prints at 31 degrees, and `scr_dn`
+// went 0.2 -> 0.30 so the other one comes out at 41. Both are asserted, on the
+// FEMALE and on the finished surface. The pitch pays for it, 2.2 -> 2.30.
+//
+// THIS RETIRES A TRAP. It used to matter enormously which way round the
+// asymmetry went — mirror the tooth and every thread still exported, still
+// mated, and printed its groove roofs at 57 degrees. With both flanks inside
+// 45 that failure mode is gone, and the charm was free to be turned over.
 //
 // The ceiling angle is measured AFTER clearance, not before: the female is the
 // male grown by `scr_fit` in both r and z, and growing radially steepens the
-// flank. `scr_up_f` is therefore its own number, not `scr_up`, and the assert
-// below is written on the female.
+// flank. `scr_up_f` is therefore its own number, not `scr_up`, and the asserts
+// below are written on the female.
 //
 // THE MALE PRINTS LYING DOWN, which is the whole reason it is a separate part.
 // Standing up it would be a 9 mm tower on a 3 mm circle, every thread crest a
@@ -232,27 +258,52 @@ module charm_grooves(pts, w, tip = charm_cut_tip) {
 // flat is a real 2.1 mm of first layer instead of a tangent line. The thread
 // is missing over the ~90 degrees of arc the flat eats; the other 270 hold.
 
-scr_maj     = 3.0;    // male major diameter — see the wall arithmetic above
+scr_maj     = 4.0;    // male major diameter — see the wall arithmetic above
 scr_depth   = 0.4;    // radial depth of the thread
-scr_pitch   = 2.2;    // lead per turn. Coarse: a fine thread on a 0.4 mm
-                      //   nozzle smears into a plain cylinder.
+scr_pitch   = 2.30;   // lead per turn. Coarse: a fine thread on a 0.4 mm
+                      //   nozzle smears into a plain cylinder. It was 2.2 —
+                      //   the extra 0.1 is what pays for a printable `scr_dn`
+                      //   while leaving `scr_crest_f` at its proven 0.45.
 scr_crest   = 0.45;   // axial width of the crest flat. Never run a thread to
                       //   a knife edge — it meshes into slivers.
 scr_up      = 0.5;    // the flank that becomes the female's CEILING
-scr_dn      = 0.2;    // the flank that becomes the female's floor — faces up
-                      //   in the print, so it may be as steep as it likes
+scr_dn      = 0.30;   // the other flank. It was 0.2, back when it was only
+                      //   ever a floor; it is the CHARM's ceiling now, so it
+                      //   has to print too. 0.30 + `scr_fit` = 0.45 on the
+                      //   female, which comes out at 41 degrees.
 scr_fit     = 0.15;   // clearance, radial AND axial, male to female
 scr_up_f    = 0.65;   // the female's ceiling flank (see above — not `scr_up`)
 
-scr_flat    = 1.05;   // axis to the flat the male lies on. Below `scr_minor/2`
-                      //   by a hair, so the groove roots touch the bed too and
-                      //   the contact patch is continuous along the shaft.
-scr_collar_af = 4.2;  // the collar: stop, seat and finger grip in one. A HEX,
-scr_collar_h  = 1.4;  //   because a 4 mm cylinder 1.4 mm tall is nothing to
-                      //   turn with; across CORNERS it is 4.85 mm, which still
-                      //   lands inside the bar's 5.0 mm flat top. Its flats
-                      //   also leave the bed at a flat 30 degrees, which a
-                      //   cylinder of the same size does not.
+scr_flat    = 1.40;   // axis to the flat the male lies on. TWO bounds, and on
+                      //   an M4 they are 0.2 mm apart: it must be at most
+                      //   (scr_maj/2)*cos(45) = 1.414 or the shaft leaves the
+                      //   bed past 45 degrees, and below `scr_minor/2` = 1.6
+                      //   so the groove roots touch the bed too and the
+                      //   contact patch is continuous along the shaft. Both
+                      //   asserted below. It was 1.05 on the M3.
+// THE COLLAR IS COUNTERSUNK, and that is not styling. A straight hex in a
+// straight pocket leaves a ledge where the pocket steps in to the thread —
+// (`scr_pocket_d` - `scr_hole_maj`)/2 = 0.77 mm of annulus with nothing under
+// it. On a charm printed seat-down that ledge is a CEILING, it is the first
+// thing the slicer shows, and it hangs. It was shipped once and it hung.
+//
+// So the collar tapers and the pocket tapers with it, at the same angle, which
+// turns the ledge into a countersink: the void closes in on itself as the
+// nozzle climbs, exactly like the roof of a horizontal hole. The clearance
+// stays `scr_pocket_fit` the whole way up because both cones have the same
+// drop over the same rise.
+//
+// It costs nothing. The pocket now ends at the collar's top rather than
+// `scr_seat_gap` above it, so the female thread starts 0.2 mm LOWER than it
+// did and the joint gained a fraction of a turn.
+scr_collar_af = 4.8;  // the collar: stop, seat and finger grip in one. A HEX,
+scr_collar_h  = 1.4;  //   because a 4.8 mm cylinder 1.4 mm tall is nothing to
+                      //   turn with; across CORNERS it is 5.54 mm, which lands
+                      //   inside the bar's now-unchamfered 6.0 mm top with
+                      //   0.23 mm to spare and overhangs the 4.3 mm hole by
+                      //   0.62 mm a side — that overhang IS the seat. Its
+                      //   flats also leave the bed at a flat 30 degrees, which
+                      //   a cylinder of the same size does not.
 
 scr_bar     = 4.45;   // thread length on the BAR end == the band's `thick`.
                       //   bracelet.scad asserts they agree.
@@ -261,46 +312,157 @@ scr_sink    = 0.25;   // how far the tip stops SHORT of the bar's underside, so
 scr_charm   = 3.9;    // thread length on the CHARM end
 scr_lead    = 0.5;    // dead depth at the bottom of a blind bore, so the joint
                       //   comes up tight on the collar and never on the floor
-scr_tip     = 0.8;    // lead-in taper at the end of a male thread
+scr_tip     = 0.60;   // lead-in taper at the end of a male thread. Trimmed
+                      //   from 0.8 to buy back the engagement the coarser
+                      //   pitch cost — see `scr_turns_bar`.
 
-// THERE IS NO COUNTERBORE AT EITHER MOUTH, and that is the second thing the
-// wall check caught. The obvious way to give the collar a flat face to sit on
-// is a short plain bore at the mouth, at the thread's own major diameter — and
-// that puts the plain bore's wall and the thread's crest cylinder on the SAME
+// THE BAR'S MOUTH HAS NO COUNTERBORE, and that is the second thing the wall
+// check caught. The obvious way to give the collar a flat face to sit on is a
+// short plain bore at the mouth, at the thread's own major diameter — and that
+// puts the plain bore's wall and the thread's crest cylinder on the SAME
 // CIRCLE, which meshes as a zero-thickness sliver: 290 sampled points reading
 // 0.00 mm, all of them on that one plane. It is the same failure `sock_lip`
-// exists to keep out of the ball socket, arriving by a different door.
+// exists to keep out of the ball socket, arriving by a different door. And the
+// bar has no rim wall to spend on widening it out of trouble. So on the bar
+// the thread simply runs OUT through the mouth, the collar lands on the
+// 0.85 mm annulus left around the hole with the runout spiralling across it,
+// and the joint gains a quarter turn of engagement rather than losing one.
 //
-// Widening the counterbore past the crest fixes the sliver and spends the bar's
-// rim wall, which is the one dimension here with nothing to spare. So the
-// thread simply runs OUT through the mouth instead. The collar lands on the
-// annulus left around the hole — 0.85 mm of it on a bar, 1.4 on a charm's pad
-// — with the thread's runout spiralling across it, and the joint gains a
-// quarter turn of engagement rather than losing one.
+// THE CHARM'S MOUTH IS DIFFERENT: it has a POCKET, and the pocket is the whole
+// point of the current shape. The collar used to sit BETWEEN the charm and the
+// bar — the charm stood off on top of it, and what you saw was a three-step
+// stack of bar, hex and pad. The pocket swallows the collar instead, so the
+// charm's pad comes all the way down onto the bar's top face and the screw
+// disappears inside the joint.
+//
+// The pocket is NOT the trap above, and the difference is the only thing that
+// makes it legal: it is `scr_pocket_d` = 6.04 mm across against a 4.3 mm
+// crest, nowhere near the same circle, so the thread runs out onto the flat
+// pocket floor exactly as it runs out onto the bar's top annulus. What it
+// costs is the charm's SEAT diameter — the seat has to wall a 6.04 mm pocket
+// instead of a 4.3 mm bore — and the seat is what now overhangs the bar into
+// the hinge gap. See `scr_seat_d`.
+//
+// It costs NO height. The collar is swallowed, but the bore's mouth moves the
+// same `scr_collar_h` deeper to meet it, so the cut reaches `scr_socket_h` in
+// from the face that lands on the bar, wherever that face happens to be.
 
 scr_wall    = 1.4;    // pad wall around a female thread in a charm
-scr_floor   = 2.2;    // material left under a blind bore in a charm. Equal to
-                      //   the plate, so `charm_cut_max` is the same 1.0 mm
-                      //   under the pad as it is out on the open face.
+scr_roof    = 1.2;    // the LEAST material a charm may leave over the blind
+                      //   end of its bore. It used to be a floor 2.2 thick,
+                      //   because the charm was a flat plate printed face-down
+                      //   and that face got engraved. Seat-down it is a roof
+                      //   instead — and a bridged one, see `charm_screw_socket`
+                      //   — so what it has to be is structural, not a budget.
 
+scr_pocket_fit  = 0.25;  // radial clearance around the collar in that pocket.
+                         //   The charm turns over a stationary hex, so this is
+                         //   a running fit on a 12-sided sweep, not a mating
+                         //   one — it only has to clear the corners.
+scr_pocket_lip  = 0.3;   // straight depth at the pocket's mouth before the
+                         //   countersink starts, and the matching straight
+                         //   band at the bottom of the collar. It keeps the
+                         //   opening crisp and the seat face square; all it
+                         //   costs is countersink angle.
+scr_cs_slack    = 0.2;   // how much WIDER than the thread's crest the
+                         //   countersink stops. Zero would put the cone's
+                         //   small end on the crest circle, which is the
+                         //   coincident-surface sliver again; going NARROWER
+                         //   than the crest would foul the male's thread,
+                         //   because the male is at full major diameter from
+                         //   the collar's top up. So it stops just outside,
+                         //   and what is left is a 0.1 mm lip instead of a
+                         //   0.77 mm ledge.
+scr_pocket_wall = 0.9;   // wall around the POCKET, which is shallow and carries
+                         //   nothing. The 1.4 mm `scr_wall` is for the threaded
+                         //   bore below it; spending 1.4 here as well would
+                         //   push the pad out past the star's valleys.
+// There is no `scr_seat_gap` any more and none is needed. It used to hold the
+// collar's flat top off a flat pocket floor so the two seats could not fight;
+// with both faces conical and `scr_pocket_fit` between them at every height,
+// the collar cannot bottom out at all. The joint closes on the charm's face
+// against the bar, and on nothing else.
 // ------------------------------------------------------------------ derived
-scr_minor    = scr_maj - 2*scr_depth;          // 2.2 — the core
-scr_hole_maj = scr_maj + 2*scr_fit;            // 3.30
-scr_hole_min = scr_minor + 2*scr_fit;          // 2.50
-scr_pad_d    = scr_hole_maj + 2*scr_wall;      // 6.10
-scr_bore     = scr_charm + scr_lead;           // 3.80 — blind bore in a charm
-scr_len      = scr_bar - scr_sink + scr_collar_h + scr_charm;   // 9.90
-scr_r_out    = scr_collar_af / cos(30) / 2;    // 2.42 — across corners
-function scr_pad_h(plate) = scr_bore + scr_floor - plate;
+scr_minor    = scr_maj - 2*scr_depth;          // 3.20 — the core
+scr_hole_maj = scr_maj + 2*scr_fit;            // 4.30
+scr_hole_min = scr_minor + 2*scr_fit;          // 3.50
+scr_bore     = scr_charm + scr_lead;           // 4.40 — blind bore in a charm
+scr_len      = scr_bar - scr_sink + scr_collar_h + scr_charm;   // 9.50
+scr_r_out    = scr_collar_af / cos(30) / 2;    // 2.77 — across corners
 
-// The engraving budget on a screw-mounted charm, the counterpart of
-// `charm_cut_max` above. `scr_floor` is deliberately set equal to the plate,
-// so this comes out at the same 1.0 mm everywhere on the face — under the pad
-// and out on the open plate alike — and one number governs a charm again.
-function charm_screw_cut_max(plate) = min(plate, scr_floor) - 1.2;
+// The pocket in the charm that swallows the collar, and the SEAT that has to
+// wall it. The seat is sized by the POCKET, not by the bore — the bore alone
+// would only ask for 7.10 — and that is the price of seating the charm on the
+// bar rather than on the collar.
+scr_pocket_d = 2*scr_r_out + 2*scr_pocket_fit;                  // 6.04
+scr_pocket_h = scr_collar_h;                                    // 1.40 — the
+                                       //   pocket ends where the collar does
+scr_socket_h = scr_collar_h + scr_bore;                         // 5.80 — how
+                                       //   far the whole cut reaches in from
+                                       //   the seat face
 
-// The female's ceiling — the one overhang in the whole joint, and the number
-// that decides whether a threaded hole prints clean.
+// The countersink. One drop, one rise, one angle — and the collar is given the
+// SAME drop over the SAME rise, which is what keeps the clearance at exactly
+// `scr_pocket_fit` from the mouth to the thread instead of pinching somewhere
+// in the middle.
+scr_cs_rise   = scr_pocket_h - scr_pocket_lip;                          // 1.10
+scr_cs_drop   = (scr_pocket_d - (scr_hole_maj + scr_cs_slack)) / 2;     // 0.77
+scr_cs_ang    = atan(scr_cs_drop / scr_cs_rise);                        // 35.0
+scr_collar_r2 = scr_r_out - scr_cs_drop;                                // 2.00
+assert(scr_pocket_lip < scr_collar_h,
+       "the pocket's straight lip is deeper than the collar is tall");
+assert(scr_cs_ang <= 40,
+       str("the countersink's roof closes at ", scr_cs_ang,
+           " deg from vertical — lower scr_pocket_lip"));
+assert(scr_collar_r2 >= scr_maj/2,
+       str("the collar tapers to ", 2*scr_collar_r2,
+           " across corners, narrower than the ", scr_maj,
+           " thread it carries — the head would neck in"));
+
+// The SEAT LAND — the ring of material a socket needs around it, wherever the
+// socket is cut. It is not a part by itself; it is a minimum that two other
+// things have to meet:
+//
+//   * on the BAR, `charm_screw_seat` in bracelet.scad lays a lens this wide
+//     into the top chamfer, so the hole passes through full-thickness material;
+//   * on the CHARM, whatever the charm's own shape is, it has to provide at
+//     least this much around the socket — the pocket plus a wall.
+//
+// It may not be much bigger than 8.2 either: on a charm it must stay inside
+// the outline at the height it is needed, and on the star the narrowest the
+// outline ever gets is the valley circle at 4.28.
+scr_seat_d   = 8.2;
+assert(scr_seat_d >= scr_pocket_d + 2*scr_pocket_wall,
+       str("the seat land is ", scr_seat_d, " and the pocket needs ",
+           scr_pocket_d + 2*scr_pocket_wall));
+
+// The BOSS a charm needs above the pocket. The pocket is only `scr_pocket_h`
+// deep, so on any charm with a plate thicker than that the pocket is buried in
+// the plate and the boss only has to wall the BORE. That is 1.1 mm narrower
+// than the seat land, and on a 16 mm star it is the difference between a
+// raised middle with the points standing clear of it and a disc with five
+// spikes stuck on.
+scr_boss_d   = scr_hole_maj + 2*scr_wall;                       // 7.10
+
+// A FLAT-BOTTOMED CHARM SITS ON A PLANE, and it is worth writing down why that
+// is safe, because it is the one clearance in this mount that is not a fit.
+// The band's top is genuinely flat: `thick` IS `pin_z + rk`, so a knuckle cap's
+// apex reaches exactly the height of a bar's top face and NOTHING on the band
+// goes above it. A charm resting on that plane touches its own bar's top face
+// and grazes the crest of any knuckle it happens to reach over.
+//
+// That does not bind the hinge. The cap is a cylinder about the PIN AXIS, so
+// its envelope is the same at every angle of the joint — the crest slides
+// under the charm rather than lifting it. And the neighbouring BAR, which does
+// move, never gets there: its near face is `pitch - body` = 5.8 mm from this
+// bar's, so it is out of reach of a 16 mm charm entirely.
+//
+// bracelet.scad asserts the flatness rather than assuming it.
+
+// The female's ceilings — the only overhangs in the whole joint, and the
+// numbers that decide whether a threaded hole prints clean. THERE ARE TWO of
+// them now, one per flank, because the bar's hole and the charm's socket print
+// the other way up from each other and so read opposite flanks as the ceiling.
 //
 // IT IS NOT THE FLANK ANGLE YOU DRAW. A thread flank is a helicoid, not a
 // cone: it also winds, by the lead angle `atan(pitch / 2 pi r)`, and the
@@ -311,10 +473,16 @@ function charm_screw_cut_max(plate) = min(plate, scr_floor) - 1.2;
 // it against the mesh: the surface is what gets sliced.
 function scr_ceil_at(r) = atan(r / sqrt(pow(scr_pitch/(2*PI), 2)
                                       + pow(scr_up_f/scr_depth, 2) * r * r));
-scr_ceiling = scr_ceil_at(scr_hole_maj/2);                     // 31.4 deg
+function scr_ceil_gen(r, f) = atan(r / sqrt(pow(scr_pitch/(2*PI), 2)
+                                          + pow(f/scr_depth, 2) * r * r));
+scr_ceiling    = scr_ceil_gen(scr_hole_maj/2, scr_up_f);           // 31.5 deg
+scr_ceiling_dn = scr_ceil_gen(scr_hole_maj/2, scr_dn + scr_fit);   // 41.3 deg
 assert(scr_ceiling <= 45,
-       str("the female thread's ceiling hangs at ", scr_ceiling,
+       str("the BAR's groove roof hangs at ", scr_ceiling,
            " deg from vertical — raise scr_up_f"));
+assert(scr_ceiling_dn <= 45,
+       str("the CHARM's groove roof hangs at ", scr_ceiling_dn,
+           " deg from vertical — raise scr_dn (and scr_pitch with it)"));
 
 // What is left of the female thread between two of its own grooves. This is
 // the number the clearance eats: every millimetre of fit is taken out of it
@@ -325,8 +493,11 @@ assert(scr_crest_f >= 0.4,
            " mm wide — raise scr_pitch"));
 
 // Engagement, in turns. Under ~1.5 a thread is a bayonet with extra steps.
-scr_turns_bar   = (scr_bar - scr_sink - scr_tip) / scr_pitch;    // 1.55
-scr_turns_charm = (scr_charm - scr_tip) / scr_pitch;             // 1.41
+scr_turns_bar   = (scr_bar - scr_sink - scr_tip) / scr_pitch;    // 1.57
+scr_turns_charm = (scr_charm - scr_tip) / scr_pitch;             // 1.43
+                       //   Nothing comes off the top any more: the countersink
+                       //   stops level with the collar, so the female's thread
+                       //   starts exactly where the male's does.
 assert(scr_turns_bar >= 1.5,
        str("only ", scr_turns_bar, " turns of thread in the bar"));
 assert(scr_turns_charm >= 1.25,
@@ -339,9 +510,15 @@ scr_crest_ov = 90 - acos(scr_flat / (scr_maj/2));                    // 44.4 deg
 assert(scr_flat < scr_maj/2, "the flat has eaten the whole thread");
 assert(scr_flat < scr_collar_af/2,
        "the flat misses the collar, so the shaft would carry the whole part");
-assert(2*scr_r_out <= 5.0,
+assert(2*scr_r_out <= 6.0,
        str("the collar is ", 2*scr_r_out,
-           " across corners and will not sit inside a bar's 5.0 mm top"));
+           " across corners and will not sit inside a bar's 6.0 mm top"));
+assert(scr_flat <= (scr_maj/2)*cos(45) + 1e-9,
+       str("the flat is only ", scr_flat,
+           " from the axis — the shaft leaves the bed past 45 degrees"));
+assert(scr_pocket_d > scr_hole_maj + 1.0,
+       str("the pocket is ", scr_pocket_d, " across and the crest is ",
+           scr_hole_maj, " — too close to the same circle"));
 assert(scr_crest_ov <= 45,
        str("the shaft leaves the bed at ", scr_crest_ov,
            " deg from vertical — raise scr_flat"));
@@ -351,23 +528,26 @@ assert(scr_crest_ov <= 45,
 // helix. The inner edge is pushed well inside the core so the rib genuinely
 // merges with the core cylinder instead of meeting it on a coincident face.
 //
-// WHICH WAY ROUND THE ASYMMETRY GOES IS NOT FREE, and getting it backwards
-// costs nothing at export and everything on the plate. `scr_up`, the slack
-// flank, sits on the side of the tooth FACING THE COLLAR — on both ends of the
-// screw, which is why both ends can be the same module (one is the other
-// rotated 180 degrees about x, and that swaps its flanks over as well).
+// WHICH WAY ROUND THE ASYMMETRY GOES USED TO DECIDE EVERYTHING, and getting it
+// backwards cost nothing at export and everything on the plate. `scr_up`, the
+// slacker flank, sits on the side of the tooth FACING THE COLLAR — on both
+// ends of the screw, which is why both ends can be the same module (one is the
+// other rotated 180 degrees about x, and that swaps its flanks over as well).
 //
 // Follow it through: the collar side of the bar-end thread points UP in the
 // assembly, and up is where the bar's hole opens; the collar side of the
-// charm-end thread points DOWN, and down is where the charm's bore opens
-// once the charm is flipped over to wear. So in both holes the slack flank is
-// the one at the MOUTH end — and the mouth end is up in the print, because
-// both holes are bored downwards from a face that prints upwards. The slack
-// flank is therefore the ceiling of every groove, in both parts, which is the
-// only surface in the joint that overhangs at all.
+// charm-end thread points DOWN, and down is where the charm's socket opens.
+// So in both holes the slacker flank is the one at the MOUTH end — and whether
+// that is the ceiling or the floor depends on which way up the part prints.
+// The bar's hole prints mouth up, so its ceiling is that flank, at 31 degrees.
+// The charm prints SEAT DOWN, so its ceiling is the other one — which is why
+// `scr_dn` is no longer allowed to be steep.
 //
-// Mirror this tooth and every thread in the project still exports, still
-// mates, and prints its groove roofs at 57 degrees.
+// Mirroring this tooth is therefore no longer fatal, and that is new: it used
+// to export, still mate, and print its groove roofs at 57 degrees. Both flanks
+// are inside 45 now (`scr_ceiling` and `scr_ceiling_dn`). Do NOT read that as
+// permission to narrow `scr_dn` again to save pitch — the charm's roof is the
+// only thing holding it.
 // NOTE THE SIX POINTS. The obvious four-point version runs each flank
 // straight on to the inner edge, and that quietly RE-CUTS THE FLANK ANGLE:
 // the flank is then measured over the whole extension instead of over
@@ -457,13 +637,18 @@ module charm_screw_hole(depth) {
 }
 
 // The whole screw, as an ASSEMBLY: z = 0 is the collar's underside, which is
-// the face that lands on the bar. The bar end runs down, the charm end up.
+// the face that lands on the bar. THE CHARM'S PAD FACE LANDS THERE TOO, on
+// the same z = 0 plane, with the whole collar up inside its pocket — that is
+// what the pocket is for. The bar end runs down, the charm end up.
 // The flat is at y = +scr_flat; the model file rolls it onto the bed.
 module charm_screw() {
     difference() {
         union() {
             rotate([180, 0, 0]) charm_screw_male(scr_bar - scr_sink);
-            cylinder(r = scr_r_out, h = scr_collar_h, $fn = 6);
+            cylinder(r = scr_r_out, h = scr_pocket_lip, $fn = 6);
+            translate([0, 0, scr_pocket_lip])              // the countersink
+                cylinder(r1 = scr_r_out, r2 = scr_collar_r2,
+                         h = scr_cs_rise, $fn = 6);
             translate([0, 0, scr_collar_h]) charm_screw_male(scr_charm);
         }
         translate([-scr_r_out - 1, scr_flat, -scr_len])
@@ -471,13 +656,52 @@ module charm_screw() {
     }
 }
 
-// The pad on the back of a charm: a boss with a blind threaded bore, standing
-// on z = 0 with its seat face — the one that meets the collar — on top.
-module charm_screw_pad(plate) {
-    h = scr_pad_h(plate);
-    assert(h > 0, str("the charm's plate is thicker than the whole pad: ", h));
-    difference() {
-        cylinder(d = scr_pad_d, h = h);
-        translate([0, 0, h]) charm_screw_hole(scr_bore);
-    }
+// THE SOCKET A CHARM IS BUILT AROUND — a CUTTER, not a solid. The charm is
+// whatever shape it likes; this is the hole through the middle of it, entered
+// from the face at z = 0 and running UP into the body. That face is the one
+// that lands on the bar, and it is also the one that lands on the bed, because
+// a screw-mounted charm prints seat-down.
+//
+// Two cuts, in the order they are met coming in from that face:
+//
+//   1. the POCKET — a short straight lip, then a COUNTERSINK — that swallows
+//      the screw's collar. It is round and `scr_pocket_fit` clear of the hex
+//      across corners at every height, so the charm turns freely over a collar
+//      that is already seated in its bar.
+//   2. the THREAD, whose mouth is `scr_collar_h` in from the seat face, which
+//      is also exactly where the countersink stops. The male's phase is
+//      referenced to the top of its collar, so the female's has to be
+//      referenced to where the top of the collar lands, and when the seat face
+//      is on the bar that is `scr_collar_h` in. Reference it anywhere else —
+//      to the visible mouth, say — and the two threads meet out of phase and
+//      the charm jams short of its seat on some screws and not on others.
+//
+// The runout the cutter overruns its mouth by falls inside the pocket and is
+// removed with it, so the thread runs out onto the countersink's cone rather
+// than ending on a face of its own.
+//
+// THE POCKET IS A COUNTERSINK, not a counterbore, and that is the whole point
+// of `scr_cs_*`. A straight pocket steps in to the thread across 0.77 mm of
+// annulus, and on a part printed seat-down that annulus is a downward-facing
+// ring hanging over the bore. It was built that way once, the slicer drew it
+// straight away, and it hung. The cone closes the void in on itself instead,
+// at `scr_cs_ang` = 35 degrees from vertical.
+//
+// What is left of it is `scr_cs_slack`/2 = 0.1 mm of lip where the cone stops
+// just outside the thread's crest — a quarter of a bead, and it cannot be
+// closed any further without either putting the cone's small end ON the crest
+// circle (a coincident-surface sliver) or inside it (which fouls the male,
+// since the male is at full major diameter from the collar's top up).
+//
+// ONE CEILING IS LEFT and a charm that uses this module owns it: the blind end
+// of the bore, a flat `scr_hole_maj` disc. That one is a 4.3 mm bridge
+// anchored all the way round, it is buried in the middle of the part, and the
+// band's own bore roofs are 2.9 mm of the same thing. It cannot be coned away
+// — a 45-degree point over a 4.3 mm hole is 2.15 mm tall and the roof is 1.5.
+module charm_screw_socket() {
+    translate([0, 0, scr_collar_h]) rotate([180, 0, 0]) charm_screw_hole(scr_bore);
+    translate([0, 0, -1]) cylinder(d = scr_pocket_d, h = scr_pocket_lip + 1);
+    translate([0, 0, scr_pocket_lip])
+        cylinder(d1 = scr_pocket_d, d2 = scr_hole_maj + scr_cs_slack,
+                 h = scr_cs_rise);
 }

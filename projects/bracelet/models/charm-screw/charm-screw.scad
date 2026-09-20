@@ -18,8 +18,8 @@
 //
 // PRINT IT LYING DOWN, flat on the bed, exactly as modelled here.
 //
-// A screw is a tower of tangent ledges printed standing up: 9 mm tall on a
-// 3 mm circle, every thread crest leaving the previous layer at the tangent.
+// A screw is a tower of tangent ledges printed standing up: 9.5 mm tall on a
+// 4 mm circle, every thread crest leaving the previous layer at the tangent.
 // Lying down it is a horizontal cylinder, and a horizontal cylinder's only
 // real problem is its underside — cut off here by `scr_flat`, exactly as
 // `pin_flat` does for the hinge pin in bracelet.scad. The thread is gone over
@@ -28,7 +28,7 @@
 // groove roots reach the bed too and the contact patch runs unbroken along the
 // whole shaft rather than stopping at each crest.
 //
-// It is a 9 x 5 x 3.5 mm part, so print a batch: `-D copies=6`.
+// It is a 9.5 x 5.5 x 4 mm part, so print a batch: `-D copies=6`.
 //
 // All the geometry and every number live in lib/charm-pin.scad, beside the
 // threaded holes they have to match. Nothing about this screw can be changed
@@ -42,7 +42,7 @@ include <../../lib/charm-pin.scad>
 copies  = 1;      // how many to lay out. 1 for the checks; raise it to print a
                   //   batch. The export is then `copies` separate shells,
                   //   which is correct, not a fault.
-spacing = 7;      // centre to centre, across the shafts. Clear of the 4.85 mm
+spacing = 8;      // centre to centre, across the shafts. Clear of the 5.54 mm
                   //   collar with room to get a fingernail between them.
 
 assert(copies >= 1, "copies must be at least 1");

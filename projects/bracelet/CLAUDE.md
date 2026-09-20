@@ -131,29 +131,192 @@ default size.
 
 ## The screw mount: what must stay true
 
-**Printed and confirmed on a real plate on 2026-09-19** ("It was printed
-good!"), both rounds — a batch of screws, the star, and a band with three
-threaded holes through it. So `scr_fit` = 0.15 per side, the M3 x 2.2 thread,
-the 31-degree ceiling and the 0.85 mm rim wall beside a bar's hole are all
-proven, exactly as the ball mount's `charm_grip` and the hinge's `bore_fit`
-are. Treat them the same way: do not move them without a reason.
+**The M3 version was printed and confirmed on a real plate on 2026-09-19** ("It
+was printed good!"), both rounds — a batch of screws, the star, and a band with
+three threaded holes through it. So `scr_fit` = 0.15 per side, the 2.2 mm pitch,
+the asymmetric tooth, the ~31-degree ceiling and the 0.85 mm wall beside a bar's
+hole are all proven, exactly as the ball mount's `charm_grip` and the hinge's
+`bore_fit` are. Treat them the same way: do not move them without a reason.
+
+**It was then re-opened on 2026-09-20 and printed three times the same day, and
+the third one is confirmed** ("Printed good, thank you!"). The M4, the seat and
+the collar pocket were fine from the start. **The STAR failed twice** — first
+with the pocket's eave hanging, then by detaching from the plate outright — and
+the countersink and the flat bottom are what fixed it. Six changes in all, and
+every one of them is now proven on a plate:
+
+1. **M3 -> M4.** The hole used to have to fit inside the 5.0 mm the top chamfer
+   leaves of a 6.0 mm bar. `charm_screw_seat` now fills the chamfer back in
+   around the hole — a disc of `scr_seat_d` clipped to the bar's own section,
+   from the top of the full-width slab to the top face — so the hole gets the
+   whole 6.0 mm and the thread is an M4 in the SAME designed 0.85 mm of wall.
+   The seat's walls are flush continuations of the slab's, so it adds no
+   overhang, no layer step, no bed contact, no shell and no hole. `scr_flat`
+   moved with the thread, 1.05 -> 1.40, and on an M4 it is pinched between two
+   bounds 0.2 mm apart (`(scr_maj/2)*cos(45)` = 1.414 above, `scr_minor/2` = 1.6
+   below); both are asserted.
+2. **The collar moved inside the charm.** `charm_screw_socket` cuts a
+   `scr_pocket_d` = 6.04 pocket `scr_pocket_h` = 1.6 deep before the thread, so
+   the charm's own face lands on the bar and the screw vanishes into the joint.
+   It costs no height (the bore's mouth moved in by exactly `scr_collar_h` to
+   meet it) and it costs seat diameter, 6.1 -> `scr_seat_d` = 8.2, which is what
+   now overhangs the bar into the hinge gap.
+3. **The charm prints SEAT DOWN.** It used to print face-down with the mount in
+   the air; the mount is underneath now, so the face that lands on the bracelet
+   is the face that lands on the bed. Everything below follows from that.
+4. **Both flanks of the thread now have to print**, because the bar's hole and
+   the charm's socket go opposite ways up on the bed and so read opposite
+   flanks as the groove ceiling. `scr_dn` 0.2 -> 0.30 and `scr_pitch` 2.2 ->
+   2.30, with `scr_tip` 0.8 -> 0.60 to buy the engagement back. `scr_up_f` and
+   `scr_fit` did not move.
+5. **The collar and its pocket are COUNTERSUNK** — see the ceiling note below.
+6. **The star is a PLATE with a raised middle**, not a solid on a seat — see
+   the two printed failures below. 5 and 6 are what the two failures bought.
+
+**The seat overhanging its bar is a new kind of clearance here** — not a fit, a
+swept envelope. It holds because the knuckle cap is a cylinder about the PIN
+AXIS and so does not move when the joint turns; `seat_clear` in bracelet.scad
+measures it and asserts >= 0.5. **Measure it at `pitch_min`, not at `pitch`** —
+`pitch` is solved from `wrist`, and the smaller it comes out the closer the
+knuckle is to the rim. It reads 0.58 at the bound against 0.85 at the default
+size. The swing test with a charm seated confirms it: free past 40 degrees,
+binds at 60.
+
+### The charm turned over, and the two shapes that failed on the plate
+
+`models/star-charm` prints FLAT SIDE DOWN and the socket is hidden under a
+raised middle on the top face. The shape that is in the tree is the THIRD one
+and it is confirmed; the two before it both came off a real printer wrong, and
+both are worth keeping:
+
+1. **The solid.** A plate cannot be printed seat-down — 16 mm of star held up
+   by an 8.2 mm seat is cantilevered into air — so the first answer was a
+   45-degree skirt rising from the seat to the points, a band of full-width
+   star, a top bevel. Geometrically clean; it **CAME OFF THE PLATE**. The only
+   face touching the bed was the seat, the seat is an ANNULUS because the
+   collar's pocket is a hole through the middle of it, and 24 mm² under a
+   7.3 mm part is not enough. It is now 61 mm², the star's own flat side.
+2. **Inside that, the lump.** The first cut of the solid ran the skirt straight
+   into the bevel, so the tips existed at ONE height and every silhouette was a
+   cone with five creases. It rendered as a blob. A top view catches that; the
+   3/4 view flatters it.
+
+The rules that survive from both:
+
+- **Grow a DISC, not the star.** The tips' relief is `star_2d()` intersected
+  with a widening disc, so new material is always within a layer height of the
+  boundary below it. Scaling or `offset`-ing the star instead makes its points
+  emerge TANGENTIALLY from the body, which is the sideways outline leap that
+  killed the cable chain — and `offset(r = -t)` on a 2 mm-wide point erases it
+  outright and then pops it back.
+- **A FLAT BOTTOM MAY NOT REACH PAST r = 5.8, and that is measured.** The band's
+  top is a plane while it is STILL — `thick` is `pin_z + rk`, so a knuckle crest
+  reaches exactly a bar's top face. Turn the joint and the knuckle's ARM, the
+  full-height rectangle behind the cap, tilts its top edge up above that plane.
+  The cap does not (it is a cylinder about the pin) and neither does the
+  neighbouring BAR (5.8 mm away, out of reach), so the arm is the whole story.
+  Swept with a plain disc at `thick`, against the real band, at both ends of the
+  wrist range: clear to r = 6.0 at 24 and 30 degrees, r = 5.8 at 40. Past that
+  the points are relieved at 45 degrees — the shallowest rise that prints, and
+  it cannot be capped part way because a relief that goes flat again is a
+  horizontal ceiling out over air. **Use a plain disc for that sweep**, not the
+  star: the star seats at an arbitrary angle, so the answer must not depend on
+  where its points happen to be.
+- **No engraving, and `charm_screw_cut_max` is gone with it.** The bed-side face
+  is against the bracelet where nothing would be seen, and a cut into the top
+  face would be an overhanging void.
+- **ONE ceiling comes with the socket and is expected**: the blind end of the
+  bore, a 4.3 mm disc, 12.3 mm², buried 5.8 mm inside the part. It and nothing
+  else is what the layer-step raster flags — the whole 45-degree body reads
+  clean, and so does the countersink.
+
+  **There used to be a second one and it is the reason the pocket is a
+  COUNTERSINK.** A straight pocket steps in to the thread across
+  (`scr_pocket_d` - `scr_hole_maj`)/2 = 0.77 mm of annulus. That was written up
+  here as "a bridge, anchored all the way round" and shipped; on the plate it
+  HUNG (2026-09-20), and it is the first thing a slicer draws on this part. `scr_cs_*` cones
+  it at 35 degrees now and the collar is coned to match, at the same angle from
+  the same height, which holds the clearance at exactly `scr_pocket_fit` the
+  whole way up. Cost: nothing. It ended up GAINING a tenth of a turn, because
+  the pocket now stops level with the collar instead of `scr_seat_gap` above it
+  (that variable is gone).
+
+  The 0.1 mm of lip that is left, where the cone stops `scr_cs_slack`/2 outside
+  the crest, is not slack thinking — it is the only place it can stop. On the
+  crest circle is a coincident-surface sliver; inside it fouls the male, which
+  is at full major diameter from the collar's top up. Both are asserted.
+
+  **The lesson generalises, and it is the same one the knuckle cap taught.**
+  "Anchored all the way round" describes the ANCHORS, not the span. A 0.87 mm
+  ring of ceiling is 0.87 mm of bead laid over air whichever way you cut it,
+  and this project has now been bitten by that reasoning twice. If a downward
+  face is flat and you are about to argue it is fine, cone it instead.
 
 Three parts move together and all three live off the lib: the hole in the bar
 (`charm_screw_hole`), the loose screw (`charm_screw`, laid down for printing in
-`models/charm-screw`) and the charm's pad (`charm_screw_pad`, used by
-`models/star-charm`). The invariants:
+`models/charm-screw`) and the charm's socket (`charm_screw_socket`, a CUTTER
+rather than a boss — the charm is whatever shape it likes and this is the hole
+through the middle of it). The invariants:
 
 - **`charm_mount = "ball"` must export byte-for-byte the committed bracelet at
   `charms = 0`,** and all five ball charms must stay `IDENTICAL` too. The screw
-  work is additive to the lib; anything else means it was not.
-- **Shell count is still `cols`, genus is `43 + charms`,** and the overhang
-  report is the *same 56 regions* as the ball band — a threaded hole adds no
-  overhang region at all. First layer drops to 2317 mm² (the three holes).
-- **Every female thread measures ~31° from vertical at its ceiling**, and the
-  screw itself reports **no downward surface past 45°** at all.
-- The two joints each pass the `intersection()` walk below, with their controls.
+  work is additive to the lib; anything else means it was not. **This still
+  holds after the M4 — re-check it, it is the cheapest test in the project.**
+- **Shell count is still `cols`, genus is `43 + charms`.** At `charms = 3`,
+  `charm_mount = "screw"`: 15 shells, genus 46. The star is 1 shell, genus 0.
+- **The wall beside a bar's hole is now ONE number, not two.** Probe across the
+  bar at the hole (`y = band_cy`) and the three runs must sum to `body` = 6.0 at
+  every z, with the thinner side ~0.86:
 
-### The five ways this went wrong before it went right
+  | z | old M3 | new M4 |
+  |---|---|---|
+  | 0.20 / 2.20 | 1.758 \| air 2.884 \| 1.358 | 1.256 \| air 3.883 \| **0.861** |
+  | 4.40 (the top face) | 1.300 \| air 2.884 \| **0.900** | 1.256 \| air 3.883 \| **0.861** |
+
+  (Those runs are from the M4 at pitch 2.2; the 2.3 pitch moves where the helix
+  crosses a given plane, not the 0.85 the wall is designed at.)
+
+  The old band pinched to 0.900 at the chamfered rim and was 1.358 through the
+  body. The new one is the same 0.861 from the bed to the top face — the seat is
+  what removes the pinch, and `scr_wall_bar` is the only wall number left.
+- **A vertical probe 0.1 mm inside a charm bar's edge must read `SOLID 4.450`**,
+  against `SOLID 3.970` on a plain bar at the same offset. That is the seat, and
+  it is the cheapest proof it landed. The documented `4.450` control still comes
+  from a PLAIN bar's centre.
+- **There are now TWO ceiling numbers, one per flank**: `scr_ceiling` = 31.5°
+  (the bar's hole) and `scr_ceiling_dn` = 41.3° (the charm's socket). Both are
+  asserted, and both are angles FROM VERTICAL on the finished helicoid.
+- **MEASURE THE ANGLE FROM VERTICAL, NOT THE NORMAL.** A downward face with unit
+  normal `n` is at `asin(|nz|)` from vertical: a vertical wall reads 0, a 45°
+  slope reads 45, a flat ceiling reads 90. Taking `acos(|nz|)` instead gives the
+  complement, and the complement is plausible at every value — it turns a clean
+  31° surface into a "59°" one and a flat ceiling into "0°", so flat bridges
+  vanish from the report and good ramps get flagged. A whole round of screw-band
+  numbers was written up wrong this way before the flat bore roof failed to show
+  up and gave it away. Keep a control: a face you know is horizontal must read
+  90, not 0.
+- **Downward faces below z = 0.7 are still nothing**: 0.02 mm² past 45° on the
+  M3 screw band, 0.01 mm² on the M4 — mesh slivers where the thread runs out
+  through the underside. The ball band reads 0.00.
+- The two joints each pass the `intersection()` walk below, with their controls.
+- **And a third check now exists: the charm on the BAND.** Seat the star on a
+  screw station and intersect it with `bracelet()` — empty at `dz = 0`, solid at
+  `dz = -0.3`. That pair is the whole proof that the charm lands on the
+  bracelet's top face and nothing else gets there first. Then swing the
+  neighbouring bar about its pin with the charm still seated: free past 40
+  degrees, binds at 60, which is the control.
+- **The star's own numbers**: 1 shell, genus 0, 14.66 x 15.31 x 7.30 bbox,
+  **61.4 mm² of bed in ONE island** (24.2 on the version that detached), and
+  15.9 mm² of downward face past 45° of which 12.3 is the bore roof at
+  z = 5.80 and the rest is the 0.1 mm lip and the thread's runout at z = 1.40.
+  The layer-step raster flags 7.3 mm² at the bore roof and 0.4 mm² at the lip,
+  and **nothing anywhere else** — in particular nothing on the tips' 45-degree
+  relief. Before the countersink those were 28.6 and 15.7 mm².
+- **Swing with a charm seated** is its own check and it is not the bare band's:
+  free to 30 degrees both ways at `wrist` 120 and 180, binds at 40. A wrist
+  needs 24. The bare band still goes to 100.
+
+### The seven ways this went wrong before it went right
 
 Every one of these exported cleanly and looked right in a render.
 
@@ -167,11 +330,14 @@ Every one of these exported cleanly and looked right in a render.
    a helicoid, not a cone: it also winds, by the lead angle, and the steepest
    descent combines the two. `scr_ceil_at(r)` is written out for that reason —
    `atan(scr_depth/scr_up_f)` is the wrong number to assert on.
-3. **Which way round the tooth's asymmetry goes is not free.** The slack flank
-   must sit on the side of the tooth FACING THE COLLAR, on both ends of the
-   screw, because the bar-end thread is the charm-end thread rotated 180° about
-   x and that swaps its flanks over. Mirror it and every thread still exports,
-   still mates, and prints its groove roofs at 57°.
+3. **Which way round the tooth's asymmetry goes used to decide everything.**
+   The slack flank had to sit on the side of the tooth FACING THE COLLAR, on
+   both ends of the screw, because the bar-end thread is the charm-end thread
+   rotated 180° about x and that swaps its flanks over. Mirror it and every
+   thread still exported, still mated, and printed its groove roofs at 57°.
+   **This is retired.** With `scr_dn` at 0.30 both flanks print (31° and 41°),
+   so neither way round is wrong any more — which is exactly what let the charm
+   be turned over. Do not re-narrow `scr_dn` to "save pitch".
 4. **Phase has to be referenced to the MOUTH of a hole, not to its floor.**
    Reference it to the floor — the obvious way — and the threads meet at
    whatever phase the bore's depth leaves, which is not the phase the collar
@@ -181,21 +347,47 @@ Every one of these exported cleanly and looked right in a render.
    collar a flat face to land on by boring the mouth plain at the thread's own
    major diameter meshes as a zero-thickness sliver — **290 sampled points
    reading 0.00 mm**, all on that plane. It is `sock_lip`'s lesson arriving by a
-   different door. The thread runs OUT through the mouth instead, and the collar
-   lands on the annulus around it.
+   different door. On the BAR the thread still runs OUT through the mouth and
+   the collar lands on the annulus around it. The charm's **pocket** is not that
+   trap and the difference is the only thing that makes it legal: 6.04 mm across
+   against a 4.3 mm crest, nowhere near the same circle. Keep them apart — there
+   is an assert.
+6. **Phase again, and the pocket is where it bites.** `charm_screw_socket` cuts
+   the thread with its mouth `scr_collar_h` in from the seat face, because the
+   male's phase is referenced to the top of its collar and that is where the
+   collar's top lands. Reference it to the visible mouth instead — the obvious
+   way — and the two threads meet out of phase by however deep the pocket is,
+   which is most of the 45 degrees the clearance allows, and the charm jams
+   short of its seat on some screws and not on others.
+7. **A 180-degree rotation about x is a PROPER rotation, and that is why the
+   socket may use one.** `charm_screw_socket` runs the bore upward by rotating
+   `charm_screw_hole`, and handedness survives that — a mirror would not, and a
+   mirrored helix exports, looks right, and will not thread onto anything. The
+   rotation carries the tooth with it, so "the slack flank is at the mouth"
+   stays true and the phase still lands at a = 0 (z = 0 is the rotation's fixed
+   plane). What it DOES flip is which flank becomes the printed ceiling, which
+   is the whole reason `scr_dn` had to grow.
 
 ### Reading the wall check on a threaded part
 
 It flags ~170 points per band and ~330 on the star, and on this geometry that is
 **mostly ray escape at the thread runout**, not thin material. Do not accept
 that on the report's word — measure it. Slice the mesh horizontally and take the
-minimum distance from the hole's boundary loop to the material around it:
+minimum distance from the hole's boundary loop to the material around it, or
+fire a horizontal ray across the bar at the hole and read the runs:
 
-| where | slice | real wall |
-|---|---|---|
-| bar, through the body | z = 0.2 … 3.5 | **1.358 mm** |
-| bar, under the chamfer | z = 4.40 | **0.900 mm** |
-| star's pad, anywhere | z = 2.4 … 6.55 | **1.396 mm** |
+| where | slice | M3 (printed) | M4 (now) |
+|---|---|---|---|
+| bar, through the body | z = 0.2 … 3.5 | 1.358 mm | **0.861 mm** |
+| bar, at the top face | z = 4.40 | 0.900 mm | **0.861 mm** |
+| star's pad, at the bore | — | 1.396 mm | **1.4 mm** (`scr_wall`) |
+| star's pad, at the pocket | — | — | **0.9 mm** (`scr_pocket_wall`) |
+
+Both versions are designed at the same 0.85; the mesh reads 0.86–0.90 depending
+on where the helix crosses the plane. What changed is that the M3 was 1.358 mm
+through the body and pinched only at the chamfered rim, while the M4 is the same
+0.86 all the way down. **The pad's pocket wall is deliberately 0.9, not
+`scr_wall`** — at 1.4 the pad would reach past the star's valleys.
 
 What IS genuinely thin, and is meant to be: the female thread's crest, 0.45 mm
 at its tip (`scr_crest_f`, asserted at ≥ 0.4).
@@ -227,6 +419,21 @@ translate([0, 0, seat + 0.02 + s*scr_pitch*a/360]) rotate([0, 0, a]) ...
 - **A failed OpenSCAD run leaves the PREVIOUS STL on disk**, and a harness that
   reads the file it finds will report the last run's volume for every point of
   the sweep. `rm -f` the target first and treat a missing file as EMPTY.
+- **`$fa` and `$fs` do not cross a `use <>`.** They are special variables, so
+  they are scoped from the CALLER, not from the file the module was written in.
+  A harness that omits them renders every `cylinder` in the imported part at the
+  defaults — `$fs` = 2 turns the star's 3.5 mm bore into a HEXAGON of inradius
+  1.516 — and the sweep then reports interference at every half-facet of the
+  thread, at r = 1.516..1.600, with the empty band shrunk from ±45° to ±10°. It
+  reads exactly like a fit that is too tight. Put `$fa = 2; $fs = 0.3;` at the
+  top of every harness. (Including `bracelet.scad` sets them for you, which is
+  why only the charm harnesses are exposed.)
+- **`-D name="string"` has to survive the SHELL.** Building the flags in a
+  variable (`D='-D charm_mount="screw"'; openscad $D ...`) loses the inner
+  quotes, OpenSCAD gets `charm_mount=screw`, fails to parse, and exports
+  NOTHING — and a whole sweep comes back "empty", which is the §4 trap wearing a
+  different hat. Pass `-D 'charm_mount="screw"'` literally on each command, and
+  never trust a sweep whose control does not go solid.
 
 ## The ball joint: two no-ops that both export a plain sphere
 

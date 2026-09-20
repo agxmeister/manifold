@@ -330,9 +330,13 @@ charm_reach = 16;    // the widest charm this spacing has to keep apart —
 //             screw comes off, and the bracelet is left a plain strip with
 //             holes in it. models/star-charm is the charm built for it.
 //
-// The hole is the reason the screw is no fatter than it is: it has to pass
-// through `body` = 6.0 mm of bar, and only 5.0 mm of that survives the top
-// chamfer. See the wall asserts below, and the arithmetic in the lib.
+// The hole's size is set by the bar it has to pass through — `body` = 6.0 mm
+// of it — and the top chamfer used to take a millimetre of that before the
+// hole ever got there, which is what held the thread to M3. A screw station
+// now FILLS THE CHAMFER BACK IN around its hole (`charm_screw_seat`), so the
+// bar is square-shouldered and its full 6.0 mm wide exactly where the hole
+// passes through, and the thread is an M4 in the same 0.85 mm of wall. See
+// the wall asserts below, and the arithmetic in the lib.
 charm_mount = "ball";
 
 function charm_col(i) = round((i + 1) * (cols - 1) / (charms + 1));
@@ -351,19 +355,54 @@ assert(charms == 0 || (charm_ix[0] >= 1 && charm_ix[charms-1] <= cols - 2),
 assert(charm_mount == "ball" || charm_mount == "screw",
        "charm_mount is either \"ball\" or \"screw\"");
 
-// The screw mount takes material OUT of a bar instead of adding it, so the two
-// walls it leaves are the things to check. The rim is the thinner of the two —
-// the chamfer has already taken 0.5 mm a side by the time the hole gets there —
-// and it is the thinnest vertical wall the mount adds anywhere.
-scr_wall_body = (body - scr_hole_maj) / 2;              // 1.35
-scr_wall_rim  = (body - 2*ch_run - scr_hole_maj) / 2;   // 0.85
+// The screw mount takes material OUT of a bar instead of adding it, so the
+// wall it leaves is the thing to check. There is now only ONE number for it:
+// the seat fills the chamfer back in over the whole width of the hole, so the
+// wall is the same from the bed to the top face instead of pinching to 0.85
+// at a chamfered rim. It is still 0.85 — the wall the printed version was
+// proven at — and the thread inside it is an M4 instead of an M3.
+scr_wall_bar = (body - scr_hole_maj) / 2;               // 0.85
 assert(charm_mount == "ball" || scr_bar == thick,
        str("the screw's bar thread is ", scr_bar, " but a bar is ", thick,
            " thick — they have to agree"));
-assert(charm_mount == "ball" || scr_wall_rim >= 0.8,
-       str("only ", scr_wall_rim, " mm of bar left beside the hole at the rim"));
-assert(charm_mount == "ball" || 2*scr_r_out <= body - 2*ch_run,
-       str("the screw's collar is wider than a bar's flat top"));
+assert(charm_mount == "ball" || scr_wall_bar >= 0.8,
+       str("only ", scr_wall_bar, " mm of bar left beside the hole"));
+assert(charm_mount == "ball" || 2*scr_r_out <= body,
+       str("the screw's collar is wider than a bar"));
+
+// The seat has to reach the bar's full width over the whole width of the hole,
+// or the chamfer comes back exactly where the wall is thinnest. The seat is a
+// disc of `scr_seat_d` clipped to the bar, so it spans the full `body` out to
+// y = +/- sqrt((scr_seat_d/2)^2 - (body/2)^2) — which must cover the hole.
+seat_span = (scr_seat_d/2 > body/2)
+              ? sqrt(pow(scr_seat_d/2, 2) - pow(body/2, 2)) : 0;
+assert(charm_mount == "ball" || seat_span >= scr_hole_maj/2 + 0.2,
+       str("the seat reaches only ", seat_span,
+           " mm along the band at the bar's edge, and the hole needs ",
+           scr_hole_maj/2));
+
+// A screw-mounted charm has a FLAT BOTTOM and it is wider than its bar, so it
+// rests on whatever the band's top surface is out to its own radius. That is
+// only safe because the band's top surface is a PLANE: `thick` is defined as
+// `pin_z + rk`, so a knuckle cap's apex reaches exactly the height of a bar's
+// top face and nothing on the band goes above it.
+//
+// Assert that rather than assume it. If `thick` and the cap's reach are ever
+// decoupled — by raising `pin_z`, or by capping the knuckle differently — a
+// charm would land on the crests and stand proud of its own bar, and the only
+// symptom would be a charm that will not pull down tight.
+knuck_top  = pin_z + rk;                                // == thick, by design
+assert(charm_mount == "ball" || knuck_top <= thick + 1e-9,
+       str("a knuckle reaches ", knuck_top, " but a bar's top is ", thick,
+           " — a flat-bottomed charm would sit on the hinge, not on its bar"));
+
+// The charm still may not reach the neighbouring BAR, which is the part that
+// actually moves. `charm_reach` is the charm's width, so half of it is how far
+// it hangs over, and the gap to the next bar's face is `pitch - body`.
+assert(charms == 0 || charm_mount == "ball"
+       || charm_reach/2 <= (pitch_min - body) + body/2,
+       str("a ", charm_reach, " mm charm overhangs past the neighbouring bar's",
+           " face at pitch_min — it would jam the joint"));
 
 // The pin outgrows the stud, so it sets the print height once there is one.
 // A screw station adds no height at all — it is a hole.
@@ -389,8 +428,10 @@ if (charms > 0 && charm_mount == "ball")
 if (charms > 0 && charm_mount == "screw")
     echo(str(charms, " screw hole(s) through bar(s) ", charm_ix, " of ", cols,
              " — M", scr_maj, " x ", scr_pitch, ", ", scr_hole_maj,
-             " across, wall ", scr_wall_rim, " at the rim / ", scr_wall_body,
-             " below it", charms < 2 ? ""
+             " across, wall ", scr_wall_bar, " top to bottom; seat d",
+             scr_seat_d, " spanning ", 2*seat_span, " at the bar's edge; band top",
+             " flat at ", thick, " out to the knuckle crests",
+             charms < 2 ? ""
                  : str(", closest pair ", charm_sep * pitch, " mm apart")));
 
 // ------------------------------------------------------------------ modules
@@ -562,6 +603,30 @@ module charm_screw_station(col) {
     translate([col*pitch, band_cy, thick]) charm_screw_hole(thick + 0.5);
 }
 
+// The SEAT the hole is cut through, and the whole reason the thread is an M4.
+//
+// A bar's top is chamfered, and the chamfer is pure loss to a hole: it takes
+// `ch_run` a side off the 6.0 mm the wall arithmetic gets to spend, and the
+// hole has to fit inside what is left. So at a station the chamfer is filled
+// back in — a disc of `scr_seat_d`, clipped to the bar's own section, standing
+// from the top of the full-width slab up to the top face.
+//
+// IT ADDS NOTHING TO PRINT. The disc is clipped by the SAME `rrect([body,
+// band_w])` the slab below it is extruded from, so its walls are flush
+// continuations of that slab's: no overhang, no layer step, no bed contact, no
+// new shell and no new hole. What it adds is a square-shouldered lens of top
+// face around the hole — which is also exactly the face the charm's pad comes
+// down onto, so the seat is doing two jobs at once.
+module charm_screw_seat(col) {
+    translate([col*pitch, band_cy, 0])
+        linear_extrude(thick)
+            intersection() {
+                circle(d = scr_seat_d);
+                rrect([body, band_w]);      // the bar's own section, centred
+            }                               //   on the same point we are
+
+}
+
 // The `ball` branch below is the band exactly as it was before the screw mount
 // existed, in the same order, deliberately NOT wrapped in the difference() the
 // screw branch needs: at `charms = 0` its export has to stay byte-for-byte the
@@ -571,6 +636,7 @@ module bracelet() {
         difference() {
             union() {
                 for (c = [0:cols-1]) bar(c);
+                for (c = charm_ix) charm_screw_seat(c);
                 clasp_stud();
                 clasp_keyhole();
             }

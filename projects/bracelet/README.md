@@ -202,14 +202,16 @@ carry it** — `charm_mount` in `bracelet.scad` picks one for the whole band:
 | | `"ball"` (default) | `"screw"` |
 |---|---|---|
 | on the bar | a ball pin **fused** to its top face | a threaded hole **through** it |
-| the charm | clips over the ball and swivels | winds onto a loose double-ended screw |
+| the charm | clips over the ball and swivels | winds onto a loose double-ended screw, and sits flat on the bar |
 | comes apart | charm only; the pin is there forever | charm, screw and all |
 | charms | flower, heart, kitten, puppy, frog | star |
-| proven | printed and worn | printed and confirmed |
+| proven | printed and worn | printed and worn |
 
 The ball mount came first; the screw mount came later and was printed and
-confirmed on 2026-09-19 — screws, star and a threaded band. It is described
-[below](#the-screw-mount).
+confirmed on 2026-09-19 — screws, star and a threaded band. It was then opened
+back up to fatten the thread to M4, to seat the charm flat on the bar and to
+turn the charm over, and **that revision is confirmed too**, on 2026-09-20. It
+is described [below](#the-screw-mount).
 
 With `charm_mount = "ball"`, `charms` bars grow a **ball pin** out of their top
 face and a charm snaps onto it. There are five: a **flower**, a **heart**, a
@@ -391,31 +393,72 @@ collar seats on the bar's top face, and the charm winds onto the other end. Take
 everything off and the bar is a plain bar with a hole in it.
 
 ```
-   star-charm        a round pad with a blind threaded bore
-        ║
-   ═════╩═════       its seat face lands on the collar
-      ╔═╧═╗          hex collar: stop, seat, and the bit you grip
-   ───╫───╫───       the bar's top face
-   bar║ ⦀ ║          M3 x 2.2 through the whole 4.45 mm
-   ───╨───╨───       the tip stops 0.25 mm shy of the underside
+    ___________      star-charm, a solid — the screw lives inside it
+   /  ║     ║  \     a blind threaded bore...
+   \  ║╱   ╲║  /     ...over a COUNTERSINK that swallows the collar whole,
+    \_╨═╧═╨_/         so the charm's own underside lands on the bar
+   ────╨───╨────     the bar's top face — square-shouldered here, no chamfer
+   bar ║ ⦀ ║         M4 x 2.3 through the whole 4.45 mm
+   ────╨───╨────     the tip stops 0.25 mm shy of the underside
 ```
 
 **The bar is what sets the size, not the screw.** The hole has to pass through
-6.0 mm of bar, and the top chamfer leaves only 5.0 mm of that at the rim — so a
-3.3 mm hole is what fits, leaving **0.85 mm of wall at the rim and 1.35 mm
-below it** (measured on the mesh, not assumed: 1.358 mm through the body,
-narrowing to 0.90 mm just under the face). That fixes the thread at **M3 × 2.2**
-— major 3.0 mm, 0.4 mm deep, a coarse pitch because a fine one on a 0.4 mm
-nozzle smears into a plain cylinder. About 1.5 turns of engagement at each end.
+6.0 mm of bar — and the top chamfer used to take a millimetre of that before the
+hole ever got there, which held the thread to an M3 in a rim only 0.85 mm thick.
+So at a charm station **the chamfer is filled back in**: a lens of material
+around the hole brings the bar back to its full 6.0 mm, square-shouldered, for
+as far as the hole reaches. It costs nothing to print — the added material's
+sides are flush with the slab below, so there is no overhang, no layer step and
+no extra bed contact — and it buys the whole millimetre the chamfer was eating.
+
+The hole is now **4.3 mm across with 0.85 mm of wall beside it, top to bottom**,
+and the thread inside it is **M4 × 2.2** — major 4.0 mm, 0.4 mm deep, a coarse
+pitch because a fine one on a 0.4 mm nozzle smears into a plain cylinder. That
+is the same wall the printed version was proven at, around a shaft with 78% more
+cross-section. There is no chamfer left to spend: fatter than M4 means a wider
+bar.
+
+**The charm sits down on the bracelet.** The collar used to stand between the
+two — bar, then hex, then pad, a visible three-step stack with the screw on show
+in the middle of it. The charm's pad now opens into a 6.04 mm **pocket** deep
+enough to swallow the collar whole, so the pad's face comes all the way down
+onto the bar's top and the screw disappears inside the joint. It costs no
+height: the collar is swallowed, but the threaded bore starts the same 1.4 mm
+deeper to meet it, so the star's face ends up exactly where it was.
+
+What it does cost is **seat** diameter — the seat has to wall a 6.04 mm pocket
+rather than a 4.3 mm bore, so it is **8.2 mm** and its rim overhangs the bar by
+1.1 mm a side, out over the hinge gap. Nothing is in the way there: the knuckle
+below it is a cylinder about the pin axis, so its envelope does not move when
+the joint turns, and it clears the rim by 0.58 mm even at the tightest pitch the
+band's solver can land on. The model asserts that against `pitch_min`, not
+against the size that happens to be on the bench, and the band still swings free
+past 40° with a charm seated on it.
+
+**The charm prints seat down** — the face that lands on the bracelet is the face
+that lands on the bed — so the screw ends up inside the charm rather than under
+it. That is what turned the star from a plate into a solid; see below.
+
+Both female threads now have to print, which was not true before. A thread cut
+into a part has one flank as a groove ceiling and the other as a floor, and
+*which* one depends on which way up the part goes on the bed — and these two go
+opposite ways. The bar's hole reads the mouth-side flank as its ceiling and gets
+the proven **31°**; the charm's socket reads the other one, so that flank was
+fattened (`scr_dn` 0.2 → 0.30, paid for with pitch 2.2 → **2.3**) and comes out
+at **41°**. Both are asserted on the finished surface, not on the drawn angle.
+It also retires a trap: it used to matter enormously which way round the tooth's
+asymmetry went, and now neither way is wrong.
 
 **The screw prints lying down**, which is the whole reason it is a separate
 part. Standing up it would be a 9.5 mm tower on a 3 mm circle with every thread
 crest leaving the layer below at the tangent. Lying down it is a horizontal
 cylinder, and a horizontal cylinder's only real problem is its underside — cut
-off by a flat, exactly as the hinge pin's underside is. The flat lands 1.05 mm
-from the axis, a hair inside the core, so the thread *and* the groove roots both
-reach the bed and the first layer is an unbroken 2.1 mm strip rather than a
-tangent line. The thread is missing over the ~90° of arc the flat eats; the
+off by a flat, exactly as the hinge pin's underside is. The flat lands 1.40 mm
+from the axis, which on an M4 is squeezed between two bounds only 0.2 mm apart:
+any further out and the shaft leaves the bed past 45°, any further in and it
+stops short of the groove roots. There the thread *and* the roots both reach the
+bed and the first layer is an unbroken 2.86 mm strip rather than a tangent
+line. The thread is missing over the ~90° of arc the flat eats; the
 other 270° hold, and a charm is not a load.
 
 **The threaded holes print with no overhang at all.** A female thread's groove
@@ -442,17 +485,81 @@ is no loss — they then unscrew from each other.
 ### The star
 
 `star-charm` is the charm built for this mount: a five-pointed star, 16 mm tip
-to tip, printed **face down** like every other charm, with a round 6.1 mm pad on
-its back instead of a socket boss. The face is a dished centre with a crease
-running out into each point — the same engraving rules as the other five, the
-same 1.0 mm cutting budget, and no cut that closes a loop.
+to tip and 7.3 mm tall, printed **flat side down** with the whole screw buried
+inside it.
 
-It stands 8.0 mm off the bar, against the ball charms' 6.7 mm, and prints
-6.6 mm tall in one 86 mm² island.
+```
+        ___                   a 45° bevel on the boss
+       /   \                  the BOSS: 7.1 mm wide, tall enough to swallow
+      |     |                   the socket. A top feature — no support needed
+    __|     |__
+   |___________|              the plate: the full 16 mm star, 3.4 mm thick
+   ^^^^^^^^^^^^^              flat on the bar, flat on the bed
+```
 
-All of this printed first time on 2026-09-19 — the screws in a batch of six,
-the star, and a band with three threaded stations — so the 0.15 mm thread
-clearance is a proven fit rather than a calculated one.
+**This is the second shape.** The first was a solid — a 45° skirt rising from an
+8.2 mm seat out to the points, because a 16 mm plate held on an 8.2 mm seat
+would be cantilevered into air. It printed beautifully and then **came off the
+plate**: the only face touching the bed was the seat, the seat is an *annulus*
+(the collar's pocket is a hole through the middle of it), and 24 mm² under a
+7.3 mm part was not enough. It detached mid-print.
+
+So the plate came back and the socket went the other way — hidden under a raised
+middle on the **top** face instead of behind a skirt on the bottom. The first
+layer is now **61 mm²**, and everything in the part is either a vertical wall or
+a surface that closes inward as it rises. No supports, no brim.
+
+**The five points are relieved, and the number is measured, not chosen.** A flat
+face at the band's top rests on a plane — `thick` is `pin_z + rk`, so a knuckle
+crest reaches exactly a bar's top face and nothing on the band is higher. But
+that is only true while the joint is *still*. Turn it and the knuckle's ARM, a
+full-height rectangle behind the cap, tilts its top edge up above that plane.
+Swept against the real band, a flat underside is clear out to **r = 5.8** at 40°
+of swing. Past that the points are lifted at 45°, which is the shallowest rise
+that prints, so they end up 1.2 mm thick at the tips against 3.4 mm at the
+middle. The band swings free to 30° with a charm seated on it and binds at 40°;
+a wrist needs 24°.
+
+What grows there is a **disc**, intersected with the star — so new material on
+each layer is always within a layer height of the one below and the outline
+never leaps sideways. Offsetting or scaling the star instead makes a point
+emerge tangentially from the body, which is the same sideways leap that tore the
+old cable-chain design off the plate.
+
+There is **no engraving**. The bed-side face is against the bracelet where
+nothing would be seen, and a cut into the top would be an overhanging void. The
+raised middle is the decoration.
+
+**The pocket is a countersink, and that came from a real print.** The first
+version had a straight pocket, which steps in to the thread across 0.77 mm of
+annulus — a downward-facing ring with nothing under it. It was written off as "a
+bridge anchored all the way round"; on the plate it hung, and it is the first
+thing the slicer draws on this part. The collar is now tapered and the pocket
+tapered to match, at the same 35° and with the same `scr_pocket_fit` clearance
+the whole way up, so the void closes in on itself as the nozzle climbs. What is
+left of the ledge is 0.1 mm — a quarter of a bead — and it cannot be closed
+further without either putting the cone's small end on the thread's crest circle
+(which meshes as a sliver) or inside it (which fouls the screw). It cost nothing
+and it gained a tenth of a turn of thread, because the pocket now ends level
+with the collar instead of 0.2 mm above it.
+
+One ceiling is left, buried 5.8 mm inside the part: the blind end of the bore, a
+4.3 mm disc. That one is an ordinary bridge with support all the way round, the
+band's own bore roofs are 2.9 mm of the same thing, and it cannot be coned away
+— a 45° point over a 4.3 mm hole is 2.15 mm tall and the roof is 1.5.
+
+The M3 version of the joint printed first time on 2026-09-19 — the screws in a
+batch of six, the star, and a band with three threaded stations — so the 0.15 mm
+thread clearance is a proven fit rather than a calculated one, and it has not
+moved.
+
+The M4, the 2.3 pitch and the seat went on the plate on 2026-09-20 and were
+fine. The star took three attempts the same day: the first hung its pocket's
+eave, the second detached outright, and the third — the countersunk pocket and
+the flat bottom with the raised middle described above — **printed well and is
+confirmed**. So the 35° countersink, the r = 5.8 flat bottom and the 41° groove
+roof of a mouth-down thread are all proven on a real plate now, and so is
+everything else on this page.
 
 ## Models and parts
 
@@ -484,8 +591,8 @@ exports as one piece.
 | `kitten-charm` | `kitten-charm` | 12.0 × 15.6 × 7.2 mm | its own face, 126 mm² in one piece |
 | `puppy-charm` | `puppy-charm` | 15.0 × 13.9 × 7.2 mm | its own face, 138 mm² in one piece |
 | `frog-charm` | `frog-charm` | 15.8 × 13.6 × 7.2 mm | its own face, 155 mm² in one piece |
-| `star-charm` | `star-charm` | 14.7 × 15.3 × 6.6 mm | its own face, 86 mm² in one piece |
-| `charm-screw` | `charm-screw` | 4.8 × 9.5 × 3.2 mm | the flat along its shaft, 20 mm² |
+| `star-charm` | `star-charm` | 14.7 × 15.3 × 7.3 mm | its flat side, 61 mm² in one piece |
+| `charm-screw` | `charm-screw` | 5.5 × 9.5 × 3.8 mm | the flat along its shaft, 22 mm² |
 
 The last two are the screw mount; the five above them are the ball mount. No
 charm may exceed **16 mm** in either direction — that is `charm_reach` in
@@ -601,17 +708,21 @@ openscad -D copies=6 \
 ### The screw and the star
 
 - **Print the screw lying down, exactly as modelled** — no rotation, no
-  supports, no brim. It is a 9.5 mm part on a 20 mm² flat, so print a batch:
-  `-D copies=6` lays them out 7 mm apart, and the export is then that many
+  supports, no brim. It is a 9.5 mm part on a 22 mm² flat, so print a batch:
+  `-D copies=6` lays them out 8 mm apart, and the export is then that many
   separate shells, which is correct rather than a fault.
+- **Print the star flat side down, exactly as modelled** — no rotation, no
+  supports, no brim. An earlier version of it stood on a 24 mm² annulus and
+  came off the plate mid-print; this one lies on 61 mm² of its own face.
 - **Same material and settings as the band.** The thread clearance is 0.15 mm
   per side, which is well inside the range a change of filament moves a fit by.
 - Three perimeters. The thread crests are 0.45 mm wide at their tips, so they
   want a nozzle laying a clean single line, not a fat one.
 - To assemble: wind the **long** end of the screw down into the bar until the
   collar is tight on the bar's top face, then wind the star onto the short end
-  until its pad is tight on the collar. Finger-tight is the whole range — there
-  is nothing to torque against.
+  until the star's own underside is tight **on the bar** — the collar ends up
+  inside the star, not under it, and once it is on you cannot see the screw at
+  all. Finger-tight is the whole range; there is nothing to torque against.
 - The star lands at whatever angle it seats at. If it matters, back it off a
   fraction rather than forcing it round.
 
