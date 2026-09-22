@@ -180,20 +180,42 @@ assert(knuck_slope <= 40,
 cl_t      = 1.6;    // clasp plate thickness. The keyhole plate lies ON TOP of
                     //   the stud plate when fastened, so the post has to
                     //   clear 2 * cl_t.
-post_d    = 3.0;
-head_d    = 5.4;
-post_top  = 2*cl_t + fit;          // 3.5 — top of the parallel post
+post_d    = 4.0;    // the post — the clasp's whole load path, and the one part
+                    //   of it that can snap off. It was 3.0 and was fragile:
+                    //   it prints standing up, so it breaks along a layer
+                    //   line, and bending strength goes as d^3 — 4.0 is 2.4x.
+slot_fit  = 0.15;                  // radial play of the post in the slot, the
+                                   //   printed value: the post has to SLIDE here
+slot_w    = post_d + 2*slot_fit;   // 4.3
+head_lip  = 1.05;                  // how far the head overhangs the slot each
+                                   //   side — what holds it. The printed value.
+head_d    = slot_w + 2*head_lip;   // 6.4
 head_h    = 1.5;                   // cone up to head_d. The underside of the
                                    //   head is therefore at atan(1.2/1.5) =
                                    //   38.7 deg from vertical: self-supporting,
                                    //   no support under the head.
-slot_w    = post_d + 0.3;          // 3.3 — the post slides freely along this
-entry_d   = head_d + 0.6;          // 6.0 — the hole the head drops through
-det_gap   = 2.7;                   // the detent pinches to here, so the post
-det_r     = 0.5;                   //   (3.0) must snap 0.15 mm past it a side
-leaf_w    = 0.8;                   // Each detent bump sits on a SPRING LEAF —
+head_slope = (head_d - post_d)/2 / head_h;   // radial growth per mm of rise
+// HOW TIGHT THE CLASP SITS, UP AND DOWN. The head's underside is a cone, so
+// what the keyhole plate lifts into is not the post's top but the height where
+// that cone grows out to the SLOT EDGE. The printed clasp put the cylinder
+// top a full `fit` over the plates, and the cone then reached the slot edge
+// 0.49 mm above them — that much rattle. Now the gap is set AT THE SLOT EDGE,
+// with the post centred: 0.15, a hair under the 0.2 a sagging ceiling would
+// want, which is fine because this ceiling is a 38.7-degree cone, not a flat
+// bridge. Pull the post against the slot's side — which the band's tension
+// does, against the seat's far wall — and the cone meets the edge right at the
+// plate's top face: under load the head clamps the two plates together.
+head_gap  = 0.15;
+post_top  = 2*cl_t + head_gap - slot_fit/head_slope;   // 3.16 — top of the
+                                   //   parallel post. It ends just BELOW the
+                                   //   top of the stacked plates, on purpose.
+entry_d   = head_d + 0.6;          // 7.0 — the hole the head drops through
+det_pinch = 0.15;                  // how far each bump stands into the post's
+det_gap   = post_d - 2*det_pinch;  //   path: 3.7. The printed value.
+det_r     = 0.5;
+leaf_w    = 1.0;                   // Each detent bump sits on a SPRING LEAF —
 rel_w     = 0.8;                   //   a strip of plate freed by a relief slot
-leaf_free = 2.5;                   //   beside the main slot. Without it the
+leaf_free = 2.8;                   //   beside the main slot. Without it the
                                    //   bump is rigid: a 1.6 mm plate will not
                                    //   yield 0.13 mm, so the post either
                                    //   refuses to pass or splits the plate.
@@ -205,30 +227,63 @@ leaf_free = 2.5;                   //   beside the main slot. Without it the
                                    //   ends. That matters: fixed-fixed at this
                                    //   length it would take ~50 N to push the
                                    //   post past, which is not a clasp, it is
-                                   //   a jam. As a cantilever it takes ~6 N —
-                                   //   a click you can feel and undo.
+                                   //   a jam.
+                                   //
+                                   //   FIRMER THAN THE PRINTED ONE, AT THE SAME
+                                   //   STRAIN. The leaf's root strain is
+                                   //   3*(w/2)*pinch/L^2 and its force goes as
+                                   //   w^3*pinch/L^3. The printed leaf (0.8 x
+                                   //   2.5) ran at 2.88% and survived; this one
+                                   //   (1.0 x 2.8) runs at 2.87% and pushes
+                                   //   back 1.39x as hard. A deeper pinch was
+                                   //   the other way to firm it up, and it
+                                   //   would have taken the leaf past the
+                                   //   strain it is proven at.
                                    //   leaf_w is a FLEXURE, and is meant to be
                                    //   under the 1.2 mm wall threshold.
-det_off   = 1.8;                   // seat -> detent, along the slot
-kh_w      = 9.0;                   // keyhole plate width
-tip_wall  = 1.8;                   // plate left beyond the seat — this is what
-                                   //   the post pulls against, so it carries
-                                   //   the entire clasp load
-kh_tip    = slot_w/2 + tip_wall;
+leaf_strain = 3*(leaf_w/2)*det_pinch / (leaf_free*leaf_free);
+det_y     = det_gap/2 + det_r;     // a bump's centre, off the slot's axis
+// seat -> detent, along the slot. NOT a free choice any more: the bumps CRADLE
+// the seated post. With the post pulled against the seat's far wall, they
+// just touch its back — so the post cannot rattle along the slot at all. The
+// printed clasp set them 1.8 mm out and the seated post had ~0.6 mm to wander.
+det_off   = sqrt(pow(post_d/2 + det_r, 2) - det_y*det_y) - slot_fit;   // 0.70
+rail_w    = 1.25;                  // plate outboard of each relief — the two
+                                   //   rails carry the whole clasp load to the
+                                   //   yoke. The printed value.
+kh_w      = 2*(slot_w/2 + leaf_w + rel_w + rail_w);   // 10.4
+tip_strip = 2.0;                   // full-width plate left beyond the reliefs'
+                                   //   ends. The seat's far wall hangs off this
+                                   //   strip and the post pulls against it, so
+                                   //   it carries the entire clasp load.
+kh_tip    = leaf_free - det_off + rel_w/2 + tip_strip;   // seat -> plate tip
+kh_wall   = 1.0;                   // plate between the entry hole and the bar
 stud_pw   = 8.0;
-stud_tip  = 3.5;
+stud_tip  = post_d/2 + 2.0;
 yoke_len  = 3.0;                   // how far a yoke stands off the end column
 yoke_bite = 1.4;                   // how far it reaches INTO it, so it unions
 
 assert(head_d > slot_w + 1.5, "head can pull back through the slot");
 assert(det_gap < post_d, "detent does not actually pinch the post");
 assert(entry_d > head_d, "head will not pass through the entry hole");
-assert(post_top >= 2*cl_t + fit, "post too short to reach through both plates");
+// The post itself has to pass through the slot with the plates stacked: at the
+// keyhole plate's top face the cone must still be inside the slot.
+assert(post_d/2 + (2*cl_t - post_top)*head_slope < slot_w/2,
+       "the head's cone starts inside the slot and jams the post");
+assert(post_top + (slot_fit/head_slope) > 2*cl_t,
+       "the head bears on the plate below its top face — the clasp cannot close");
 assert(slot_w > post_d, "post cannot slide along the slot at all");
 assert(kh_w/2 - (slot_w/2 + leaf_w + rel_w) >= 1.0,
        str("relief slot leaves too little plate outboard: ",
            kh_w/2 - (slot_w/2 + leaf_w + rel_w)));
 assert(det_r > (post_d - det_gap)/2, "detent bump too small to pinch");
+assert(leaf_strain <= 0.029,
+       str("detent leaf strained to ", 100*leaf_strain,
+           "% — past the 2.88% the printed leaf was proven at"));
+// The seat's far wall, directly behind the post, must stay at least as thick
+// as the printed clasp's (1.8).
+assert(kh_tip - slot_w/2 >= 1.8,
+       str("only ", kh_tip - slot_w/2, " mm of wall behind the seat"));
 // The leaf must stay a cantilever: its free end has to reach the entry hole.
 assert(x_entry + 1.0 - (x_det - leaf_free) > leaf_free,
        "relief slot does not reach the entry hole - the leaf is built in at
@@ -240,10 +295,18 @@ assert(x_entry + 1.0 - (x_det - leaf_free) > leaf_free,
 // two extra shells in the export, which is easy to read as "a tile came free".
 // This bit the design at travel = 3 and went unnoticed because the default
 // size never landed there.
-assert(norm([x_entry - x_det, det_gap/2 + det_r]) >= entry_d/2 + det_r + 0.1,
+assert(norm([x_entry - x_det, det_y]) >= entry_d/2 + det_r + 0.1,
        str("the entry hole is eating the detent bumps: centres ",
-           norm([x_entry - x_det, det_gap/2 + det_r]), " apart, need ",
+           norm([x_entry - x_det, det_y]), " apart, need ",
            entry_d/2 + det_r + 0.1));
+// Fastening, the head drops through the entry hole while the band's ends are
+// `kh_travel` closer together than they are once clasped, and the keyhole
+// plate's tip is then that much nearer the stud's end bar. It has to come
+// down BESIDE that bar, not onto it. The printed clasp overran it by 0.95 mm
+// and had to be tilted in; `stud_ext` is now derived so it never does.
+assert(stud_ext - (kh_lock - kh_entry) - kh_tip >= -1e-9,
+       str("the keyhole plate's tip lands on the stud's end bar while fastening, by ",
+           (kh_lock - kh_entry) + kh_tip - stud_ext, " mm"));
 
 // ------------------------------------------------------------ length budget
 // Clasped, the loop runs: post axis -> keyhole plate -> yoke -> band -> yoke
@@ -262,12 +325,29 @@ assert(norm([x_entry - x_det, det_gap/2 + det_r]) >= entry_d/2 + det_r + 0.1,
 // exactly on wrist+ease. Nothing about a bar changes; only the gaps do, and
 // they have about a millimetre of room between the knuckles binding and the
 // band looking gappy.
-stud_ext = 8.0;                        // last bar's face -> post axis
-kh_entry = yoke_len + entry_d/2 + 1.0; // first bar's face -> entry hole
+//
+// AND THE BUCKLE ITSELF IS NOW CUT TO THE BONE. Clasped, it is a rigid flat
+// run from one end bar to the other, `stud_ext + kh_lock` long, and every term
+// in it is now a constraint rather than a round number:
+//
+//   kh_entry  the entry hole, `kh_wall` off the bar. It used to stand a whole
+//             `yoke_len` + 1 mm off it — 3 mm of plate doing nothing.
+//   travel    entry -> seat: the least that keeps the entry hole off the
+//             detent bumps. Short, because the bumps now cradle the seated
+//             post instead of standing 1.8 mm out from it.
+//   stud_ext  post -> stud's end bar: the least that lets the keyhole plate's
+//             tip come down beside that bar while the head drops through the
+//             entry hole (see the assert above). It used to be a flat 8.0 —
+//             more than needed, and still 0.95 mm short of that.
+//
+// Travel appears twice — once in each plate — which is why shortening it is
+// what shortens the buckle.
+kh_entry = kh_wall + entry_d/2;        // first bar's face -> entry hole, 4.5
 // Shortest usable slot: the seated post has to sit far enough from the entry
 // hole that the hole does not reach the detent bumps (see the assert above).
-kh_travel_min = det_off + entry_d/2 + det_r + 0.2;   // 5.5
-kh_lock  = kh_entry + kh_travel_min;                 // 12.5, at every size
+kh_travel_min = det_off + sqrt(pow(entry_d/2 + det_r + 0.15, 2) - det_y*det_y);
+kh_lock  = kh_entry + kh_travel_min;   // 8.6, at every size
+stud_ext = kh_travel_min + kh_tip;     // last bar's face -> post axis, 8.6
 
 // What the band has to span, tip face to tip face.
 band_run  = wrist + ease - stud_ext - kh_lock;
@@ -414,6 +494,9 @@ echo(str("cols=", cols, " rows=", rows,
          "  loop=", band_run + stud_ext + kh_lock,
          "  pitch=", pitch, " (gap ", pitch - body, ")",
          "  keyhole travel=", kh_lock - kh_entry,
+         "  buckle clasped=", stud_ext + kh_lock,
+         "  post d", post_d, " head d", head_d,
+         "  leaf strain=", 100*leaf_strain, "%",
          "  footprint=", (x_stud + stud_tip) - (x_lock - kh_tip),
                     " x ", band_w, " x ", top_z,
          "  band thick=", thick,
@@ -572,10 +655,23 @@ module keyhole_cut() {
     // the relief slots that turn each bump into a cantilever spring leaf.
     // They deliberately run into the entry hole — that free end is what makes
     // the leaf a spring instead of a rigid rib.
-    for (s = [-1, 1])
-        hull() for (e = [x_det - leaf_free, x_entry + 1.0])
-            translate([e, band_cy + s*(slot_w/2 + leaf_w + rel_w/2)])
-                circle(d = rel_w);
+    //
+    // Each relief then TURNS IN, radially, to the entry hole's centre. At the
+    // 4 mm post it runs `slot_w/2 + leaf_w + rel_w/2` = 3.55 off the axis and
+    // the hole is only 3.5 in radius, so a straight relief merely grazes the
+    // hole and leaves a 0.02 mm cusp of rail between the two. Turned radially,
+    // it crosses the hole's edge square.
+    for (s = [-1, 1]) {
+        p_end = [x_entry + 1.0, band_cy + s*(slot_w/2 + leaf_w + rel_w/2)];
+        hull() {
+            translate([x_det - leaf_free, p_end[1]]) circle(d = rel_w);
+            translate(p_end) circle(d = rel_w);
+        }
+        hull() {
+            translate(p_end) circle(d = rel_w);
+            translate([x_entry, band_cy]) circle(d = rel_w);
+        }
+    }
 }
 
 module clasp_keyhole() {

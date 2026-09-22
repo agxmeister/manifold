@@ -101,12 +101,14 @@ A charm pin stands on a bar's top face, entirely above z = `thick`, and is fused
 to its bar. It is the cheapest feature in the project to verify, because almost
 everything must come out **unchanged**:
 
-- **`charms = 0` must export byte-for-byte the file the printed bracelet came
-  from.** `cmp` it against `exports/bracelet-bracelet.stl`. Cheapest regression
-  test here.
+- **`charms = 0` must export byte-for-byte the plain band** in
+  `exports/bracelet-bracelet.stl`. Cheapest regression test here. (Since the
+  2026-09-22 clasp rework that file is the NEW clasp, which is not yet printed —
+  see "The clasp" below. The band's bars are unchanged.)
 - **Shell count `cols` and genus 43 are unchanged at any `charms`.** A pin adds
   no piece and no hole. 15 + n shells means a pin missed its bar.
-- **The first layer is unchanged** — 2338 mm² across 15 islands.
+- **The first layer is unchanged** — 2396 mm² across 15 islands (2338 before
+  the 2026-09-22 clasp rework).
 - **The downward-face scan below z = 0.7 is unchanged** — 331.6 mm² downward,
   0.00 mm² past 45°.
 - **The layer-step raster is unchanged**, byte for byte in its output. Verified
@@ -720,7 +722,7 @@ test can detect anything at all. A wrist needs 24°.
 
 ### 5. Everything else
 
-- Bed stability: **`cols` islands** (15), 2366 mm² of first layer, one
+- Bed stability: **`cols` islands** (15), 2396 mm² of first layer, one
   full-width bar foot each. If it ever reports **1 island**, the feet have
   merged — see `axial_fit`.
 - `check_overhangs.py`: all `BRIDGE`, no `SUPPORT`. The regions are the pins
@@ -743,8 +745,8 @@ test can detect anything at all. A wrist needs 24°.
   bridges in §3. `fit` = 0.3 now means only the swing clearance and the clasp
   stack-up.
 - **`pitch` is SOLVED, not set.** The buckle is fixed at its shortest working
-  length (`kh_lock` = `kh_entry` + `kh_travel_min`, 5.5 mm of travel at every
-  size), so it no longer absorbs the sizing remainder — the joints do. The
+  length (17.24 mm fastened, 4.12 mm of travel at every size — see "The
+  clasp"), so it no longer absorbs the sizing remainder — the joints do. The
   solver picks the bar count nearest `pitch_nom` = 11.6 and divides the run by
   it, landing between `pitch_min` = `2*(h + rk + fit)` = 11.30 and
   `pitch_max` = 11.30 + 1.4. Both bounds are asserted, and the lower one IS the
@@ -779,6 +781,64 @@ test can detect anything at all. A wrist needs 24°.
 - **`tip_wall` = 1.8**, the plate left beyond the keyhole seat. It carries the
   entire clasp load. An earlier version left 0.8 mm there.
 
+## The clasp — reworked 2026-09-22, NOT YET PRINTED
+
+The user asked for "the buckle as short as possible", "the fastener more
+tight" and "the pin of the fastener thicker — to make it less fragile". The
+stud-and-keyhole principle is unchanged; its numbers are not, and none of the
+new ones has been on a plate yet. What changed, and what each is pinned by:
+
+- **`post_d` 3.0 → 4.0** (2.4× the bending strength). Everything the post sizes
+  is now derived from it: `slot_w` = post + 2·`slot_fit` (0.15, the printed
+  play), `head_d` = slot + 2·`head_lip` (1.05, the printed overhang),
+  `entry_d` = head + 0.6, `det_gap` = post − 2·`det_pinch` (0.15, printed),
+  `kh_w` from the leaf, relief and `rail_w` (1.25, printed).
+- **Vertical fit is `head_gap` = 0.15, measured AT THE SLOT EDGE with the post
+  centred.** The first clasp set the cylinder top `fit` above the plates, and the
+  38.7° cone then only met the slot edge 0.49 mm up. `post_top` (3.16) now ends
+  just *below* the stacked plates' top face on purpose. Pulled against the
+  seat's far wall, the cone meets the rim at the plate top: the head clamps the
+  plates under load.
+- **The bumps CRADLE the seated post.** `det_off` (0.70) is solved so that, with
+  the post against the far wall, it just touches the bumps. Post centred in the
+  seat is 0.047 mm into them — deliberate, the leaves take it.
+- **The leaf is 1.0 × 2.8, not 0.8 × 2.5**: same root strain (2.87 % vs the
+  printed 2.88 %, asserted ≤ 2.9 % as `leaf_strain`), 1.39× the force
+  (∝ w³·pinch/L³). A deeper pinch was the rejected alternative — it overstrains
+  the leaf.
+- **The buckle is 17.24 mm fastened, from 20.5.** `kh_entry` = `kh_wall` (1.0)
+  + entry radius; `kh_travel_min` is solved from the bump/entry clearance;
+  `kh_tip` = relief end + `tip_strip` (2.0 of full-width plate carrying the
+  load); `stud_ext` = travel + `kh_tip`, which is the **insertion constraint**:
+  while the head drops through the entry hole the ends are `travel` closer than
+  when fastened, and the keyhole plate's tip must come down beside the stud's
+  end bar. The old flat 8.0 overran it by 0.95 mm. It is now exactly 0 nominal
+  (asserted), with the entry hole's 0.3 radial play as the working clearance.
+  **Travel counts twice** in the fastened length, once per plate — that is why
+  shortening it is what shortens the buckle.
+- **The relief turns radially into the entry hole's centre.** At the 4 mm post
+  its centreline (3.55 off-axis) is outside the 3.5 mm entry radius; run
+  straight it only grazes the hole and leaves a 0.02 mm cusp of rail, which
+  `check_wall_thickness.py` flags at (−6.2, 9.1). Genus still reads one keyhole
+  hole.
+
+**The clasp harness** (include `bracelet.scad` with `bracelet();` stripped and
+the include made absolute). Fastened = keyhole side TRANSLATED by
+`x_stud - x_lock + dx` and lifted `cl_t + 0.02 + dz`; `dx > 0` moves the post
+toward the seat's far wall. Fastening = translated by `x_stud - x_entry + dx`,
+keyhole side with `bar(0)`, stud side with `bar(cols-1)`.
+
+| test | reads |
+|---|---|
+| seated, dx 0.10 | 0.00 mm thick — touching the bumps |
+| seated, dx 0.17 / 0.25 (control) | solid — the far wall |
+| seated at dx 0.14, lift dz 0.05 | solid — no vertical play under load |
+| fastening, dx +0.25, dz 0 … 3.2 | empty at every height |
+| fastening, dx −0.25 (control) | solid, 0.25 × 10.4 × 1.6 — the tip against the stud bar |
+
+That last control is also the measurement: the tip reaches the bar face
+exactly at dx 0.
+
 ## Traps already hit here
 
 - **A brim welds every hinge shut.** The feet are 0.6 mm apart. Never recommend
@@ -787,14 +847,13 @@ test can detect anything at all. A wrist needs 24°.
   pinned at `kh_travel_min`, which puts it right on the edge of the trap below,
   so any change to `entry_d`, `det_off` or `det_r` moves that edge and must be
   swept. Do not restore the long plate to "simplify" the solver.
-- **The entry hole eats the detent bumps on a short keyhole plate.** The entry
-  is 6 mm across and the bumps sit `det_off` = 1.8 mm from the seat, so below
-  about 5.3 mm of post travel the hole swallows them and they export as two
+- **The entry hole eats the detent bumps on a short keyhole plate.** Bring the
+  entry hole too close to the bumps and it swallows them and they export as two
   loose 1 mm crumbs — a clasp with no detent. The *only* symptom is two extra
   shells, which reads exactly like "a bar came free". This was latent in the
-  printed version too (it appears there at `wrist` = 144 and 155); the sizing
-  solve now reserves `kh_travel_min` = 5.5 mm and an assert measures the
-  centre-to-centre distance. **Sweep `wrist` across its whole range and check
+  printed version too (it appears there at `wrist` = 144 and 155). Travel is
+  now SOLVED from exactly that distance (`kh_travel_min`, with 0.05 mm over the
+  assert's own margin) and an assert measures the centre-to-centre distance. **Sweep `wrist` across its whole range and check
   the shell count after any change to the clasp or to `pitch`** — a shift in
   quantisation is all it takes to land on a bad size.
 - **The lug arm must reach far enough into the bar's rounded corner to fuse.**
