@@ -63,7 +63,8 @@ $fs = 0.3;
 include <../../lib/charm-pin.scad>
 
 // ------------------------------------------------------------------- sizing
-wrist   = 180;   // wrist circumference in mm. 180 adult, 140 child.
+wrist   = 130;   // wrist circumference in mm. 130 is the 4-year-old this was
+                 //   printed for and fits (2026-09-14); 180 adult, 140 child.
 ease    =  12;   // slack on top of the wrist, so the band hangs rather than
                  //   grips. EXACT, not approximate: the fabric quantises to
                  //   whole columns of `pitch`, and the remainder is spent on
@@ -417,6 +418,11 @@ charm_reach = 16;    // the widest charm this spacing has to keep apart —
 // bar is square-shouldered and its full 6.0 mm wide exactly where the hole
 // passes through, and the thread is an M4 in the same 0.85 mm of wall. See
 // the wall asserts below, and the arithmetic in the lib.
+//   "h"     — a POCKET sunk into the bar's top. A loose H-shaped pin
+//             (models/charm-h-pin) snaps down into it with the hooks on its
+//             lower legs, the crossbar sinks flush, and the charm snaps onto
+//             the upper legs. models/butterfly-charm is the charm built for
+//             it. See the H-PIN section of the lib.
 charm_mount = "ball";
 
 function charm_col(i) = round((i + 1) * (cols - 1) / (charms + 1));
@@ -432,8 +438,24 @@ assert(charms == 0 || charm_sep * pitch >= charm_reach,
 assert(charms == 0 || (charm_ix[0] >= 1 && charm_ix[charms-1] <= cols - 2),
        "a charm landed on an end bar, where the clasp yoke is");
 
-assert(charm_mount == "ball" || charm_mount == "screw",
-       "charm_mount is either \"ball\" or \"screw\"");
+assert(charm_mount == "ball" || charm_mount == "screw" || charm_mount == "h",
+       "charm_mount is \"ball\", \"screw\" or \"h\"");
+
+// The H-pin's pocket runs ACROSS the bar: `hp_slot_x` of the 6.0 mm along the
+// band, the rest left as wall either side; the full chamber width across it,
+// well inside the band's width; and `hp_floor` of bar under it, so the first
+// layer never sees it. It stays inside |x| < h - 1.0 too, where the knuckle
+// arms begin, so it cuts nothing but plain bar.
+hp_wall_bar = (body - hp_slot_x) / 2;                   // 1.45
+assert(charm_mount != "h" || hp_bar == thick,
+       str("the H-pin's pocket is drawn for a ", hp_bar, " mm bar but a bar is ",
+           thick, " thick"));
+assert(charm_mount != "h" || hp_wall_bar - ch_run >= 0.85,
+       str("only ", hp_wall_bar - ch_run, " mm of bar beside the pocket at the rim"));
+assert(charm_mount != "h" || hp_slot_x/2 < h - 1.0,
+       "the H-pin's pocket reaches the knuckle arms");
+assert(charm_mount != "h" || band_w/2 - hp_out >= 2.0,
+       str("only ", band_w/2 - hp_out, " mm of bar beyond the pocket's end"));
 
 // The screw mount takes material OUT of a bar instead of adding it, so the
 // wall it leaves is the thing to check. There is now only ONE number for it:
@@ -507,6 +529,12 @@ if (charms > 0 && charm_mount == "ball")
     echo(str(charms, " charm pin(s) on bar(s) ", charm_ix, " of ", cols,
              " — ball d", charm_ball, " standing ", charm_rise + charm_ball/2,
              " mm off the band", charms < 2 ? ""
+                 : str(", closest pair ", charm_sep * pitch, " mm apart")));
+if (charms > 0 && charm_mount == "h")
+    echo(str(charms, " H-pin pocket(s) in bar(s) ", charm_ix, " of ", cols,
+             " — ", hp_slot_x, " x ", 2*hp_out, " x ", hp_bar - hp_floor,
+             " deep, wall ", hp_wall_bar, " along the band, floor ", hp_floor,
+             charms < 2 ? ""
                  : str(", closest pair ", charm_sep * pitch, " mm apart")));
 if (charms > 0 && charm_mount == "screw")
     echo(str(charms, " screw hole(s) through bar(s) ", charm_ix, " of ", cols,
@@ -727,8 +755,23 @@ module charm_screw_seat(col) {
 // existed, in the same order, deliberately NOT wrapped in the difference() the
 // screw branch needs: at `charms = 0` its export has to stay byte-for-byte the
 // file the printed bracelet was cut from.
+// An H-pin station: the pocket, cut down from bar `col`'s top face, running
+// across the band.
+module charm_h_station(col) {
+    translate([col*pitch, band_cy, thick]) charm_h_pocket();
+}
+
 module bracelet() {
-    if (charm_mount == "screw")
+    if (charm_mount == "h")
+        difference() {
+            union() {
+                for (c = [0:cols-1]) bar(c);
+                clasp_stud();
+                clasp_keyhole();
+            }
+            for (c = charm_ix) charm_h_station(c);
+        }
+    else if (charm_mount == "screw")
         difference() {
             union() {
                 for (c = [0:cols-1]) bar(c);

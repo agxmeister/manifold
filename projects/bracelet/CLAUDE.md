@@ -3,6 +3,19 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
+## The default size is `wrist = 130` — the numbers below are mostly at 180
+
+Since 2026-09-22 the default is the 4-year-old's 130 mm wrist (printed and
+confirmed 2026-09-14): **11 bars, 150.5 × 17.6 mm, genus 31, 1807 mm² of first
+layer in 11 islands.** It exports byte-for-byte what used to be
+`exports/bracelet-bracelet-w130.stl`, and the old default is now
+`exports/bracelet-bracelet-w180.stl`.
+
+**Almost every band-level invariant in this file — 15 shells, genus 43, 2396
+mm², the downward-face and layer-step totals — was measured at `wrist = 180`
+and is still true there.** Reproduce any of them with `-D wrist=180`. Per-joint
+readings (probes, swing, displacement, clearances) do not depend on size.
+
 ## The one rule
 
 **Nothing may be cantilevered into air.** Every piece of material must either
@@ -23,19 +36,20 @@ bought nothing.
 **knuckle clusters** spaced along each joint, which is what stops a wide bar
 twisting about a single pin.
 
-## Eight models, one library, `cols` shells
+## Ten models, one library, `cols` shells
 
 `models/bracelet/bracelet.scad` is the bracelet, and every dimension of the band
-is at the top of it. `lib/charm-pin.scad` holds BOTH charm mounts — the
-ball-and-socket and the screw and its threads — plus the two cutters the charms
-engrave with. There are six charms: `flower`, `heart`, `kitten`, `puppy`, `frog`
-on the ball mount and `star` on the screw mount, each its own model folder, and
-`charm-screw` is the loose screw itself. The lib draws nothing — variables,
+is at the top of it. `lib/charm-pin.scad` holds ALL THREE charm mounts — the
+ball-and-socket, the screw and its threads, and the H-pin — plus the cutters the
+charms engrave with. There are seven charms: `flower`, `heart`, `kitten`,
+`puppy`, `frog` on the ball mount, `star` on the screw mount and `butterfly` on
+the H-pin, each its own model folder; `charm-screw` and `charm-h-pin` are the
+loose connectors themselves. The lib draws nothing — variables,
 functions and modules only — so every model `include`s it.
 
-**The two mounts are exclusive per band**, chosen by `charm_mount` in
+**The mounts are exclusive per band**, chosen by `charm_mount` in
 `bracelet.scad`: `"ball"` (default, and what was printed) grows a fused pin,
-`"screw"` cuts a threaded hole through the bar instead. The `"ball"` branch of
+`"screw"` cuts a threaded hole through the bar, `"h"` sinks a pocket into it. The `"ball"` branch of
 `module bracelet()` is deliberately written out in full rather than sharing the
 `difference()` the screw branch needs — that is what keeps the default export
 byte-for-byte identical.
@@ -45,6 +59,7 @@ has to prove it changed nothing.** All of these must come back `IDENTICAL`:
 
 ```sh
 openscad -o /tmp/b.stl models/bracelet/bracelet.scad && cmp /tmp/b.stl exports/bracelet-bracelet.stl
+openscad -o /tmp/b180.stl -D wrist=180 models/bracelet/bracelet.scad && cmp /tmp/b180.stl exports/bracelet-bracelet-w180.stl
 for c in flower heart kitten puppy frog; do
   openscad -o /tmp/$c.stl models/$c-charm/$c-charm.scad \
       && cmp /tmp/$c.stl exports/$c-charm-$c-charm.stl && echo "$c IDENTICAL"
@@ -55,13 +70,15 @@ Adding to the lib is fine — a function or a module that nothing calls draws
 nothing. Touching any existing number in it is re-opening a settled fit.
 
 **Everything the lib defines is named `charm_*` / `ball_*` / `neck_*` / `cav_*`
-/ `mouth_*` / `sock_*` for the ball mount, and `scr_*` for the screw.** That is
+/ `mouth_*` / `sock_*` for the ball mount, `scr_*` for the screw and `hp_*` for
+the H-pin.** That is
 not tidiness: this file already has a `pin_d`, `pin_r`, `pin_z` and `pin_flat`,
 and they are the HINGE pin. A third thing called a pin in the same namespace is
 how a silent shadowing bug gets written — which is why the screw is `scr_*`
 throughout and never `pin_*`.
 
-The bracelet export must be **`cols` shells** — 15 at the default size — one per bar,
+The bracelet export must be **`cols` shells** — 11 at the default size, 15 at
+180 — one per bar,
 with the two clasp plates fused onto the end bars. Anything else means a piece
 came free; see the detent trap below.
 
@@ -75,7 +92,7 @@ memorising. OpenSCAD reports `1 - p + sum(genus)`:
 | fork loops — body → lug → pin → lug → body encloses a hole | `rows * (cols-1)` | 28 |
 | keyhole plate (entry + slot + seat + both relief slots, all merged) | 1 | 1 |
 
-`1 - cols + (2*rows*(cols-1) + 1)` = **43** at the default, and it holds at
+`1 - cols + (2*rows*(cols-1) + 1)` = **31** at the default (43 at 180), and it holds at
 every `wrist` from 120 to 230 and at `rows = 3` (71). Note the last row: **the
 relief slots run into the entry hole**, so the keyhole is one hole, not three.
 One extra hole means a relief has stopped reaching the entry hole and the
@@ -103,8 +120,8 @@ everything must come out **unchanged**:
 
 - **`charms = 0` must export byte-for-byte the plain band** in
   `exports/bracelet-bracelet.stl`. Cheapest regression test here. (Since the
-  2026-09-22 clasp rework that file is the NEW clasp, which is not yet printed —
-  see "The clasp" below. The band's bars are unchanged.)
+  2026-09-22 clasp rework that file is the NEW clasp, printed and confirmed
+  2026-09-23 — see "The clasp" below. The band's bars are unchanged.)
 - **Shell count `cols` and genus 43 are unchanged at any `charms`.** A pin adds
   no piece and no hole. 15 + n shells means a pin missed its bar.
 - **The first layer is unchanged** — 2396 mm² across 15 islands (2338 before
@@ -436,6 +453,109 @@ translate([0, 0, seat + 0.02 + s*scr_pitch*a/360]) rotate([0, 0, a]) ...
   NOTHING — and a whole sweep comes back "empty", which is the §4 trap wearing a
   different hat. Pass `-D 'charm_mount="screw"'` literally on each command, and
   never trust a sweep whose control does not go solid.
+
+## The H-pin mount — printed and confirmed 2026-09-23
+
+Asked for on 2026-09-22 ("an H type pin... legs should have small hooks on
+their ends... Middle part of the H also should be recessed into the
+bracelet"), then revised the same day: **upper half as short as the lower**,
+**a less tall charm**, **charms printed bottom down so they can be 3D**. `hp_*`
+in the lib, `charm_mount = "h"`, `models/charm-h-pin`, `models/butterfly-charm`.
+**Printed and confirmed by the user on 2026-09-23** ("It printed well"), band,
+pin and butterfly together. So the crossbar spring, the mixed hook directions,
+the 45°/55° catches and the gabled charm holes are proven on a plate now, like
+the fits (0.15 lateral, 0.15 vertical play) they borrowed from the other
+mounts. Treat them the same way: do not move them without a reason.
+
+**The decisions that shape it, and none is free to undo:**
+
+1. **The H prints LYING FLAT** — `linear_extrude(hp_t) hp_pin_2d()`. Hooks are
+   outline corners; zero overhang.
+2. **Both halves are the same length (3.45), so NEITHER leg can be the
+   spring.** The legs TURN about the crossbar's middle and the CROSSBAR bends:
+   `hp_strain_cb` = turn·depth/length = 2.2 %, set by the bar side (shorter
+   lever, `hp_arm_lo` 1.81 vs `hp_arm_up` 3.21). Each hole has room on the side
+   a turning leg's END swings to: `hp_room_lo` INSIDE the lower legs (bar),
+   `hp_room_up` OUTSIDE the upper legs (charm).
+3. **The upper hooks point IN, the lower ones OUT — do not "tidy" them into
+   matching.** Turning moves a leg's ends opposite ways. With all hooks out,
+   fitting the charm (upper hooks forced one way) drives the lower hooks up
+   into their shoulders and JAMS. Mixed, fitting the charm eases the lower hooks
+   off their shoulders and they spring back. Insertion order is pin first,
+   charm second.
+4. **Two catch angles, each forced by its part's print orientation.** Bar
+   prints upright → its shoulder is a ceiling → 45°, descending away from the
+   slot. The self-locking reverse barb (shoulder rising outward) is
+   UNPRINTABLE there — it starts as a free edge over the chamber — and was
+   rejected; do not re-propose it. The charm prints BOTTOM DOWN → its shoulder
+   is a floor → `hp_catch_up` = 55°, what makes the charm hold. Asserted 45–60:
+   past ~60 friction locks it on for good. The pin is held in the bar only
+   because the charm stops the legs turning.
+5. **The charm's hole ends are ceilings now, so they are GABLED** (45°, ridge
+   along u, `hp_apex` 5.20). The chamber's roof follows the hook's lead-in, the
+   material growing out from the chamber's inner wall. Its FLOOR is the
+   shoulder. Nothing in the hole is a flat ceiling.
+
+**Invariants at `charm_mount = "h"`, `charms = 3`:**
+
+- Default (130): 11 shells, **genus 31**, **1807 mm² in 11 islands** —
+  identical to the plain band; 46 BRIDGE regions against the plain band's 40
+  (the six pocket shoulders). At 180 the same holds as 15 / 43 / 2396.
+- Ray probes at a station (start OUTSIDE the part or the solid/air labels
+  invert — an along-band ray from inside a knuckle does exactly that): along
+  the band 1.450 wall | 3.100 pocket | 1.450 wall, 0.99 at z = 4.4 (the rim);
+  vertical through a leg slot `SOLID 0.800`; through a chamber (`y = cy + 5.5`)
+  `0.800 | air 1.485 | 2.165`; between the legs `SOLID 3.450`.
+- Pin: 1 shell, 11.1 × 6.9 × 2.8, 22 mm² of bed, **zero** downward faces. The
+  wall check flags 0.80 (crossbar) and 1.00 (legs) — meant.
+- Butterfly: 1 shell, genus 0, 16.1 × 18.4 × 7.0, 146 mm² in one island.
+  `check_overhangs.py` clean. Measured off the mesh (`asin(|nz|)`): the gables
+  at 44–45.5° (z 3.6–5.2), wing relief 43.6°, head/ridge/antennae < 40°,
+  **nothing past 45.5°**. Thinnest wall 1.19, the roof over each gable's far
+  end — why `body_top` carries +0.1.
+- `cmp`: all ball charms, the star, the screw, the default band (== old w130)
+  and `-D wrist=180` (== `-w180`): IDENTICAL.
+
+**The joint harness** (band include made absolute, `bracelet();` stripped;
+`charm_on(dz)` = `translate([X, band_cy, thick + dz]) butterfly_charm()` — no
+flip, it prints as it sits; `pin_on(dz)` = `charm_h_pin()` at `thick + dz`):
+
+| test | reads |
+|---|---|
+| bar ∩ pin, seated | 0.0000 mm³ — crossbar ON its slot floor, the stop |
+| bar ∩ pin, dz +0.10 / +0.25 (control) / −0.05 (control) | empty / solid / solid |
+| bar ∩ pin, dz +0.05, dx 0.12 / 0.20 | empty / solid |
+| charm ∩ pin, seated; dz +0.10; dx or dy ±0.12 | empty |
+| charm ∩ pin, dz +0.25, dz −0.25, dy 0.20, dx 0.20 (controls) | solid |
+| charm ∩ band, seated / dz −0.3 | 0.0000 (bottom on the bar top) / solid |
+| swing a neighbour, charm seated, wrist 130 and 180 | clear to ±40°, HIT at 60° |
+
+Test lateral play on the bar side with the pin LIFTED off its stop (dz 0.05),
+or the stop's coincident sliver reads as contact at every dx.
+
+**The butterfly's bottom stays within |x| ≤ `x0` = 5.0.** Not the star's r =
+5.8 disc: that disc only reached x = 5.08 at the knuckle clusters' edge, and
+this charm is long across the band, right over the clusters. Beyond it the
+wings' undersides rise at 43.6° (`relief` = 1.05) — NOT 45 exactly: faces on
+the threshold flicker, and `check_overhangs.py` split one clean ramp into a
+"ramp" and a phantom "bridge" 2 mm up.
+
+**Traps this round hit:**
+
+- **A closing pass over the WHOLE H fills every catch root** (a concave
+  corner) by ~0.03 mm and eats the hooks' clearance. The fillet is clipped to
+  the crossbar band; `hp_recess` ≥ `hp_fillet` keeps it under the charm's seat.
+- **`scale(r) circle(1)` takes its facet count from r = 1** — 21 sides on a
+  4.7 mm wing. The wings set `$fn`.
+- **`use <>` carries neither `$fa`/`$fs` nor the file's top-level
+  variables.** A harness drew the wings as pentagons, and `height` came
+  through `undef`. Put `$fa`/`$fs` in every harness; recompute dimensions from
+  lib variables.
+- **A spot cutter carried on above a tilted surface keeps widening** and bit
+  scoops out of the body beside it. Cone to the surface, then straight up.
+- **A gable started 0.01 below the eaves leaves a 0.01 mm ledge** along each
+  eave — 0.07 mm² of flat ceiling, found only by the direct angle scan. The
+  gable's walls are carried a millimetre down into the hole instead.
 
 ## The ball joint: two no-ops that both export a plain sphere
 
@@ -781,12 +901,14 @@ test can detect anything at all. A wrist needs 24°.
 - **`tip_wall` = 1.8**, the plate left beyond the keyhole seat. It carries the
   entire clasp load. An earlier version left 0.8 mm there.
 
-## The clasp — reworked 2026-09-22, NOT YET PRINTED
+## The clasp — reworked 2026-09-22, printed and confirmed 2026-09-23
 
 The user asked for "the buckle as short as possible", "the fastener more
 tight" and "the pin of the fastener thicker — to make it less fragile". The
-stud-and-keyhole principle is unchanged; its numbers are not, and none of the
-new ones has been on a plate yet. What changed, and what each is pinned by:
+stud-and-keyhole principle is unchanged; its numbers are not. **All of them
+went on a plate on 2026-09-23, with the H-pin print, and it printed well** — so
+they are proven now, like the rest of the band. What changed, and what each is
+pinned by:
 
 - **`post_d` 3.0 → 4.0** (2.4× the bending strength). Everything the post sizes
   is now derived from it: `slot_w` = post + 2·`slot_fit` (0.15, the printed
@@ -875,7 +997,7 @@ exactly at dx 0.
    changed: connectivity (1 piece), wall thickness (≥ 1.30 mm on all five),
    bed stability (1 island, 126–155 mm²), overhangs (nothing but the puppy's
    nose flat), the snap walk in §4's charm harness, and a right-side-up render.
-1. Export; read **genus (43)** and the **shell count (15)** — and confirm the
+1. Export; read **genus (31; 43 at 180)** and the **shell count (11; 15 at 180)** — and confirm the
    formula still holds at `rows = 3` and across a `wrist` sweep. The sweep also
    checks the pitch solver: every size must echo `loop` = `wrist + ease`
    exactly and a pitch inside its bounds.

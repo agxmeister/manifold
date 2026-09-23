@@ -4,9 +4,10 @@ A bracelet made of **printed 3D fabric**: a row of rigid bars joined by
 print-in-place **hinges**. It comes off the bed as a band that rolls up around
 a wrist, and nothing is assembled, glued, or picked out of supports.
 
-**Sized to the wrist it is printed for — a 192 mm loop on a 180 mm wrist,
-15 bars, printed flat in a 200.5 × 17.6 × 4.7 mm strip.** The clasp is the same
-short buckle at every size; length is band, not plate.
+**Sized to the wrist it is printed for — by default a 142 mm loop on a
+130 mm wrist (the 4-year-old it was printed for, and fits), 11 bars, printed
+flat in a 150.5 × 17.6 × 4.7 mm strip.** `-D wrist=180` is the adult size.
+The clasp is the same short buckle at every size; length is band, not plate.
 
 ![the bracelet as it comes off the bed](previews/bracelet-bracelet.png)
 
@@ -106,7 +107,8 @@ underside is cut flat so its first layer is **1.20 mm** wide instead of a knife
 edge, and the knuckle caps are **not plain discs** — see below.
 
 The hinge swings freely through **±100°** and only binds at 110°. Wrapping a
-180 mm wrist over 15 bars needs 24°.
+180 mm wrist over 15 bars needs 24°; a 130 mm wrist over 11 bars needs a
+little more, still far inside the swing.
 
 ### The knuckle cap is a chord, not a disc
 
@@ -209,8 +211,9 @@ visibly drooped, and neither automated check ever saw that cap (see
 `CLAUDE.md` — it took looking at the model in a slicer). The ray probes above
 are what prove the anchors are real.
 
-Bed stability: **15 separate contact patches**, 2396 mm² of first layer — one
-per bar, with the two clasp plates fused onto the end bars. Each patch is a
+Bed stability: **one separate contact patch per bar** — 11 and 1807 mm² of
+first layer at the default size, 15 and 2396 mm² at `wrist=180` — with the two
+clasp plates fused onto the end bars. Each patch is a
 full-width bar foot, so there is far more of it than the old tile grid had.
 
 ## Charms
@@ -240,9 +243,9 @@ so any charm fits any station, and each one is its own five-minute print.
 **A bar's top is the best mounting face in the project**: flat, horizontal,
 5.0 × 16.6 mm inside the chamfer, and solid all the way down to the plate. So
 the pin is a plain vertical stalk. It adds nothing to the footprint, no
-overhang, no layer step — measured, not assumed: with three charms the export
-is still 15 shells and genus 43, still 2338 mm² of first layer across 15
-islands, still 0.00 mm² of downward surface past 45° below z = 0.7, and the
+overhang, no layer step — measured, not assumed (at the 180 size): with three
+charms the export is still 15 shells and genus 43, still 2338 mm² of first
+layer across 15 islands, still 0.00 mm² of downward surface past 45° below z = 0.7, and the
 layer-step raster is **identical** to the plain bracelet's. The rule at the top
 of this README is not even tested by it.
 
@@ -580,31 +583,131 @@ confirmed**. So the 35° countersink, the r = 5.8 flat bottom and the 41° groov
 roof of a mouth-down thread are all proven on a real plate now, and so is
 everything else on this page.
 
+## The H-pin mount
+
+A third way to hang a charm, and the only one **snapped on at both ends**.
+**Printed and confirmed on 2026-09-23** ("It printed well") — the band with
+its pockets, the pin and the 3D butterfly, on the same print as the reworked
+clasp.
+
+![a butterfly on its H-pin, and a pin over an empty pocket](previews/bracelet-bracelet-c3-h.png)
+
+The pin is a flat **H**: two upright legs joined by a crossbar, a small hook on
+the end of every leg. A bar gets a **pocket** sunk into its top instead of a
+pin or a hole. The lower half of the H pushes down into the pocket until the
+crossbar bottoms out, and the lower hooks snap under shoulders at its foot. The
+charm then pushes down over the upper half and the upper hooks snap into it.
+The crossbar ends up **sunk 0.3 mm into the bar**, so the charm comes down flat
+onto the bar and the pin is not on show anywhere.
+
+```
+  charm  |<   >|    upper hooks point IN, into the charm's two holes
+  -------|=====|--- bar top: the crossbar sits just below it
+  bar    |>   <|    lower hooks point OUT, under 45° shoulders in the pocket
+```
+
+**The two halves are the same length** — 3.45 mm each side of the bar's top
+face — so the pin is 11.1 × 6.9 × 2.8 mm. Tell them apart by the hooks: the
+half whose hooks point **out** goes into the bracelet.
+
+`charm_mount = "h"` in `bracelet.scad` cuts the pockets; `models/charm-h-pin`
+is the pin and `models/butterfly-charm` is the charm built for it.
+
+### The H prints lying flat, so its hooks are free
+
+The whole pin is a 2D outline extruded 2.8 mm straight up. Its hooks are just
+corners of that outline, so nothing on it overhangs, and the one part that
+flexes flexes **in the plane of the bed**, along its perimeters.
+
+### The crossbar is the spring, for both halves
+
+Both halves are far too short to bend — a 3.45 mm leg flexed 0.4 mm would
+strain ~6–15 %. So the legs do not bend, they **turn**, and the crossbar bends
+in an arc between them: **2.2 % strain** at worst, under the 2.9 % the clasp's
+printed leaf runs at. The crossbar carries none of the pull, which goes
+straight down the legs.
+
+That is why the upper hooks point the other way. Turning a leg moves its two
+ends in opposite directions. Pushing the pin into the bar squeezes the lower
+hooks in and the upper legs splay out — freely, there is no charm yet. Pushing
+the charm on then splays the upper legs out again, which swings the lower ends
+**in**: with the lower hooks pointing out, that eases them off their shoulders
+a little, and they spring home as the charm snaps. Had all four hooks pointed
+out, fitting the charm would have driven the lower hooks up into their
+shoulders and jammed.
+
+So: **pin into the bracelet first, then the charm onto the pin.**
+
+### The two catches are different angles, and that is on purpose
+
+- **In the bar, 45°.** The bar prints upright, so the shoulder a lower hook
+  catches under faces down — a ceiling — and this project prints no flat
+  ceilings. 45° is only a detent, but it never has to be more: the lower hooks
+  can only let go by turning the legs, and while a charm is on, the charm
+  holds the upper legs still. **The pin cannot leave the bar with a charm on
+  it.**
+- **In the charm, 55°.** The charm prints bottom down, so the shoulder its
+  hooks catch on is a *floor* and can be any angle. A steeper catch is what
+  makes the charm **hold**: it takes a firm tug (roughly 25–55 N, depending on
+  the plastic's friction) to pull it off. `hp_catch_up` is the one number to
+  tune — 45 makes the charm easy to pull off; past 60 friction locks it on for
+  good, which is asserted against.
+
+### What it costs the band
+
+Nothing it prints with. The pocket is 3.1 mm along the band and 11.4 mm across
+it, 3.65 deep, leaving 1.45 mm of wall either side (0.99 at the chamfered rim)
+and **0.8 mm of floor**. So the first layer is identical to the plain band
+(1807 mm² over 11 bars at the default size), the genus is unchanged and it is
+still one shell per bar. The only new overhangs are the pockets' 45° shoulders.
+
+### The butterfly — a 3D charm
+
+It prints **bottom down**: the face that lands on the bracelet is the face that
+lands on the bed. That is what lets it be a solid thing rather than a flat
+plate. A raised, rounded **body** runs across the band with a head and two
+antennae at the front, and the **wings lift away from it in a shallow V**, with
+a spot sunk into each one.
+
+- The body is where the pin goes: its two holes open on the bed, and their far
+  ends have **pointed 45° roofs**, since a flat one would be a ceiling. 6.5 mm
+  tall, it stands 7.0 off the band's top at the antennae — against 8.8 for the
+  ball charms.
+- The wings' **undersides rise at 43.6°** beyond |x| = 5 mm, so every layer
+  lands on the one below (the star's trick, in a V). That also keeps them
+  clear of the neighbouring hinges, whose arms tilt up above the band as a
+  joint turns: with a butterfly seated, the neighbours swing clear to **±40°**
+  at both 130 and 180 and bind at 60 (a wrist needs about 24°).
+- 15.8 mm wingspan along the band; 18.4 mm across it with the head and
+  antennae. It cannot swivel — two legs hold it square.
+
 ## Models and parts
 
 ```
 projects/bracelet/
-├── lib/charm-pin.scad                    # both mounts — the ball-and-socket, the
-│                                         #   screw and its threads, and the two
-│                                         #   cutters every charm engraves with
+├── lib/charm-pin.scad                    # all three mounts — the ball-and-socket,
+│                                         #   the screw and its threads, the H-pin —
+│                                         #   and the cutters charms engrave with
 └── models/
     ├── bracelet/bracelet.scad            # the whole bracelet — one printed object
     ├── charm-screw/charm-screw.scad      # the loose double-ended screw
-    ├── flower-charm/flower-charm.scad    # and six charms, each printed separately
+    ├── charm-h-pin/charm-h-pin.scad      # the loose H-shaped pin
+    ├── flower-charm/flower-charm.scad    # and seven charms, each printed separately
     ├── heart-charm/heart-charm.scad
     ├── kitten-charm/kitten-charm.scad
     ├── puppy-charm/puppy-charm.scad
     ├── frog-charm/frog-charm.scad
-    └── star-charm/star-charm.scad        # the one that screws on
+    ├── star-charm/star-charm.scad        # the one that screws on
+    └── butterfly-charm/butterfly-charm.scad  # the one that snaps onto an H-pin
 ```
 
-The bracelet exports as **15 separate shells** — one per bar, with the clasp
-plates fused onto the two end bars. They are not supposed to touch. Every charm
+The bracelet exports as **one separate shell per bar** — 11 at the default
+size, 15 at `wrist=180` — with the clasp plates fused onto the two end bars. They are not supposed to touch. Every charm
 exports as one piece.
 
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
-| `bracelet` | `bracelet` | 200.5 × 17.6 × 4.7 mm (10.25 with charm pins) | all 15 bars' own flat feet |
+| `bracelet` | `bracelet` | 150.5 × 17.6 × 4.7 mm (10.25 with charm pins) | all 11 bars' own flat feet |
 | `flower-charm` | `flower-charm` | 16.0 × 14.3 × 7.2 mm | its own face, 131 mm² in one piece |
 | `heart-charm` | `heart-charm` | 15.7 × 13.9 × 7.2 mm | its own face, 138 mm² in one piece |
 | `kitten-charm` | `kitten-charm` | 12.0 × 15.6 × 7.2 mm | its own face, 126 mm² in one piece |
@@ -612,11 +715,15 @@ exports as one piece.
 | `frog-charm` | `frog-charm` | 15.8 × 13.6 × 7.2 mm | its own face, 155 mm² in one piece |
 | `star-charm` | `star-charm` | 14.7 × 15.3 × 7.3 mm | its flat side, 61 mm² in one piece |
 | `charm-screw` | `charm-screw` | 5.5 × 9.5 × 3.8 mm | the flat along its shaft, 22 mm² |
+| `butterfly-charm` | `butterfly-charm` | 16.1 × 18.4 × 7.0 mm | its own bottom, 146 mm² in one piece |
+| `charm-h-pin` | `charm-h-pin` | 11.1 × 6.9 × 2.8 mm | its own face, 22 mm² |
 
-The last two are the screw mount; the five above them are the ball mount. No
-charm may exceed **16 mm** in either direction — that is `charm_reach` in
-`bracelet.scad`, the number the station spacing is checked against, and each
-charm asserts its own size against it.
+The last two are the H-pin mount, the two above them the screw mount, and the
+five above those the ball mount. No charm may exceed **16 mm** along the band
+— that is `charm_reach` in `bracelet.scad`, the number the station spacing is
+checked against, and each charm asserts its own size against it. The ball and
+screw charms can turn, so for them that means 16 mm in every direction; the
+butterfly cannot, so only its wingspan counts.
 
 ## Sizing
 
@@ -644,10 +751,10 @@ the band's width does not wander when the length solver breathes the joints.
 
 | `wrist` | bars | loop, clasped | joint pitch | printed footprint |
 |---|---|---|---|---|
-| 130 (4-year-old) | 11 | 142.0 mm | 11.88 mm | 150.5 × 17.6 mm |
+| **130 (default, 4-year-old)** | **11** | **142.0 mm** | **11.88 mm** | **150.5 × 17.6 mm** |
 | 140 (child) | 12 | 152.0 mm | 11.71 mm | 160.5 × 17.6 mm |
 | 160 | 14 | 172.0 mm | 11.44 mm | 180.5 × 17.6 mm |
-| **180 (default, adult)** | **15** | **192.0 mm** | **12.05 mm** | **200.5 × 17.6 mm** |
+| 180 (adult) | 15 | 192.0 mm | 12.05 mm | 200.5 × 17.6 mm |
 | 200 | 17 | 212.0 mm | 11.80 mm | 220.5 × 17.6 mm |
 | 180, `rows=3` | 15 | 192.0 mm | 12.05 mm | 200.5 × 29.2 mm |
 
@@ -675,6 +782,9 @@ asserted at the printed leaf's 2.9 %), `head_gap` for how tight it sits, and
 ```sh
 openscad -o projects/bracelet/exports/bracelet-bracelet.stl \
          projects/bracelet/models/bracelet/bracelet.scad
+openscad -D wrist=180 \
+         -o projects/bracelet/exports/bracelet-bracelet-w180.stl \
+         projects/bracelet/models/bracelet/bracelet.scad
 openscad -D charms=3 \
          -o projects/bracelet/exports/bracelet-bracelet-c3.stl \
          projects/bracelet/models/bracelet/bracelet.scad
@@ -690,6 +800,16 @@ openscad -D charm_mount='"screw"' -D charms=3 \
 openscad -D copies=6 \
          -o projects/bracelet/exports/charm-screw-charm-screw.stl \
          projects/bracelet/models/charm-screw/charm-screw.scad
+
+# the H-pin mount: a band with pockets, a batch of pins, and the butterfly
+openscad -D charm_mount='"h"' -D charms=3 \
+         -o projects/bracelet/exports/bracelet-bracelet-c3-h.stl \
+         projects/bracelet/models/bracelet/bracelet.scad
+openscad -D copies=6 \
+         -o projects/bracelet/exports/charm-h-pin-charm-h-pin.stl \
+         projects/bracelet/models/charm-h-pin/charm-h-pin.scad
+openscad -o projects/bracelet/exports/butterfly-charm-butterfly-charm.stl \
+         projects/bracelet/models/butterfly-charm/butterfly-charm.scad
 ```
 
 - **Lay it flat, exactly as modelled.** No rotation, no supports.
@@ -750,6 +870,27 @@ openscad -D copies=6 \
   all. Finger-tight is the whole range; there is nothing to torque against.
 - The star lands at whatever angle it seats at. If it matters, back it off a
   fraction rather than forcing it round.
+
+### The H-pin and the butterfly
+
+- **Print the pin lying flat, exactly as modelled** — no rotation, no supports,
+  no brim. It is 2.8 mm tall on 22 mm² of its own face; `-D copies=6` lays out
+  a batch, which exports as that many separate shells.
+- **Print the butterfly bottom down, exactly as modelled** — no rotation, no
+  supports, no brim. Unlike every other charm it is *not* face down: it stands
+  on the face that sits on the bracelet, 146 mm² of it.
+- **Same material and settings as the band**, and **three perimeters**: the
+  pin's crossbar is 0.8 mm and its legs 1.0 mm, exactly two lines each. The
+  crossbar is the spring and is meant to be thin; one fat perimeter would print
+  it as a single weak line.
+- The fits are the proven ones from the other mounts: 0.15 mm around the pin
+  in every slot, and 0.15 mm of play over each hook.
+- To assemble: push the pin's **outward-hooked** half straight down into the
+  pocket until the crossbar bottoms out — the upper legs splay as the hooks go
+  in and spring back when they snap. Then press the butterfly straight down
+  over the upper legs until its underside is flat on the bar.
+- To take the charm off, pull it straight up, firmly. The pin stays in the
+  bar; pull it separately if you want the bar bare.
 
 ## License
 
