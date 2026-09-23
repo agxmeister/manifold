@@ -765,7 +765,7 @@ hp_t      = 2.8;    // the H's thickness: its print height, and its extent
                     //   ALONG the band once assembled
 hp_leg_w  = 1.0;    // a leg, across
 hp_s      = 4.5;    // a leg's centre off the H's axis
-hp_cb_h   = 0.8;    // the crossbar, top to bottom — THE spring. Meant to be
+hp_cb_h   = 0.9;    // the crossbar, top to bottom — THE spring. Meant to be
                     //   under the 1.2 mm wall threshold, like the clasp's leaf.
 hp_recess = 0.3;    // how far the crossbar's top sits below the bar's top face
 hp_fillet = 0.3;    // inside corners where the crossbar meets a leg — the
@@ -773,7 +773,11 @@ hp_fillet = 0.3;    // inside corners where the crossbar meets a leg — the
                     //   below the charm's seat face (asserted).
 
 hp_hook   = 0.55;   // how far a hook stands out from its leg
-hp_lead   = 35;     // lead-in, degrees from vertical: steeper = easier in
+hp_lead   = 35;     // the LOWER hook's lead-in, degrees from vertical: steeper
+                    //   = easier in. (The upper one is whatever runs from its
+                    //   tip to the leg's top, `hp_lead_up`.)
+hp_under  = 1.0;    // charm left under the upper hooks' shoulders. The upper
+                    //   hooks sit as LOW as this allows — see "the spring"
 hp_tip    = 0.3;    // straight flat at the hook's edge, never a point
 hp_catch_up = 55;   // the UPPER catch, degrees from vertical. 45 = a light
                     //   detent (the charm pulls off easily); 55 needs a firm
@@ -804,13 +808,30 @@ hp_v_end  = hp_v_fl + hp_gap;                   // -3.45 — lower leg's end
 hp_v_lt   = hp_v_end + hp_lr + hp_tip;          // -2.36 — lower hook's tip top
 hp_v_lc   = hp_v_lt + hp_hook;                  // -1.81 — lower catch meets leg
 hp_v_top  = -hp_v_end;                          //  3.45 — AS SHORT AS THE BOTTOM
-hp_v_ut   = hp_v_top - hp_lr - hp_tip;          //  2.36 — upper hook's tip bottom
-hp_v_uc   = hp_v_ut - hp_cr;                    //  1.98 — upper catch meets leg
+hp_v_uc   = hp_under + hp_vfit;                 //  1.15 — upper catch meets leg
+hp_v_ut   = hp_v_uc + hp_cr;                    //  1.54 — upper hook's tip bottom
+hp_lr_up  = hp_v_top - hp_v_ut - hp_tip;        //  1.61 — its lead-in, tip to leg top
+hp_lead_up = atan(hp_hook / hp_lr_up);          //  19 deg from vertical
 
 // The spring. The legs turn about the crossbar's middle and the crossbar bends
 // in a pure arc, strain = angle * depth / length. Going into the bar the lever
 // is the short one (pivot -> lower hook), so that insertion sets the strain;
 // going into the charm the lever is longer and the turn smaller.
+//
+// THE LEVERS DECIDE HOW FIRMLY EACH HALF HOLDS. A hook feels the crossbar's
+// moment over its lever, and the turn is its travel over the same lever, so
+// its force goes as cb_h^3 / lever^2. The crossbar has to stay in the bar, so
+// the pivot is below the seat and the charm's lever is always the longer one.
+// Until 2026-09-23 the upper hooks sat at the top of their legs, on a 3.21
+// lever against the bar's 1.81, and held with a third of the bar's force: the
+// charm felt loose on a real print. They now sit as low as `hp_under` allows,
+// with a long gentle lead-in above them up to the leg's top (the leg is still
+// as long as the bottom one), which cuts the lever to 2.44.
+//
+// THE CHARM'S LEVER MUST STAY THE LONGER ONE. Pulling the charm off turns the
+// legs the way that also lets the lower hooks go. The longer lever turns
+// less for the same hook travel, so the charm lets go while the lower hooks
+// still overlap their shoulders by `hp_keep` — and the pin stays in the bar.
 hp_pivot  = (hp_cb_top + hp_cb_bot)/2;
 hp_arm_lo = hp_pivot - (hp_v_end + hp_lr + hp_tip/2);
 hp_arm_up = (hp_v_ut + hp_tip/2) - hp_pivot;
@@ -822,7 +843,8 @@ hp_strain_cb = max(hp_turn_lo, hp_turn_up) * hp_cb_h / hp_cb_len;
 // on the side the end swings to: INSIDE the lower legs (bar), OUTSIDE the
 // upper legs (charm).
 hp_room_lo = hp_turn_lo * (hp_pivot - hp_v_end) + 0.1;   // 0.72
-hp_room_up = hp_turn_up * (hp_v_top - hp_pivot) + 0.1;   // 0.62
+hp_room_up = hp_turn_up * (hp_v_top - hp_pivot) + 0.1;   // 0.79
+hp_keep   = hp_defl - hp_turn_up * hp_arm_lo;             // 0.11
 
 hp_slot_x = hp_t + 2*hp_fit;                    // 3.10 — every slot, along the band
 hp_out    = hp_uo + hp_hook + hp_fit;           // 5.70 — a bar chamber's outer wall
@@ -839,8 +861,12 @@ assert(hp_catch_up >= 45 && hp_catch_up <= 60,
 assert(hp_v_lc < hp_cb_bot - 0.3,
        str("the lower hook runs into the crossbar: catch top ", hp_v_lc,
            ", crossbar bottom ", hp_cb_bot));
-assert(hp_v_uc - hp_vfit >= 1.0,
-       str("only ", hp_v_uc - hp_vfit, " mm of charm under the upper hooks' shoulders"));
+assert(hp_under >= 1.0,
+       str("only ", hp_under, " mm of charm under the upper hooks' shoulders"));
+assert(hp_lead_up < hp_lead + 1e-6, "the upper hook's lead-in is steeper to push past than the lower one's");
+assert(hp_keep >= 0.1,
+       str("the lower hooks hold only ", hp_keep, " mm when the charm lets go —",
+           " the pin would come out of the bar with the charm"));
 assert(hp_recess >= hp_fillet,
        "the crossbar's fillets stand above the bar's top face and into the charm");
 assert(hp_strain_cb <= 0.029,
@@ -862,7 +888,7 @@ function hp_leg_pts() = [
     [hp_uo,           hp_v_lc],                      // 45-degree catch
     [hp_uo,           hp_v_top],
     [hp_ui,           hp_v_top],
-    [hp_ui - hp_hook, hp_v_top - hp_lr],             // upper lead-in
+    [hp_ui - hp_hook, hp_v_ut + hp_tip],             // upper lead-in, to the top
     [hp_ui - hp_hook, hp_v_ut],                      // tip flat
     [hp_ui,           hp_v_uc],                      // `hp_catch_up` catch
 ];
@@ -938,6 +964,8 @@ function hp_charm_hole_pts() = [
     [hp_c_in,        hp_c_sh(hp_c_in)],
     [hp_ui - hp_fit, hp_c_sh(hp_ui - hp_fit)],
 ];
+assert(hp_c_rf(hp_ui - hp_fit) - (hp_v_ut + hp_tip + (hp_hook - hp_fit) * hp_lr_up / hp_hook)
+       >= hp_gap, "the charm's chamber roof comes down onto the hook's lead-in");
 assert(hp_c_rf(hp_c_in) - hp_c_sh(hp_c_in) >= 0.2,
        "the charm's chamber pinches shut at its inner wall");
 

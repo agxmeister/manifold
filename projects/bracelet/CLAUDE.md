@@ -454,7 +454,7 @@ translate([0, 0, seat + 0.02 + s*scr_pitch*a/360]) rotate([0, 0, a]) ...
   different hat. Pass `-D 'charm_mount="screw"'` literally on each command, and
   never trust a sweep whose control does not go solid.
 
-## The H-pin mount — printed and confirmed 2026-09-23
+## The H-pin mount — printed 2026-09-23; spring retuned the same day, unprinted
 
 Asked for on 2026-09-22 ("an H type pin... legs should have small hooks on
 their ends... Middle part of the H also should be recessed into the
@@ -462,7 +462,12 @@ bracelet"), then revised the same day: **upper half as short as the lower**,
 **a less tall charm**, **charms printed bottom down so they can be 3D**. `hp_*`
 in the lib, `charm_mount = "h"`, `models/charm-h-pin`, `models/butterfly-charm`.
 **Printed and confirmed by the user on 2026-09-23** ("It printed well"), band,
-pin and butterfly together. So the crossbar spring, the mixed hook directions,
+pin and butterfly together. The bar side "sits very well"; the charm side was
+"a bit loose". **Retuned the same day, NOT printed yet**: see "The retune"
+below. The layout is the user's and is fixed: **the crossbar entirely in the
+bar, only the legs' holes in the charm, the upper legs as long as the lower**.
+A symmetric H with the crossbar straddling the seat was built and REJECTED by
+the user for breaking that. Do not re-propose it. So the crossbar spring, the mixed hook directions,
 the 45°/55° catches and the gabled charm holes are proven on a plate now, like
 the fits (0.15 lateral, 0.15 vertical play) they borrowed from the other
 mounts. Treat them the same way: do not move them without a reason.
@@ -473,8 +478,8 @@ mounts. Treat them the same way: do not move them without a reason.
    outline corners; zero overhang.
 2. **Both halves are the same length (3.45), so NEITHER leg can be the
    spring.** The legs TURN about the crossbar's middle and the CROSSBAR bends:
-   `hp_strain_cb` = turn·depth/length = 2.2 %, set by the bar side (shorter
-   lever, `hp_arm_lo` 1.81 vs `hp_arm_up` 3.21). Each hole has room on the side
+   `hp_strain_cb` = turn·depth/length = 2.55 %, set by the bar side (shorter
+   lever, `hp_arm_lo` 1.76 vs `hp_arm_up` 2.44). Each hole has room on the side
    a turning leg's END swings to: `hp_room_lo` INSIDE the lower legs (bar),
    `hp_room_up` OUTSIDE the upper legs (charm).
 3. **The upper hooks point IN, the lower ones OUT — do not "tidy" them into
@@ -508,13 +513,46 @@ mounts. Treat them the same way: do not move them without a reason.
   `0.800 | air 1.485 | 2.165`; between the legs `SOLID 3.450`.
 - Pin: 1 shell, 11.1 × 6.9 × 2.8, 22 mm² of bed, **zero** downward faces. The
   wall check flags 0.80 (crossbar) and 1.00 (legs) — meant.
-- Butterfly: 1 shell, genus 0, 16.1 × 18.4 × 7.0, 146 mm² in one island.
+- Butterfly: 1 shell, genus 0, 16.1 × 18.6 × 7.0, 146 mm² in one island.
   `check_overhangs.py` clean. Measured off the mesh (`asin(|nz|)`): the gables
   at 44–45.5° (z 3.6–5.2), wing relief 43.6°, head/ridge/antennae < 40°,
   **nothing past 45.5°**. Thinnest wall 1.19, the roof over each gable's far
   end — why `body_top` carries +0.1.
 - `cmp`: all ball charms, the star, the screw, the default band (== old w130)
   and `-D wrist=180` (== `-w180`): IDENTICAL.
+
+**The retune (2026-09-23, unprinted).** The looseness was the LEVERS, not a
+fit. Hook force ∝ `hp_cb_h`³ / lever², and the charm's hooks sat at the leg
+tops on 3.21 against the bar's 1.81: 0.32 of the bar's force. Now:
+
+- **The upper hooks sit as LOW as `hp_under` = 1.0 allows** (catch at 1.15,
+  tip 1.54). The leg still runs to 3.45, and above the hook is one long lead-in,
+  `hp_lead_up` = 19° (gentler than the lower 35°, so the charm goes on more
+  easily). Lever 3.21 → 2.44.
+- **`hp_cb_h` 0.8 → 0.9.** Against the printed pin: charm ~2.5×, bar
+  insertion ~1.5×, strain 2.55 %. Setting 0.8 back restores the bar side
+  exactly and leaves the charm at ~1.7×.
+- **The charm's lever MUST stay the longer one.** Pulling the charm drives the
+  legs the same way that releases the bar's hooks. The longer lever turns
+  less for the same travel, so the charm clears first and `hp_keep` = 0.11 mm
+  of the bar's hook is still under its shoulder. This is asserted ≥ 0.1. That
+  is what bounds how low the upper hooks may go and how far the levers can be
+  evened. Equal levers would free both catches at once and let the pin leave
+  with the charm.
+- The charm's chamber roof still slopes at `hp_lead` 35°, NOT along the new
+  hook ramp. Following the 19° ramp pinches the chamber to 0.1 at its inner
+  wall. An assert checks that the roof clears the ramp by `hp_gap`.
+- Unchanged, and still byte-identical checks: bar pocket shape (only 0.1
+  deeper, for the thicker crossbar), 46 overhang regions / 1807 mm² / genus
+  31 at 130 and 60 / 2396 / 43 at 180, identical wall-check counts to the
+  printed version, the butterfly's single 1.19 roof point.
+
+Two harness rows are added for this: **bar ∩ a single leg turned by the
+charm's release angle (−9.41°), lifted 1.2 → solid** (the pin stays), and
+turned 1.03 × the bar's own angle (−12.99°), lifted 1.2 / 2.5 → empty. Lift
+it well clear. The shoulder is a 45° ceiling, and a hook swung under it sits
+under a higher part, so a lift of only `hp_vfit` reads empty whether or not
+it would hold.
 
 **The joint harness** (band include made absolute, `bracelet();` stripped;
 `charm_on(dz)` = `translate([X, band_cy, thick + dz]) butterfly_charm()` — no

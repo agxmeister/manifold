@@ -586,9 +586,11 @@ everything else on this page.
 ## The H-pin mount
 
 A third way to hang a charm, and the only one **snapped on at both ends**.
-**Printed and confirmed on 2026-09-23** ("It printed well") — the band with
-its pockets, the pin and the 3D butterfly, on the same print as the reworked
-clasp.
+The first version was **printed and confirmed on 2026-09-23** ("It printed
+well"), on the same print as the reworked clasp. It sat very well in the bar
+but a bit loose in the charm, so the pin's spring was **retuned the same
+day** (see *Why the charm was loose*). That version is **not printed yet**.
+The pin, the butterfly and the band's pockets all changed, slightly.
 
 ![a butterfly on its H-pin, and a pin over an empty pocket](previews/bracelet-bracelet-c3-h.png)
 
@@ -623,7 +625,7 @@ flexes flexes **in the plane of the bed**, along its perimeters.
 
 Both halves are far too short to bend — a 3.45 mm leg flexed 0.4 mm would
 strain ~6–15 %. So the legs do not bend, they **turn**, and the crossbar bends
-in an arc between them: **2.2 % strain** at worst, under the 2.9 % the clasp's
+in an arc between them: **2.55 % strain** at worst, under the 2.9 % the clasp's
 printed leaf runs at. The crossbar carries none of the pull, which goes
 straight down the legs.
 
@@ -638,6 +640,26 @@ shoulders and jammed.
 
 So: **pin into the bracelet first, then the charm onto the pin.**
 
+### Why the charm was loose
+
+The crossbar sits in the bar, so the legs turn about a point just below the
+bar's top face. The bar's hooks are close to that point and the charm's are
+far from it. A hook's grip goes as **1 / lever²**: the first pin had its charm
+hooks at the very top of their legs, on a 3.2 mm lever against the bar's
+1.8 mm, so the charm was held with about **a third** of the bar's force.
+
+The legs are still the same length each side, but the charm's hooks now sit
+**as low on them as the charm allows** (1 mm of charm under each catch), with a
+long, gentle 19° ramp from the hook up to the leg's end. That cuts their lever
+to 2.4 mm. The crossbar is also a little thicker, 0.9 mm instead of 0.8.
+Against the printed pin, the charm now holds about **2.5×** as firmly and the
+pin pushes into the bar about **1.5×** as firmly.
+
+The charm's lever is still deliberately the longer one. Pulling the charm off
+turns the legs the same way that frees the bar's hooks. With the longer lever,
+the charm's hooks clear first, while the bar's still overlap their shoulders
+by 0.11 mm, so the pin stays in the bar.
+
 ### The two catches are different angles, and that is on purpose
 
 - **In the bar, 45°.** The bar prints upright, so the shoulder a lower hook
@@ -648,10 +670,11 @@ So: **pin into the bracelet first, then the charm onto the pin.**
   it.**
 - **In the charm, 55°.** The charm prints bottom down, so the shoulder its
   hooks catch on is a *floor* and can be any angle. A steeper catch is what
-  makes the charm **hold**: it takes a firm tug (roughly 25–55 N, depending on
-  the plastic's friction) to pull it off. `hp_catch_up` is the one number to
-  tune — 45 makes the charm easy to pull off; past 60 friction locks it on for
-  good, which is asserted against.
+  makes the charm **hold**: it takes a firm tug to pull it off. `hp_catch_up`
+  is the number to tune: 45 makes the charm easy to pull off, and past 60
+  friction locks it on for good (an assert rejects that). If the charm is now
+  too firm, lower this. If the pin is too hard to push into the bar, set
+  `hp_cb_h` back to 0.8, which returns the bar side to exactly how it printed.
 
 ### What it costs the band
 
@@ -678,7 +701,7 @@ a spot sunk into each one.
   clear of the neighbouring hinges, whose arms tilt up above the band as a
   joint turns: with a butterfly seated, the neighbours swing clear to **±40°**
   at both 130 and 180 and bind at 60 (a wrist needs about 24°).
-- 15.8 mm wingspan along the band; 18.4 mm across it with the head and
+- 15.8 mm wingspan along the band; 18.6 mm across it with the head and
   antennae. It cannot swivel — two legs hold it square.
 
 ## Models and parts
@@ -715,7 +738,7 @@ exports as one piece.
 | `frog-charm` | `frog-charm` | 15.8 × 13.6 × 7.2 mm | its own face, 155 mm² in one piece |
 | `star-charm` | `star-charm` | 14.7 × 15.3 × 7.3 mm | its flat side, 61 mm² in one piece |
 | `charm-screw` | `charm-screw` | 5.5 × 9.5 × 3.8 mm | the flat along its shaft, 22 mm² |
-| `butterfly-charm` | `butterfly-charm` | 16.1 × 18.4 × 7.0 mm | its own bottom, 146 mm² in one piece |
+| `butterfly-charm` | `butterfly-charm` | 16.1 × 18.6 × 7.0 mm | its own bottom, 146 mm² in one piece |
 | `charm-h-pin` | `charm-h-pin` | 11.1 × 6.9 × 2.8 mm | its own face, 22 mm² |
 
 The last two are the H-pin mount, the two above them the screw mount, and the
@@ -880,7 +903,7 @@ openscad -o projects/bracelet/exports/butterfly-charm-butterfly-charm.stl \
   supports, no brim. Unlike every other charm it is *not* face down: it stands
   on the face that sits on the bracelet, 146 mm² of it.
 - **Same material and settings as the band**, and **three perimeters**: the
-  pin's crossbar is 0.8 mm and its legs 1.0 mm, exactly two lines each. The
+  pin's crossbar is 0.9 mm and its legs 1.0 mm, about two lines each. The
   crossbar is the spring and is meant to be thin; one fat perimeter would print
   it as a single weak line.
 - The fits are the proven ones from the other mounts: 0.15 mm around the pin
