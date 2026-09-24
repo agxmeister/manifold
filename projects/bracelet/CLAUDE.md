@@ -40,7 +40,7 @@ twisting about a single pin.
 
 `models/bracelet/bracelet.scad` is the bracelet, and every dimension of the band
 is at the top of it. `lib/charm-pin.scad` holds the charm mount — the H-pin,
-the pocket it snaps into and the holes a charm has for it. `models/charm-h-pin`
+the pocket it snaps into and the holes a charm has for it. `models/pin`
 is the loose pin and `models/butterfly-charm` the one charm. The lib draws
 nothing — variables, functions and modules only — so every model `include`s
 it.
@@ -65,7 +65,7 @@ touch them:
 openscad -o /tmp/b.stl models/bracelet/bracelet.scad && cmp /tmp/b.stl exports/bracelet-bracelet.stl
 openscad -o /tmp/b180.stl -D wrist=180 models/bracelet/bracelet.scad && cmp /tmp/b180.stl exports/bracelet-bracelet-w180.stl
 openscad -o /tmp/c3.stl -D charms=3 models/bracelet/bracelet.scad && cmp /tmp/c3.stl exports/bracelet-bracelet-c3.stl
-openscad -o /tmp/p.stl models/charm-h-pin/charm-h-pin.scad && cmp /tmp/p.stl exports/charm-h-pin-charm-h-pin.stl
+openscad -o /tmp/p.stl models/pin/pin.scad && cmp /tmp/p.stl exports/pin-pin.stl
 openscad -o /tmp/f.stl models/butterfly-charm/butterfly-charm.scad && cmp /tmp/f.stl exports/butterfly-charm-butterfly-charm.stl
 ```
 
@@ -132,7 +132,7 @@ Asked for on 2026-09-22 ("an H type pin... legs should have small hooks on
 their ends... Middle part of the H also should be recessed into the
 bracelet"), then revised the same day: **upper half as short as the lower**,
 **a less tall charm**, **charms printed bottom down so they can be 3D**. `hp_*`
-in the lib, `charms` in `bracelet.scad`, `models/charm-h-pin`, `models/butterfly-charm`.
+in the lib, `charms` in `bracelet.scad`, `models/pin`, `models/butterfly-charm`.
 **Printed and confirmed by the user on 2026-09-23** ("It printed well"), band,
 pin and butterfly together. The bar side "sits very well"; the charm side was
 "a bit loose". **Retuned the same day, NOT printed yet**: see "The retune"

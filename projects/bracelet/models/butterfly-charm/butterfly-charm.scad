@@ -1,6 +1,6 @@
 // butterfly-charm — a 3D butterfly, and the charm that goes with the H-PIN mount.
 //
-// It snaps onto the upper half of an H-shaped pin (models/charm-h-pin) whose
+// It snaps onto the upper half of an H-shaped pin (models/pin) whose
 // lower half is already snapped into a pocket in a bracelet bar.
 //
 // IT PRINTS SEAT DOWN — the face that lands on the bracelet is the face that

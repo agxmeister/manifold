@@ -253,7 +253,7 @@ onto the bar and the pin is not on show anywhere.
 face — so the pin is 11.1 × 6.9 × 2.8 mm. Tell them apart by the hooks: the
 half whose hooks point **out** goes into the bracelet.
 
-`charms` in `bracelet.scad` cuts the pockets; `models/charm-h-pin`
+`charms` in `bracelet.scad` cuts the pockets; `models/pin`
 is the pin and `models/butterfly-charm` is the charm built for it.
 
 ### The H prints lying flat, so its hooks are free
@@ -352,7 +352,7 @@ projects/bracelet/
 │                                         #   the bar and the holes in the charm
 └── models/
     ├── bracelet/bracelet.scad            # the whole bracelet — one printed object
-    ├── charm-h-pin/charm-h-pin.scad      # the loose H-shaped pin
+    ├── pin/pin.scad                      # the loose H-shaped pin
     └── butterfly-charm/butterfly-charm.scad  # the charm that snaps onto it
 ```
 
@@ -364,7 +364,7 @@ piece.
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
 | `bracelet` | `bracelet` | 150.5 × 17.6 × 4.7 mm | all 11 bars' own flat feet |
-| `charm-h-pin` | `charm-h-pin` | 11.1 × 6.9 × 2.8 mm | its own face, 24 mm² |
+| `pin` | `pin` | 11.1 × 6.9 × 2.8 mm | its own face, 24 mm² |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 18.6 × 7.0 mm | its own bottom, 146 mm² in one piece |
 
 No charm may exceed **16 mm** along the band — that is `charm_reach` in
@@ -435,8 +435,8 @@ openscad -D charms=3 \
          -o projects/bracelet/exports/bracelet-bracelet-c3.stl \
          projects/bracelet/models/bracelet/bracelet.scad
 openscad -D copies=6 \
-         -o projects/bracelet/exports/charm-h-pin-charm-h-pin.stl \
-         projects/bracelet/models/charm-h-pin/charm-h-pin.scad
+         -o projects/bracelet/exports/pin-pin.stl \
+         projects/bracelet/models/pin/pin.scad
 openscad -o projects/bracelet/exports/butterfly-charm-butterfly-charm.stl \
          projects/bracelet/models/butterfly-charm/butterfly-charm.scad
 ```

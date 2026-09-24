@@ -1,4 +1,4 @@
-// charm-h-pin — the loose H-shaped pin that snaps a charm onto a bracelet.
+// pin — the loose H-shaped pin that snaps a charm onto a bracelet.
 //
 // Two legs and a crossbar, a hook at every leg end. The lower half pushes
 // down into a pocket in a bracelet bar until the crossbar bottoms out and the
@@ -44,7 +44,7 @@ echo(str("hooks ", hp_hook, " (", hp_defl, " past the wall), lead-in ", hp_lead,
          "; crossbar ", hp_cb_h, " at ", 100*hp_strain_cb, "% strain; lower hooks keep ",
          hp_keep, " when the charm lets go"));
 
-module charm_h_pin_printed() linear_extrude(hp_t) hp_pin_2d();
+module pin_printed() linear_extrude(hp_t) hp_pin_2d();
 
 for (i = [0 : copies - 1])
-    translate([i * spacing, 0, 0]) charm_h_pin_printed();
+    translate([i * spacing, 0, 0]) pin_printed();

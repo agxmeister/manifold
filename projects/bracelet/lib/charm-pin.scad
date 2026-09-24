@@ -214,7 +214,7 @@ module hp_pin_2d() union() {
 // centred), y = u, z = v.
 module hp_stand(w) rotate([90, 0, 90]) linear_extrude(w, center = true) children();
 
-// The pin, ASSEMBLED: z = 0 is the bar's top face. models/charm-h-pin lays
+// The pin, ASSEMBLED: z = 0 is the bar's top face. models/pin lays
 // it flat for printing.
 module charm_h_pin() hp_stand(hp_t) hp_pin_2d();
 

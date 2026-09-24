@@ -380,7 +380,7 @@ x_det   = x_lock + det_off;
 
 // --------------------------------------------------------------- the charms
 // OPTIONAL. `charms` bars along the band get a POCKET sunk into their top face.
-// A loose H-shaped pin (models/charm-h-pin) snaps down into it with the hooks
+// A loose H-shaped pin (models/pin) snaps down into it with the hooks
 // on its lower legs, its crossbar sinks just under the bar's top, and the
 // charm (models/butterfly-charm) snaps onto the upper legs. See the lib. Leave
 // it at 0 and the bracelet is exactly the plain band.
