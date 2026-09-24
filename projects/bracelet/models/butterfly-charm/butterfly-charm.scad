@@ -12,26 +12,25 @@
 //   * the body's sides are vertical and its top closes inward;
 //   * the wings' tops rise outward — a top surface — and their undersides are
 //     relieved just inside 45 degrees outside `x0`, so every layer lands on
-//     the one below (the star's trick, turned into a V);
+//     the one below;
 //   * the antennae lean out at `ant_lean`, inside the self-supporting cone;
 //   * the two holes open on the bed, and their far ends are gabled at 45
 //     degrees (see the lib).
 //
-// WHY A BUTTERFLY. The H is 11 mm across, so the charm needs a 5.5 x 13.6 mm
-// lozenge of material around its legs, not a round 7.2 mm post. A butterfly's
+// WHY A BUTTERFLY. The H is 11 mm across, so the charm needs a 5.5 x 14 mm
+// lozenge of material around its legs. A butterfly's
 // BODY is that lozenge. It runs ACROSS the band and the wings along it, so the
 // wingspan is what `charm_reach` in bracelet.scad spaces.
 //
 // THE FLAT BOTTOM STAYS WITHIN |x| <= `x0`. The band's top is a plane only
 // while it is still: turn a joint and the neighbour's knuckle ARM tilts up
-// above it, just past the hinge gap's inner edge. The star measured that as a
-// disc of r = 5.8; this charm is long across the band, so its bottom is kept
-// inside |x| = 5.0, the disc's reach at the knuckle clusters' edge, and
-// relieved beyond. The swing test in CLAUDE.md is the proof: clear to 40
+// above it, just past the hinge gap's inner edge. Swept as a flat disc at the
+// band's top, that reaches r = 5.8 from the bar's centre; this charm is long
+// across the band, so its bottom is kept inside |x| = 5.0, the disc's reach at
+// the knuckle clusters' edge, and relieved beyond. The swing test in CLAUDE.md is the proof: clear to 40
 // degrees each way at wrist 130 and 180, binding at 60.
 //
-// The charm cannot swivel, unlike the ball charms: two legs fix it square to
-// the band.
+// The charm cannot swivel: two legs fix it square to the band.
 
 $fa = 2;
 $fs = 0.3;
@@ -76,7 +75,7 @@ wing_root = 2.2;             // the wing's thickness where it meets the body
 wing_lift = 15;              // and the V: its top rises outward at this angle
 
 // Spots, cut into the wings' tops. A cone opening upward is all floor, so it
-// prints on a top face as cleanly as the ball charms' dimples do on a bed face.
+// prints on a top face with nothing overhanging.
 spot_up   = [4.6, 3.6];      spot_up_d = 2.6;
 spot_lo   = [3.95, -4.5];    spot_lo_d = 1.6;
 spot_deep = 0.7;
