@@ -398,6 +398,26 @@ charm_sep   = charms < 2 ? cols
             : min([for (i = [0 : charms - 2]) charm_ix[i+1] - charm_ix[i]]);
 assert(charms == 0 || charm_sep * pitch >= charm_reach,
        "two charms would land closer together than a charm is wide — lower `charms`");
+
+// ------------------------------------------------------ the two-colour stripe
+// OPTIONAL. `accent = true` cuts the whole bracelet at two heights into TWO
+// objects — the slab between `accent_lo` and `accent_hi`, and everything above
+// and below it — so a multi-material printer can print the middle of the band
+// in a second colour. The geometry is untouched: the two objects together are
+// exactly the plain bracelet. Export it as 3MF WITH LAZY UNION, or OpenSCAD
+// fuses them back into one:
+//   openscad --enable=lazy-union -D accent=true -o ....3mf bracelet.scad
+// A horizontal slab costs the printer exactly TWO filament swaps per print.
+accent       = false;
+accent_lo    = 1.8;       // both on a 0.2 layer boundary, and off every
+accent_hi    = 3.2;       //   feature plane of the band (see CLAUDE.md §3)
+base_color   = "white";   // only a hint for the slicer's preview — the
+accent_color = "hotpink"; //   filament is chosen per object when slicing
+
+// The clasp plates (0 .. cl_t) stay one colour: a slab starting inside them
+// would leave a skin of accent a layer thick on their top faces.
+assert(accent_lo >= cl_t + 0.2 && accent_hi > accent_lo && accent_hi < thick,
+       "the stripe must start above the clasp plates and end inside the band");
 assert(charms == 0 || (charm_ix[0] >= 1 && charm_ix[charms-1] <= cols - 2),
        "a charm landed on an end bar, where the clasp yoke is");
 
@@ -655,4 +675,14 @@ module bracelet() {
     }
 }
 
-bracelet();
+// The slab the accent colour fills, far wider than any bracelet.
+module accent_slab()
+    translate([-1000, -1000, accent_lo]) cube([2000, 2000, accent_hi - accent_lo]);
+
+// `accent` off writes `bracelet()` alone, so the plain export stays
+// byte-for-byte what it was.
+if (accent) {
+    color(base_color)   difference()   { bracelet(); accent_slab(); }
+    color(accent_color) intersection() { bracelet(); accent_slab(); }
+} else
+    bracelet();

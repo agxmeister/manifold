@@ -344,6 +344,26 @@ a spot sunk into each one.
 - 15.8 mm wingspan along the band; 18.6 mm across it with the head and
   antennae. It cannot swivel — two legs hold it square.
 
+## Two colours
+
+`-D accent=true` prints **the middle of the band in a second colour**: a
+stripe from 1.8 to 3.2 mm up, with the bottom and the top in the first colour.
+It shows as a band of colour round every bar's sides and ends, and the clasp
+plates (1.6 mm thick) stay entirely in the first colour.
+
+![the bracelet with an accent stripe](previews/bracelet-bracelet-accent.png)
+
+The geometry does not change at all. The bracelet is cut at those two heights
+into **two parts**, the stripe and the rest, which together are exactly the
+plain band. It exports as a **3MF** holding **one object made of those two
+parts**, with the rest on filament 1 and the stripe on filament 2, for a
+multi-material printer (AMS, MMU). Because the stripe is horizontal, it costs
+only **two filament swaps per print**, one at 1.8 mm and one back at 3.2.
+
+`accent_lo` / `accent_hi` move the stripe; keep them on 0.2 mm layer
+boundaries. `base_color` / `accent_color` only tint the preview; the slicer
+picks the actual filaments.
+
 ## Models and parts
 
 ```
@@ -439,7 +459,32 @@ openscad -D copies=6 \
          projects/bracelet/models/pin/pin.scad
 openscad -o projects/bracelet/exports/butterfly-charm-butterfly-charm.stl \
          projects/bracelet/models/butterfly-charm/butterfly-charm.scad
+
+# two colours, in two steps. OpenSCAD writes each colour as a SEPARATE
+# object (--enable=lazy-union keeps them apart), and a slicer would load
+# those as separate models in one filament. tools/multicolor-3mf.py turns
+# them into one object with one part and one filament per colour.
+openscad --enable=lazy-union -D accent=true \
+         -o /tmp/accent.3mf projects/bracelet/models/bracelet/bracelet.scad
+python3 tools/multicolor-3mf.py /tmp/accent.3mf \
+         projects/bracelet/exports/bracelet-bracelet-accent.3mf
+openscad --enable=lazy-union -D accent=true -D charms=3 \
+         -o /tmp/accent-c3.3mf projects/bracelet/models/bracelet/bracelet.scad
+python3 tools/multicolor-3mf.py /tmp/accent-c3.3mf \
+         projects/bracelet/exports/bracelet-bracelet-c3-accent.3mf
 ```
+
+### Printing it in two colours
+
+- Open the `-accent.3mf`. It loads as **one object with two parts**, already
+  on filaments 1 and 2. Set those two filament slots to the colours you want.
+  The stripe is filament 2.
+- Everything else under *Printing* still applies. **No brim, still.** The
+  prime/wipe tower is the slicer's and sits apart from the band, so it is fine.
+- Watch for ooze at the two colour changes. A blob or string left in a
+  hinge's 0.6 mm gap welds that hinge just as a brim would. Keep the prime
+  tower (or "wipe into object" off), and work every hinge after the print, as
+  always.
 
 - **Lay it flat, exactly as modelled.** No rotation, no supports.
 - **NO BRIM, and no raft.** This is the one setting that will ruin the print:

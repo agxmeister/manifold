@@ -79,6 +79,13 @@ projects/<project>/
 - Regenerate a mesh from source into the project's `exports/`, named
   `<model>-<part>.<ext>`, e.g.
   `openscad -o projects/chess/exports/board-cell.stl projects/chess/models/board/cell.scad`.
+- **Multicolour 3MFs take two steps.** First give each colour its own top-level
+  `color()` and export with `openscad --enable=lazy-union -o raw.3mf`. Then run
+  `python3 tools/multicolor-3mf.py raw.3mf projects/<p>/exports/<name>.3mf`.
+  OpenSCAD's own 3MF loads as separate single-filament models in
+  Orca-family slicers. The tool makes it one object with a part and a
+  filament per colour. `tools/` is for build helpers shared across projects
+  and holds no geometry.
 
 ## Working here
 

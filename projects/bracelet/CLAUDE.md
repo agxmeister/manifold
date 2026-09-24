@@ -102,6 +102,50 @@ A connectivity checker reporting "15 disconnected pieces ... will NOT print as
 one solid object" is the **expected, correct** result. This is a print-in-place
 band; the pieces are the bars.
 
+## The two-colour stripe (`accent`) — added 2026-09-24, unprinted
+
+`accent = true` splits the finished bracelet at `accent_lo` = 1.8 and
+`accent_hi` = 3.2 into two top-level `color()`ed objects:
+`difference()` and `intersection()` with a slab. At `accent = false` the file
+still ends in a bare `bracelet();`, which is what keeps every `cmp` above
+IDENTICAL. The user asked for "the middle part (vertically) in another color",
+for a multi-material printer.
+
+- **Export needs `--enable=lazy-union`.** Without it OpenSCAD unions the two
+  objects, and even the 3MF comes out as ONE mesh with per-triangle materials,
+  which slicers handle inconsistently. With it, the 3MF holds two `<object>`s,
+  one base material each.
+- **That raw 3MF is NOT the deliverable. Always run it through
+  `tools/multicolor-3mf.py`.** Creality Print, the user's slicer (an
+  Orca/Bambu fork), loaded the raw file as **two separate models, both in
+  one filament**: it ignores 3MF colours, and every build item becomes its
+  own model. The tool writes a single build item whose `<components>` are the
+  meshes, plus `Metadata/model_settings.config` with a `<part id=…>`
+  carrying `extruder` for each one. This was verified against Creality
+  Print's `src/libslic3r/Format/bbs_3mf.cpp`:
+  - config is read for any Application tag;
+  - `part id` = the component's object id;
+  - part metadata goes into the volume config;
+  - with no project settings the filament cap is INT_MAX, so extruder 2
+    survives.
+
+  The user has not yet confirmed that it loads correctly.
+- **Invariants.** The two volumes sum to the plain band's STL volume (to
+  ~1e-3 mm³). Base: `2*cols + 1` shells (bottom and top of each bar, plus the
+  stud head), so 23 at 130 and 31 at 180. Stripe: `cols + 1 + rows*(cols-1)`
+  shells, so 32 at 130 and 44 at 180. The extra `rows*(cols-1)` are each
+  blade's far bore wall, cut loose inside the slab because the bore
+  (0.65–3.55) spans it completely. They are not free pieces: each one sits on
+  base material and has base material on top of it. Stripe z range 1.8..3.2
+  exactly. `charms = 3` gives the same shell counts.
+- **`accent_lo` must clear the clasp plates** (`cl_t` = 1.6, asserted
+  ≥ `cl_t + 0.2`). Starting inside them would put a one-layer skin of accent on
+  the plates. Keep both planes on 0.2 layer boundaries and off the feature
+  planes in §3.
+- **PNG previews need `--render`.** The default OpenCSG preview draws the
+  whole bar in the accent colour.
+- Not printed. No slicer is installed on this machine to check it with.
+
 ## Charm stations: what must stay true
 
 - **`charms = 0` must export byte-for-byte the plain band** in
