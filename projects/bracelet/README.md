@@ -344,6 +344,38 @@ a spot sunk into each one.
 - 15.8 mm wingspan along the band; 18.6 mm across it with the head and
   antennae. It cannot swivel — two legs hold it square.
 
+### The ladybug — a two-colour charm
+
+![the ladybug charm](previews/ladybug-charm-ladybug-charm-accent.png)
+
+A round red **shell** with six heart-shaped spots and a seam down the middle,
+a black **head** with two antennae, and three stubby **legs** a side. It
+takes the same two holes as the butterfly and goes on the same H-pin.
+
+- **Two colours, one object.** The shell is filament 1. The hearts, seam,
+  head, legs and antennae are filament 2. The eyes and the antennae's tips go
+  back to filament 1, so they show on the black head. The spots are inlaid
+  0.8 mm deep, flush with the shell, not painted on the surface.
+- It prints **bottom down** like the butterfly. The shell is a dome and every
+  face closes inward as it rises. Beyond |x| = 5 mm its underside is relieved
+  at 43.6°. The **legs lie flat on the bed**, each a strip with a rounded
+  top, so nothing overhangs.
+- The shell is 7.8 mm tall, not 7.0 like the butterfly. It must roof both
+  holes' 45° gables with a 1.2 mm wall right to their ends, and a rounded
+  shell comes down faster there than the butterfly's ridge does.
+- 20.6 mm along the band, 18.3 mm across it, head included. The middle legs
+  are longer than the others, because the shell is widest there and hides
+  more of them. All six show 4 mm of leg. **The legs lie
+  on the neighbouring bars.** As the band curls round a wrist, those bars
+  swing away from them: clear to 60° at both 130 and 180. **Bent backwards,
+  the two joints beside it do not move at all.** The legs rest flat on the
+  neighbours and stop them from the first half-degree. Forcing it levers
+  on the charm. The butterfly keeps its underside off the hinges, so it
+  bends back to 40°.
+- `-D accent=false` (the default) writes it in one colour. The two-colour
+  file is `exports/ladybug-charm-ladybug-charm-accent.3mf`; see
+  [Printing](#the-ladybug-in-two-colours).
+
 ## Two colours
 
 `-D accent=true` prints **the middle of the band in a second colour**: a
@@ -373,12 +405,13 @@ projects/bracelet/
 └── models/
     ├── bracelet/bracelet.scad            # the whole bracelet — one printed object
     ├── pin/pin.scad                      # the loose H-shaped pin
-    └── butterfly-charm/butterfly-charm.scad  # the charm that snaps onto it
+    ├── butterfly-charm/butterfly-charm.scad  # a charm that snaps onto it
+    └── ladybug-charm/ladybug-charm.scad      # another, in two colours
 ```
 
 The bracelet exports as **one separate shell per bar** — 11 at the default
 size, 15 at `wrist=180` — with the clasp plates fused onto the two end bars.
-They are not supposed to touch. The pin and the charm each export as one
+They are not supposed to touch. The pin and each charm export as one
 piece.
 
 | Model | Part | Size (print pose) | Sits on |
@@ -386,6 +419,7 @@ piece.
 | `bracelet` | `bracelet` | 150.5 × 17.6 × 4.7 mm | all 11 bars' own flat feet |
 | `pin` | `pin` | 11.1 × 6.9 × 2.8 mm | its own face, 24 mm² |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 18.6 × 7.0 mm | its own bottom, 146 mm² in one piece |
+| `ladybug-charm` | `ladybug-charm` | 20.6 × 18.3 × 7.8 mm | its own bottom and legs, 197 mm² in one piece |
 
 No charm may exceed **16 mm** along the band — that is `charm_reach` in
 `bracelet.scad`, the number the station spacing is checked against. A charm on
@@ -459,6 +493,8 @@ openscad -D copies=6 \
          projects/bracelet/models/pin/pin.scad
 openscad -o projects/bracelet/exports/butterfly-charm-butterfly-charm.stl \
          projects/bracelet/models/butterfly-charm/butterfly-charm.scad
+openscad -o projects/bracelet/exports/ladybug-charm-ladybug-charm.stl \
+         projects/bracelet/models/ladybug-charm/ladybug-charm.scad
 
 # two colours, in two steps. OpenSCAD writes each colour as a SEPARATE
 # object (--enable=lazy-union keeps them apart), and a slicer would load
@@ -472,6 +508,10 @@ openscad --enable=lazy-union -D accent=true -D charms=3 \
          -o /tmp/accent-c3.3mf projects/bracelet/models/bracelet/bracelet.scad
 python3 tools/multicolor-3mf.py /tmp/accent-c3.3mf \
          projects/bracelet/exports/bracelet-bracelet-c3-accent.3mf
+openscad --enable=lazy-union -D accent=true \
+         -o /tmp/ladybug.3mf projects/bracelet/models/ladybug-charm/ladybug-charm.scad
+python3 tools/multicolor-3mf.py /tmp/ladybug.3mf \
+         projects/bracelet/exports/ladybug-charm-ladybug-charm-accent.3mf
 ```
 
 ### Printing it in two colours
@@ -507,7 +547,7 @@ python3 tools/multicolor-3mf.py /tmp/accent-c3.3mf \
   tip comes down right beside that bar. To release, push
   it back past the detent and lift the head out.
 
-### The H-pin and the butterfly
+### The H-pin and the charms
 
 - The pockets change nothing about how the band prints — same first layer,
   same bridges, same no-brim rule.
@@ -522,15 +562,30 @@ python3 tools/multicolor-3mf.py /tmp/accent-c3.3mf \
   pin's crossbar is 0.9 mm and its legs 1.0 mm, about two lines each. The
   crossbar is the spring and is meant to be thin; one fat perimeter would print
   it as a single weak line.
+- **Print the ladybug the same way**, bottom down, no supports, no brim, 197
+  mm² on the bed. Its holes are the butterfly's exactly, so it fits the pin
+  the same way.
 - The fits are proven ones: 0.15 mm around the pin in every slot, and 0.15 mm
   of play over each hook.
 - To assemble: push the pin's **outward-hooked** half (the one with its hooks
   at the very ends of the legs) straight down into the
   pocket until the crossbar bottoms out — the upper legs splay as the hooks go
-  in and spring back when they snap. Then press the butterfly straight down
+  in and spring back when they snap. Then press the charm straight down
   over the upper legs until its underside is flat on the bar.
 - To take the charm off, pull it straight up, firmly. The pin stays in the
   bar; pull it separately if you want the bar bare.
+
+### The ladybug in two colours
+
+- Open `ladybug-charm-ladybug-charm-accent.3mf`. It loads as **one object with
+  two parts**: the shell on filament 1 and the spots, head and legs on
+  filament 2. Set them to red and black, or whatever you like.
+- **Unlike the band's stripe, this costs a filament change on every layer.**
+  Both colours share every layer from the bed to the top, about 39 layers at
+  0.2 mm, so expect a prime tower several times the charm's own volume. It
+  is still a small print. Several ladybugs on one plate share the same tower.
+- Keep the prime tower on. Stringing from the black nozzle onto red shell is
+  the main thing that can mark it.
 
 ## License
 

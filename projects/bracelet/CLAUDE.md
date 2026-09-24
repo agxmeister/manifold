@@ -36,12 +36,13 @@ bought nothing.
 **knuckle clusters** spaced along each joint, which is what stops a wide bar
 twisting about a single pin.
 
-## Three models, one library, `cols` shells
+## Four models, one library, `cols` shells
 
 `models/bracelet/bracelet.scad` is the bracelet, and every dimension of the band
 is at the top of it. `lib/charm-pin.scad` holds the charm mount — the H-pin,
 the pocket it snaps into and the holes a charm has for it. `models/pin`
-is the loose pin and `models/butterfly-charm` the one charm. The lib draws
+is the loose pin, and `models/butterfly-charm` and `models/ladybug-charm` are
+the two charms. The lib draws
 nothing — variables, functions and modules only — so every model `include`s
 it.
 
@@ -67,6 +68,7 @@ openscad -o /tmp/b180.stl -D wrist=180 models/bracelet/bracelet.scad && cmp /tmp
 openscad -o /tmp/c3.stl -D charms=3 models/bracelet/bracelet.scad && cmp /tmp/c3.stl exports/bracelet-bracelet-c3.stl
 openscad -o /tmp/p.stl models/pin/pin.scad && cmp /tmp/p.stl exports/pin-pin.stl
 openscad -o /tmp/f.stl models/butterfly-charm/butterfly-charm.scad && cmp /tmp/f.stl exports/butterfly-charm-butterfly-charm.stl
+openscad -o /tmp/l.stl models/ladybug-charm/ladybug-charm.scad && cmp /tmp/l.stl exports/ladybug-charm-ladybug-charm.stl
 ```
 
 **Everything the lib defines is named `hp_*`.** That is not tidiness: this
@@ -308,6 +310,78 @@ the threshold flicker, and `check_overhangs.py` split one clean ramp into a
 - **A gable started 0.01 below the eaves leaves a 0.01 mm ledge** along each
   eave — 0.07 mm² of flat ceiling, found only by the direct angle scan. The
   gable's walls are carried a millimetre down into the hole instead.
+
+## The ladybug charm — added 2026-09-25, unprinted
+
+Asked for as "a ladybug charm. Use two colors - one for body and another one
+for dots", with a plush ladybug as the reference: heart-shaped spots, a black
+head with eyes, antennae with red tips, stubby legs. Same H-pin holes as the
+butterfly (`charm_h_holes`), same print pose (seat down). **The lib and the
+band were not touched.** Every `cmp` above stayed IDENTICAL.
+
+- **It lies ACROSS the band, head at +y.** The two holes need ~16 mm across
+  the band. The legs set its 20.6 mm span along it. That is past
+  `charm_reach` = 16: on 2026-09-25 the user lifted any size limit on charms
+  ("they can span outside the bracelet size"). `bracelet.scad` was NOT
+  changed, and its spacing assert still reads 16. At `charms = 3` the
+  closest stations are 23.75 apart, so two ladybugs still clear each other.
+  The middle pair is longer (5.8 against 5.0) because the shell hides more
+  of it. The user found the equal-length version's middle legs "too
+  short". 5.8 shows 4.0 mm, the same as the others.
+- **Shell: a superellipsoid dome**, `sh_p` = 3.3. An ellipsoid comes down too
+  fast near its ends to roof the gables. The binding numbers are
+  `shell_z(0, hp_c_out)` ≥ `hp_apex + hp_wall + 0.2` (6.86 against 6.6),
+  asserted, and the wall check's minimum, now **1.20**. At `sh_p` = 3.0 it
+  read 1.13 at (0.09, 6.65, 5.86), over a gable's far end.
+- **Legs lie FLAT ON THE BED**, at the user's request (2026-09-25). They
+  were first built lying on the 43.6° relief, rising up and out. Each is
+  the hull of two `dome()`s, a stadium in plan with a rounded top, 2.0 wide
+  and 1.6 tall. **This deliberately breaks the flat-bottom-within-`x0`
+  rule**, and the cost is measured below. Only the shell is intersected
+  with `keep()`. Put the legs back inside it and it trims them away.
+- **Colour is a region cut from the finished solid** (`accent_region`), not
+  separately built parts. Its surfaces are GROWN by 0.2 (`head(0.2)`,
+  `legs(0.2)`, `shell(0.2)`...) so they never coincide with the solid's.
+  Coincident faces rendered as ragged hearts and red streaks down the legs.
+  The shell it cuts the head/legs back to is shrunk by `cg` = 0.05, **and
+  carried 1 mm under the bed**. Without that, its floor lay on the solid's
+  and the black part carried **133 zero-volume sheets** at z = 0. Those are
+  invisible in renders; only a per-shell volume count found them.
+
+**Invariants:**
+
+- Single colour (`accent = false`): 1 shell, genus 0, 20.6 × 18.3 × 7.8,
+  196.9 mm² in 1 island. Wall ≥ 1.20 (1.28 now).
+  Flat legs made the 1.20 point over the gables no longer the thinnest. `check_overhangs`
+  clean. `asin(|nz|)` scan: **0.000 mm² past 45°**. A 1 mm² ceiling bolted on
+  as a control reads 1.000. The only 90° faces are zero-area eave slivers,
+  the same as on the butterfly.
+- Two colour: red **5 shells** (body, 2 eyes, 2 antenna tips).
+  Black **14 shells** (head + antennae, seam, 6 hearts, 6 legs).
+  The two sum to the whole within 0.0002 mm³. Any shell under 0.01 mm³ is a
+  regression.
+- Pin harness: identical to the butterfly's rows (seated / dz +0.10 / dx, dy
+  ±0.12 empty; dz ±0.25, dx, dy 0.20 solid; charm ∩ band 0.0000 seated,
+  19.2 mm³ at dz −0.3).
+- Swing, wrist 130 and 180. In the harness, `test="swing"` is the WEARING
+  direction (neighbours drop, the top face goes convex) and `"swing2"` is
+  BACKWARDS.
+  - Wearing: clear to 60°.
+  - Backwards: **HIT from 0.5°**, 0.12 mm³ spread over x −6.7..+8.8 of the
+    bar centre and the full band width. The flat legs rest on both
+    neighbours, and the two joints beside the charm cannot bend back at all.
+  - Control: the butterfly, clear both ways to 40° and HIT backwards at 50°.
+  - The user was told and asked whether that is acceptable.
+  - The earlier sloped-leg version matched the butterfly exactly.
+
+**Harness trap:** do NOT `include` the butterfly and the ladybug in one
+harness file. Both define `span`, `x0`, `relief`... and the second silently
+overwrites the first with `undef`s. Every swing then read "clear", including
+the butterfly's known bind. One harness per charm.
+
+Colour cost: both colours share every layer (legs and head start on the bed),
+so it is a filament change per layer, ~39 of them. The user was told this.
+Not printed. Not loaded in a slicer.
 
 ## Why the joint is a hinge
 
@@ -604,7 +678,8 @@ exactly at dx 0.
 0. If the lib, `bracelet.scad` or a charm model was touched: the `cmp` block
    at the top of this file, then the H-pin joint harness with its controls.
    If the charm stations were touched, re-run steps 1–6 at `charms = 3` —
-   every number must be identical to `charms = 0`. If the butterfly or a new
+   every number must be identical to `charms = 0`. If a charm (butterfly,
+   ladybug) or a new
    charm changed: connectivity (1 piece), wall thickness (≥ 1.19 mm, the gable
    roof), bed stability (1 island), the `asin(|nz|)` scan (nothing past 45.5°),
    the swing test with it seated, and a render.
