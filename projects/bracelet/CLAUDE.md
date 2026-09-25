@@ -36,13 +36,13 @@ bought nothing.
 **knuckle clusters** spaced along each joint, which is what stops a wide bar
 twisting about a single pin.
 
-## Four models, one library, `cols` shells
+## Five models, one library, `cols` shells
 
 `models/bracelet/bracelet.scad` is the bracelet, and every dimension of the band
 is at the top of it. `lib/charm-pin.scad` holds the charm mount — the H-pin,
 the pocket it snaps into and the holes a charm has for it. `models/pin`
-is the loose pin, and `models/butterfly-charm` and `models/ladybug-charm` are
-the two charms. The lib draws
+is the loose pin, and `models/butterfly-charm`, `models/ladybug-charm` and
+`models/heart-charm` are the three charms. The lib draws
 nothing — variables, functions and modules only — so every model `include`s
 it.
 
@@ -69,7 +69,15 @@ openscad -o /tmp/c3.stl -D charms=3 models/bracelet/bracelet.scad && cmp /tmp/c3
 openscad -o /tmp/p.stl models/pin/pin.scad && cmp /tmp/p.stl exports/pin-pin.stl
 openscad -o /tmp/f.stl models/butterfly-charm/butterfly-charm.scad && cmp /tmp/f.stl exports/butterfly-charm-butterfly-charm.stl
 openscad -o /tmp/l.stl models/ladybug-charm/ladybug-charm.scad && cmp /tmp/l.stl exports/ladybug-charm-ladybug-charm.stl
+openscad -o /tmp/h.stl models/heart-charm/heart-charm.scad && cmp /tmp/h.stl exports/heart-charm-heart-charm.stl
 ```
+
+**The ladybug's export is NOT byte-stable** (found 2026-09-25). Two fresh
+exports of the same unchanged file differ, with the same volume and bbox: the
+triangle order changes run to run. Compare its VOLUME and bbox instead,
+1077.6452 mm³. Everything else above is byte-stable, and a `cmp` difference
+there is a real change. That includes the heart, which is one polyhedron. Its
+first, hull-built version was not stable.
 
 **Everything the lib defines is named `hp_*`.** That is not tidiness: this
 file already has a `pin_d`, `pin_r`, `pin_z` and `pin_flat`, and they are the
@@ -383,6 +391,83 @@ Colour cost: both colours share every layer (legs and head start on the bed),
 so it is a filament change per layer, ~39 of them. The user was told this.
 Not printed. Not loaded in a slicer.
 
+## The heart charm — added 2026-09-25, printed and confirmed the same day
+
+**Printed and confirmed by the user on 2026-09-25** ("Printed good"), the
+smooth 23 × 19 version. Treat its shape and numbers as proven.
+
+Asked for as "a heart charm. It should be 3D, look artistic, and I would like
+to have configurable rotation angle - so we can export different options,
+rotated differently." Same H-pin holes (`charm_h_holes`), same pose (seat
+down). **The lib and the band were not touched.** The band, `-c3`, pin and
+butterfly `cmp`s stayed IDENTICAL, and the ladybug's volume is unchanged
+(its bytes never were stable, see above).
+
+- **`angle` turns the HEART, never the holes.** `rotate(angle)` wraps only
+  the heart. `charm_h_holes()` is subtracted after, in the band frame, because
+  the pin always runs across the band. Rotating the finished charm (or
+  rotating it in a slicer) would turn the holes with it and it would not go
+  on. Exports: `-a45`, `-a90`, `-a270`, `-a315`, plus 0 without a suffix.
+- **Size is set by ALL angles at once.** The holes plus a 1.2 wall reach 6.99
+  along their axis and 7.51 at the lozenge's corners, roofed at `hp_apex +
+  hp_wall` over the middle 11.6. The heart must hold that wherever it is
+  turned. The binding direction is the NOTCH: the lozenge points into it at 0
+  and 180.
+- **The envelope test is the proof, not the wall check.** `minkowski()`
+  `charm_h_holes()` with a sphere of `hp_wall − 0.05`, clip to z > 0, and
+  subtract the rotated `heart() − shine()`. It must be EMPTY at every 10°
+  over −150..180. Displacement controls must leak: dy −1.0 at 0°, and dy
+  +1.0 at 30°. Shifts of 0.6 stay clean, so that is the margin. **Do not
+  build the control from a smaller parameter.** An assert (notch,
+  star-shape) vetoes it, OpenSCAD exports nothing, and "empty" reads as a
+  pass. `check_wall_thickness.py` only samples: it reads 1.51+ here and
+  misses the ~1.2 gable roofs that the envelope test pins down.
+- **Shape: ONE inflated surface, a polyhedron.** The outline is the classic
+  heart curve with `side_q` = 1.6 (x = sin^q: full sides), `round_e` (a
+  rounded point and notch bottom) and `notch_up` = 5 × cos(t)^6 lifting the
+  top (1.5 mm notch). Each ring is the outline scaled by `prof_s(phi)` about
+  the origin, at `prof_z(phi)`, with a superellipse profile `prof_p` = 4.
+  The outline being star-shaped about the origin is ASSERTED, and it makes
+  the surface a height field, so it has no downward face. The rejected
+  versions:
+  - **Hull of domes** (lobe, belly, tip; the first version shown). The user
+    rejected it: "should be wider, and without corners on the sides - it
+    should be smooth". A hull is ruled between its domes and leaves an edge
+    wherever one dome takes over from another.
+  - **`notch_up` as a narrow Gaussian** at the notch. It raised a bump in the
+    middle of the top edge, three humps instead of two lobes. The cos^6 lift
+    is as broad as the lobes.
+  - An inflated surface falls away from the middle, so it needs the width.
+    Tuned in python across angles: at 19–21 mm wide it could not hold the
+    holes with any notch left. At 23 × 19, p 4, it has 0.5 mm to spare.
+- **The shine is placed in surface coordinates** `(s, t)`, so the arc runs
+  parallel to the lobe's edge. It is cones at `shine_flare` = 20° hulled
+  along the arc and clipped to a 0.6 mm skin between `heart(+0.5)` and
+  `heart(−0.6)`. With VERTICAL walls on a 45° slope, the downhill lip was a
+  45° wedge that the wall check read as 0.06 mm. The slope under it is
+  asserted ≤ 32°, and the lip ≥ 75°. The dot is asserted `hp_wall` clear of
+  the arc's NEARER end. An earlier assert measured the far end only, and
+  passed a 0.47 mm land.
+- **Flat bottom to the edge, like the ladybug's legs.** The heart reaches
+  13.07 from the pin at 45°. The butterfly's 43.6° relief would eat it.
+
+**Invariants (angle 0; the others are the same solid turned):**
+
+- 1 shell, genus 0, 23.0 × 19.0 × 8.0, **vol 2166.785 at every angle**.
+  **306.7–306.9 mm² in 1 island.** Wall check ≥ 1.51. `check_overhangs`
+  clean. `asin(|nz|)` scan: 0.000 mm² past 45°.
+- Pin harness at 0, 45 and 90: seated / dz +0.10 / dx, dy 0.12 empty; dz
+  +0.25 → 0.224 mm³, dx 0.20 → 0.4165 (controls). charm ∩ band 0.0000
+  seated, 32–42 mm³ at dz −0.3.
+- Swing at 130 and 180, angles 0, 45 and 90:
+  - wearing (`"swing"`): clear to 60°.
+  - backwards (`"swing2"`): **HIT from 0.5°**, the ladybug's trade. The user
+    committed the ladybug knowing it, so it was taken as accepted.
+- Spacing: at `charms = 3` and 130 the stations are 23.75 apart. Two hearts
+  at 0° are 23.0 wide along the band, so they clear by only 0.75.
+- Harness: one per charm (`band.scad` with the `if (accent)` tail cut,
+  `heart.scad` with `heart_charm();` stripped, both includes absolute).
+
 ## Why the joint is a hinge
 
 Two earlier joints failed:
@@ -679,7 +764,7 @@ exactly at dx 0.
    at the top of this file, then the H-pin joint harness with its controls.
    If the charm stations were touched, re-run steps 1–6 at `charms = 3` —
    every number must be identical to `charms = 0`. If a charm (butterfly,
-   ladybug) or a new
+   ladybug, heart) or a new
    charm changed: connectivity (1 piece), wall thickness (≥ 1.19 mm, the gable
    roof), bed stability (1 island), the `asin(|nz|)` scan (nothing past 45.5°),
    the swing test with it seated, and a render.

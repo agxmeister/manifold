@@ -220,7 +220,8 @@ full-width bar foot, so there is far more of it than the old tile grid had.
 ## Charms
 
 `charms` bars along the band carry a charm, hung on an **H-pin** snapped in at
-both ends. There is one charm for it so far, a 3D **butterfly**.
+both ends. Three charms are built for it: a 3D **butterfly**, a two-colour
+**ladybug** and a puffy **heart** that can be turned to any angle.
 
 Two earlier mounts came before this one — a ball pin fused to the bar with
 clip-on charms, and a loose double-ended screw — and both printed and worked.
@@ -376,6 +377,48 @@ takes the same two holes as the butterfly and goes on the same H-pin.
   file is `exports/ladybug-charm-ladybug-charm-accent.3mf`; see
   [Printing](#the-ladybug-in-two-colours).
 
+### The heart — a puffy charm you can turn
+
+![the heart charm](previews/heart-charm-heart-charm.png)
+
+**Printed and confirmed on 2026-09-25.**
+
+A **pillow heart**, 23 mm wide and 19 tall: one smooth surface with no seams
+or corners. Its outline is a smooth heart curve, with two wide lobes, a soft
+1.5 mm notch, full round sides and a point rounded off just enough not to be
+sharp. The heart is that outline **inflated**. It rises from the bed on one
+pillow profile to an 8 mm crown, and the notch carries up the surface as a
+gentle valley between the lobes. A cartoon **shine**, an arc and a dot, is
+sunk 0.6 mm into the upper-left lobe.
+
+- **`-D angle=` turns it** in plan about the pin, in degrees, anticlockwise
+  seen from above. The holes stay where they are, because the pin always runs
+  across the band. At 0 the heart stands upright across the band, lobes to
+  one edge and point to the other. At 90 or 270 it lies along the band,
+  pointing one way or the other. The heart is symmetric, so -a (or 360 − a) is
+  the mirror image of a, apart from the shine.
+- **It is sized to work at every angle at once.** Wherever it is turned, the
+  pin's two holes and their 1.2 mm walls must stay buried inside it. A test
+  grows the holes by the wall and subtracts the heart at every 10° from −150°
+  to 180°, and it comes back empty at every angle. It keeps 0.6–1.0 mm to
+  spare: moved 1.0 mm off centre, the heart leaks.
+- It prints **bottom down** like the others. Every ring of the surface lies
+  inside the one below it, so it only ever faces up. The shine is a groove
+  whose walls flare outward, so it is all floor. No supports, no brim, 307 mm²
+  on the bed.
+- **Its bottom is flat to the edge, like the ladybug's legs.** The heart reaches
+  up to 13 mm along the band from the pin. The butterfly's 43.6° relief would
+  cut its edges away from underneath, so the heart rests on the neighbouring
+  bars instead. As the band curls round a wrist they swing away from it: clear
+  to 60° at both 130 and 180, at 0°, 45° and 90°. **Bent backwards, the two
+  joints beside it do not move**, the same trade as the ladybug.
+- Two hearts side by side at `charms = 3` clear each other by 0.75 mm at 0°,
+  when their 23 mm width lies along the band. That is closer than any other
+  pair of charms.
+- Exports, in `exports/`: `heart-charm-heart-charm.stl` (0°) and `-a45`,
+  `-a90`, `-a270`, `-a315`. Any other angle is one
+  `openscad -D angle=... ` away.
+
 ## Two colours
 
 `-D accent=true` prints **the middle of the band in a second colour**: a
@@ -406,7 +449,8 @@ projects/bracelet/
     ├── bracelet/bracelet.scad            # the whole bracelet — one printed object
     ├── pin/pin.scad                      # the loose H-shaped pin
     ├── butterfly-charm/butterfly-charm.scad  # a charm that snaps onto it
-    └── ladybug-charm/ladybug-charm.scad      # another, in two colours
+    ├── ladybug-charm/ladybug-charm.scad      # another, in two colours
+    └── heart-charm/heart-charm.scad          # a heart, turnable with `angle`
 ```
 
 The bracelet exports as **one separate shell per bar** — 11 at the default
@@ -420,10 +464,13 @@ piece.
 | `pin` | `pin` | 11.1 × 6.9 × 2.8 mm | its own face, 24 mm² |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 18.6 × 7.0 mm | its own bottom, 146 mm² in one piece |
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 18.3 × 7.8 mm | its own bottom and legs, 197 mm² in one piece |
+| `heart-charm` | `heart-charm` | 23.0 × 19.0 × 8.0 mm at 0° | its own flat bottom, 307 mm² in one piece |
 
-No charm may exceed **16 mm** along the band — that is `charm_reach` in
-`bracelet.scad`, the number the station spacing is checked against. A charm on
-an H-pin cannot turn, so only its length along the band counts.
+`charm_reach` in `bracelet.scad` spaces the stations for a **16 mm** charm,
+the butterfly. Charms may be bigger than that (the ladybug is 20.6 mm along
+the band, and the heart up to 23). At `charms = 3` the closest stations are
+23.75 mm apart, so neighbours still clear each other. A charm on an H-pin
+cannot swivel, so only its length along the band counts.
 
 ## Sizing
 
@@ -565,6 +612,9 @@ python3 tools/multicolor-3mf.py /tmp/ladybug.3mf \
 - **Print the ladybug the same way**, bottom down, no supports, no brim, 197
   mm² on the bed. Its holes are the butterfly's exactly, so it fits the pin
   the same way.
+- **Print the heart the same way**, bottom down, no supports, no brim, 307
+  mm² on the bed. Pick the angle before you slice: it is in the file, not a
+  rotation in the slicer (turning it in the slicer would turn its holes too).
 - The fits are proven ones: 0.15 mm around the pin in every slot, and 0.15 mm
   of play over each hook.
 - To assemble: push the pin's **outward-hooked** half (the one with its hooks
