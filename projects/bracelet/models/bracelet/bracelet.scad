@@ -119,18 +119,24 @@ axial_fit  = 0.6;               // clearance ALONG the pin, between a lug and
                                 //   amount of flexing afterwards frees it.
                                 //   Raised from 0.5 with the bore, so the lug
                                 //   faces stop rubbing the blade's as well.
-pin_d      = 2.0;               // the pin — the entire load path of the band
+pin_d      = 1.8;               // the pin — the entire load path of the band.
+                                //   It was 2.0, printed and confirmed; 1.8
+                                //   (2026-09-25) is what brings `thick` down
+                                //   to 4.2 so the accent stripe can split the
+                                //   band into three equal 1.4 mm bands.
+                                //   Bending strength goes as d^3: 0.73x.
 pin_r      = pin_d/2;
-bore_r     = pin_r + bore_fit;  // 1.45
+bore_r     = pin_r + bore_fit;  // 1.35
 knuck_wall = 0.9;               // material around the bore
-rk         = bore_r + knuck_wall;   // 2.35 — the knuckle's outer radius, and
+rk         = bore_r + knuck_wall;   // 2.25 — the knuckle's outer radius, and
                                     //   the radius everything sweeps through
                                     //   when the hinge turns
-pin_z      = 2.1;               // pin axis height. NOT free: see the two
+pin_z      = 1.95;              // pin axis height. NOT free: see the two
                                 //   asserts below — it is squeezed between
                                 //   needing floor under the bore and needing
-                                //   the knuckle to reach the bed.
-thick      = pin_z + rk;        // 4.45 — the knuckle's top IS the band's top
+                                //   the knuckle to reach the bed. 1.95 leaves
+                                //   exactly the 0.6 mm floor the assert asks.
+thick      = pin_z + rk;        // 4.2 — the knuckle's top IS the band's top
 
 pin_flat   = 0.2;   // the pin's underside is cut flat this far above where a
                     //   full cylinder would have been tangent. A cylinder
@@ -158,7 +164,7 @@ pin_flat_w  = 2 * sqrt(pin_r*pin_r - pow(pin_r - pin_flat, 2));
 assert(knuck_foot >= 0.6,
        str("knuckle stands on a knife edge: cap reaches ", knuck_foot,
            " mm past the pin at the bed"));
-assert(pin_z - bore_r >= 0.6,
+assert(pin_z - bore_r >= 0.6 - 1e-9,
        str("too little floor under the bore: ", pin_z - bore_r));
 assert(lug_w >= 1.2, str("lugs too narrow: ", lug_w));
 assert(bore_fit > fit, "the bore is the joint's play — keep it the loosest fit");
@@ -354,8 +360,8 @@ band_run  = wrist + ease - stud_ext - kh_lock;
 // The knuckles bind below `pitch_min` — that is the swing clearance, the same
 // limit that used to be asserted against a constant. Above `pitch_max` the
 // gaps just look wrong; the range is what makes an exact fit reachable.
-pitch_min = 2*(h + rk + fit);            // 11.30
-pitch_max = pitch_min + 1.4;             // 12.70
+pitch_min = 2*(h + rk + fit);            // 11.10
+pitch_max = pitch_min + 1.4;             // 12.50
 joints_lo = ceil((band_run - body) / pitch_max);
 joints_hi = floor((band_run - body) / pitch_min);
 assert(joints_lo <= joints_hi,
@@ -415,14 +421,16 @@ assert(charms == 0 || charm_sep * pitch >= charm_reach,
 //   openscad --enable=lazy-union -D accent=true -o ....3mf bracelet.scad
 // A horizontal slab costs the printer exactly TWO filament swaps per print.
 accent       = false;
-accent_lo    = 1.8;       // both on a 0.2 layer boundary, and off every
-accent_hi    = 3.2;       //   feature plane of the band (see CLAUDE.md §3)
+accent_lo    = 1.4;       // both on a 0.2 layer boundary, and off every
+accent_hi    = 2.8;       //   feature plane of the band (see CLAUDE.md §3):
+                          //   three equal 1.4 mm bands of the 4.2 band
 base_color   = "white";   // only a hint for the slicer's preview — the
 accent_color = "hotpink"; //   filament is chosen per object when slicing
 
-// The clasp plates (0 .. cl_t) stay one colour: a slab starting inside them
-// would leave a skin of accent a layer thick on their top faces.
-assert(accent_lo >= cl_t + 0.2 && accent_hi > accent_lo && accent_hi < thick,
+// The stripe starts INSIDE the clasp plates (0 .. cl_t), so `accent_region`
+// leaves the plates out of it — otherwise their top layer would be a skin of
+// accent. They stay wholly the first colour.
+assert(accent_lo > 0 && accent_hi > accent_lo && accent_hi < thick,
        "the stripe must start above the clasp plates and end inside the band");
 assert(charms == 0 || (charm_ix[0] >= 1 && charm_ix[charms-1] <= cols - 2),
        "a charm landed on an end bar, where the clasp yoke is");
@@ -595,12 +603,15 @@ module bar(col) {
 // where a 1.6 mm plate tears.
 module filleted(r = 1.2) offset(r = -r) offset(r = r) children();
 
-module clasp_stud() {
-    linear_extrude(cl_t) filleted() union() {
+module clasp_stud_2d()
+    filleted() union() {
         translate([x_r - yoke_bite, -h]) square([yoke_len + yoke_bite, band_w]);
         translate([x_r, band_cy - stud_pw/2])
             square([x_stud + stud_tip - x_r, stud_pw]);
     }
+
+module clasp_stud() {
+    linear_extrude(cl_t) clasp_stud_2d();
     translate([x_stud, band_cy, 0]) {
         cylinder(h = post_top, d = post_d);
         translate([0, 0, post_top]) cylinder(h = head_h, d1 = post_d, d2 = head_d);
@@ -644,13 +655,16 @@ module keyhole_cut() {
     }
 }
 
+module clasp_keyhole_2d()
+    filleted() union() {
+        translate([x_l - yoke_len, -h]) square([yoke_len + yoke_bite, band_w]);
+        translate([x_lock - kh_tip, band_cy - kh_w/2])
+            square([x_l - (x_lock - kh_tip), kh_w]);
+    }
+
 module clasp_keyhole() {
     linear_extrude(cl_t) difference() {
-        filleted() union() {
-            translate([x_l - yoke_len, -h]) square([yoke_len + yoke_bite, band_w]);
-            translate([x_lock - kh_tip, band_cy - kh_w/2])
-                square([x_l - (x_lock - kh_tip), kh_w]);
-        }
+        clasp_keyhole_2d();
         keyhole_cut();
     }
 }
@@ -681,14 +695,26 @@ module bracelet() {
     }
 }
 
-// The slab the accent colour fills, far wider than any bracelet.
-module accent_slab()
+// Where the accent colour goes: a slab far wider than any bracelet, minus the
+// two clasp plates where they stand out past the end bars. (Where a yoke bites
+// into its bar, the bar keeps the stripe.) The plates are cut out GROWN, 0.05
+// sideways and 0.01 up, so no face of the cut lies on a face of a plate —
+// cut exactly to their outline, every plate wall left a zero-volume sheet in
+// the stripe. The 0.01 is far under a layer; a slicer samples mid-layer.
+module accent_region() difference() {
     translate([-1000, -1000, accent_lo]) cube([2000, 2000, accent_hi - accent_lo]);
+    difference() {
+        linear_extrude(cl_t + 0.01) offset(delta = 0.05)
+            union() { clasp_stud_2d(); clasp_keyhole_2d(); }
+        bar(0);
+        bar(cols - 1);
+    }
+}
 
 // `accent` off writes `bracelet()` alone, so the plain export stays
 // byte-for-byte what it was.
 if (accent) {
-    color(base_color)   difference()   { bracelet(); accent_slab(); }
-    color(accent_color) intersection() { bracelet(); accent_slab(); }
+    color(base_color)   difference()   { bracelet(); accent_region(); }
+    color(accent_color) intersection() { bracelet(); accent_region(); }
 } else
     bracelet();

@@ -3,17 +3,60 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
+## The band is 4.2 mm thick since 2026-09-25 — printed and confirmed the same day
+
+The user asked for the accent stripe's three bands to be equal and chose to
+thin the band for it. **Printed in one colour at `charms = 3` with a heart on
+an H-pin: "Printed well, the pin sits fine."** So the 1.8 pin, `pin_z` 1.95
+and the 0.6 pocket floor are proven. The two-colour stripe is still unprinted. `thick` = `pin_z + rk` went 4.45 → **4.2**:
+**`pin_d` 2.0 → 1.8** (bore_r 1.35, rk 2.25, pin 0.73× as stiff in bending)
+and **`pin_z` 2.1 → 1.95** (the bore floor is now exactly the asserted 0.6).
+Every other hinge fit — `bore_fit`, `axial_fit`, `knuck_wall`, `pin_flat`,
+`fit` — is the printed value. The clasp (`cl_t` 1.6) does not depend on
+`thick` and is untouched. The H-pin pocket's floor went 0.8 → **0.6**, and
+`hp_leg_lo` = 3.45 now fixes the lower legs' reach, so **the pin, the pocket's
+hooks and every charm export byte-identical** — pins and charms printed for
+the 4.45 band fit this one. The stripe is 1.4–2.8: three 1.4 mm bands.
+
+Measured on the 4.2 band. The 4.45 band was re-run in the same harness as a
+control and reproduced the old numbers:
+
+- 130: 11 shells, genus 31, **1812.5 mm²** in 11 islands; 180: **16 bars**
+  (was 15 — `pitch_min` fell 11.30 → 11.10, so the solver now picks 11.25),
+  genus 46, 2471.5 mm². Every wrist 110–230: shells == cols, loop exact.
+- Probes (§1): z 0.10 and axis rows unchanged; free span `0.605 | air 0.645 |
+  1.590 | air 0.455 | 0.905`; axial gap `SOLID 1.590`; lug `4.199`; bar
+  centre control `4.200`.
+- §2: below z 0.7, 0.00 mm² past 45°, steepest 30.0°.
+- §3 (grid 0.05, z at layer mid + 0.007): only z ≈ 1.3 (58.8 mm², was 57.6
+  in this harness) and z ≈ 3.3 (23.0, was 5.2 — the roof's crown now falls
+  so the last open layer leaves a ~1.4 mm gap, closed as one bridge). A
+  1.5 mm ledge control flags.
+- §4: bore contact between dx 0.40 and 0.50, dy 0.55/0.65, dz −0.40
+  empty / −0.60 solid, +0.50 empty / +0.70 solid. Swing ±100° clear, 110°
+  binds at 130; at the tightest pitch (wrist 145, 11.146) clear to 98°, binds
+  by 100°, and dx −0.40 touches the neighbour's body (the 0.3 `fit`).
+- H-pin: bar ∩ pin seated 0.0000, +0.10 empty, +0.25 0.3080, −0.05 0.8811,
+  dx 0.12 empty / 0.20 0.7316 — all identical to the 4.45 band. Leg release
+  −14.25° lift 1.2: 0.0867 (control 1.2577); −18.18° empty at every lift
+  0–3.0. Pocket floor probe 0.600.
+- Charms seated, neighbours swung: butterfly, heart, ladybug wearing-clear to
+  70°. An exact 60° reads a 0.0000 coincidence for heart and ladybug (59.5 /
+  60.5 / 62 empty) — do not read that as a bind. Backwards: as before.
+- `check_overhangs`: 40 BRIDGE, no SUPPORT. Wall check: the same keyhole and
+  stud-rim artefacts as the 4.45 band.
+
 ## The default size is `wrist = 130` — the numbers below are mostly at 180
 
 Since 2026-09-22 the default is the 4-year-old's 130 mm wrist (printed and
 confirmed 2026-09-14): **11 bars, 150.5 × 17.6 mm, genus 31, 1807 mm² of first
-layer in 11 islands.** It exports byte-for-byte what used to be
+layer in 11 islands** (1812.5 on the 4.2 band). It exports byte-for-byte what used to be
 `exports/bracelet-bracelet-w130.stl`, and the old default is now
 `exports/bracelet-bracelet-w180.stl`.
 
 **Almost every band-level invariant in this file — 15 shells, genus 43, 2396
 mm², the downward-face and layer-step totals — was measured at `wrist = 180`
-and is still true there.** Reproduce any of them with `-D wrist=180`. Per-joint
+on the 4.45 mm band.** The 4.2 band's numbers are in the section above. Reproduce any of them with `-D wrist=180`. Per-joint
 readings (probes, swing, displacement, clearances) do not depend on size.
 
 ## The one rule
@@ -114,9 +157,10 @@ band; the pieces are the bars.
 
 ## The two-colour stripe (`accent`) — added 2026-09-24, unprinted
 
-`accent = true` splits the finished bracelet at `accent_lo` = 1.8 and
-`accent_hi` = 3.2 into two top-level `color()`ed objects:
-`difference()` and `intersection()` with a slab. At `accent = false` the file
+`accent = true` splits the finished bracelet at `accent_lo` = 1.4 and
+`accent_hi` = 2.8 into two top-level `color()`ed objects:
+`difference()` and `intersection()` with `accent_region()` — a slab minus
+the clasp plates. At `accent = false` the file
 still ends in a bare `bracelet();`, which is what keeps every `cmp` above
 IDENTICAL. The user asked for "the middle part (vertically) in another color",
 for a multi-material printer.
@@ -142,16 +186,24 @@ for a multi-material printer.
   The user has not yet confirmed that it loads correctly.
 - **Invariants.** The two volumes sum to the plain band's STL volume (to
   ~1e-3 mm³). Base: `2*cols + 1` shells (bottom and top of each bar, plus the
-  stud head), so 23 at 130 and 31 at 180. Stripe: `cols + 1 + rows*(cols-1)`
-  shells, so 32 at 130 and 44 at 180. The extra `rows*(cols-1)` are each
+  stud head), so 23 at 130 and 33 at 180 (16 bars). Stripe:
+  `cols + 1 + rows*(cols-1)` shells, so 32 at 130 and 47 at 180. Smallest
+  shell 2.47 mm³ — anything near zero is a coincident-face sheet. The extra `rows*(cols-1)` are each
   blade's far bore wall, cut loose inside the slab because the bore
-  (0.65–3.55) spans it completely. They are not free pieces: each one sits on
-  base material and has base material on top of it. Stripe z range 1.8..3.2
+  (0.6–3.3) spans it completely. They are not free pieces: each one sits on
+  base material and has base material on top of it. Stripe z range 1.4..2.8
   exactly. `charms = 3` gives the same shell counts.
-- **`accent_lo` must clear the clasp plates** (`cl_t` = 1.6, asserted
-  ≥ `cl_t + 0.2`). Starting inside them would put a one-layer skin of accent on
-  the plates. Keep both planes on 0.2 layer boundaries and off the feature
-  planes in §3.
+- **Three equal 1.4 mm bands.** History: 1.8 / 1.4 / 1.25 at first; the
+  user saw the top was thinner; 1.6 / 1.4 / 1.45 was the best a 4.45 band
+  allowed; the user then chose to thin the band to 4.2 (section at the top).
+- **The stripe starts INSIDE the clasp plates (`cl_t` = 1.6), so
+  `accent_region` cuts the plates out of it**, except where a yoke bites into
+  its end bar (the bar keeps its stripe; a 0.2 mm white corner shows where
+  the square yoke meets the bar's rounded corner). The cut-out is the plates'
+  outline GROWN 0.05 sideways and 0.01 up. Cut to the exact outline, every
+  plate wall and the keyhole plate's top face left a ZERO-VOLUME sheet in the
+  stripe: 47 shells instead of 32 at 130, `NoError`, invisible in renders.
+  Keep both planes on 0.2 layer boundaries and off the feature planes in §3.
 - **PNG previews need `--render`.** The default OpenCSG preview draws the
   whole bar in the accent colour.
 - Not printed. No slicer is installed on this machine to check it with.
@@ -161,8 +213,8 @@ for a multi-material printer.
 - **`charms = 0` must export byte-for-byte the plain band** in
   `exports/bracelet-bracelet.stl`. Cheapest regression test here.
 - **Shell count `cols` and the genus are unchanged at any `charms`.**
-- **The first layer is unchanged** — 1807 mm² in 11 islands (2396 in 15 at
-  180). The pocket keeps `hp_floor` = 0.8 mm of bar under it, so the first
+- **The first layer is unchanged** — 1812.5 mm² in 11 islands (2471.5 in 16
+  at 180). The pocket keeps `hp_floor` = 0.6 mm of bar under it, so the first
   layer never sees it.
 - **The swing test with a butterfly seated**: clear to ±40°, binds at 60°, at
   both 130 and 180 (a wrist needs about 24°).
@@ -548,9 +600,9 @@ Ray-probe the exported mesh. These are the readings that mean the rule holds:
 |---|---|
 | along the pin at z = 0.10 | `lug 1.400 \| air 0.600 \| blade 2.000 \| air 0.600 \| lug 1.400`, once per cluster, `air 5.600` between clusters |
 | along the pin at its axis (z = `pin_z`) | one unbroken `SOLID 6.000` per cluster |
-| vertical through the pin's free span (y = 0) | `0.656 \| air 0.644 \| 1.792 \| air 0.453 \| 0.901` |
-| vertical through the axial gap (y = 1.35) | `SOLID 1.792` — the pin alone, in mid-air, which is what a bridge looks like |
-| vertical through a lug | `SOLID 4.445` |
+| vertical through the pin's free span (y = 0) | `0.605 \| air 0.645 \| 1.590 \| air 0.455 \| 0.905` |
+| vertical through the axial gap (y = 1.35) | `SOLID 1.590` — the pin alone, in mid-air, which is what a bridge looks like |
+| vertical through a lug | `SOLID 4.199` |
 
 The first says the pin's anchors are feet on the plate; the second says the pin
 is continuous between them. Together they are the proof that nothing is
@@ -561,7 +613,7 @@ Two ways a probe lies, both hit here:
 - **A ray that starts inside material inverts every solid/air run** in an
   even-odd walk, and the inverted result looks perfectly plausible. Start
   outside the part, and keep a control whose answer you know (a vertical
-  through a bar centre must read exactly `thick` = 4.450).
+  through a bar centre must read exactly `thick` = 4.200).
 - **A bore is not empty** — it contains the neighbour's pin. A probe fired from
   the bore centre measures the pin, not the wall.
 
@@ -619,7 +671,10 @@ Both grew per feature when the bore was loosened (the old, printed version read
 115 mm². That is the whole price of the looser hinge, and it is paid in the two
 places that were already bridges.
 
-Feature planes are z = 0, 0.655, 1.3, 2.1, 3.55, 3.85, 4.45, 5.0 — `pin_z`,
+(The table is the 4.45 band. For the 4.2 band see the section at the top.)
+
+Feature planes are z = 0, 0.6, 1.25, 1.95, 3.3, 3.6, 4.2 (4.45 band: 0,
+0.655, 1.3, 2.1, 3.55, 3.85, 4.45, 5.0) — `pin_z`,
 `pin_z ± pin_r ∓ pin_flat`, `pin_z ± bore_r`, `thick`. **Sampling exactly on
 one** puts triangle vertices in the sampling plane and splits or invents steps:
 sampled on the grid, the pin bridge reads as two events of 11.6 and 10.1 mm²;
@@ -666,7 +721,7 @@ test can detect anything at all. A wrist needs 24°.
 
 ### 5. Everything else
 
-- Bed stability: **`cols` islands** (15), 2396 mm² of first layer, one
+- Bed stability: **`cols` islands** (16 at 180), 2471.5 mm² of first layer, one
   full-width bar foot each. If it ever reports **1 island**, the feet have
   merged — see `axial_fit`.
 - `check_overhangs.py`: all `BRIDGE`, no `SUPPORT`. The regions are the pins
@@ -705,18 +760,19 @@ test can detect anything at all. A wrist needs 24°.
   layer (the 0.7 bore floor) or `leaf_w`, which is a flexure and is *meant* to
   be thin. The three points under 0.6 mm are an edge artifact at the stud
   head's top rim, not a wall.
-- **`pin_z` = 2.1 is squeezed from both sides**: the bore needs floor under it
-  (`pin_z - bore_r >= 0.6`, and at `bore_fit` = 0.45 only 0.65 is left, so
-  loosening the bore further means raising `pin_z` too) and the knuckle must
-  reach the bed with a real foot (`knuck_foot >= 0.6`, currently 1.05). Assert
+- **`pin_z` = 1.95 is squeezed from both sides**: the bore needs floor under it
+  (`pin_z - bore_r >= 0.6`, and it sits exactly on 0.6 now, so loosening the
+  bore or fattening the pin means raising `pin_z` — and `thick` — too) and
+  the knuckle must reach the bed with a real foot (`knuck_foot >= 0.6`,
+  currently 1.12). Assert
   on the **foot width**, not on `rk > pin_z` — a
   disc that only just dips below z = 0 technically "reaches" the bed while
   standing on a knife edge.
-- **`knuck_slope` = 31.7°**, derived from `rk`, `pin_z` and the foot, asserted
+- **`knuck_slope` = 30.0°** (31.7 on the 4.45 band), derived from `rk`, `pin_z` and the foot, asserted
   at ≤ 40°. It is the largest sloped surface in the model.
 - **`pin_flat` = 0.2.** A plain cylinder is tangent to the bed, and its outline
   jumps 0.63 mm in the first layer — the failure that killed the chain. Cut
-  flat, the first layer is 1.20 mm wide. The bore stays round, so the flat only
+  flat, the first layer is 1.13 mm wide (1.20 with the 2.0 pin). The bore stays round, so the flat only
   adds clearance.
 - **`leaf_free` + the relief reaching the entry hole.** The detent leaves must
   be **cantilevers**. Built in at both ends at this length they need ~50 N,

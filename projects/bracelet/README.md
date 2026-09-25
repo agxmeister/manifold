@@ -84,8 +84,8 @@ Measured on the exported mesh:
 |---|---|
 | along the pin, at the bed (z = 0.10) | `lug 1.400 \| air 0.600 \| blade 2.000 \| air 0.600 \| lug 1.400` |
 | along the pin, at its axis | one unbroken `SOLID 6.000` — fused lug to lug |
-| vertical through the pin's free span | `floor 0.656 \| air 0.644 \| pin 1.792 \| air 0.453 \| roof 0.901` |
-| vertical through a lug | `SOLID 4.445` — bed to top |
+| vertical through the pin's free span | `floor 0.605 \| air 0.645 \| pin 1.590 \| air 0.455 \| roof 0.905` |
+| vertical through a lug | `SOLID 4.199` — bed to top |
 
 The first two lines are the point: the pin's anchors are feet on the plate, and
 the pin is continuous between them.
@@ -104,11 +104,11 @@ the bore and the band falls limp. It is not free: the bore grew, so the knuckle
 grew, so `pitch` had to step from 11.0 to 11.6 to keep the swing clearance.
 
 Nothing is tangent to the bed either, and nothing overhangs off it. The pin's
-underside is cut flat so its first layer is **1.20 mm** wide instead of a knife
+underside is cut flat so its first layer is **1.13 mm** wide instead of a knife
 edge, and the knuckle caps are **not plain discs** — see below.
 
 The hinge swings freely through **±100°** and only binds at 110°. Wrapping a
-180 mm wrist over 15 bars needs 24°; a 130 mm wrist over 11 bars needs a
+180 mm wrist over 16 bars needs 24°; a 130 mm wrist over 11 bars needs a
 little more, still far inside the swing.
 
 ### The knuckle cap is a chord, not a disc
@@ -135,7 +135,7 @@ Measured on the mesh, in the band where the part leaves the plate (z < 0.69):
 | | downward surface | past 45° | steepest |
 |---|---|---|---|
 | disc cap | 251.2 mm² | **184.4 mm²** | 68.9° |
-| chord cap | 331.6 mm² | **0.0 mm²** | **31.7°** |
+| chord cap | 331.6 mm² | **0.0 mm²** | **31.7°** (30.0° since the 4.2 mm band) |
 
 Per-layer step falls from 0.348 mm to a uniform 0.128 mm.
 
@@ -195,8 +195,12 @@ measuring the gap between the entry hole and the bumps.
 
 | layer | reaches past a bead | what it is |
 |---|---|---|
-| z ≈ 1.4 | 87.4 mm² | each pin's first layer — a 3.2 mm bridge between two lugs |
-| z ≈ 3.6 | 28.0 mm² | each bore's roof — anchored on both sides of the blade |
+| z ≈ 1.3 | 87.4 mm² | each pin's first layer — a 3.2 mm bridge between two lugs |
+| z ≈ 3.3 | 28.0 mm² | each bore's roof — anchored on both sides of the blade |
+
+(Measured on the 4.45 mm band at `wrist=180`. The 4.2 mm band has the same
+two layers and nothing else, a little lower: the pin's flat is narrower, and
+the bore roof now closes as one ~1.4 mm bridge instead of stepping in.)
 
 Nothing else in the print reaches more than one 0.4 mm bead past the layer
 below it. Both entries are the same two anchored features as before, and the
@@ -212,8 +216,8 @@ visibly drooped, and neither automated check ever saw that cap (see
 `CLAUDE.md` — it took looking at the model in a slicer). The ray probes above
 are what prove the anchors are real.
 
-Bed stability: **one separate contact patch per bar** — 11 and 1807 mm² of
-first layer at the default size, 15 and 2396 mm² at `wrist=180` — with the two
+Bed stability: **one separate contact patch per bar** — 11 and 1812 mm² of
+first layer at the default size, 16 and 2471 mm² at `wrist=180` — with the two
 clasp plates fused onto the end bars. Each patch is a
 full-width bar foot, so there is far more of it than the old tile grid had.
 
@@ -349,9 +353,9 @@ changed inside. Reprint all three.
 ### What it costs the band
 
 Nothing it prints with. The pocket is 3.1 mm along the band and 11.9 mm across
-it, 3.65 deep, leaving 1.45 mm of wall either side (0.99 at the chamfered rim)
-and **0.8 mm of floor**. So the first layer is identical to the plain band
-(1807 mm² over 11 bars at the default size), the genus is unchanged and it is
+it, 3.6 deep, leaving 1.45 mm of wall either side (0.99 at the chamfered rim)
+and **0.6 mm of floor**. So the first layer is identical to the plain band
+(1812 mm² over 11 bars at the default size), the genus is unchanged and it is
 still one shell per bar. The only new overhangs are the pockets' 45° shoulders.
 
 ### The butterfly — a 3D charm
@@ -450,7 +454,13 @@ sunk 0.6 mm into the upper-left lobe.
 ## Two colours
 
 `-D accent=true` prints **the middle of the band in a second colour**: a
-stripe from 1.8 to 3.2 mm up, with the bottom and the top in the first colour.
+stripe from 1.4 to 2.8 mm up, with the bottom and the top in the first colour
+— three equal bands of 1.4 mm. To make them equal the whole band was thinned
+from 4.45 to 4.2 mm (2026-09-25): the hinge pin went from 2.0 to 1.8 mm, and
+the H-pin pocket's floor from 0.8 to 0.6 mm, so the pins and charms did not
+change. **The 4.2 mm band was printed and confirmed on 2026-09-25** in one colour, with
+a heart charm on the H-pin ("Printed well, the pin sits fine"). The
+two-colour 3MF has not been printed yet.
 It shows as a band of colour round every bar's sides and ends, and the clasp
 plates (1.6 mm thick) stay entirely in the first colour.
 
@@ -461,10 +471,11 @@ into **two parts**, the stripe and the rest, which together are exactly the
 plain band. It exports as a **3MF** holding **one object made of those two
 parts**, with the rest on filament 1 and the stripe on filament 2, for a
 multi-material printer (AMS, MMU). Because the stripe is horizontal, it costs
-only **two filament swaps per print**, one at 1.8 mm and one back at 3.2.
+only **two filament swaps per print**, one at 1.4 mm and one back at 2.8.
 
 `accent_lo` / `accent_hi` move the stripe; keep them on 0.2 mm layer
-boundaries. `base_color` / `accent_color` only tint the preview; the slicer
+boundaries. The clasp plates (1.6 mm) stay wholly in the first colour: the
+stripe is cut away around them. `base_color` / `accent_color` only tint the preview; the slicer
 picks the actual filaments.
 
 ## Models and parts
@@ -515,7 +526,7 @@ and the band makes up the difference: the solver picks the bar count that lands
 nearest the nominal 11.6 mm spacing, then stretches or squeezes **every joint
 equally**, by a fraction of a millimetre, to hit the length exactly. Bars never
 change; only the gaps do, and they have about a millimetre of room between the
-knuckles binding (11.3 mm) and the band looking gappy (12.7 mm).
+knuckles binding (11.1 mm) and the band looking gappy (12.5 mm).
 
 `charms` is independent of all of it — it does not touch the length budget, and
 the stations are placed on whatever bar count the solver lands on.
@@ -529,24 +540,25 @@ the band's width does not wander when the length solver breathes the joints.
 | **130 (default, 4-year-old)** | **11** | **142.0 mm** | **11.88 mm** | **150.5 × 17.6 mm** |
 | 140 (child) | 12 | 152.0 mm | 11.71 mm | 160.5 × 17.6 mm |
 | 160 | 14 | 172.0 mm | 11.44 mm | 180.5 × 17.6 mm |
-| 180 (adult) | 15 | 192.0 mm | 12.05 mm | 200.5 × 17.6 mm |
+| 180 (adult) | 16 | 192.0 mm | 11.25 mm | 200.5 × 17.6 mm |
 | 200 | 17 | 212.0 mm | 11.80 mm | 220.5 × 17.6 mm |
-| 180, `rows=3` | 15 | 192.0 mm | 12.05 mm | 200.5 × 29.2 mm |
+| 180, `rows=3` | 16 | 192.0 mm | 11.25 mm | 200.5 × 29.2 mm |
 
 The buckle is 17.2 mm fastened in every row of that table — that is the point
 of the short buckle. (The flat print got 1.5 mm *longer* even so: the plates
 overlap when fastened, and the 3.3 mm the buckle gave up went to the band.)
 
-The band itself is 4.45 mm thick at every size; the 4.66 mm overall height is
+The band itself is 4.2 mm thick at every size; the 4.66 mm overall height is
 the stud.
 
 Other parameters worth knowing: `pitch_nom` / `body` (what bar spacing wants to
 be, and the bar itself — the knuckles need room to swing, so `pitch_min` is
 derived from `body` and the knuckle radius),
-`pin_d` (2.0 mm — the entire load path of the band), **`bore_fit`** (0.45 mm,
+`pin_d` (1.8 mm — the entire load path of the band; it was 2.0 until the band
+was thinned to 4.2 mm for three equal colour bands), **`bore_fit`** (0.45 mm,
 the play in the hinge) and **`axial_fit`** (0.6 mm, along the pin — both above),
 `fit` (0.3 mm, the swing and clasp clearances), `knuck_wall` (0.9 mm,
-the deliberate thinnest wall), `knuck_slope` (32.7°, derived — the knuckle
+the deliberate thinnest wall), `knuck_slope` (30.0°, derived — the knuckle
 underside, asserted at ≤ 40°), and the clasp's `det_pinch` / `leaf_w` /
 `leaf_free` if the detent wants to be lighter or firmer (`leaf_strain` is
 asserted at the printed leaf's 2.9 %), `head_gap` for how tight it sits, and

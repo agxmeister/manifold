@@ -86,11 +86,17 @@ hp_catch_up = 60;   // the UPPER catch, degrees from vertical. 45 = a light
 hp_fit    = 0.15;   // clearance: a hook's tip to its chamber, a leg to its
                     //   slot, and the H's faces to the slots along the band
 hp_vfit   = 0.15;   // vertical play between a seated hook and its shoulder
-hp_gap    = 0.2;    // a leg's end to the far end of its hole
+hp_gap    = 0.2;    // an upper leg's end to the far end of its charm hole
+                    //   (under the lower legs it is 0.15: `hp_leg_lo`)
 
-hp_bar    = 4.45;   // the bar's thickness == the band's `thick`, asserted there
-hp_floor  = 0.8;    // bar left under the pocket — it never reaches the first
-                    //   layer
+hp_bar    = 4.2;    // the bar's thickness == the band's `thick`, asserted there
+hp_floor  = 0.6;    // bar left under the pocket — it never reaches the first
+                    //   layer. It was 0.8 under a 4.45 bar; when the bar came
+                    //   down to 4.2 (2026-09-25) the floor took the cut. Keep
+                    //   it on a 0.2 boundary: 0.55 falls mid-layer at 0.1 mm.
+hp_leg_lo = 3.45;   // how far the lower legs reach below the seat. Fixed — the
+                    //   printed length — so the pin, the pocket's hooks and
+                    //   every charm's holes did not move when the bar thinned
 hp_wall   = 1.2;    // charm wall around its two holes
 
 // ------------------------------------------------------------------ derived
@@ -103,8 +109,8 @@ hp_defl_up = hp_hook_up - hp_fit;               // 0.60 —   move to pass its w
 
 hp_cb_top = -hp_recess;                         // -0.30
 hp_cb_bot = hp_cb_top - hp_cb_h;                // -1.06
-hp_v_fl   = hp_floor - hp_bar;                  // -3.65 — the pocket's floor
-hp_v_end  = hp_v_fl + hp_gap;                   // -3.45 — lower leg's end
+hp_v_fl   = hp_floor - hp_bar;                  // -3.60 — the pocket's floor
+hp_v_end  = -hp_leg_lo;                         // -3.45 — lower leg's end
 hp_v_lt   = hp_v_end + hp_lr + hp_tip;          // -2.32 — lower hook's tip top
 hp_v_lc   = hp_v_lt + hp_hook_lo;               // -1.62 — lower catch meets leg
 hp_v_top  = -hp_v_end;                          //  3.45 — AS SHORT AS THE BOTTOM
@@ -173,6 +179,8 @@ hp_apex   = hp_roof + hp_slot_x/2;              // 5.20 — and the gable's ridg
 hp_boss_x = hp_slot_x + 2*hp_wall;              // 5.50
 hp_boss_u = 2*hp_c_out + 2*hp_wall;
 
+assert(hp_v_end - hp_v_fl >= hp_fit - 1e-9,
+       str("the lower legs bottom out in the pocket: ", hp_v_end - hp_v_fl, " mm under them"));
 assert(hp_lead < 45, "the hook's lead-in is flatter than its catch — it would hold going IN");
 assert(hp_catch_up >= 45 && hp_catch_up <= 60,
        str("hp_catch_up = ", hp_catch_up, ": under 45 the charm falls off, past 60 friction locks it on"));
