@@ -180,7 +180,7 @@ r = 6.0 at 24° and 30°, r = 5.8 at 40°. The butterfly is long across the band
 right over the knuckle clusters, so its bottom stays within |x| ≤ 5.0 and is
 relieved beyond (see below).
 
-## The H-pin mount — printed 2026-09-23; spring retuned the same day, unprinted
+## The H-pin mount — printed 2026-09-23; retuned, printed, still loose; bigger hooks printed and confirmed 2026-09-25
 
 Asked for on 2026-09-22 ("an H type pin... legs should have small hooks on
 their ends... Middle part of the H also should be recessed into the
@@ -203,8 +203,8 @@ the 45°/55° catches, the gabled charm holes and the fits (0.15 lateral,
    outline corners; zero overhang.
 2. **Both halves are the same length (3.45), so NEITHER leg can be the
    spring.** The legs TURN about the crossbar's middle and the CROSSBAR bends:
-   `hp_strain_cb` = turn·depth/length = 2.55 %, set by the bar side (shorter
-   lever, `hp_arm_lo` 1.76 vs `hp_arm_up` 2.44). Each hole has room on the side
+   `hp_strain_cb` = turn·depth/length = 2.85 %, set by the bar side (shorter
+   lever, `hp_arm_lo` 1.79 vs `hp_arm_up` 2.41). Each hole has room on the side
    a turning leg's END swings to: `hp_room_lo` INSIDE the lower legs (bar),
    `hp_room_up` OUTSIDE the upper legs (charm).
 3. **The upper hooks point IN, the lower ones OUT — do not "tidy" them into
@@ -218,7 +218,7 @@ the 45°/55° catches, the gabled charm holes and the fits (0.15 lateral,
    slot. The self-locking reverse barb (shoulder rising outward) is
    UNPRINTABLE there — it starts as a free edge over the chamber — and was
    rejected; do not re-propose it. The charm prints BOTTOM DOWN → its shoulder
-   is a floor → `hp_catch_up` = 55°, what makes the charm hold. Asserted 45–60:
+   is a floor → `hp_catch_up` = 60° (55 until 2026-09-25), what makes the charm hold. Asserted 45–60:
    past ~60 friction locks it on for good. The pin is held in the bar only
    because the charm stops the legs turning.
 5. **The charm's hole ends are ceilings now, so they are GABLED** (45°, ridge
@@ -229,15 +229,19 @@ the 45°/55° catches, the gabled charm holes and the fits (0.15 lateral,
 **Invariants at `charms = 3`:**
 
 - Default (130): 11 shells, **genus 31**, **1807 mm² in 11 islands** —
-  identical to the plain band; 46 BRIDGE regions against the plain band's 40
-  (the six pocket shoulders). At 180 the same holds as 15 / 43 / 2396.
+  identical to the plain band; 40 BRIDGE regions, the same as the plain band.
+  (It read 46 until 2026-09-25. The six pocket shoulders flickered just past
+  the 45° threshold and now land on it. The `asin(|nz|)` area past 45.5° is
+  183.73 mm² both before and after, so nothing real changed.) At 180 the same holds as 15 / 43 / 2396.
 - Ray probes at a station (start OUTSIDE the part or the solid/air labels
   invert — an along-band ray from inside a knuckle does exactly that): along
   the band 1.450 wall | 3.100 pocket | 1.450 wall, 0.99 at z = 4.4 (the rim);
   vertical through a leg slot `SOLID 0.800`; through a chamber (`y = cy + 5.5`)
-  `0.800 | air 1.485 | 2.165`; between the legs `SOLID 3.450`.
-- Pin: 1 shell, 11.1 × 6.9 × 2.8, 22 mm² of bed, **zero** downward faces. The
-  wall check flags 0.80 (crossbar) and 1.00 (legs) — meant.
+  `0.800 | air 1.485 | 2.165`; between the legs `SOLID 3.450`. (Measured before the 2026-09-25 bigger hooks. The chamber
+  profile has changed, so re-measure before comparing.)
+- Pin: 1 shell, 11.6 × 6.9 × 2.8, 22.6 mm² of bed, **zero** downward faces. The
+  wall check flags 0.76 (crossbar) and 1.00 (legs) — meant. The tapered leg
+  tips (0.54) are too small for it to sample.
 - Butterfly: 1 shell, genus 0, 16.1 × 18.6 × 7.0, 146 mm² in one island.
   `check_overhangs.py` clean. Measured off the mesh (`asin(|nz|)`): the gables
   at 44–45.5° (z 3.6–5.2), wing relief 43.6°, head/ridge/antennae < 40°,
@@ -277,6 +281,53 @@ turned 1.03 × the bar's own angle (−12.99°), lifted 1.2 / 2.5 → empty. Lif
 it well clear. The shoulder is a 45° ceiling, and a hook swung under it sits
 under a higher part, so a lift of only `hp_vfit` reads empty whether or not
 it would hold.
+
+**Bigger hooks (2026-09-25) — PRINTED AND CONFIRMED the same day** with the heart: "it sits very well now". The retuned pin DID print, with the
+heart, and the user reported the heart "comes off with a light pull" (a
+straight pull, not prying and not wobble). On paper the retune held at ~2.5×
+and ~60 N. So the spring was never what gave way. The catch was: 0.40 mm of
+overlap is one bead, and the printer rounds it off. **Do not tune this mount
+on spring force alone. The rigid model cannot see rounding.** Now:
+
+- `hp_hook` split into **`hp_hook_up` 0.75** (0.60 past the wall) and
+  **`hp_hook_lo` 0.70** (0.55), asserted ≥ 0.5 of overlap each. `hp_catch_up`
+  55 → **60**, the top of its asserted band.
+- **The upper hooks cannot grow alone.** Their bigger release turn frees the
+  bar hooks too: 0.75 up with 0.55 down gives `hp_keep` −0.04, and the pin
+  leaves with the charm. At equal footprint, the rigid model even prefers
+  the OLD hook size. Bigger hooks only pay because of rounding.
+- Bigger bar hooks mean a bigger insertion turn, so `hp_lead` 35 → **40** (to
+  keep the lower catch under the crossbar), **`hp_cb_h` 0.9 → 0.76** and
+  **`hp_s` 4.5 → 4.6** (strain 2.85 %). The charm chamber's roof keeps its
+  35° as the new `hp_roof_lead`, so it did not move with `hp_lead`.
+- **`hp_taper`: the upper legs' outer face leans in above the hook by exactly
+  the turn** (0.46, tip 0.54 wide). `hp_room_up` is now measured at the hook
+  tip, not the leg top. `hp_c_out` 5.79 → **5.76**. The charms' holes did NOT
+  grow, so every charm model and its asserts stand unchanged.
+- Old bands, pins and charms do not mix with new ones (bar chamber `hp_out`
+  5.70 → 5.95, charm chamber `hp_c_in` 3.30 → 3.20). Reprint all three.
+- The user proposed legs that splay outward. It was explained and not built.
+  With rigid legs turning about the crossbar, splayed legs in matching holes
+  would drive the lower hooks into their shoulders on removal. The charm
+  would be permanent. The user chose "removable, just firmer".
+
+Harness rows for this, heart and butterfly identical:
+
+| test | reads |
+|---|---|
+| bar ∩ single leg turned −14.25° (charm release), lift 1.2 | 0.0869 — SOLID, the pin stays |
+| same, unturned (control) | 1.2577 |
+| leg turned −18.18° (1.03 × bar turn), lift 1.2 / 2.5 | empty / empty |
+| same turn, lift 0 → 3.0 (bar insertion sweep) | empty at every step |
+| charm ∩ leg turned −14.66° (1.03 × charm turn), pin 0 → 3.0 below seat | empty at every step |
+| charm ∩ leg turned 1.6 × charm turn, seated (control, the room is real) | 1.9498 |
+| charm ∩ leg unturned, 1.0 below seat (control, the hook must turn) | 1.2692 |
+| charm ∩ pin, dz +0.25 (control) | 0.0015 — the tapered tip meets the gable |
+| heart envelope, every 30° −150..180 | empty; controls dy +1.0 at 0° and −1.0 at 180° leak 0.418 (0.512 before) |
+
+**The heart envelope control's sign:** the notch is at +y (`notch at 8.03`),
+so the leaking shift at 0° is dy **+1.0**, not −1.0. A −1.0 shift reads empty
+and proves nothing.
 
 **The joint harness** (band include made absolute, `bracelet();` stripped;
 `charm_on(dz)` = `translate([X, band_cy, thick + dz]) butterfly_charm()` — no
@@ -416,8 +467,8 @@ butterfly `cmp`s stayed IDENTICAL, and the ladybug's volume is unchanged
 - **The envelope test is the proof, not the wall check.** `minkowski()`
   `charm_h_holes()` with a sphere of `hp_wall − 0.05`, clip to z > 0, and
   subtract the rotated `heart() − shine()`. It must be EMPTY at every 10°
-  over −150..180. Displacement controls must leak: dy −1.0 at 0°, and dy
-  +1.0 at 30°. Shifts of 0.6 stay clean, so that is the margin. **Do not
+  over −150..180. Displacement controls must leak: dy +1.0 at 0° (toward the notch — see "Bigger hooks"; −1.0 reads empty), and dy
+  −1.0 at 180° (+1.0 at 30° also read empty on 2026-09-25). Shifts of 0.6 stay clean, so that is the margin. **Do not
   build the control from a smaller parameter.** An assert (notch,
   star-shape) vetoes it, OpenSCAD exports nothing, and "empty" reads as a
   pass. `check_wall_thickness.py` only samples: it reads 1.51+ here and

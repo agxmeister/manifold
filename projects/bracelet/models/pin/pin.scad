@@ -31,14 +31,15 @@ $fs = 0.3;
 include <../../lib/charm-pin.scad>
 
 copies  = 1;      // how many to lay out; `-D copies=6` for a batch
-spacing = 2*(hp_uo + hp_hook) + 3;   // centre to centre, side by side
+spacing = 2*(hp_uo + hp_hook_lo) + 3;   // centre to centre, side by side
 
 assert(copies >= 1, "copies must be at least 1");
 
-echo(str("H-pin: ", 2*(hp_uo + hp_hook), " x ", hp_v_top - hp_v_end, " x ", hp_t,
+echo(str("H-pin: ", 2*(hp_uo + hp_hook_lo), " x ", hp_v_top - hp_v_end, " x ", hp_t,
          " mm, legs ", hp_leg_w, " wide at ", 2*hp_s, " apart; ",
          -hp_v_end, " mm into the bar, ", hp_v_top, " into the charm"));
-echo(str("hooks ", hp_hook, " (", hp_defl, " past the wall), lead-in ", hp_lead,
+echo(str("hooks ", hp_hook_lo, " / ", hp_hook_up, " (", hp_defl_lo, " / ", hp_defl_up,
+         " past the wall), lead-in ", hp_lead,
          " deg into the bar, ", hp_lead_up, " into the charm; catch 45 deg in the bar, ",
          hp_catch_up, " deg in the charm; levers ", hp_arm_lo, " / ", hp_arm_up,
          "; crossbar ", hp_cb_h, " at ", 100*hp_strain_cb, "% strain; lower hooks keep ",

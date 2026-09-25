@@ -251,7 +251,7 @@ onto the bar and the pin is not on show anywhere.
 ```
 
 **The two halves are the same length** — 3.45 mm each side of the bar's top
-face — so the pin is 11.1 × 6.9 × 2.8 mm. Tell them apart by the hooks: the
+face — so the pin is 11.6 × 6.9 × 2.8 mm. Tell them apart by the hooks: the
 half whose hooks point **out** goes into the bracelet.
 
 `charms` in `bracelet.scad` cuts the pockets; `models/pin`
@@ -267,7 +267,7 @@ flexes flexes **in the plane of the bed**, along its perimeters.
 
 Both halves are far too short to bend — a 3.45 mm leg flexed 0.4 mm would
 strain ~6–15 %. So the legs do not bend, they **turn**, and the crossbar bends
-in an arc between them: **2.55 % strain** at worst, under the 2.9 % the clasp's
+in an arc between them: **2.85 % strain** at worst, under the 2.9 % the clasp's
 printed leaf runs at. The crossbar carries none of the pull, which goes
 straight down the legs.
 
@@ -302,6 +302,34 @@ turns the legs the same way that frees the bar's hooks. With the longer lever,
 the charm's hooks clear first, while the bar's still overlap their shoulders
 by 0.11 mm, so the pin stays in the bar.
 
+### Why it was still loose: the hooks were too small
+
+That pin printed, and a heart still came off with a light pull. The retune had
+made the spring stiffer, so the spring was not what gave way. The catches
+were. Each hook only reached **0.4 mm** past its wall. That is about one printed
+line, and the printer rounds off most of it, so the hook rolled over a rounded
+edge instead of catching behind a steep face.
+
+So the hooks are bigger now. The upper ones reach **0.60 mm** past the wall
+(0.75 hook) and the lower ones **0.55** (0.70 hook), and the charm's catch
+is **60°**, up from 55°. The rest follows from the rules above:
+
+- **The bar's hooks had to grow too.** Bigger charm hooks need a bigger turn
+  to let go. That same turn frees the bar's hooks, so with only the charm's
+  hooks enlarged, the pin would come out of the bracelet with the charm. The
+  bar's hooks still hold 0.11 mm when the charm lets go.
+- **The crossbar is thinner and a little longer** (0.76 mm, the legs 0.1 mm
+  further out). Bigger bar hooks mean the legs turn further going in, and this
+  keeps the bend under the 2.9 % limit.
+- **The upper legs taper on the outside above the hook**, down to 0.54 mm at
+  the tip. A turning leg's end swings outward, and the taper keeps it inside
+  the room the old holes already had. The charms' holes did not grow, and
+  every charm keeps its shape.
+
+**The bands, pins and charms printed before 2026-09-25 do not mix with the new
+ones.** The bigger bar hooks don't fit an old pocket, and the charm holes
+changed inside. Reprint all three.
+
 ### The two catches are different angles, and that is on purpose
 
 - **In the bar, 45°.** The bar prints upright, so the shoulder a lower hook
@@ -310,17 +338,17 @@ by 0.11 mm, so the pin stays in the bar.
   can only let go by turning the legs, and while a charm is on, the charm
   holds the upper legs still. **The pin cannot leave the bar with a charm on
   it.**
-- **In the charm, 55°.** The charm prints bottom down, so the shoulder its
+- **In the charm, 60°.** The charm prints bottom down, so the shoulder its
   hooks catch on is a *floor* and can be any angle. A steeper catch is what
   makes the charm **hold**: it takes a firm tug to pull it off. `hp_catch_up`
   is the number to tune: 45 makes the charm easy to pull off, and past 60
   friction locks it on for good (an assert rejects that). If the charm is now
-  too firm, lower this. If the pin is too hard to push into the bar, set
-  `hp_cb_h` back to 0.8, which returns the bar side to exactly how it printed.
+  too firm, lower this to 55. The bigger hooks are what make the real
+  difference, so leave those alone.
 
 ### What it costs the band
 
-Nothing it prints with. The pocket is 3.1 mm along the band and 11.4 mm across
+Nothing it prints with. The pocket is 3.1 mm along the band and 11.9 mm across
 it, 3.65 deep, leaving 1.45 mm of wall either side (0.99 at the chamfered rim)
 and **0.8 mm of floor**. So the first layer is identical to the plain band
 (1807 mm² over 11 bars at the default size), the genus is unchanged and it is
@@ -461,7 +489,7 @@ piece.
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
 | `bracelet` | `bracelet` | 150.5 × 17.6 × 4.7 mm | all 11 bars' own flat feet |
-| `pin` | `pin` | 11.1 × 6.9 × 2.8 mm | its own face, 24 mm² |
+| `pin` | `pin` | 11.6 × 6.9 × 2.8 mm | its own face, 24 mm² |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 18.6 × 7.0 mm | its own bottom, 146 mm² in one piece |
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 18.3 × 7.8 mm | its own bottom and legs, 197 mm² in one piece |
 | `heart-charm` | `heart-charm` | 23.0 × 19.0 × 8.0 mm at 0° | its own flat bottom, 307 mm² in one piece |
@@ -606,7 +634,7 @@ python3 tools/multicolor-3mf.py /tmp/ladybug.3mf \
   supports, no brim. It stands on the face that sits on the bracelet, 146 mm²
   of it.
 - **Same material and settings as the band**, and **three perimeters**: the
-  pin's crossbar is 0.9 mm and its legs 1.0 mm, about two lines each. The
+  pin's crossbar is 0.76 mm and its legs 1.0 mm, about two lines each. The
   crossbar is the spring and is meant to be thin; one fat perimeter would print
   it as a single weak line.
 - **Print the ladybug the same way**, bottom down, no supports, no brim, 197
