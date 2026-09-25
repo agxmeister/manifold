@@ -388,7 +388,13 @@ charms      = 0;     // how many charm stations. 0 = none.
 charm_reach = 16;    // the widest charm this spacing has to keep apart —
                      //   models/butterfly-charm spans 15.8 mm along the band.
 
-function charm_col(i) = round((i + 1) * (cols - 1) / (charms + 1));
+// The stations are MIRRORED about the band's middle, not each rounded on its
+// own: round() takes every .5 the same way, so the ideal 2.5 and 7.5 of three
+// charms on 11 bars both went up and landed on [3, 5, 8]. Only the first half
+// is rounded; the second half is its reflection.
+function charm_col(i) = i < charms / 2
+    ? round((i + 1) * (cols - 1) / (charms + 1))
+    : cols - 1 - charm_col(charms - 1 - i);
 charm_ix    = [for (i = [0 : charms - 1]) charm_col(i)];
 
 // Spacing is checked on the SMALLEST gap between consecutive stations, not on
