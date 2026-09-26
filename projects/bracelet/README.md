@@ -251,11 +251,11 @@ onto the bar and the pin is not on show anywhere.
 ```
   charm  |<   >|    upper hooks point IN, into the charm's two holes
   -------|=====|--- bar top: the crossbar sits just below it
-  bar    |>   <|    lower hooks point OUT, under 45° shoulders in the pocket
+  bar    |>   <|    lower hooks point OUT, under 60° shoulders in the pocket
 ```
 
 **The two halves are the same length** — 3.45 mm each side of the bar's top
-face — so the pin is 11.6 × 6.9 × 2.8 mm. Tell them apart by the hooks: the
+face — so the pin is 11.9 × 6.9 × 2.8 mm. Tell them apart by the hooks: the
 half whose hooks point **out** goes into the bracelet.
 
 `charms` in `bracelet.scad` cuts the pockets; `models/pin`
@@ -271,8 +271,10 @@ flexes flexes **in the plane of the bed**, along its perimeters.
 
 Both halves are far too short to bend — a 3.45 mm leg flexed 0.4 mm would
 strain ~6–15 %. So the legs do not bend, they **turn**, and the crossbar bends
-in an arc between them: **2.85 % strain** at worst, under the 2.9 % the clasp's
-printed leaf runs at. The crossbar carries none of the pull, which goes
+in an arc between them. Each time a charm goes on or off it bends **2.3 %**,
+under the 2.9 % the clasp's printed leaf runs at. Pushing the pin into the
+bracelet bends it further, **3.7 %**, but that happens once per pin (see
+"Longer bar hooks"). The crossbar carries none of the pull, which goes
 straight down the legs.
 
 That is why the upper hooks point the other way. Turning a leg moves its two
@@ -334,14 +336,45 @@ is **60°**, up from 55°. The rest follows from the rules above:
 ones.** The bigger bar hooks don't fit an old pocket, and the charm holes
 changed inside. Reprint all three.
 
+### Why the pin still came out of the bracelet: the bar's catch
+
+With the bigger hooks the pin sat well in the charm but still left the
+bracelet with little effort. The bar's catch is now **60°** instead of 45°
+(see below). The charms did not change. **Reprint the pin and the band
+together:** an old pin does not fit the new pocket. A new pin does fit an
+old band, but it holds there only as firmly as the old one did.
+
+### Longer bar hooks (2026-09-26)
+
+Printed and confirmed: the pin now holds in the bracelet much better.
+
+The 60° catch did not change anything you could feel: the pin still came out
+of the bracelet with a light pull, with or without a charm on it. So the
+bracelet's hooks are longer: **0.85 mm, reaching 0.70 past the wall** (were
+0.70 and 0.55). Their lead-in is a little steeper (44°) so the extra length
+costs as little turn as possible.
+
+- The margin that keeps the pin in the bracelet when a charm is pulled off
+  grows from **0.11 to 0.27 mm**. That margin is what the printer was eating.
+- **Pushing the pin in takes more force**, and the crossbar bends 3.7 %
+  instead of 2.85 %, past the 2.9 % limit this project uses elsewhere. That
+  bend happens once per pin. Charms going on and off still bend it only
+  2.3 %. If a crossbar cracks going in, `hp_hook_lo = 0.80` gives 3.4 %.
+- The charms did not change. **Reprint the pin and the band together**: the
+  new pin does not fit a band printed before this change.
+
 ### The two catches are different angles, and that is on purpose
 
-- **In the bar, 45°.** The bar prints upright, so the shoulder a lower hook
-  catches under faces down — a ceiling — and this project prints no flat
-  ceilings. 45° is only a detent, but it never has to be more: the lower hooks
-  can only let go by turning the legs, and while a charm is on, the charm
-  holds the upper legs still. **The pin cannot leave the bar with a charm on
-  it.**
+- **In the bar, 60° too (45° until 2026-09-25).** The bar prints upright, so
+  the shoulder a lower hook catches under faces down, like a ceiling. It is
+  only 0.8 mm deep and 3.1 mm long between the slot's walls, so each layer
+  bridges across a short gap. It used to be 45°, on the belief that a seated
+  charm holds the legs still. **It doesn't.** The turn that lets the charm's
+  hooks go is the same turn that lets the bar's hooks go, and the 45° catch
+  did most of the turning, so the pin pulled out of the bracelet too easily.
+  The charm still lets go first: when it does, the bar's hooks still overlap
+  by 0.27 mm (0.11 before the longer hooks). To take a bare pin out of the bracelet, spread its upper legs
+  apart.
 - **In the charm, 60°.** The charm prints bottom down, so the shoulder its
   hooks catch on is a *floor* and can be any angle. A steeper catch is what
   makes the charm **hold**: it takes a firm tug to pull it off. `hp_catch_up`
@@ -352,11 +385,12 @@ changed inside. Reprint all three.
 
 ### What it costs the band
 
-Nothing it prints with. The pocket is 3.1 mm along the band and 11.9 mm across
+Nothing it prints with. The pocket is 3.1 mm along the band and 12.2 mm across
 it, 3.6 deep, leaving 1.45 mm of wall either side (0.99 at the chamfered rim)
 and **0.6 mm of floor**. So the first layer is identical to the plain band
 (1812 mm² over 11 bars at the default size), the genus is unchanged and it is
-still one shell per bar. The only new overhangs are the pockets' 45° shoulders.
+still one shell per bar. The only new overhangs are the pockets' 60° shoulders,
+each a short bridge between the slot's walls.
 
 ### The butterfly — a 3D charm
 
@@ -500,7 +534,7 @@ piece.
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
 | `bracelet` | `bracelet` | 150.5 × 17.6 × 4.7 mm | all 11 bars' own flat feet |
-| `pin` | `pin` | 11.6 × 6.9 × 2.8 mm | its own face, 24 mm² |
+| `pin` | `pin` | 11.9 × 6.9 × 2.8 mm | its own face, 24 mm² |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 18.6 × 7.0 mm | its own bottom, 146 mm² in one piece |
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 18.3 × 7.8 mm | its own bottom and legs, 197 mm² in one piece |
 | `heart-charm` | `heart-charm` | 23.0 × 19.0 × 8.0 mm at 0° | its own flat bottom, 307 mm² in one piece |

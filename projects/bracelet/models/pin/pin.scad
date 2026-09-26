@@ -40,9 +40,9 @@ echo(str("H-pin: ", 2*(hp_uo + hp_hook_lo), " x ", hp_v_top - hp_v_end, " x ", h
          -hp_v_end, " mm into the bar, ", hp_v_top, " into the charm"));
 echo(str("hooks ", hp_hook_lo, " / ", hp_hook_up, " (", hp_defl_lo, " / ", hp_defl_up,
          " past the wall), lead-in ", hp_lead,
-         " deg into the bar, ", hp_lead_up, " into the charm; catch 45 deg in the bar, ",
+         " deg into the bar, ", hp_lead_up, " into the charm; catch ", hp_catch_lo, " deg in the bar, ",
          hp_catch_up, " deg in the charm; levers ", hp_arm_lo, " / ", hp_arm_up,
-         "; crossbar ", hp_cb_h, " at ", 100*hp_strain_cb, "% strain; lower hooks keep ",
+         "; crossbar ", hp_cb_h, " at ", 100*hp_strain_cb, "% strain going in, ", 100*hp_strain_up, "% per charm; lower hooks keep ",
          hp_keep, " when the charm lets go"));
 
 module pin_printed() linear_extrude(hp_t) hp_pin_2d();

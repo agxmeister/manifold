@@ -265,14 +265,17 @@ the 45°/55° catches, the gabled charm holes and the fits (0.15 lateral,
    into their shoulders and JAMS. Mixed, fitting the charm eases the lower hooks
    off their shoulders and they spring back. Insertion order is pin first,
    charm second.
-4. **Two catch angles, each forced by its part's print orientation.** Bar
-   prints upright → its shoulder is a ceiling → 45°, descending away from the
-   slot. The self-locking reverse barb (shoulder rising outward) is
+4. **The catches, each shaped by its part's print orientation.** Bar
+   prints upright → its shoulder is a ceiling, descending away from the
+   slot: 45° until 2026-09-25, now `hp_catch_lo` = 60° (see "A firmer bar
+   catch" below). The self-locking reverse barb (shoulder rising outward) is
    UNPRINTABLE there — it starts as a free edge over the chamber — and was
    rejected; do not re-propose it. The charm prints BOTTOM DOWN → its shoulder
    is a floor → `hp_catch_up` = 60° (55 until 2026-09-25), what makes the charm hold. Asserted 45–60:
-   past ~60 friction locks it on for good. The pin is held in the bar only
-   because the charm stops the legs turning.
+   past ~60 friction locks it on for good. **The charm does NOT stop the
+   legs turning** — this file used to say it did. The turn that frees the
+   charm's hooks is the same turn that frees the bar's; only `hp_keep` stands
+   between them.
 5. **The charm's hole ends are ceilings now, so they are GABLED** (45°, ridge
    along u, `hp_apex` 5.20). The chamber's roof follows the hook's lead-in, the
    material growing out from the chamber's inner wall. Its FLOOR is the
@@ -330,7 +333,7 @@ tops on 3.21 against the bar's 1.81: 0.32 of the bar's force. Now:
 Two harness rows are added for this: **bar ∩ a single leg turned by the
 charm's release angle (−9.41°), lifted 1.2 → solid** (the pin stays), and
 turned 1.03 × the bar's own angle (−12.99°), lifted 1.2 / 2.5 → empty. Lift
-it well clear. The shoulder is a 45° ceiling, and a hook swung under it sits
+it well clear. The shoulder is a ceiling (45° then, 60° now), and a hook swung under it sits
 under a higher part, so a lift of only `hp_vfit` reads empty whether or not
 it would hold.
 
@@ -421,6 +424,98 @@ the threshold flicker, and `check_overhangs.py` split one clean ramp into a
 - **A gable started 0.01 below the eaves leaves a 0.01 mm ledge** along each
   eave — 0.07 mm² of flat ceiling, found only by the direct angle scan. The
   gable's walls are carried a millimetre down into the hole instead.
+
+**A firmer bar catch (2026-09-25, later the same day) — NOT printed yet.**
+The user: the pin "sits well in the charm, but in the bracelet it still sits
+a bit loosely — small effort to detach it". The cause was a false claim in
+this file: that a seated charm holds the legs still. Upper hooks point IN and
+release by the upper ends swinging OUT; lower hooks point OUT and release by
+the lower ends swinging IN. About the crossbar's middle **that is ONE
+rotation**. A pull on the charm cams both catches the same way, and with
+friction (µ ≈ 0.4) the bar's 45° catch was doing about two thirds of that
+camming (cot-with-friction 0.43 × lever 1.79, against the charm's 60°:
+0.14 × 2.41). The release order is purely geometric: the charm lets go
+first, with `hp_keep` 0.106 mm of bar hook still under its shoulder. On a
+real print, the ceiling's sag and rounding can eat that.
+
+- **`hp_catch_lo` = 60** (new; asserted 45–60), the charm's proven angle.
+  The shoulder `hp_b_sh(u)` is the hook's catch face lifted `hp_vfit`, so
+  `hp_catch_lo = 45` reproduces the old pin, c3 band and plain band byte for
+  byte (checked). As a ceiling it is 0.8 × 3.1 mm, anchored on the slot's two
+  walls along the band: `check_overhangs` gives 46 BRIDGE (40 + the six
+  shoulders, each "3.1 × 0.9, worst 60°"), no SUPPORT. At a 0.2 mm layer each
+  step is 0.35, under a bead, for about 2 layers.
+- Friction estimate only (the rigid model has already been wrong once here):
+  bare pin ~3× firmer, charm-on pull ~1.8× firmer. **The charm itself comes
+  off ~1.8× harder too**, because the bar's cam was helping turn the legs.
+  If the charm gets too firm, lower `hp_catch_up` to 55 before touching the
+  bar.
+- **`hp_keep` is unchanged at 0.106 and cannot grow cheaply.** It is capped at
+  `arm_lo·(turn_lo,max − turn_up)`, and `turn_lo,max` is set by the 2.9 %
+  crossbar strain. More keep means a longer crossbar (wider pin: every charm's
+  holes move) or higher upper hooks (a weaker charm). If the pin still
+  follows the charm out of the bar, this is the next step, and it costs charm
+  reprints.
+- Bare-pin removal: spread the upper legs apart (upper ends out → lower ends
+  in). No pull needed.
+- Untouched: the charms (heart, butterfly byte-identical), `hp_keep`, the
+  strain, the levers, the plain band and `-w180`.
+- **A new pin fits an old band** (lifted 0.05 off the stop: empty), with only
+  the old 45° grip. **An old pin does NOT fit a new band** (0.116 mm³). Reprint
+  the pin with the band.
+
+Harness (`bar(c)` minus `charm_h_station(c)` — `bar()` alone has NO pocket,
+and a harness without the station reads ~40 mm³ everywhere, controls
+included). At 45 it reproduces every earlier row exactly. At 60:
+
+| test | reads |
+|---|---|
+| bar ∩ pin seated / dz +0.10 / +0.25 / −0.05 | 0.0000 / empty / 0.3080 / 0.8811 |
+| dz 0.05, dx 0.12 / 0.20 | empty / 0.7212 |
+| leg turned −14.25° (charm release), lift 1.2 | 0.0778 — the pin stays |
+| same unturned (control) | 1.1719 |
+| leg −18.18°, lift 0 → 3.0 step 0.3 | empty at every step |
+| leg unturned, lift 0.10 / 0.14 / 0.20 | empty / empty / 0.0770 (the 0.15 `hp_vfit`) |
+
+**Longer bar hooks (2026-09-26) — PRINTED AND CONFIRMED the same day** ("It is much better now"). The 60° catch printed
+and changed nothing the user could feel: the pin still left the bar with a
+light pull, both bare and under a charm. A spring-finger redesign (a separate
+flexure for the charm, so the legs could be locked by the charm's holes) was
+proposed and declined: "Just make the hooks longer - it should be enough."
+Done:
+
+- **`hp_hook_lo` 0.70 → 0.85** (0.70 past the wall), **`hp_lead` 40 → 44**
+  (a shorter lead-in, so a longer lever and a smaller turn). `hp_keep`
+  **0.106 → 0.267**. Pin 11.9 wide, pocket 12.2 (`hp_out` 6.10, 2.7 mm of
+  bar beyond it).
+- **The strain assert is split.** `hp_strain_up` (2.30 %, every charm on and
+  off) stays ≤ 2.9. `hp_strain_cb` (the max, set by the one-off push into the
+  bar) is now **3.73 %**, asserted ≤ 3.8. This deliberately breaks the
+  project's 2.9 % rule for a single bend per pin. If a crossbar cracks going
+  in, 0.80 gives 3.36 % and keep 0.20.
+- Charms are byte-identical (heart, butterfly checked); the plain band too.
+  At 130: 11 shells, genus 31, 1812.5 mm², 46 BRIDGE, no SUPPORT; genus 25 /
+  37 / 46 / 58 at 110 / 150 / 180 / 230. Pin: 1 shell, wall flags the same
+  as before (0.76 crossbar, 1.00 legs), no overhangs.
+- New pin in an old band: SOLID (does not fit). Old pin in the new band: fits
+  (loose, as before). Reprint pin and band.
+
+| test (at 60° catch, 0.85 hook) | reads |
+|---|---|
+| bar ∩ pin seated / dz +0.10 / +0.25 / −0.05 | 0.0000 / empty / 0.3920 / 0.8079 |
+| dz 0.05, dx 0.12 / 0.20 | empty / 0.7407 |
+| leg −14.25° (charm release), lift 1.2 / 2.5 | 0.3144 / 0.1715 — the pin stays |
+| leg unturned, lift 1.2 (control) | 1.5697 |
+| leg −20°, lift 1.2 (under the insertion turn — control) | 0.0309 |
+| leg −23.73° (1.03 × insertion turn), lift 0.15 → 3.3 | empty at every step |
+| same, lift 0 / 0.05 / 0.10 | 0.0372 / 0.0116 / 0.0000 — see below |
+| leg unturned, lift 0.10 / 0.14 / 0.20 | empty / empty / 0.0980 |
+
+The fully turned leg's outer lower corner drops ~0.2 onto the pocket floor
+(0.15 below the leg) within 0.1 mm of seating. That state does not happen:
+there the hooks are already under their shoulders, and a 12° turn clears
+them at lift 0.15. The turn peaks near lift 0.9, where 23° clears. (The
+old pin's row was on the same edge: a 0.16 drop against 0.15.)
 
 ## The ladybug charm — added 2026-09-25, unprinted
 
