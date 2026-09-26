@@ -3,6 +3,46 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
+## Bigger detent bumps on a tapered leaf — 2026-09-26, unprinted
+
+The user asked for the buckle's "hooks" to be bigger, so opening it takes some
+effort. The hooks are the two detent bumps. **`det_pinch` 0.15 → 0.30.** On
+the straight 1.0 × 2.8 leaf that would strain it far past the proven 2.9 %,
+and a straight leaf lengthened to stay at 2.9 % gets SOFTER (at fixed strain
+side force ∝ w²/L). So the leaf **tapers**: `leaf_root` 1.6 → `leaf_tip` 0.8
+at the bump, `leaf_free` 3.9. `leaf_strain` is now computed as a beam sum over
+the taper (it reduces to the old formula for a straight leaf): **2.894 %**.
+New echo `leaf force` = side force against the printed leaf: **1.85×**. With
+the steeper bump (and μ 0.3) the modelled peak opening push is **~2.2×**.
+Treat that as a ratio, not newtons. The last real lesson says catches get
+rounded off by the printer.
+
+What moved: `kh_w` 10.4 → **11.6**; `det_off` 0.70 → 1.04 (still solved to
+cradle the seated post); travel 4.12 → **4.56**; buckle 17.24 → **18.88 mm**
+fastened. The band exports all changed (the solver re-divides the run): 130 is
+still 11 bars, pitch 11.71, **151.3 mm** flat; **180 is 15 bars again**
+(11.94). The pin and all charms are byte-identical, so they still fit.
+The relief is now three hulls: a tapered run, a straight run at `leaf_tip`,
+then the radial turn-in.
+
+Verified:
+- shells == cols and genus = formula at every wrist 110–230; genus 31 at
+  `charms = 3`, 11 shells.
+- Clasp harness vs the old file, side by side: seated dx −0.05 … 0.25 reads
+  the same pattern (far wall 0.0460 at 0.17, 0.4069 at 0.25, lift 0.05 →
+  0.011 in both). Post centred on the bumps: 0.534 mm³ (was 0.179). It is
+  clear again by dx −2.5, well before the entry. Fastening dx +0.25 is empty
+  at dz 0/0.8/1.6/2.4/3.2. The control dx −0.25 gives 4.6387 = 0.25 × 11.6 ×
+  1.6, and dx 0 is empty.
+- `check_overhangs`: 40 BRIDGE, no SUPPORT (unchanged). Bed: 11 islands,
+  1828.1 mm².
+- Keyhole plate alone, under 0.78 mm: only the pointed FREE END of each leaf,
+  where the entry hole's arc cuts it past the bump. The old plate had the same
+  cusp, sharper (0.01 vs 0.06). It has no job.
+
+If it is now too stiff to close, lower `det_pinch` to 0.25. The leaf only
+gets less strained.
+
 ## The band is 4.2 mm thick since 2026-09-25 — printed and confirmed the same day
 
 The user asked for the accent stripe's three bands to be equal and chose to
@@ -909,7 +949,7 @@ test can detect anything at all. A wrist needs 24°.
   bridges in §3. `fit` = 0.3 now means only the swing clearance and the clasp
   stack-up.
 - **`pitch` is SOLVED, not set.** The buckle is fixed at its shortest working
-  length (17.24 mm fastened, 4.12 mm of travel at every size — see "The
+  length (18.88 mm fastened, 4.56 mm of travel at every size — see "The
   clasp"), so it no longer absorbs the sizing remainder — the joints do. The
   solver picks the bar count nearest `pitch_nom` = 11.6 and divides the run by
   it, landing between `pitch_min` = `2*(h + rk + fit)` = 11.30 and
@@ -969,11 +1009,11 @@ pinned by:
 - **The bumps CRADLE the seated post.** `det_off` (0.70) is solved so that, with
   the post against the far wall, it just touches the bumps. Post centred in the
   seat is 0.047 mm into them — deliberate, the leaves take it.
-- **The leaf is 1.0 × 2.8, not 0.8 × 2.5**: same root strain (2.87 % vs the
+- *(Superseded 2026-09-26 by the tapered leaf, top of this file.)* **The leaf is 1.0 × 2.8, not 0.8 × 2.5**: same root strain (2.87 % vs the
   printed 2.88 %, asserted ≤ 2.9 % as `leaf_strain`), 1.39× the force
   (∝ w³·pinch/L³). A deeper pinch was the rejected alternative — it overstrains
   the leaf.
-- **The buckle is 17.24 mm fastened, from 20.5.** `kh_entry` = `kh_wall` (1.0)
+- **The buckle was 17.24 mm fastened, from 20.5** (18.88 since the bigger bumps). `kh_entry` = `kh_wall` (1.0)
   + entry radius; `kh_travel_min` is solved from the bump/entry clearance;
   `kh_tip` = relief end + `tip_strip` (2.0 of full-width plate carrying the
   load); `stud_ext` = travel + `kh_tip`, which is the **insertion constraint**:
@@ -1001,7 +1041,7 @@ keyhole side with `bar(0)`, stud side with `bar(cols-1)`.
 | seated, dx 0.17 / 0.25 (control) | solid — the far wall |
 | seated at dx 0.14, lift dz 0.05 | solid — no vertical play under load |
 | fastening, dx +0.25, dz 0 … 3.2 | empty at every height |
-| fastening, dx −0.25 (control) | solid, 0.25 × 10.4 × 1.6 — the tip against the stud bar |
+| fastening, dx −0.25 (control) | solid, 0.25 × 11.6 × 1.6 (10.4 before 2026-09-26) — the tip against the stud bar |
 
 That last control is also the measurement: the tip reaches the bar face
 exactly at dx 0.

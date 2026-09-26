@@ -6,7 +6,7 @@ a wrist, and nothing is assembled, glued, or picked out of supports.
 
 **Sized to the wrist it is printed for — by default a 142 mm loop on a
 130 mm wrist (the 4-year-old it was printed for, and fits), 11 bars, printed
-flat in a 150.5 × 17.6 × 4.7 mm strip.** `-D wrist=180` is the adult size.
+flat in a 151.3 × 17.6 × 4.7 mm strip.** `-D wrist=180` is the adult size.
 The clasp is the same short buckle at every size; length is band, not plate.
 
 ![the bracelet as it comes off the bed](previews/bracelet-bracelet.png)
@@ -108,7 +108,7 @@ underside is cut flat so its first layer is **1.13 mm** wide instead of a knife
 edge, and the knuckle caps are **not plain discs** — see below.
 
 The hinge swings freely through **±100°** and only binds at 110°. Wrapping a
-180 mm wrist over 16 bars needs 24°; a 130 mm wrist over 11 bars needs a
+180 mm wrist over 15 bars needs 24°; a 130 mm wrist over 11 bars needs a
 little more, still far inside the swing.
 
 ### The knuckle cap is a chord, not a disc
@@ -154,14 +154,22 @@ the plate and cannot come back through it. (The post was 3.0 mm and fragile — 
 prints standing up, so it snaps along a layer line. Bending strength goes as the
 cube of the diameter, so 4.0 mm is 2.4× as strong.)
 
-Two **detent bumps** pinch the slot to 3.7 mm, so the post snaps 0.15 mm past
+Two **detent bumps** pinch the slot to 3.4 mm, so the post snaps 0.30 mm past
 them a side and will not wander back to the entry hole. Each bump sits on a
-**cantilever spring leaf** — a 1.0 mm strip freed by a relief slot that
-deliberately runs out into the entry hole. That free end is what makes it a
-spring: built in at both ends the post would need something like 50 N to pass,
-which is not a clasp but a jam. The leaf is 1.0 × 2.8 mm (the first print's
-was 0.8 × 2.5), which makes it **about 1.4× as firm at the same 2.9 % peak
-strain** the printed leaf survived.
+**cantilever spring leaf** — a strip freed by a relief slot that deliberately
+runs out into the entry hole. That free end is what makes it a spring: built
+in at both ends the post would need something like 50 N to pass, which is not
+a clasp but a jam.
+
+**The bumps were doubled on 2026-09-26** (0.15 → 0.30 mm) because the buckle
+opened too easily. A printer rounds a 0.15 mm catch off to very little. Doubling
+the pinch on the old straight 1.0 × 2.8 mm leaf would have strained it far past
+the 2.9 % it is proven at. So the leaf now **tapers**, 1.6 mm at its root down
+to 0.8 mm at the bump, over 3.9 mm. That spreads the bending along the leaf:
+twice the pinch at the same 2.9 % peak strain, 1.85× the side force, and about
+**2.2× the push needed to open** (the deeper bump is also steeper). Closing it
+takes more push too. The cost: the keyhole plate is 1.2 mm wider (11.6 mm) and
+the buckle 1.6 mm longer.
 
 **It sits tight, not just latched.** The bumps now sit right at the seat and
 **cradle** the post: pulled against the seat's far wall it touches them too, so
@@ -173,13 +181,13 @@ and clamps the two plates together. The first clasp let them lift ~0.5 mm.
 The head's underside is a cone at 38.7° from vertical, so the stud prints
 standing up with no support under the head.
 
-**The buckle is as short as the clasp allows: 17.2 mm between the two end bars
-when fastened, down from 20.5.** Every length in it is now a constraint rather
+**The buckle is as short as the clasp allows: 18.9 mm between the two end bars
+when fastened** (20.5 originally, 17.2 before the bumps were doubled). Every length in it is now a constraint rather
 than a round number:
 
 - the entry hole sits 1.0 mm off its bar (it stood 4 mm off);
 - post travel, entry to seat, is the least that keeps the entry hole off the
-  detent bumps — 4.1 mm, because the bumps now sit at the seat;
+  detent bumps — 4.6 mm, because the bumps now sit at the seat;
 - the stud reaches just far enough that, while the head drops through the entry
   hole, the keyhole plate's tip comes down **beside** the stud's end bar rather
   than on it. The first clasp overran that bar by about a millimetre and had to
@@ -568,7 +576,7 @@ piece.
 
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
-| `bracelet` | `bracelet` | 150.5 × 17.6 × 4.7 mm | all 11 bars' own flat feet |
+| `bracelet` | `bracelet` | 151.3 × 17.6 × 4.7 mm | all 11 bars' own flat feet |
 | `pin` | `pin` | 11.9 × 6.9 × 2.8 mm | its own face, 24 mm² |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 18.6 × 7.0 mm | its own bottom, 146 mm² in one piece |
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 18.3 × 7.8 mm | its own bottom and legs, 197 mm² in one piece |
@@ -590,7 +598,7 @@ not approximate — the loop lands on `wrist + 12` at every size.
 used to soak up whatever the band could not cover, since the band only came in
 whole bars. On a small wrist that left a 27 mm slab of flat plate hanging off
 the end of a 149 mm bracelet. Now the buckle is cut to the shortest slot the
-clasp can actually use — **17.2 mm fastened, 4.1 mm of post travel, the same
+clasp can actually use — **18.9 mm fastened, 4.6 mm of post travel, the same
 at every size** —
 and the band makes up the difference: the solver picks the bar count that lands
 nearest the nominal 11.6 mm spacing, then stretches or squeezes **every joint
@@ -607,14 +615,14 @@ the band's width does not wander when the length solver breathes the joints.
 
 | `wrist` | bars | loop, clasped | joint pitch | printed footprint |
 |---|---|---|---|---|
-| **130 (default, 4-year-old)** | **11** | **142.0 mm** | **11.88 mm** | **150.5 × 17.6 mm** |
-| 140 (child) | 12 | 152.0 mm | 11.71 mm | 160.5 × 17.6 mm |
-| 160 | 14 | 172.0 mm | 11.44 mm | 180.5 × 17.6 mm |
-| 180 (adult) | 16 | 192.0 mm | 11.25 mm | 200.5 × 17.6 mm |
-| 200 | 17 | 212.0 mm | 11.80 mm | 220.5 × 17.6 mm |
-| 180, `rows=3` | 16 | 192.0 mm | 11.25 mm | 200.5 × 29.2 mm |
+| **130 (default, 4-year-old)** | **11** | **142.0 mm** | **11.71 mm** | **151.3 × 17.6 mm** |
+| 140 (child) | 12 | 152.0 mm | 11.56 mm | 161.3 × 17.6 mm |
+| 160 | 14 | 172.0 mm | 11.32 mm | 181.3 × 17.6 mm |
+| 180 (adult) | 15 | 192.0 mm | 11.94 mm | 201.3 × 17.6 mm |
+| 200 | 17 | 212.0 mm | 11.70 mm | 221.3 × 17.6 mm |
+| 180, `rows=3` | 15 | 192.0 mm | 11.94 mm | 201.3 × 29.2 mm |
 
-The buckle is 17.2 mm fastened in every row of that table — that is the point
+The buckle is 18.9 mm fastened in every row of that table — that is the point
 of the short buckle. (The flat print got 1.5 mm *longer* even so: the plates
 overlap when fastened, and the 3.3 mm the buckle gave up went to the band.)
 
@@ -629,8 +637,8 @@ was thinned to 4.2 mm for three equal colour bands), **`bore_fit`** (0.45 mm,
 the play in the hinge) and **`axial_fit`** (0.6 mm, along the pin — both above),
 `fit` (0.3 mm, the swing and clasp clearances), `knuck_wall` (0.9 mm,
 the deliberate thinnest wall), `knuck_slope` (30.0°, derived — the knuckle
-underside, asserted at ≤ 40°), and the clasp's `det_pinch` / `leaf_w` /
-`leaf_free` if the detent wants to be lighter or firmer (`leaf_strain` is
+underside, asserted at ≤ 40°), and the clasp's `det_pinch` / `leaf_root` /
+`leaf_tip` / `leaf_free` if the detent wants to be lighter or firmer (`leaf_strain` is
 asserted at the printed leaf's 2.9 %), `head_gap` for how tight it sits, and
 `post_d` for the post.
 

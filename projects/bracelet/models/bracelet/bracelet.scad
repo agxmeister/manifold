@@ -216,14 +216,17 @@ post_top  = 2*cl_t + head_gap - slot_fit/head_slope;   // 3.16 — top of the
                                    //   parallel post. It ends just BELOW the
                                    //   top of the stacked plates, on purpose.
 entry_d   = head_d + 0.6;          // 7.0 — the hole the head drops through
-det_pinch = 0.15;                  // how far each bump stands into the post's
-det_gap   = post_d - 2*det_pinch;  //   path: 3.7. The printed value.
+det_pinch = 0.30;                  // how far each bump stands into the post's
+det_gap   = post_d - 2*det_pinch;  //   path: 3.4. It was 0.15 (printed): the
+                                   //   buckle opened too easily. A printer
+                                   //   rounds a 0.15 mm catch off to almost
+                                   //   nothing, so the hook itself is what grew.
 det_r     = 0.5;
-leaf_w    = 1.0;                   // Each detent bump sits on a SPRING LEAF —
-rel_w     = 0.8;                   //   a strip of plate freed by a relief slot
-leaf_free = 2.8;                   //   beside the main slot. Without it the
-                                   //   bump is rigid: a 1.6 mm plate will not
-                                   //   yield 0.13 mm, so the post either
+leaf_root = 1.6;                   // Each detent bump sits on a SPRING LEAF —
+leaf_tip  = 0.8;                   //   a strip of plate freed by a relief slot
+rel_w     = 0.8;                   //   beside the main slot. Without it the
+leaf_free = 3.9;                   //   bump is rigid: a 1.6 mm plate will not
+                                   //   yield 0.3 mm, so the post either
                                    //   refuses to pass or splits the plate.
                                    //
                                    //   The relief runs OUT INTO THE ENTRY
@@ -235,19 +238,36 @@ leaf_free = 2.8;                   //   beside the main slot. Without it the
                                    //   post past, which is not a clasp, it is
                                    //   a jam.
                                    //
-                                   //   FIRMER THAN THE PRINTED ONE, AT THE SAME
-                                   //   STRAIN. The leaf's root strain is
-                                   //   3*(w/2)*pinch/L^2 and its force goes as
-                                   //   w^3*pinch/L^3. The printed leaf (0.8 x
-                                   //   2.5) ran at 2.88% and survived; this one
-                                   //   (1.0 x 2.8) runs at 2.87% and pushes
-                                   //   back 1.39x as hard. A deeper pinch was
-                                   //   the other way to firm it up, and it
-                                   //   would have taken the leaf past the
-                                   //   strain it is proven at.
-                                   //   leaf_w is a FLEXURE, and is meant to be
-                                   //   under the 1.2 mm wall threshold.
-leaf_strain = 3*(leaf_w/2)*det_pinch / (leaf_free*leaf_free);
+                                   //   THE LEAF TAPERS, leaf_root at its root
+                                   //   down to leaf_tip at the bump. A straight
+                                   //   leaf strains only at its root, and
+                                   //   doubling the pinch on it would have
+                                   //   taken it far past the 2.88% the printed
+                                   //   leaf was proven at (or, lengthened to
+                                   //   stay there, made it SOFTER). Tapered,
+                                   //   the bending is spread along it: twice
+                                   //   the pinch at the same root strain, and
+                                   //   ~1.85x the side force of the printed
+                                   //   1.0 x 2.8 leaf; the steeper bump turns
+                                   //   more of it against the post — ~2.2x to
+                                   //   open. The cost: the plate is 1.2 mm
+                                   //   wider and the buckle 1.1 mm longer.
+                                   //   leaf_tip is a FLEXURE, and is meant to
+                                   //   be under the 1.2 mm wall threshold.
+// Leaf depth at distance x from its root, and the beam sums for a tip load at
+// the bump (per unit E*cl_t, midpoint rule): compliance = int 12(L-x)^2/w^3,
+// and root-most strain per unit force = max 6(L-x)/w^2 — at the root for this
+// taper. For a straight leaf they give the old 3*(w/2)*pinch/L^2 exactly.
+function leaf_depth(x) = leaf_root + (leaf_tip - leaf_root)*x/leaf_free;
+leaf_n      = 200;
+leaf_comp   = let (dx = leaf_free/leaf_n)
+    [for (i = [0:leaf_n-1]) let (x = (i + 0.5)*dx)
+        12*pow(leaf_free - x, 2)/pow(leaf_depth(x), 3)*dx] * [for (i = [0:leaf_n-1]) 1];
+leaf_strain = max([for (i = [0:leaf_n]) let (x = i*leaf_free/leaf_n)
+    6*(leaf_free - x)/pow(leaf_depth(x), 2)]) * det_pinch / leaf_comp;
+// side force of the bump at full pinch, against the printed straight
+// 1.0 x 2.8 leaf at 0.15 (straight: compliance 4L^3/w^3)
+leaf_force  = (det_pinch/leaf_comp) / (0.15/(4*pow(2.8, 3)/pow(1.0, 3)));
 det_y     = det_gap/2 + det_r;     // a bump's centre, off the slot's axis
 // seat -> detent, along the slot. NOT a free choice any more: the bumps CRADLE
 // the seated post. With the post pulled against the seat's far wall, they
@@ -257,7 +277,7 @@ det_off   = sqrt(pow(post_d/2 + det_r, 2) - det_y*det_y) - slot_fit;   // 0.70
 rail_w    = 1.25;                  // plate outboard of each relief — the two
                                    //   rails carry the whole clasp load to the
                                    //   yoke. The printed value.
-kh_w      = 2*(slot_w/2 + leaf_w + rel_w + rail_w);   // 10.4
+kh_w      = 2*(slot_w/2 + leaf_root + rel_w + rail_w);   // 11.6
 tip_strip = 2.0;                   // full-width plate left beyond the reliefs'
                                    //   ends. The seat's far wall hangs off this
                                    //   strip and the post pulls against it, so
@@ -279,10 +299,11 @@ assert(post_d/2 + (2*cl_t - post_top)*head_slope < slot_w/2,
 assert(post_top + (slot_fit/head_slope) > 2*cl_t,
        "the head bears on the plate below its top face — the clasp cannot close");
 assert(slot_w > post_d, "post cannot slide along the slot at all");
-assert(kh_w/2 - (slot_w/2 + leaf_w + rel_w) >= 1.0,
+assert(kh_w/2 - (slot_w/2 + leaf_root + rel_w) >= 1.0,
        str("relief slot leaves too little plate outboard: ",
-           kh_w/2 - (slot_w/2 + leaf_w + rel_w)));
+           kh_w/2 - (slot_w/2 + leaf_root + rel_w)));
 assert(det_r > (post_d - det_gap)/2, "detent bump too small to pinch");
+assert(leaf_tip >= 0.8, "the leaf is thinner than two beads at the bump");
 assert(leaf_strain <= 0.029,
        str("detent leaf strained to ", 100*leaf_strain,
            "% — past the 2.88% the printed leaf was proven at"));
@@ -482,7 +503,7 @@ echo(str("cols=", cols, " rows=", rows,
          "  keyhole travel=", kh_lock - kh_entry,
          "  buckle clasped=", stud_ext + kh_lock,
          "  post d", post_d, " head d", head_d,
-         "  leaf strain=", 100*leaf_strain, "%",
+         "  leaf strain=", 100*leaf_strain, "%  leaf force x", leaf_force,
          "  footprint=", (x_stud + stud_tip) - (x_lock - kh_tip),
                     " x ", band_w, " x ", top_z,
          "  band thick=", thick,
@@ -637,15 +658,24 @@ module keyhole_cut() {
     // They deliberately run into the entry hole — that free end is what makes
     // the leaf a spring instead of a rigid rib.
     //
-    // Each relief then TURNS IN, radially, to the entry hole's centre. At the
-    // 4 mm post it runs `slot_w/2 + leaf_w + rel_w/2` = 3.55 off the axis and
-    // the hole is only 3.5 in radius, so a straight relief merely grazes the
-    // hole and leaves a 0.02 mm cusp of rail between the two. Turned radially,
-    // it crosses the hole's edge square.
+    // The relief's inner edge follows the leaf's TAPER: `leaf_root` off the
+    // slot at the root, down to `leaf_tip` at the bump, then straight on at
+    // `leaf_tip` to the entry hole.
+    //
+    // Each relief then TURNS IN, radially, to the entry hole's centre. A
+    // relief running along the hole's edge only grazes it and leaves a cusp
+    // of rail between the two (at the 1.0 leaf it was 0.02 mm, flagged by
+    // `check_wall_thickness.py`). Turned radially, it crosses the edge square.
     for (s = [-1, 1]) {
-        p_end = [x_entry + 1.0, band_cy + s*(slot_w/2 + leaf_w + rel_w/2)];
+        y_root = band_cy + s*(slot_w/2 + leaf_root + rel_w/2);
+        y_tip  = band_cy + s*(slot_w/2 + leaf_tip  + rel_w/2);
+        p_end  = [x_entry + 1.0, y_tip];
         hull() {
-            translate([x_det - leaf_free, p_end[1]]) circle(d = rel_w);
+            translate([x_det - leaf_free, y_root]) circle(d = rel_w);
+            translate([x_det, y_tip]) circle(d = rel_w);
+        }
+        hull() {
+            translate([x_det, y_tip]) circle(d = rel_w);
             translate(p_end) circle(d = rel_w);
         }
         hull() {
