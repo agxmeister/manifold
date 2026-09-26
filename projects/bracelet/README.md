@@ -224,8 +224,9 @@ full-width bar foot, so there is far more of it than the old tile grid had.
 ## Charms
 
 `charms` bars along the band carry a charm, hung on an **H-pin** snapped in at
-both ends. Three charms are built for it: a 3D **butterfly**, a two-colour
-**ladybug** and a puffy **heart** that can be turned to any angle.
+both ends. Four charms are built for it: a 3D **butterfly**, a two-colour
+**ladybug**, a puffy **heart** that can be turned to any angle, and a
+**rose** with thin, ruffled petals.
 
 Two earlier mounts came before this one — a ball pin fused to the bar with
 clip-on charms, and a loose double-ended screw — and both printed and worked.
@@ -485,6 +486,39 @@ sunk 0.6 mm into the upper-left lobe.
   `-a90`, `-a270`, `-a315`. Any other angle is one
   `openscad -D angle=... ` away.
 
+### The rose — thin, ruffled petals
+
+![the rose charm](previews/rose-charm-rose-charm.png)
+
+**Added, printed and confirmed on 2026-09-26** ("Printed good").
+
+A rose **22.7 mm across and 10.5 mm tall**, made of 19 thin petals. Three
+petals wrap the open middle of the bud. Around it stand three rings of 5, 5
+and 6 petals, each ring turned against the next. Every petal is a **0.9 mm
+shell**: a rounded top that dips between petals, a wavy lip, pleats that
+deepen toward the lip, and a flare that opens outward as it rises. The flare
+grows ring by ring, so the rose opens out from the middle.
+
+- The **core** under the petals is solid and holds the pin's two holes. The
+  outer petals are fused to it up to 6.6 mm, so from the side you see petals
+  all the way down. Above that they stand free.
+- **No two petals graze.** Two thin walls crossing at a shallow angle leave
+  a slit too narrow to print, and slivers too thin to lay down. Inside a
+  ring, neighbours overlap and are fused solid. Between rings there is always
+  at least 0.4 mm of air. Both are asserted in the source.
+- It prints **bottom down**, like the others. Every petal leans out at most
+  about 30° from vertical, so every layer lands on the one below. No
+  supports, no brim, 263 mm² on the bed.
+- **The petals are two lines thick.** On a 0.4 mm nozzle they print as two
+  perimeters. Keep the slicer's thin-wall handling on (Arachne, the default
+  in Creality Print). `petal_t` sets the thickness if you want sturdier
+  petals.
+- **Its bottom is flat to the edge**, like the heart's, and reaches 9.5 mm
+  from the pin. It rests on the neighbouring bars. As the band curls round a
+  wrist they swing away from it freely. **Bent backwards, the two joints
+  beside it do not move**, the same trade as the heart and the ladybug.
+- Two roses side by side at `charms = 3` clear each other by about 1 mm.
+
 ## Two colours
 
 `-D accent=true` prints **the middle of the band in a second colour**: a
@@ -523,7 +557,8 @@ projects/bracelet/
     ├── pin/pin.scad                      # the loose H-shaped pin
     ├── butterfly-charm/butterfly-charm.scad  # a charm that snaps onto it
     ├── ladybug-charm/ladybug-charm.scad      # another, in two colours
-    └── heart-charm/heart-charm.scad          # a heart, turnable with `angle`
+    ├── heart-charm/heart-charm.scad          # a heart, turnable with `angle`
+    └── rose-charm/rose-charm.scad            # a rose with thin petals
 ```
 
 The bracelet exports as **one separate shell per bar** — 11 at the default
@@ -538,6 +573,7 @@ piece.
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 18.6 × 7.0 mm | its own bottom, 146 mm² in one piece |
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 18.3 × 7.8 mm | its own bottom and legs, 197 mm² in one piece |
 | `heart-charm` | `heart-charm` | 23.0 × 19.0 × 8.0 mm at 0° | its own flat bottom, 307 mm² in one piece |
+| `rose-charm` | `rose-charm` | 22.1 × 22.4 × 10.5 mm | its own flat bottom, 263 mm² in one piece |
 
 `charm_reach` in `bracelet.scad` spaces the stations for a **16 mm** charm,
 the butterfly. Charms may be bigger than that (the ladybug is 20.6 mm along
@@ -689,6 +725,9 @@ python3 tools/multicolor-3mf.py /tmp/ladybug.3mf \
 - **Print the heart the same way**, bottom down, no supports, no brim, 307
   mm² on the bed. Pick the angle before you slice: it is in the file, not a
   rotation in the slicer (turning it in the slicer would turn its holes too).
+- **Print the rose the same way**, bottom down, no supports, no brim, 263
+  mm² on the bed. Its petals are 0.9 mm, two perimeters. Leave thin-wall
+  handling on and do not print it with a single fat perimeter.
 - The fits are proven ones: 0.15 mm around the pin in every slot, and 0.15 mm
   of play over each hook.
 - To assemble: push the pin's **outward-hooked** half (the one with its hooks

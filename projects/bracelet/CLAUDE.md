@@ -79,13 +79,13 @@ bought nothing.
 **knuckle clusters** spaced along each joint, which is what stops a wide bar
 twisting about a single pin.
 
-## Five models, one library, `cols` shells
+## Six models, one library, `cols` shells
 
 `models/bracelet/bracelet.scad` is the bracelet, and every dimension of the band
 is at the top of it. `lib/charm-pin.scad` holds the charm mount — the H-pin,
 the pocket it snaps into and the holes a charm has for it. `models/pin`
-is the loose pin, and `models/butterfly-charm`, `models/ladybug-charm` and
-`models/heart-charm` are the three charms. The lib draws
+is the loose pin, and `models/butterfly-charm`, `models/ladybug-charm`,
+`models/heart-charm` and `models/rose-charm` are the four charms. The lib draws
 nothing — variables, functions and modules only — so every model `include`s
 it.
 
@@ -113,6 +113,7 @@ openscad -o /tmp/p.stl models/pin/pin.scad && cmp /tmp/p.stl exports/pin-pin.stl
 openscad -o /tmp/f.stl models/butterfly-charm/butterfly-charm.scad && cmp /tmp/f.stl exports/butterfly-charm-butterfly-charm.stl
 openscad -o /tmp/l.stl models/ladybug-charm/ladybug-charm.scad && cmp /tmp/l.stl exports/ladybug-charm-ladybug-charm.stl
 openscad -o /tmp/h.stl models/heart-charm/heart-charm.scad && cmp /tmp/h.stl exports/heart-charm-heart-charm.stl
+openscad -o /tmp/r.stl models/rose-charm/rose-charm.scad && cmp /tmp/r.stl exports/rose-charm-rose-charm.stl
 ```
 
 **The ladybug's export is NOT byte-stable** (found 2026-09-25). Two fresh
@@ -666,6 +667,75 @@ butterfly `cmp`s stayed IDENTICAL, and the ladybug's volume is unchanged
 - Harness: one per charm (`band.scad` with the `if (accent)` tail cut,
   `heart.scad` with `heart_charm();` stripped, both includes absolute).
 
+## The rose charm — added 2026-09-26, printed and confirmed the same day
+
+**Printed and confirmed by the user on 2026-09-26** ("Printed good"), so the
+0.9 mm petals, the fused overlaps and the 0.4 ring gaps are proven. Treat its
+shape and numbers as proven.
+
+Asked for as "a rose, with thin fluffy petals". Same H-pin holes
+(`charm_h_holes`), same pose (seat down), flat bottom to the edge. **The lib
+and the band were not touched.**
+
+- **Structure.** A solid core (r 8.0, side 6.6, dome to 7.6) holds the
+  holes. `rings` is a table, one row per ring: a 3-petal bud around an open
+  middle, then 5, 5 and 6 petals. Each petal is ONE polyhedron: a shell
+  whose inner face is r(θ, z) = shingle + closed-form flare (lean linear in
+  height) + a pleat, with thickness `petal_t / cos(lean)` outward. Every
+  horizontal slice is an arc, so the inner face only faces up, and the
+  outer face's lean is asserted ≤ `flare_max` (the pleat's slope included).
+- **The grazing trap. This is the reason the source is shaped the way it
+  is.** The first version was four rings with big shingle steps, and it
+  looked best. But its petals crossed each other at shallow angles near the
+  lip: neighbours' pleats rippled in opposite phase, and ring bands
+  interleaved. The wall check flagged 0.3 mm slivers. A petal-pair scan
+  found gaps down to −0.46 and thousands of samples of slit narrower than
+  0.4 that persisted over height. The rules that fixed it, all asserted:
+  - Within a ring, the overlap step leaves neighbours sharing ≥ `ring_fuse`
+    (0.3) of wall. They are FUSED, never grazing. Going "apart" instead
+    needs a ≥ 1.7 mm step, which made the rose 25 mm across.
+  - The pleat lives only in the part of a petal no neighbour shares (`lap`).
+  - Ring bands never interleave. The next ring's `r_start − pleat` sits
+    ≥ `ring_gap` (0.4) outside this ring's `r_end + t + pleat`.
+  - The outer ring's web runs up the core's whole side (6.6). At 4.4 the
+    petals peeled off the vertical core wall at a 6° lean, a slit that
+    stayed under 0.4 mm for 2 mm of height.
+  A single Archimedean spiral of petals was also tried. It came out
+  lopsided, crenellated and showed the core. Do not re-propose it.
+- **The gap scan** (`dump = true` echoes every petal record). At every 1° and
+  0.1 mm it collects each petal's wall interval plus the core. It flags air
+  gaps under 0.4 that are still narrow 0.5 mm higher at the same radius.
+  Every V-groove is narrow at its bottom, so a gap that is merely narrow is
+  not a finding. It also flags near-coincident faces of overlapping petals.
+  Now: **0 persistent, 0 near.** Control: the first version's table, with
+  `ring_fuse`/`ring_gap` at −9, gives 4410 persistent and 48 near.
+- **The bud's middle is open (r 1.3).** Petals starting at r 0.55 pinched
+  one another into 0.02 mm slivers near the axis. A solid centre column
+  fixed that, but grazed the bud petals in its turn.
+
+**Invariants:**
+
+- 1 shell, genus 0, 22.1 × 22.4 × 10.5 (echo: 22.68 across at the lip),
+  vol 2506.600, byte-stable. **262.6 mm² in 1 island**, adhesion 0.6.
+- Wall check `--nozzle 0.4`: min **0.82** (petals, 0.9 nominal). At the
+  default 1.2 it flags the petals, which are thin by request.
+  `check_overhangs` clean. `asin(|nz|)` scan: 0.000 mm² past 45°, and a
+  1 mm² control ceiling reads 1.000.
+- Envelope test (holes ⊕ sphere 1.15, z > 0, minus `rose()`): empty at
+  nominal and at shifts of dx/dy ±1.0, dx 2.0, dy 2.0, dz −0.3. It leaks at
+  dy 3.0 (9.2 mm³) and dz −1.0. The roof margin is 0.3–1.0; sideways it is
+  over 2 mm.
+- Pin harness: seated, dz +0.10 and dx/dy ±0.12 empty. dz +0.25 → 0.0015,
+  +0.30 → 0.0262, +0.40 → 2.284, dx 0.20 → 0.3992. **The heart reads the
+  identical numbers in the same harness.** The heart section's "dz +0.25 →
+  0.224" is stale; it most likely predates the bigger hooks.
+- Band (`charms = 3`, middle station): charm ∩ band 0.0 seated, 31.5 mm³ at
+  dz −0.3. Wearing swing clear at 24/40/62/70/90 at 130 and 180. An exact
+  60 reads a 0.0 coincidence, as for the heart. Backwards: **HIT from
+  0.5°** (0.12 / 0.33 mm³), the heart's trade.
+- Two roses at `charms = 3`, 130: stations 23.75 apart, so they clear by
+  ≥ 1.07.
+
 ## Why the joint is a hinge
 
 Two earlier joints failed:
@@ -966,7 +1036,7 @@ exactly at dx 0.
    at the top of this file, then the H-pin joint harness with its controls.
    If the charm stations were touched, re-run steps 1–6 at `charms = 3` —
    every number must be identical to `charms = 0`. If a charm (butterfly,
-   ladybug, heart) or a new
+   ladybug, heart, rose) or a new
    charm changed: connectivity (1 piece), wall thickness (≥ 1.19 mm, the gable
    roof), bed stability (1 island), the `asin(|nz|)` scan (nothing past 45.5°),
    the swing test with it seated, and a render.
