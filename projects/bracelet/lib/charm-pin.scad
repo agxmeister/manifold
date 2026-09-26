@@ -110,7 +110,7 @@ hp_leg_lo = 3.45;   // how far the lower legs reach below the seat. Fixed — th
 hp_wall   = 1.2;    // charm wall around its two holes
 
 // ------------------------------------------------------------------ derived
-hp_uo     = hp_s + hp_leg_w/2;                  // 5.00 — leg's outer face
+hp_uo     = hp_s + hp_leg_w/2;                  // 5.10 — leg's outer face
 hp_ui     = hp_s - hp_leg_w/2;                  // 4.00 — leg's inner face
 hp_lr     = hp_hook_lo / tan(hp_lead);          // 0.83 — lead-in rise
 hp_cr     = hp_hook_up / tan(hp_catch_up);      // 0.43 — upper catch rise
@@ -182,7 +182,7 @@ hp_room_up = hp_turn_up * (hp_v_ut - hp_pivot) + 0.1;    // 0.66
 hp_keep   = hp_defl_lo - hp_turn_up * hp_arm_lo;          // 0.11
 
 hp_slot_x = hp_t + 2*hp_fit;                    // 3.10 — every slot, along the band
-hp_out    = hp_uo + hp_hook_lo + hp_fit;        // 5.95 — a bar chamber's outer wall
+hp_out    = hp_uo + hp_hook_lo + hp_fit;        // 6.10 — a bar chamber's outer wall
 hp_c_out  = hp_uo + hp_room_up;                 // a charm hole's outer wall
 hp_c_in   = hp_ui - hp_hook_up - hp_fit;        // 3.20 — a charm chamber's inner wall
 hp_roof   = hp_v_top + hp_gap;                  // 3.65 — a charm hole's eaves

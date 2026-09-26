@@ -3,6 +3,32 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
+## The band is 16.2 mm wide since 2026-09-26 — unprinted
+
+The user asked for a narrower bracelet and chose the narrowest band the
+current H-pin allows over thinning the pocket's end walls or shrinking the pin
+(which would remake every charm). **`row_pitch` 11.6 → 10.2, band 17.6 →
+16.2.** The limit is the existing assert `band_w/2 - hp_out >= 2.0`, and
+`hp_out` is **6.10**, not the 5.95 the lib's comment said: the legs moved 0.1
+out with the bigger hooks (`hp_uo` 5.10). Both comments are fixed. The pin and
+every charm are unchanged, so printed pins and charms fit.
+
+Nothing along the band moves: 130 is still 11 bars at 11.71, 151.3 mm flat.
+The knuckle clusters sit at y 0 and 10.2, so the gap between them is 4.2.
+
+Verified:
+- 130 and `charms = 3`: 11 shells, genus 31; 180: 15 shells, genus 43.
+- `check_overhangs`: 40 BRIDGE (46 at `charms = 3`), no SUPPORT. Bed:
+  **1752.2 mm²** in 11 islands. Wall check: the same stud-rim and keyhole
+  artefacts as before.
+- H-pin in bar 5: seated 0.0000, dz +0.10 empty, +0.25 0.3920, −0.05 0.8079,
+  dz 0.05 dx 0.12 empty / 0.20 0.7407.
+- Swing harness (exported charm STLs imported on bar 5, bars 4 and 6 turned
+  about their pin axes), run at 16.2 and 17.6 side by side: heart (0° and 90°),
+  rose, ladybug and butterfly are all clear in the wearing direction to 80°.
+  The flat-bottomed charms hit backwards at −2° on both widths. Butterfly
+  control: clear at −40°, hit at −50° on both.
+
 ## Bigger detent bumps on a tapered leaf — 2026-09-26, unprinted
 
 The user asked for the buckle's "hooks" to be bigger, so opening it takes some

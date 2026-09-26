@@ -6,7 +6,7 @@ a wrist, and nothing is assembled, glued, or picked out of supports.
 
 **Sized to the wrist it is printed for — by default a 142 mm loop on a
 130 mm wrist (the 4-year-old it was printed for, and fits), 11 bars, printed
-flat in a 151.3 × 17.6 × 4.7 mm strip.** `-D wrist=180` is the adult size.
+flat in a 151.3 × 16.2 × 4.7 mm strip.** `-D wrist=180` is the adult size.
 The clasp is the same short buckle at every size; length is band, not plate.
 
 ![the bracelet as it comes off the bed](previews/bracelet-bracelet.png)
@@ -576,7 +576,7 @@ piece.
 
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
-| `bracelet` | `bracelet` | 151.3 × 17.6 × 4.7 mm | all 11 bars' own flat feet |
+| `bracelet` | `bracelet` | 151.3 × 16.2 × 4.7 mm | all 11 bars' own flat feet |
 | `pin` | `pin` | 11.9 × 6.9 × 2.8 mm | its own face, 24 mm² |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 18.6 × 7.0 mm | its own bottom, 146 mm² in one piece |
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 18.3 × 7.8 mm | its own bottom and legs, 197 mm² in one piece |
@@ -613,14 +613,19 @@ the stations are placed on whatever bar count the solver lands on.
 nothing but filament. It spaces those clusters on its own fixed `row_pitch`, so
 the band's width does not wander when the length solver breathes the joints.
 
+The band is 16.2 mm wide (`row_pitch` 10.2; it was 17.6 until 2026-09-26).
+That is as narrow as it goes with the H-pin: the pocket runs 12.2 mm across the
+bar, and 2.0 mm of bar is kept beyond each end of it, where the pin's hooks
+catch. Narrower would mean a smaller pin, and new charms to match.
+
 | `wrist` | bars | loop, clasped | joint pitch | printed footprint |
 |---|---|---|---|---|
-| **130 (default, 4-year-old)** | **11** | **142.0 mm** | **11.71 mm** | **151.3 × 17.6 mm** |
-| 140 (child) | 12 | 152.0 mm | 11.56 mm | 161.3 × 17.6 mm |
-| 160 | 14 | 172.0 mm | 11.32 mm | 181.3 × 17.6 mm |
-| 180 (adult) | 15 | 192.0 mm | 11.94 mm | 201.3 × 17.6 mm |
-| 200 | 17 | 212.0 mm | 11.70 mm | 221.3 × 17.6 mm |
-| 180, `rows=3` | 15 | 192.0 mm | 11.94 mm | 201.3 × 29.2 mm |
+| **130 (default, 4-year-old)** | **11** | **142.0 mm** | **11.71 mm** | **151.3 × 16.2 mm** |
+| 140 (child) | 12 | 152.0 mm | 11.56 mm | 161.3 × 16.2 mm |
+| 160 | 14 | 172.0 mm | 11.32 mm | 181.3 × 16.2 mm |
+| 180 (adult) | 15 | 192.0 mm | 11.94 mm | 201.3 × 16.2 mm |
+| 200 | 17 | 212.0 mm | 11.70 mm | 221.3 × 16.2 mm |
+| 180, `rows=3` | 15 | 192.0 mm | 11.94 mm | 201.3 × 26.4 mm |
 
 The buckle is 18.9 mm fastened in every row of that table — that is the point
 of the short buckle. (The flat print got 1.5 mm *longer* even so: the plates

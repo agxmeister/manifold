@@ -72,7 +72,7 @@ ease    =  12;   // slack on top of the wrist, so the band hangs rather than
 rows    =   2;   // how many tile-widths wide the band is. It no longer means
                  //   a row of separate tiles — a column is a single bar — but
                  //   it still sets the width AND the number of hinge knuckle
-                 //   clusters spaced along each joint. 2 -> a 17.6 mm band.
+                 //   clusters spaced along each joint. 2 -> a 16.2 mm band.
 
 // --------------------------------------------------------------------- bars
 pitch_nom = 11.6;         // what bar spacing WANTS to be. The spacing actually
@@ -81,10 +81,13 @@ pitch_nom = 11.6;         // what bar spacing WANTS to be. The spacing actually
 body      =  6.0;         // the bar slab, along the band. Also the width of
                           //   one hinge knuckle cluster, across it.
 h         = body/2;       // 3.0
-row_pitch = 11.6;         // spacing of the knuckle clusters ACROSS the band.
+row_pitch = 10.2;         // spacing of the knuckle clusters ACROSS the band.
                           //   Deliberately NOT `pitch`: the band's width must
                           //   not change when the length solver breathes the
-                          //   joints, so this one is fixed.
+                          //   joints, so this one is fixed. It was 11.6 (a
+                          //   17.6 band); 10.2 (2026-09-26) is the narrowest
+                          //   the H-pin pocket allows — 2.0 mm of bar left
+                          //   beyond each end of it, asserted below.
 corner_r  =  1.0;         // plan-view corner radius of a bar
 
 ch_run    = 0.5;          // TOP chamfer only. The bottom stays flat and full
