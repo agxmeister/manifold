@@ -288,9 +288,14 @@ for a multi-material printer.
 - **The swing test with a butterfly seated**: clear to ±40°, binds at 60°, at
   both 130 and 180 (a wrist needs about 24°).
 
-Charm spacing is checked on the **smallest** gap between stations, not the
-average: rounding station indices to whole bars makes the gaps uneven, and the
-average passes a pair that lands one bar apart.
+**Stations: the middle bar, then every `charm_step` = 3 bars either side**
+(asked for 2026-09-27; `charms` must be odd, asserted). At 130 `charms = 3` is
+bars [2, 5, 8], 35.1 mm apart; it used to spread them evenly, which gave
+[3, 5, 7] — every second bar, 23.4 apart. An even `cols` has no middle bar;
+the pattern then sits half a pitch toward bar 0 (`floor`). 5 charms need
+≥ 15 bars. The re-check at `charms = 3` read the same shells, genus, bed
+(1752.2 in 11 islands) and 46 BRIDGE as before; the middle station is still
+bar 5, so the charm-seated swing tests there still apply.
 
 **A flat-bottomed charm may not reach past r = 5.8 from its bar's centre.** The
 band's top is a plane while it is STILL — `thick` is `pin_z + rk`, so a knuckle
@@ -599,7 +604,7 @@ band were not touched.** Every `cmp` above stayed IDENTICAL.
   `charm_reach` = 16: on 2026-09-25 the user lifted any size limit on charms
   ("they can span outside the bracelet size"). `bracelet.scad` was NOT
   changed, and its spacing assert still reads 16. At `charms = 3` the
-  closest stations are 23.75 apart, so two ladybugs still clear each other.
+  closest stations are 35.1 apart (23.75 before 2026-09-27), so two ladybugs clear.
   The middle pair is longer (5.8 against 5.0) because the shell hides more
   of it. The user found the equal-length version's middle legs "too
   short". 5.8 shows 4.0 mm, the same as the others.
@@ -730,8 +735,8 @@ butterfly `cmp`s stayed IDENTICAL, and the ladybug's volume is unchanged
   - wearing (`"swing"`): clear to 60°.
   - backwards (`"swing2"`): **HIT from 0.5°**, the ladybug's trade. The user
     committed the ladybug knowing it, so it was taken as accepted.
-- Spacing: at `charms = 3` and 130 the stations are 23.75 apart. Two hearts
-  at 0° are 23.0 wide along the band, so they clear by only 0.75.
+- Spacing: at `charms = 3` and 130 the stations are 35.1 apart (23.75 before
+  2026-09-27). Two hearts at 0° are 23.0 wide along the band: ~12 clear.
 - Harness: one per charm (`band.scad` with the `if (accent)` tail cut,
   `heart.scad` with `heart_charm();` stripped, both includes absolute).
 
@@ -801,8 +806,8 @@ and the band were not touched.**
   dz −0.3. Wearing swing clear at 24/40/62/70/90 at 130 and 180. An exact
   60 reads a 0.0 coincidence, as for the heart. Backwards: **HIT from
   0.5°** (0.12 / 0.33 mm³), the heart's trade.
-- Two roses at `charms = 3`, 130: stations 23.75 apart, so they clear by
-  ≥ 1.07.
+- Two roses at `charms = 3`, 130: stations 35.1 apart (23.75 before
+  2026-09-27), so they clear by ~13.
 
 ## The dolphin charm — added 2026-09-27, unprinted (links hidden the same day)
 
@@ -997,8 +1002,8 @@ and the band were not touched.**
   README says so.
 - Not re-run: the pin harness and the band swing. The carrier's front and
   holes are unchanged; the pocket front is now 7.6 (assert ≥ 7.16).
-- Two dolphins at `charms = 3` collide (29.8 along the band, stations 23.75
-  apart). Not asserted; say so if asked for more than one.
+- Two dolphins at `charms = 3` clear by ~5 mm since 2026-09-27 (29.8 along the
+  band, stations 35.1 apart; 3.5 at `pitch_min`). They collided at 23.75.
 
 ## Why the joint is a hinge
 

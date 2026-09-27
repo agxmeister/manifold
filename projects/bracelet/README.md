@@ -231,8 +231,8 @@ full-width bar foot, so there is far more of it than the old tile grid had.
 
 ## Charms
 
-`charms` bars along the band carry a charm, hung on an **H-pin** snapped in at
-both ends. Four charms are built for it: a 3D **butterfly**, a two-colour
+`charms` bars along the band — the middle one and every third bar either side
+of it — carry a charm, hung on an **H-pin** snapped in at both ends. Four charms are built for it: a 3D **butterfly**, a two-colour
 **ladybug**, a puffy **heart** that can be turned to any angle, a
 **rose** with thin, ruffled petals, and an articulated **dolphin** whose tail
 bends every way.
@@ -488,9 +488,8 @@ sunk 0.6 mm into the upper-left lobe.
   bars instead. As the band curls round a wrist they swing away from it: clear
   to 60° at both 130 and 180, at 0°, 45° and 90°. **Bent backwards, the two
   joints beside it do not move**, the same trade as the ladybug.
-- Two hearts side by side at `charms = 3` clear each other by 0.75 mm at 0°,
-  when their 23 mm width lies along the band. That is closer than any other
-  pair of charms.
+- Two hearts side by side at `charms = 3` clear each other by about 12 mm at
+  0°, when their 23 mm width lies along the band.
 - Exports, in `exports/`: `heart-charm-heart-charm.stl` (0°) and `-a45`,
   `-a90`, `-a270`, `-a315`. Any other angle is one
   `openscad -D angle=... ` away.
@@ -526,7 +525,7 @@ grows ring by ring, so the rose opens out from the middle.
   from the pin. It rests on the neighbouring bars. As the band curls round a
   wrist they swing away from it freely. **Bent backwards, the two joints
   beside it do not move**, the same trade as the heart and the ladybug.
-- Two roses side by side at `charms = 3` clear each other by about 1 mm.
+- Two roses side by side at `charms = 3` clear each other by about 13 mm.
 
 ### The dolphin — an articulated tail
 
@@ -594,8 +593,9 @@ joints the tail curls about 70° sideways and about 35° up or down.
 - **Its bottom is flat to the edge**, like the heart and rose. As the band
   curls round a wrist, the neighbouring bars swing away from it freely.
   **Bent backwards, the two joints beside it do not move**, the same trade as
-  the others. The flippers reach 14.9 mm along the band, so two dolphins at
-  `charms = 3` would touch. One dolphin between smaller charms is fine.
+  the others. The flippers reach 14.9 mm along the band each way, so two
+  dolphins at `charms = 3` clear each other by only about 5 mm (3.5 at the
+  tightest joint spacing) — the closest pair of any charms.
 
 ## Two colours
 
@@ -656,11 +656,16 @@ printed in place.
 | `rose-charm` | `rose-charm` | 22.1 × 22.4 × 10.5 mm | its own flat bottom, 263 mm² in one piece |
 | `dolphin-charm` | `dolphin-charm` | 29.8 × 52.5 × 13.5 mm | its own flat bottom, 481 mm² in 4 pieces |
 
-`charm_reach` in `bracelet.scad` spaces the stations for a **16 mm** charm,
-the butterfly. Charms may be bigger than that (the ladybug is 20.6 mm along
-the band, and the heart up to 23). At `charms = 3` the closest stations are
-23.75 mm apart, so neighbours still clear each other. A charm on an H-pin
-cannot swivel, so only its length along the band counts.
+The stations sit on the **middle bar**, then on **every third bar** either
+side of it (`charm_step` in `bracelet.scad`), so `charms` is odd. On the
+default 11 bars, `charms = 3` puts them on bars 2, 5 and 8 (counting from 0),
+35 mm apart; 5 charms need at least 15 bars (a 170–180 wrist). Until
+2026-09-27 they were spread evenly over the band, which put three charms on
+every second bar, only 23.4 mm apart. `charm_reach` is the narrowest spacing
+the model accepts: **16 mm**, the butterfly. The bigger charms (ladybug
+20.6 mm along the band, heart up to 23, dolphin 29.8) all clear each other at
+three bars apart. A charm on an H-pin cannot swivel, so only its length along
+the band counts.
 
 ## Sizing
 

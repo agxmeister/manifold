@@ -414,22 +414,25 @@ x_det   = x_lock + det_off;
 // on its lower legs, its crossbar sinks just under the bar's top, and the
 // charm (models/butterfly-charm) snaps onto the upper legs. See the lib. Leave
 // it at 0 and the bracelet is exactly the plain band.
-charms      = 0;     // how many charm stations. 0 = none.
+charms      = 0;     // how many charm stations, odd. 0 = none.
 charm_reach = 16;    // the widest charm this spacing has to keep apart —
                      //   models/butterfly-charm spans 15.8 mm along the band.
 
-// The stations are MIRRORED about the band's middle, not each rounded on its
-// own: round() takes every .5 the same way, so the ideal 2.5 and 7.5 of three
-// charms on 11 bars both went up and landed on [3, 5, 8]. Only the first half
-// is rounded; the second half is its reflection.
-function charm_col(i) = i < charms / 2
-    ? round((i + 1) * (cols - 1) / (charms + 1))
-    : cols - 1 - charm_col(charms - 1 - i);
-charm_ix    = [for (i = [0 : charms - 1]) charm_col(i)];
+charm_step  = 3;     // bars from one station to the next.
 
-// Spacing is checked on the SMALLEST gap between consecutive stations, not on
-// the average. Rounding station indices to whole bars makes the gaps uneven,
-// and the average happily passes a pair that lands one bar apart.
+// One station on the MIDDLE bar, the rest paired off either side of it,
+// `charm_step` bars apart — so `charms` is odd. Stations used to be spread
+// evenly over the whole band, which on 11 bars put three charms on every
+// second bar, [3, 5, 7]; now they are [2, 5, 8]. An even bar count has no
+// middle bar, and the pattern then sits half a pitch towards the first end.
+charm_mid   = floor((cols - 1) / 2);
+charm_ix    = [for (i = [0 : charms - 1])
+                   charm_mid + (i - (charms - 1) / 2) * charm_step];
+assert(charms % 2 == 1 || charms == 0,
+       "`charms` must be odd: one on the middle bar and pairs either side of it");
+
+// Spacing is checked on the SMALLEST gap between consecutive stations. With a
+// fixed step every gap is `charm_step`, but the check still guards the step.
 charm_sep   = charms < 2 ? cols
             : min([for (i = [0 : charms - 2]) charm_ix[i+1] - charm_ix[i]]);
 assert(charms == 0 || charm_sep * pitch >= charm_reach,
@@ -457,7 +460,9 @@ accent_color = "hotpink"; //   filament is chosen per object when slicing
 assert(accent_lo > 0 && accent_hi > accent_lo && accent_hi < thick,
        "the stripe must start above the clasp plates and end inside the band");
 assert(charms == 0 || (charm_ix[0] >= 1 && charm_ix[charms-1] <= cols - 2),
-       "a charm landed on an end bar, where the clasp yoke is");
+       str("a charm landed on or past an end bar, where the clasp yoke is — ",
+           charms, " charms every ", charm_step, " bars need more than ",
+           cols, " bars; lower `charms`"));
 
 // The H-pin's pocket runs ACROSS the bar: `hp_slot_x` of the 6.0 mm along the
 // band, the rest left as wall either side; the full chamber width across it,
