@@ -169,7 +169,9 @@ eye      = [-7.6, 5.0, 0.95, 0.6];
 blowhole = [-7.6, 0.5, 0.5];   // shallow: the head is low over the pin hole here
 
 // ------------------------------------------------------------------ joints
-joints  = [10.7, 18.2, 25.7];   // where the tail bends, along the spine
+joints  = [11.0, 18.2, 25.7];   // where the tail bends, along the spine. The
+                                //   first was 10.7 until the 2026-09-27 pin
+                                //   grew the holes out to 6.43
 bend    = 25;           // how far each joint bends sideways, degrees
 nod     = 15;           // and up and down: A's roof over the nose's flat top
                         //   stops it at about 12 anyway

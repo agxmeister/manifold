@@ -261,7 +261,7 @@ onto the bar and the pin is not on show anywhere.
 ```
   charm  |<   >|    upper hooks point IN, into the charm's two holes
   -------|=====|--- bar top: the crossbar sits just below it
-  bar    |>   <|    lower hooks point OUT, under 60° shoulders in the pocket
+  bar    |>   <|    lower hooks point OUT, under 85° shoulders in the pocket
 ```
 
 **The two halves are the same length** — 3.45 mm each side of the bar's top
@@ -373,25 +373,82 @@ costs as little turn as possible.
 - The charms did not change. **Reprint the pin and the band together**: the
   new pin does not fit a band printed before this change.
 
+### A thicker pin with thicker legs (2026-09-27, later) — not printed yet
+
+The near-square catches printed a little better, but not enough: the pin is
+so small that the printer smoothed the catches away. So the pin grew:
+
+- **3.5 mm thick** (was 2.8), which means more grip along the band. To leave
+  enough wall beside the wider pocket, the bar's small top chamfer is filled
+  in flat next to each pocket. The charm sits over it, so you won't see it.
+- **Thicker, straight legs.** Each leg is one straight 1.6 mm bar, thickened
+  0.6 mm on the inside along its whole length, with no steps. The outside runs
+  straight from bottom to top, and the charm's hook stands off the thickened
+  inside face. Because the legs are closer together, the crossbar between
+  them is shorter (7.0 mm, was 8.2) and thinner (0.65 mm, was 0.76) so it
+  bends no further than before. That makes the spring about 25 % softer; the
+  near-square catches do most of the holding now. (Two earlier versions the
+  same day were never printed.)
+- **Taller tips on the charm hooks: 0.6 mm** (was 0.3), more than one print
+  line, so the catch's corner isn't one blob of plastic. 0.8 didn't fit: the
+  tip's height comes out of the ramp above it, which would get steeper than the
+  bracelet side's 44°. The ramp is now 41°, so pushing a charm on is stiffer.
+- The charms' holes are larger (to 6.44 mm from the middle, gables 5.55 tall),
+  and every charm was refitted around them:
+  - the butterfly's wing spots moved out;
+  - the ladybug's shell is a little longer and taller, and its head moved out;
+  - the rose's core is 0.35 mm taller;
+  - the dolphin's first tail joint is 0.3 mm further back.
+- **Reprint the band with charm stations, the pins and every charm you use.**
+  None of them mix with earlier prints. The plain bands (no stations) are
+  unchanged.
+
+### Near-square catches (2026-09-27) — printed, slightly better
+
+
+Charms still came off the pin too easily: a sleeve brushing past was enough.
+So both catches are now close to square. **The bar's is 85° and the charm's
+is 80°** (both were 60°). A pull now pushes a hook almost straight into its
+shoulder instead of sliding it sideways off it. In theory, anything past
+about 68° never lets go by pulling. In practice the printer rounds off the
+edge of each catch, and that rounding is what lets a charm come off at all.
+Only a print can tell how hard it really is.
+
+- **The charm's hooks are longer: 0.90 mm, reaching 0.75 past the wall**
+  (were 0.75 and 0.60). They also sit 0.5 mm higher on their legs. That keeps
+  the crossbar's bend per charm at 2.6 % and leaves 0.21 mm of the bar's hooks
+  holding when a charm lets go (0.27 before). It also leaves 1.5 mm of charm
+  under each hook instead of 1.0.
+- **The bar's hooks cannot get longer.** The band is already as narrow as the
+  pocket allows, and they set the crossbar's 3.7 % bend going in.
+- Pushing a charm on is a little stiffer: the ramp above each hook is now 34°
+  (was 26°), still gentler than the bar's 44°.
+- The bar's catch prints as a flat 0.95 × 3.1 mm bridge between the slot's
+  walls.
+- **To take a bare pin out of the bracelet**, spread its upper legs apart, as
+  before. The flat catch doesn't stop that.
+- **Reprint the band, the pins and every charm together.** The charms' holes
+  are a little longer now (to 5.91 mm from the middle, was 5.76), and neither
+  old pins nor old charms fit the new parts.
+- If a charm now won't come off at all, lower `hp_catch_up` to 70–75.
+
 ### The two catches are different angles, and that is on purpose
 
-- **In the bar, 60° too (45° until 2026-09-25).** The bar prints upright, so
+- **In the bar, 85° since 2026-09-27 (45° until 2026-09-25, then 60°).** The bar prints upright, so
   the shoulder a lower hook catches under faces down, like a ceiling. It is
-  only 0.8 mm deep and 3.1 mm long between the slot's walls, so each layer
-  bridges across a short gap. It used to be 45°, on the belief that a seated
+  only 0.95 mm deep and 3.1 mm long between the slot's walls, so it prints
+  as a short bridge. It used to be 45°, on the belief that a seated
   charm holds the legs still. **It doesn't.** The turn that lets the charm's
   hooks go is the same turn that lets the bar's hooks go, and the 45° catch
   did most of the turning, so the pin pulled out of the bracelet too easily.
   The charm still lets go first: when it does, the bar's hooks still overlap
-  by 0.27 mm (0.11 before the longer hooks). To take a bare pin out of the bracelet, spread its upper legs
+  by 0.21 mm (0.11 before the longer hooks, 0.27 before the near-square catches). To take a bare pin out of the bracelet, spread its upper legs
   apart.
-- **In the charm, 60°.** The charm prints bottom down, so the shoulder its
+- **In the charm, 80° since 2026-09-27 (60° before).** The charm prints bottom down, so the shoulder its
   hooks catch on is a *floor* and can be any angle. A steeper catch is what
   makes the charm **hold**: it takes a firm tug to pull it off. `hp_catch_up`
-  is the number to tune: 45 makes the charm easy to pull off, and past 60
-  friction locks it on for good (an assert rejects that). If the charm is now
-  too firm, lower this to 55. The bigger hooks are what make the real
-  difference, so leave those alone.
+  is the number to tune: 45 makes the charm easy to pull off. 60 still let
+  a sleeve knock it off. If 80 turns out too firm, try 70–75.
 
 ### What it costs the band
 

@@ -38,7 +38,7 @@ $fs = 0.3;
 include <../../lib/charm-pin.scad>
 
 // ------------------------------------------------------------------ the body
-body_top  = hp_apex + hp_wall + 0.1;   // 6.50 — roofs the holes by a wall.
+body_top  = hp_apex + hp_wall + 0.1;   // 6.85 — roofs the holes by a wall.
                                  //   The +0.1 is for the ENDS, where the ridge
                                  //   rounds away over each gable's far end.
 body_side = 3.9;                 // vertical sides up to here, then the round top.
@@ -76,8 +76,9 @@ wing_lift = 15;              // and the V: its top rises outward at this angle
 
 // Spots, cut into the wings' tops. A cone opening upward is all floor, so it
 // prints on a top face with nothing overhanging.
-spot_up   = [4.6, 3.6];      spot_up_d = 2.6;
-spot_lo   = [3.95, -4.5];    spot_lo_d = 1.6;
+spot_up   = [5.0, 3.6];      spot_up_d = 2.6;   // both 0.4 further out since the
+spot_lo   = [4.25, -4.5];    spot_lo_d = 1.4;   //   3.5 mm pin widened the body (2026-09-27);
+                                                //   the lower one also shrank, to stay inside x0
 spot_deep = 0.7;
 
 // ------------------------------------------------------------------- checks
@@ -90,7 +91,7 @@ assert(span <= 16.2,
        str("the wings span ", span, " — that outgrows `charm_reach` in bracelet.scad"));
 assert(tip_thick >= 1.2,
        str("the wing tips come out ", tip_thick, " mm thick — raise wing_root or wing_lift"));
-body_x    = hp_boss_x/2 + body_pad;                         // 3.05
+body_x    = hp_boss_x/2 + body_pad;                         // 3.40
 assert(spot_up[0] - spot_up_d/2 >= body_x + 0.1 && spot_lo[0] - spot_lo_d/2 >= body_x + 0.1,
        "a wing spot runs into the body");
 assert(ant_lean <= 40, "the antennae lean past what prints without support");

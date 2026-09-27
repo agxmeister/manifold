@@ -52,8 +52,9 @@ accent_color = "black";
 // stays full for longer than a sphere does before it rounds over — it has to
 // stand a wall over the holes' gables near both ends.
 sh_a     = 6.3;             // half-width, along the band
-sh_b     = 8.0;             // half-length, across the band
-sh_h     = 7.8;             // height
+sh_b     = 8.8;             // half-length, across the band — 8.0 until the
+                            //   2026-09-27 pin grew the holes
+sh_h     = 8.0;             // height — 7.8 until the same day
 sh_p     = 3.3;             // profile exponent: 2 = ellipsoid, more = fuller
 
 x0       = 5.0;             // the flat bottom stops here each side
@@ -65,7 +66,7 @@ hd_a     = 3.2;             // half-width
 hd_b     = 2.9;             // half-length
 hd_h     = 5.0;             // height
 hd_p     = 2.5;
-hd_y     = 7.4;             // its centre — it tucks under the shell's front
+hd_y     = 8.2;             // its centre — it tucks under the shell's front
 
 ant_d     = 1.3;            // the antennae: two leaning rods
 ant_lean  = 35;             //   degrees from vertical — self-supporting

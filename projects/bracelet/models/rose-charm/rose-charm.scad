@@ -56,8 +56,9 @@ web_slope = 60;             // the web's inner face, from vertical — faces up
 
 // The core: a flat-sided dome, solid, that the holes are sunk into.
 core_r    = 8.0;            // its radius
-core_side = 6.6;            // the height of its side
-core_top  = 7.6;            // and of its crown
+core_side = 6.95;           // the height of its side — 6.6 until the
+                            //   2026-09-27 pin raised the holes' gables 0.35
+core_top  = 7.95;           // and of its crown
 
 // The rings, from the middle out. Each row is one ring of `n` petals:
 //   [n, span, r_start, r_end, z_base, top, side, lean0, lean1, turn, wave,
@@ -74,7 +75,7 @@ rings = [
     [3, 150, 1.30, 1.90, 5.0, 10.3,  8.8, -6,  4,  20, 0.25, 0.05, 0.0],  // the bud
     [5,  90, 3.40, 4.00, 4.0, 10.0,  7.9,  2, 16,  70, 0.35, 0.15, 0.0],  // inner ring
     [5,  90, 5.65, 6.25, 3.0,  9.7,  7.1,  4, 18,  34, 0.40, 0.20, 0.0],  // middle ring
-    [6,  75, 8.05, 8.65, 0.0,  9.0,  5.6,  6, 16,   0, 0.45, 0.30, 6.6],  // outer ring
+    [6,  75, 8.05, 8.65, 0.0,  9.0,  5.6,  6, 16,   0, 0.45, 0.30, 6.95],  // outer ring
 ];
 ring_fuse = 0.3;            // the least wall two neighbours in a ring share
 ring_gap  = 0.4;            // and the least air between two rings, at the foot

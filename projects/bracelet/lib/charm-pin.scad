@@ -54,21 +54,32 @@
 //     belief that a seated charm holds the legs still. It does NOT: the turn
 //     that frees the charm is the turn that frees the bar (see `hp_keep`),
 //     and a 45-degree catch did most of the camming — the pin pulled out of
-//     the bar on a real print. `hp_catch_lo` is now 60, the charm's proven
-//     angle. As a ceiling it is only 0.8 mm deep and 3.1 mm long between the
-//     slot's walls, so each layer is a short bridge anchored at both ends.
+//     the bar on a real print. It was 60 until 2026-09-27 and is now 85:
+//     all but flat, a 0.95 x 3.1 mm bridge anchored on the slot's two walls.
 //   * the CHARM prints SEAT DOWN, so the upper hooks' shoulder is a FLOOR and
-//     may be any angle. `hp_catch_up` is steeper than 45 on purpose: that is
-//     what makes the charm hold. It is the one tuning number of this mount.
+//     may be any angle. `hp_catch_up` is steep on purpose — 80 since
+//     2026-09-27: that is what makes the charm hold. It is the one tuning
+//     number of this mount.
 //     What goes the other way is the far end of each hole, now a ceiling:
 //     it is roofed with a 45-degree gable.
 
-hp_t      = 2.8;    // the H's thickness: its print height, and its extent
-                    //   ALONG the band once assembled
-hp_leg_w  = 1.0;    // a leg, across
+hp_t      = 3.5;    // the H's thickness: its print height, and its extent
+                    //   ALONG the band once assembled. 2.8 until 2026-09-27;
+                    //   3.5 leaves 1.1 of bar either side of the pocket, so
+                    //   the bar's top chamfer is filled in at a station (see
+                    //   `hp_fill_u`) — at 2.8 it was 0.99 at the rim.
+hp_leg_w  = 1.0;    // the leg's original width. Since 2026-09-27 each leg is
+                    //   `hp_grow` wider on its INSIDE, top to bottom, with no
+                    //   step anywhere: one straight bar from `hp_ui_g` to
+                    //   `hp_uo` (the user's sketch). The outer face carries
+                    //   the lower hook and does not move.
+hp_grow   = 0.6;    // a leg, grown INWARD, its whole length
 hp_s      = 4.6;    // a leg's centre off the H's axis
-hp_cb_h   = 0.76;   // the crossbar, top to bottom — THE spring. Meant to be
+hp_cb_h   = 0.65;   // the crossbar, top to bottom — THE spring. Meant to be
                     //   under the 1.2 mm wall threshold, like the clasp's leaf.
+                    //   0.76 until 2026-09-27, when the straight legs cut its
+                    //   free length 8.2 -> 7.0: strain goes as depth / length,
+                    //   so it came down to hold 2.9 / 3.8 %.
 hp_recess = 0.3;    // how far the crossbar's top sits below the bar's top face
 hp_fillet = 0.3;    // inside corners where the crossbar meets a leg — the
                     //   spring's roots. recess >= fillet keeps the fillets
@@ -77,22 +88,34 @@ hp_fillet = 0.3;    // inside corners where the crossbar meets a leg — the
 hp_hook_lo = 0.85;  // how far a LOWER hook stands out from its leg — 0.70
                     //   until 2026-09-26, when the pin still left the bar
                     //   with a light pull (see "longer bar hooks")
-hp_hook_up = 0.75;  // how far an UPPER hook stands out — see "bigger hooks"
+hp_hook_up = 0.90;  // how far an UPPER hook stands out — 0.75 until
+                    //   2026-09-27 (see "near-square catches")
 hp_lead   = 44;     // the LOWER hook's lead-in, degrees from vertical: steeper
                     //   = easier in. (The upper one is whatever runs from its
                     //   tip to the leg's top, `hp_lead_up`.)
-hp_roof_lead = 35;  // the slope of a charm chamber's roof, from vertical
-hp_under  = 1.0;    // charm left under the upper hooks' shoulders. The upper
-                    //   hooks sit as LOW as this allows — see "the spring"
-hp_tip    = 0.3;    // straight flat at the hook's edge, never a point
-hp_catch_lo = 60;   // the LOWER catch, in the bar, degrees from vertical. It
-                    //   prints as a CEILING, so it is a short 60-degree roof
-                    //   bridged between the slot's two walls. 45 until
-                    //   2026-09-25: the pin pulled out of the bar too easily.
-hp_catch_up = 60;   // the UPPER catch, degrees from vertical. 45 = a light
-                    //   detent (the charm pulls off easily); 55 printed and
-                    //   still pulled off lightly, with 0.4 mm hooks; past
-                    //   ~60 the friction locks it and the charm is on for good.
+hp_roof_lead = 42;  // the slope of a charm chamber's roof, from vertical —
+                    //   35 until the taller upper tip came up under it
+hp_under  = 1.5;    // charm left under the upper hooks' shoulders. It sets
+                    //   the charm's lever — see "the spring" and "near-square
+                    //   catches". 1.0 until 2026-09-27.
+hp_tip_lo = 0.3;    // straight flat at the LOWER hook's edge, never a point
+hp_tip_up = 0.6;    // the same on the UPPER hook — 0.3 until 2026-09-27.
+                    //   0.3 is under a bead: the slicer laid the tooth's
+                    //   outer 0.3 mm as one blob of a line and rounded the
+                    //   catch off. 0.8 was wanted; 0.6 is what fits, because
+                    //   the tip's height comes out of the lead-in above it
+                    //   (`hp_lead_up` must stay under `hp_lead`).
+hp_catch_lo = 85;   // the LOWER catch, in the bar, degrees from vertical. It
+                    //   prints as a CEILING: at 85 it is all but flat, a
+                    //   0.95 x 3.1 mm BRIDGE between the slot's two walls.
+                    //   45 until 2026-09-25, 60 until 2026-09-27.
+hp_catch_up = 80;   // the UPPER catch, degrees from vertical. 45 = a light
+                    //   detent; 55 and then 60 printed and the charm still
+                    //   came off with a small effort (a sleeve brushing it).
+                    //   On paper anything past ~68 is friction-locked; the
+                    //   printer rounds the catch's edge, and that rounding
+                    //   is what lets a near-square catch go at all. 80 is the
+                    //   user's choice, 2026-09-27 — see "near-square catches".
 hp_fit    = 0.15;   // clearance: a hook's tip to its chamber, a leg to its
                     //   slot, and the H's faces to the slots along the band
 hp_vfit   = 0.15;   // vertical play between a seated hook and its shoulder
@@ -111,23 +134,25 @@ hp_wall   = 1.2;    // charm wall around its two holes
 
 // ------------------------------------------------------------------ derived
 hp_uo     = hp_s + hp_leg_w/2;                  // 5.10 — leg's outer face
-hp_ui     = hp_s - hp_leg_w/2;                  // 4.00 — leg's inner face
-hp_lr     = hp_hook_lo / tan(hp_lead);          // 0.83 — lead-in rise
-hp_cr     = hp_hook_up / tan(hp_catch_up);      // 0.43 — upper catch rise
+hp_ui     = hp_s - hp_leg_w/2;                  // 4.10 — leg's inner face (the neck)
+hp_lr     = hp_hook_lo / tan(hp_lead);          // 0.88 — lead-in rise
+hp_ui_g   = hp_ui - hp_grow;                    // 3.50 — a leg's inner face,
+                                                //   above and below the neck
+hp_cr     = hp_hook_up / tan(hp_catch_up);      // 0.16 — upper catch rise
 hp_defl_lo = hp_hook_lo - hp_fit;               // 0.55 — how far a hook has to
-hp_defl_up = hp_hook_up - hp_fit;               // 0.60 —   move to pass its wall
+hp_defl_up = hp_hook_up - hp_fit;               // 0.75 —   move to pass its wall
 
 hp_cb_top = -hp_recess;                         // -0.30
 hp_cb_bot = hp_cb_top - hp_cb_h;                // -1.06
 hp_v_fl   = hp_floor - hp_bar;                  // -3.60 — the pocket's floor
 hp_v_end  = -hp_leg_lo;                         // -3.45 — lower leg's end
-hp_v_lt   = hp_v_end + hp_lr + hp_tip;          // -2.32 — lower hook's tip top
-hp_v_lc   = hp_v_lt + hp_hook_lo / tan(hp_catch_lo);  // -1.92 — lower catch meets leg
+hp_v_lt   = hp_v_end + hp_lr + hp_tip_lo;       // -2.27 — lower hook's tip top
+hp_v_lc   = hp_v_lt + hp_hook_lo / tan(hp_catch_lo);  // -2.20 — lower catch meets leg
 hp_v_top  = -hp_v_end;                          //  3.45 — AS SHORT AS THE BOTTOM
-hp_v_uc   = hp_under + hp_vfit;                 //  1.15 — upper catch meets leg
-hp_v_ut   = hp_v_uc + hp_cr;                    //  1.58 — upper hook's tip bottom
-hp_lr_up  = hp_v_top - hp_v_ut - hp_tip;        //  1.57 — its lead-in, tip to leg top
-hp_lead_up = atan(hp_hook_up / hp_lr_up);       //  26 deg from vertical
+hp_v_uc   = hp_under + hp_vfit;                 //  1.65 — upper catch meets leg
+hp_v_ut   = hp_v_uc + hp_cr;                    //  1.81 — upper hook's tip bottom
+hp_lr_up  = hp_v_top - hp_v_ut - hp_tip_up;     //  1.04 — its lead-in, tip to leg top
+hp_lead_up = atan(hp_hook_up / hp_lr_up);       //  41 deg from vertical
 
 // The spring. The legs turn about the crossbar's middle and the crossbar bends
 // in a pure arc, strain = angle * depth / length. Going into the bar the lever
@@ -164,11 +189,17 @@ hp_lead_up = atan(hp_hook_up / hp_lr_up);       //  26 deg from vertical
 // less for the same hook travel, so the charm lets go while the lower hooks
 // still overlap their shoulders by `hp_keep` — and the pin stays in the bar.
 hp_pivot  = (hp_cb_top + hp_cb_bot)/2;
-hp_arm_lo = hp_pivot - (hp_v_end + hp_lr + hp_tip/2);
-hp_arm_up = (hp_v_ut + hp_tip/2) - hp_pivot;
+hp_arm_lo = hp_pivot - (hp_v_end + hp_lr + hp_tip_lo/2);
+// The upper lever runs to the tip's BOTTOM corner, the catch corner: that is
+// the point that has to clear the charm's wall, and it is the tip's lowest,
+// so it swings least. (To the tip's middle until 2026-09-27; with a 0.3 tip
+// that was 0.15 of error, covered by the harness's 1.03 margin. With a
+// taller tip it was not.) The lower lever still runs to its tip's middle:
+// that tip is on the leg's outside, and turning adds to its travel there.
+hp_arm_up = hp_v_ut - hp_pivot;
 hp_turn_lo = hp_defl_lo / hp_arm_lo;
 hp_turn_up = hp_defl_up / hp_arm_up;
-hp_cb_len = 2*hp_ui;
+hp_cb_len = 2*hp_ui_g;                          // 7.0 — between the legs' inner faces
 hp_strain_cb = max(hp_turn_lo, hp_turn_up) * hp_cb_h / hp_cb_len;
 hp_strain_up = hp_turn_up * hp_cb_h / hp_cb_len;   // every charm on and off
 // A turning leg's END swings further than its hook, so each hole leaves room
@@ -176,27 +207,28 @@ hp_strain_up = hp_turn_up * hp_cb_h / hp_cb_len;   // every charm on and off
 // upper legs (charm). Above the upper hook the leg's outer face leans in by
 // exactly the turn, so every point of it swings out no further than the face
 // does at the hook's tip — that is all the room the charm's hole has to give.
-hp_taper  = hp_turn_up * (hp_v_top - hp_v_ut);            // 0.46
-hp_room_lo = hp_turn_lo * (hp_pivot - hp_v_end) + 0.1;   // 0.95
-hp_room_up = hp_turn_up * (hp_v_ut - hp_pivot) + 0.1;    // 0.66
-hp_keep   = hp_defl_lo - hp_turn_up * hp_arm_lo;          // 0.11
+hp_room_lo = hp_turn_lo * (hp_pivot - hp_v_end) + 0.1;   // 1.21
+hp_room_up = hp_turn_up * (hp_v_top - hp_pivot) + 0.1;    // 1.34 — at the leg's TOP
+hp_keep   = hp_defl_lo - hp_turn_up * hp_arm_lo;          // 0.18
 
-hp_slot_x = hp_t + 2*hp_fit;                    // 3.10 — every slot, along the band
+hp_slot_x = hp_t + 2*hp_fit;                    // 3.80 — every slot, along the band
 hp_out    = hp_uo + hp_hook_lo + hp_fit;        // 6.10 — a bar chamber's outer wall
-hp_c_out  = hp_uo + hp_room_up;                 // a charm hole's outer wall
-hp_c_in   = hp_ui - hp_hook_up - hp_fit;        // 3.20 — a charm chamber's inner wall
+hp_c_out  = hp_uo + hp_room_up;                 // 6.44 — a charm hole's outer wall
+hp_c_in   = hp_ui_g - hp_hook_up - hp_fit;      // 2.45 — a charm chamber's inner wall
 hp_roof   = hp_v_top + hp_gap;                  // 3.65 — a charm hole's eaves
-hp_apex   = hp_roof + hp_slot_x/2;              // 5.20 — and the gable's ridge
-hp_boss_x = hp_slot_x + 2*hp_wall;              // 5.50
+hp_apex   = hp_roof + hp_slot_x/2;              // 5.55 — and the gable's ridge
+hp_boss_x = hp_slot_x + 2*hp_wall;              // 6.20
 hp_boss_u = 2*hp_c_out + 2*hp_wall;
 
 assert(hp_v_end - hp_v_fl >= hp_fit - 1e-9,
        str("the lower legs bottom out in the pocket: ", hp_v_end - hp_v_fl, " mm under them"));
 assert(hp_lead < 45, "the lower hook's lead-in is steeper than 45 — too hard to push in");
-assert(hp_catch_lo >= 45 && hp_catch_lo <= 60,
-       str("hp_catch_lo = ", hp_catch_lo, ": it is a ceiling in the bar — past 60 it droops"));
-assert(hp_catch_up >= 45 && hp_catch_up <= 60,
-       str("hp_catch_up = ", hp_catch_up, ": under 45 the charm falls off, past 60 friction locks it on"));
+// A ceiling in the bar: up to 60 it steps in under a bead a layer; past 80
+// it is a flat bridge between the slot's walls. Between the two it is neither.
+assert(hp_catch_lo >= 45 && (hp_catch_lo <= 60 || hp_catch_lo >= 80) && hp_catch_lo <= 90,
+       str("hp_catch_lo = ", hp_catch_lo, ": a ceiling in the bar — a 45-60 slope or an 80-90 bridge"));
+assert(hp_catch_up >= 45 && hp_catch_up < 90,
+       str("hp_catch_up = ", hp_catch_up, ": under 45 the charm falls off; 90 has no edge left to round"));
 assert(hp_v_lc < hp_cb_bot - 0.3,
        str("the lower hook runs into the crossbar: catch top ", hp_v_lc,
            ", crossbar bottom ", hp_cb_bot));
@@ -216,40 +248,82 @@ assert(hp_recess >= hp_fillet,
 // project's other flexures run at. That bend happens once per pin, when it
 // is pushed in; every charm going on and off stays at `hp_strain_up`, under
 // 2.9. If a crossbar cracks going in, 0.80 gives 3.4 %.
+// NEAR-SQUARE CATCHES, 2026-09-27. The charms still came off the pin with a
+// small effort — a sleeve brushing past was enough. The user chose catches
+// close to square: `hp_catch_lo` 60 -> 85, `hp_catch_up` 60 -> 80. A pull
+// then pushes a hook almost straight into its shoulder instead of camming it
+// sideways, and it is the printer's rounding of the edge, not the angle, that
+// lets a charm go at all — so a real print is the only test of how hard it is.
+//   * The steeper upper catch rises less (0.43 -> 0.16), which would drop
+//     the hooks and shorten the charm's lever: more strain per charm, less
+//     `hp_keep`, and the leg tips tapered to 0.38. `hp_under` 1.0 -> 1.5
+//     puts the hooks back up, and leaves more charm under them.
+//   * The upper hooks are longer, 0.75 -> 0.90 (0.75 past the wall). That is
+//     as far as they go: 0.95 needs the leg tips under 0.5 or the strain past
+//     2.9 %. The LOWER hooks cannot grow: `hp_out` is the band's width limit
+//     (`band_w/2 - hp_out >= 2.0`) and their turn sets the 3.73 % insertion
+//     strain.
+//   * The lower catch is a ceiling in the bar, now a 0.95 x 3.1 mm flat
+//     bridge between the slot's walls, not a 60-degree stepped roof.
+//   * `hp_c_out` 5.76 -> 5.91: the charms' holes are a little longer, so
+//     every charm, the band and the pin must be reprinted together.
+// A THICKER PIN WITH GROWN LEGS, 2026-09-27 (later). The near-square
+// catches printed and were "slightly better, but not enough": the angle was
+// smoothed away because the part is so small. The user sketched the fix:
+//   * `hp_t` 2.8 -> 3.5, more grip along the band. The bar's top chamfer is
+//     filled at a station (bracelet.scad) so 1.1 of wall reaches the rim.
+//   * the LOWER legs grown 0.6 INWARD, the UPPER legs 0.5 OUTWARD — the
+//     faces with no hooks on them, so no hook, `hp_out` or `hp_c_in` moved.
+//     The lower growth stops `hp_notch` under the crossbar so the spring
+//     keeps its full length; the upper one starts `hp_step` above the seat
+//     on a chamfer, because the insertion turn drops a corner there.
+//   * the upper hook's tip 0.3 -> 0.6 (`hp_tip_up`), past one bead.
+// Making the tip taller showed that the upper lever had been measured to the
+// tip's middle. It is now measured to the catch corner, the point that has to
+// clear, and that is what set 0.6, `hp_under` 1.5 and `hp_roof_lead` 42.
+// Charm holes out to `hp_c_out` 6.45 (from 5.91) and gables to 5.55 (from
+// 5.20): every charm's own dimensions were refitted around them.
+// STRAIGHT LEGS, the same day (unprinted). From a second sketch: the upper
+// leg is grown INWARD like the lower one, not outward, and its outside runs
+// straight up with no taper. Each leg is one 1.6 mm bar, `hp_ui_g` to
+// `hp_uo`, step-free top to bottom — the user rejected notches beside the
+// crossbar's ends. So the spring is 7.0 long, not 8.2, and `hp_cb_h` came
+// down 0.76 -> 0.65 to keep its strain; that costs ~25 % of its force. The upper hook now
+// stands off the grown face, so the charm's chambers moved in 0.6
+// (`hp_c_in` 2.45). With no taper the hole's outer wall is set by the leg's
+// top corner: `hp_c_out` 6.44, about where the outward growth had it.
 assert(hp_strain_up <= 0.029,
        str("the crossbar bends to ", 100*hp_strain_up,
            "% every time a charm goes on — past the 2.9% this project's flexures run at"));
 assert(hp_strain_cb <= 0.038,
        str("the crossbar bends to ", 100*hp_strain_cb,
            "% as the pin goes into the bar — past the 3.8% allowed for that one-off bend"));
-assert(hp_room_lo < hp_ui - hp_fillet - 0.8,
+assert(hp_room_lo < hp_ui_g - hp_fillet - 0.8,
        "the legs' inward room eats the bar between the two leg slots");
-assert(hp_c_in > hp_cb_len/2 - hp_ui + 2.0, "the charm's two chambers meet in the middle");
+assert(hp_c_in >= 2.0, "the charm's two chambers leave under 4 mm of charm between them");
 assert(min(hp_defl_lo, hp_defl_up) >= 0.5,
        "the hooks overlap their shoulders by less than the printer rounds off");
-assert(hp_leg_w - hp_taper >= 0.5, "the upper legs taper to a sliver at the top");
 
 // ----------------------------------------------------------------- the pin
 // One leg, the one at +u, in (u, v): lower hook OUT, upper hook IN. The left
 // leg is its mirror.
 function hp_leg_pts() = [
-    [hp_ui,           hp_v_end],
+    [hp_ui_g,         hp_v_end],
     [hp_uo,           hp_v_end],
     [hp_uo + hp_hook_lo, hp_v_end + hp_lr],          // lower lead-in
     [hp_uo + hp_hook_lo, hp_v_lt],                   // tip flat
     [hp_uo,           hp_v_lc],                      // `hp_catch_lo` catch
-    [hp_uo,           hp_v_ut],
-    [hp_uo - hp_taper, hp_v_top],                    // the taper, see hp_taper
-    [hp_ui,           hp_v_top],
-    [hp_ui - hp_hook_up, hp_v_ut + hp_tip],          // upper lead-in, to the top
-    [hp_ui - hp_hook_up, hp_v_ut],                   // tip flat
-    [hp_ui,           hp_v_uc],                      // `hp_catch_up` catch
-];
+    [hp_uo,           hp_v_top],                     // straight up the outside
+    [hp_ui_g,         hp_v_top],
+    [hp_ui_g - hp_hook_up, hp_v_ut + hp_tip_up],     // upper lead-in, to the top
+    [hp_ui_g - hp_hook_up, hp_v_ut],                 // tip flat
+    [hp_ui_g,         hp_v_uc],                      // `hp_catch_up` catch
+];                                                   // ... and straight back down
 
 module hp_pin_raw_2d() union() {
     polygon(hp_leg_pts());
     mirror([1, 0]) polygon(hp_leg_pts());
-    translate([-hp_ui - 0.3, hp_cb_bot]) square([2*hp_ui + 0.6, hp_cb_h]);
+    translate([-hp_ui_g - 0.3, hp_cb_bot]) square([2*hp_ui_g + 0.6, hp_cb_h]);
 }
 
 // The H's outline, in (u, v). The four inside corners where the crossbar
@@ -260,8 +334,8 @@ module hp_pin_2d() union() {
     hp_pin_raw_2d();
     intersection() {
         offset(r = -hp_fillet) offset(r = hp_fillet) hp_pin_raw_2d();
-        translate([-hp_ui, hp_cb_bot - 2*hp_fillet])
-            square([2*hp_ui, hp_cb_h + 4*hp_fillet]);
+        translate([-hp_ui_g, hp_cb_bot - 2*hp_fillet])
+            square([2*hp_ui_g, hp_cb_h + 4*hp_fillet]);
     }
 }
 
@@ -281,14 +355,14 @@ module charm_h_pin() hp_stand(hp_t) hp_pin_2d();
 // The shoulder: the hook's catch face lifted `hp_vfit`, at the catch's angle.
 function hp_b_sh(u) = hp_v_lt + (hp_uo + hp_hook_lo - u) / tan(hp_catch_lo) + hp_vfit;
 function hp_bar_pocket_pts() = [
-    [hp_ui - hp_room_lo, hp_v_fl],
+    [hp_ui_g - hp_room_lo, hp_v_fl],
     [hp_out,             hp_v_fl],
     [hp_out,             hp_b_sh(hp_out)],
     [hp_uo + hp_fit,     hp_b_sh(hp_uo + hp_fit)],
     [hp_uo + hp_fit,     -0.4],
     [hp_uo + 2*hp_fit,   0],
     [hp_uo + 2*hp_fit,   1],
-    [hp_ui - hp_room_lo, 1],
+    [hp_ui_g - hp_room_lo, 1],
 ];
 
 // The pocket, cut DOWN from z = 0 (a bar's top face): two leg slots with a
@@ -307,19 +381,19 @@ module charm_h_pocket() hp_stand(hp_slot_x) union() {
 // follows the hook's lead-in down and inward, the material growing out from
 // the chamber's inner wall at `hp_roof_lead` from vertical. Over the leg the hole
 // stops at flat eaves, and `charm_h_holes` puts a 45-degree gable on them.
-function hp_c_sh(u) = hp_v_uc + (hp_ui - u) * hp_cr / hp_hook_up - hp_vfit;
-function hp_c_rf(u) = hp_roof - (hp_ui - u) / tan(hp_roof_lead);
+function hp_c_sh(u) = hp_v_uc + (hp_ui_g - u) * hp_cr / hp_hook_up - hp_vfit;
+function hp_c_rf(u) = hp_roof - (hp_ui_g - u) / tan(hp_roof_lead);
 function hp_charm_hole_pts() = [
-    [hp_ui - hp_fit, -1],
+    [hp_ui_g - hp_fit, -1],
     [hp_c_out,       -1],
     [hp_c_out,       hp_roof],
-    [hp_ui - hp_fit, hp_roof],
-    [hp_ui - hp_fit, hp_c_rf(hp_ui - hp_fit)],
+    [hp_ui_g - hp_fit, hp_roof],
+    [hp_ui_g - hp_fit, hp_c_rf(hp_ui_g - hp_fit)],
     [hp_c_in,        hp_c_rf(hp_c_in)],
     [hp_c_in,        hp_c_sh(hp_c_in)],
-    [hp_ui - hp_fit, hp_c_sh(hp_ui - hp_fit)],
+    [hp_ui_g - hp_fit, hp_c_sh(hp_ui_g - hp_fit)],
 ];
-assert(hp_c_rf(hp_ui - hp_fit) - (hp_v_ut + hp_tip + (hp_hook_up - hp_fit) * hp_lr_up / hp_hook_up)
+assert(hp_c_rf(hp_ui_g - hp_fit) - (hp_v_ut + hp_tip_up + (hp_hook_up - hp_fit) * hp_lr_up / hp_hook_up)
        >= hp_gap, "the charm's chamber roof comes down onto the hook's lead-in");
 assert(hp_c_rf(hp_c_in) - hp_c_sh(hp_c_in) >= 0.2,
        "the charm's chamber pinches shut at its inner wall");
@@ -332,9 +406,9 @@ module charm_h_holes() {
     }
     // the gables: 45-degree roofs over each leg's end, running along u
     for (s = [-1, 1])
-        translate([0, s*(hp_ui - hp_fit + hp_c_out)/2, 0])
+        translate([0, s*(hp_ui_g - hp_fit + hp_c_out)/2, 0])
             rotate([90, 0, 0])
-                linear_extrude(hp_c_out - (hp_ui - hp_fit), center = true)
+                linear_extrude(hp_c_out - (hp_ui_g - hp_fit), center = true)
                     // walls carried a millimetre down into the hole, so the
                     // gable meets them square instead of leaving a ledge
                     polygon([[-hp_slot_x/2, hp_roof - 1], [hp_slot_x/2, hp_roof - 1],

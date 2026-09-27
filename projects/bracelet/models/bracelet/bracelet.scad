@@ -469,12 +469,20 @@ assert(charms == 0 || (charm_ix[0] >= 1 && charm_ix[charms-1] <= cols - 2),
 // well inside the band's width; and `hp_floor` of bar under it, so the first
 // layer never sees it. It stays inside |x| < h - 1.0 too, where the knuckle
 // arms begin, so it cuts nothing but plain bar.
-hp_wall_bar = (body - hp_slot_x) / 2;                   // 1.45
+hp_wall_bar = (body - hp_slot_x) / 2;                   // 1.10
+// At a station the bar's top chamfer is FILLED IN, so the wall beside the
+// pocket keeps its full 1.1 up to the rim instead of 0.6. The chamfer is only
+// cosmetic — the hinge does the articulating — and the fill is flush with the
+// slab's faces below it, so it adds no overhang and no layer step. The charm
+// covers it. `hp_fill_u` is how far it runs across the band, either side.
+hp_fill_u   = hp_out + 0.8;                             // 6.90
 assert(hp_bar == thick,
        str("the H-pin's pocket is drawn for a ", hp_bar, " mm bar but a bar is ",
            thick, " thick"));
-assert(hp_wall_bar - ch_run >= 0.85,
-       str("only ", hp_wall_bar - ch_run, " mm of bar beside the pocket at the rim"));
+assert(hp_wall_bar >= 1.0,
+       str("only ", hp_wall_bar, " mm of bar beside the pocket"));
+assert(hp_fill_u <= band_w/2 - corner_r,
+       "the chamfer fill runs into the bar's rounded corners");
 assert(hp_slot_x/2 < h - 1.0,
        "the H-pin's pocket reaches the knuckle arms");
 assert(band_w/2 - hp_out >= 2.0,
@@ -713,6 +721,13 @@ module charm_h_station(col) {
     translate([col*pitch, band_cy, thick]) charm_h_pocket();
 }
 
+// The chamfer fill at a station (see `hp_fill_u`): a block the bar's full
+// `body` along the band, from below the chamfer's foot to the top face.
+module charm_h_seat(col) {
+    translate([col*pitch, band_cy, thick - ch_rise - 0.1])
+        translate([-body/2, -hp_fill_u, 0]) cube([body, 2*hp_fill_u, ch_rise + 0.1]);
+}
+
 // With no charms the band is written out in full, NOT wrapped in the
 // difference() the pockets need: at `charms = 0` its export has to stay
 // byte-for-byte the file the printed bracelet was cut from.
@@ -721,6 +736,7 @@ module bracelet() {
         difference() {
             union() {
                 for (c = [0:cols-1]) bar(c);
+                for (c = charm_ix) charm_h_seat(c);
                 clasp_stud();
                 clasp_keyhole();
             }
