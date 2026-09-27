@@ -145,13 +145,14 @@ bought nothing.
 **knuckle clusters** spaced along each joint, which is what stops a wide bar
 twisting about a single pin.
 
-## Six models, one library, `cols` shells
+## Seven models, one library, `cols` shells
 
 `models/bracelet/bracelet.scad` is the bracelet, and every dimension of the band
 is at the top of it. `lib/charm-pin.scad` holds the charm mount — the H-pin,
 the pocket it snaps into and the holes a charm has for it. `models/pin`
 is the loose pin, and `models/butterfly-charm`, `models/ladybug-charm`,
-`models/heart-charm` and `models/rose-charm` are the four charms. The lib draws
+`models/heart-charm`, `models/rose-charm` and `models/dolphin-charm` are the
+five charms. The lib draws
 nothing — variables, functions and modules only — so every model `include`s
 it.
 
@@ -180,6 +181,7 @@ openscad -o /tmp/f.stl models/butterfly-charm/butterfly-charm.scad && cmp /tmp/f
 openscad -o /tmp/l.stl models/ladybug-charm/ladybug-charm.scad && cmp /tmp/l.stl exports/ladybug-charm-ladybug-charm.stl
 openscad -o /tmp/h.stl models/heart-charm/heart-charm.scad && cmp /tmp/h.stl exports/heart-charm-heart-charm.stl
 openscad -o /tmp/r.stl models/rose-charm/rose-charm.scad && cmp /tmp/r.stl exports/rose-charm-rose-charm.stl
+openscad -o /tmp/d.stl models/dolphin-charm/dolphin-charm.scad && cmp /tmp/d.stl exports/dolphin-charm-dolphin-charm.stl
 ```
 
 **The ladybug's export is NOT byte-stable** (found 2026-09-25). Two fresh
@@ -801,6 +803,146 @@ and the band were not touched.**
   0.5°** (0.12 / 0.33 mm³), the heart's trade.
 - Two roses at `charms = 3`, 130: stations 23.75 apart, so they clear by
   ≥ 1.07.
+
+## The dolphin charm — added 2026-09-27, unprinted
+
+Asked for as "an articulated dolphin", from a photo of a chubby flexi dolphin
+(big round head, fin, flippers, two tail rings and a fluke). Same H-pin holes
+(`charm_h_holes`), same pose (seat down), flat bottom to the edge. **The lib
+and the band were not touched.**
+
+- **Layout.** Spine along y (across the band), head at −y. The holes need a
+  rigid block 14 mm long and 6.4 mm tall, so the CARRIER is head + body + fin
+  + flippers in one solid. `joints` = [10.7, 18.2, 25.7]; the last segment
+  carries the fluke. The first joint sits right at the band's edge, so the
+  tail hangs past it.
+- **Reworked the same day on request: "The tail should be raised up... use
+  rings, to make it possible to move in all directions."** Asked, the user
+  clarified that ONLY THE FLUKE ("rear fins") is raised. A raised tail of loose
+  segments cannot print: each segment's first layer would be in the air, at
+  any angle. Do not propose raising the segments themselves.
+- **The joint is a chain link (replaced the post-and-ring hinge, which only
+  wagged about a vertical axis).** A (front) ends in a WALL (`wall_t` 1.4)
+  with a slot (`slot_w` 2.8) through its full height; a CROSSBAR (z 1.5–2.7)
+  bridges the slot. B (rear) reaches forward in a closed LOOP (`loop_w` 1.8):
+  a bottom rail on the bed (`rail_h` 1.0), an upright in a through-POCKET in A,
+  and a top rail from z 3.2 up to the body's surface. Every clearance is 0.5
+  (`bed_gap` sideways, `v_gap` vertically). Nothing is cantilevered: the
+  crossbar is a 2.8 bridge between A's wall halves, the top rail a ~3 mm
+  bridge from the upright to B's body.
+  - **Facing surfaces are cones round the joint axis** (0, s, `z_c` 2.1), each
+    `bend`/2 = 12.5° back from square. Turned `bend`, one lies parallel to the
+    other. A's rear is FLAT out to `a_flat_r` 2.5 before its cone starts. A
+    cone right to the axis thinned the wall beside the slot to 0.02–0.3 mm and
+    left two zero-area bed patches. The flat costs ~1° of bend.
+  - **A's pocket is the upright swung ±`bend` in plan, grown `bed_gap`, and
+    STOPPED at the wall's front face.** Grown into the wall it made the same
+    slivers.
+  - **B's loop is clipped, in side view, to a disc (`loop_r` 2.9) round the
+    joint axis.** Under the tall head a square upright's top corner hit the
+    pocket front at 20° of lift. With the disc, lifting or dropping the tail
+    never swings the loop's front forward. So under the head, B's loop tops
+    out below the body surface, visibly.
+- **The fluke tilts up `fluke_a` = 50° about its root** (`fluke_root`, the
+  outline's min y). `inflate()` gained `lift`/`root`/`skirt`. The plan is
+  shortened by cos and each point raised by sin × distance behind the root, so
+  it stays a height field over a flat underside 40° from vertical. 50, not 45:
+  faces on the threshold flicker in the checks. The skirt (the rim's vertical
+  thickness, cut off by the bed when flat) is `fluke_skirt` 1.6. At 1.0 the
+  leading edge read 0.3 mm. The tail stock's last rows were shortened
+  (ends at 30.2) so it ends INSIDE the raised fluke (asserted), not as a stub
+  under it.
+- **Nose and fins, reworked the same day on request** ("nose sharper, the
+  fins smooth, without any kinks... do not be afraid to make it wider").
+  The beak runs on to a rounded point at s = −16. The flippers and the fluke
+  were hulls of three ellipsoids, creased where one took over from the next.
+  Each is now ONE `inflate()` surface, the heart's method: a closed
+  Catmull-Rom spline through `flip_pts` / `fluke_pts`, with every ring that
+  outline scaled toward `*_mid` on a superellipse profile. The star-shape is
+  asserted, so the surface is a height field. The fluke must stay ≥ 0.5 in
+  front of the last joint's A side (asserted). `inflate()` came out INSIDE
+  OUT first (flippers −178, fluke −284 signed volume); the export said
+  `NoError` and genus 1, and the total volume FELL as the fins grew. That
+  fall is what gave it away.
+- **Two harness traps, both hit here.** The envelope polyhedron's flat bottom
+  lying ON the z = 0 cut left eight zero-thickness 4-triangle sheets
+  (connectivity: 12 pieces); it is now carried 1 mm under the bed. And the
+  first winding was inside out (signed volume −3038): the export still said
+  `NoError` but fused carrier to segment 1 and left a crumb in a pin hole.
+  Check the signed volume of any new polyhedron.
+
+- **Fluke swept back, later the same day, on request** ("the tail fins are
+  opposite to each other... maybe 120 degree"). The lobes read ~158° apart
+  from above: the 50° tilt shortens their sweep by cos 50. `fluke_sweep` 0.6
+  shears the half outline back by 0.6 × x, so the centreline and
+  `fluke_root` do not move. That gives ~122° IN PLAN. The trailing-edge
+  points moved back 0.4–0.9 to give the sheared lobes their chord back.
+  Then "the tail is too big now": **`fluke_scale` 0.75** scales the swept
+  outline about the root (y 27.3), so the V angle is kept. The span is now
+  17.9.
+- **Dorsal fin reshaped from a photo** of a real dolphin's fin (first
+  enlarged: tip 11.8 → 13.0). The two-value `fin_z/le/te/t` became the
+  `fin` table: rows [z, leading edge, trailing edge, half-thickness],
+  sampled on an open Catmull-Rom spline (`fin_n` per row). The shape is a
+  long, convex leading edge from s −6, a tip that curls back (the
+  trailing edge moves back 3.9 → 4.95 over z 10–12.9; asserted ≤ 40° per
+  sample), and a concave trailing edge running into a fillet at s 6.4. The
+  "runs into the first joint" assert now takes the max trailing edge. Traps:
+  - A half-thickness of 2.3 at body level stood proud of the falling back as
+    a visible collar; it is 1.45–1.55 there now.
+  - The rear root row must stay under the body (z 7.4 at s 6.4, body 7.48).
+    At z 7.6 it poked out 0.15.
+  - A half-ellipsoid dome on the top slice is vertical at its equator, and it
+    read as a knob. The cap is now an ellipsoid cut at 0.8 of its height
+    (`fin_cap` 0.35), so it meets the sides at a slope.
+  - The fin's front now covers s −4, so **the blowhole moved −4.0 → −7.0**
+    (it was cutting into the leading edge).
+
+- **Beak reshaped from a photo**, the same day: a rounded melon whose
+  forehead slopes down to a crease (s −12.1), then a slim rostrum 1.5–2.2
+  tall and 2.6–3.5 wide, tapering to a rounded point at s −16.8. Only the
+  `body` rows in front of s −8.8 changed (−8.8 itself 7.0 → 6.8 tall). The
+  first try dropped the forehead almost vertically onto a thin stub; the
+  photo's forehead slopes at ~45°. The body is a height field, so any
+  profile here prints. Hole envelope (`charm_h_holes()` ⊕ sphere
+  `hp_wall − 0.05`, z > 0, minus `dolphin()`): empty nominal, dy −1.5 and
+  dz −1.0; leaks at dz −2.2 / −3 and dy −10 (controls).
+
+**Invariants:**
+
+- **4 shells** (carrier + 3), OpenSCAD genus **3** (`1 − 4 + 6`: each joint
+  is one hole in A's wall, one in B's loop). 29.8 × 50.87 × 13.25,
+  vol 2509.3.
+- Bed: **471.7 mm² in 4 islands**; the tail islands are 49.8 / 47.9 / 21.9.
+  More than 4 islands means a sliver; fewer means segments welded.
+- `check_overhangs`: 6 BRIDGE (crossbars at z 1.5, top rails at z 3.3), no
+  SUPPORT.
+- After the fluke and fin changes, re-run on the final version:
+  - the joint harness at joints 0 and 2: yaw ±23, pitch ±23 and diagonal
+    ±20 empty; yaw/pitch 35 HIT;
+  - connectivity, overhangs (6 BRIDGE) and stability;
+  - walls: nothing on the fin; the lobe tips read 0.6–0.7. One sample read
+    0.05 at a joint-1 pocket side (unchanged geometry, sampling noise
+    against the documented 0.3–0.4). The layer raster was NOT re-run. The fluke's underside is still
+  one plane 40° from vertical.
+- Layer raster (`projection(cut)` of layer n minus layer n−1 grown 0.4, at
+  z = 0.1 + 0.2i + 0.013): only z 1.51 (8.40 mm²) and 3.31 (9.99 mm²) — the
+  bridges. The fluke leading edge leaves ≤ 0.013 mm² per layer. Control: a
+  1.5 × 3 mm ledge at z 4 flags at 4.11.
+- Wall check `--nozzle 0.4`: the flipper tip at the bed (0.37), the pocket
+  sides meeting the domed top (0.3–0.4), and the tilted fluke's acute lower
+  rim corners (0.01 at the bed line y 28.65, ~0.5 along the leading edge;
+  across the tilt the rim is 1.0).
+- Joint harness (`intersection(segment(k−1), segment(k)` turned about
+  (0, joints[k−1], z_c)), all three joints: rest empty; yaw ±20/±23 empty,
+  35 HIT; pitch ±20/±23 empty, ±35 HIT; diagonal [1,0,1] ±20 empty; roll 10
+  HIT at joints 1–2 (0.07 / 0.01), 15 HIT at all. Displacement dx/dy/dz ±0.4
+  empty, ±0.6 HIT.
+- Not re-run after the rework: the pin harness and the band swing. The
+  carrier's holes and its bottom over the band are unchanged. The pocket
+  front (7.3) stays behind the holes' walls by the existing assert (7.16).
+- Two dolphins at `charms = 3` collide (29.8 along the band, stations 23.75
+  apart). Not asserted; say so if asked for more than one.
 
 ## Why the joint is a hinge
 

@@ -233,8 +233,9 @@ full-width bar foot, so there is far more of it than the old tile grid had.
 
 `charms` bars along the band carry a charm, hung on an **H-pin** snapped in at
 both ends. Four charms are built for it: a 3D **butterfly**, a two-colour
-**ladybug**, a puffy **heart** that can be turned to any angle, and a
-**rose** with thin, ruffled petals.
+**ladybug**, a puffy **heart** that can be turned to any angle, a
+**rose** with thin, ruffled petals, and an articulated **dolphin** whose tail
+bends every way.
 
 Two earlier mounts came before this one — a ball pin fused to the bar with
 clip-on charms, and a loose double-ended screw — and both printed and worked.
@@ -527,6 +528,59 @@ grows ring by ring, so the rose opens out from the middle.
   beside it do not move**, the same trade as the heart and the ladybug.
 - Two roses side by side at `charms = 3` clear each other by about 1 mm.
 
+### The dolphin — an articulated tail
+
+![the dolphin charm](previews/dolphin-charm-dolphin-charm.png)
+
+**Added 2026-09-27, not printed yet.** Reworked the same day: the fluke now
+tilts up, and the tail hangs on chain-link rings that bend in every
+direction. Later that day the fluke's lobes were swept back into a smaller V, and the
+dorsal fin and the beak were reshaped like a real dolphin's.
+
+A chubby cartoon dolphin **50.9 mm long, 29.8 mm across the flippers and
+13.3 mm tall**. It has a big round head whose forehead slopes down to a slim beak,
+dimpled eyes and a blowhole, and a dorsal fin with a long sloping front
+edge, a tip that curls back and a curved-in back edge. The flippers and the fluke
+are each one smooth inflated surface over a rounded outline, with no creases
+anywhere. **The fluke is tilted up 50°** at the end of the tail, and its two lobes
+are swept back so that from above they are about 120° apart. It lies **across the band**,
+the same way the heart does. The head, body, fin and flippers are one solid,
+and that solid holds the pin's two holes. Behind it, the **tail is three
+loose segments**, the last one the fluke. Each joint bends **about 23° in
+any direction**: up, down, sideways or between. It also twists about 10°,
+and there is 0.5 mm of play on top of that. Over three joints the tail
+curls about 70° each way.
+
+![the tail curled up and sideways](previews/dolphin-charm-dolphin-charm-bend.png)
+
+- **It prints in one go, tail and all.** Every joint prints in place, like
+  two links of a chain. Each segment stands on the bed by itself, 0.5 mm
+  from its neighbour:
+  - The front segment ends in a **wall** with a slot through it, and a
+    **crossbar** bridges the slot halfway up.
+  - The next segment reaches forward through the slot in a closed **loop**
+    that hooks round the crossbar. The loop is a rail on the bed, an upright
+    in a pocket in the front segment, and a rail over the top.
+  - The loop cannot come off the crossbar. There is 0.5 mm of clearance all
+    round it.
+- **The fluke prints without support.** Its flat underside rises from the
+  bed at 50°, so every layer lands on the one below.
+- **Nothing hangs in the air.** The only flat undersides are the three
+  crossbars and the three loop top rails, each a bridge of about 3 mm
+  between two parts that stand on the bed. No supports. **No brim**: a brim
+  would weld the segments together, just as it welds the band's hinges.
+- **Work the tail after printing.** Bend each joint every way a few times,
+  until it moves freely.
+- **The tail hangs past the band's edge.** Only the head, body and first
+  tail joint are over the band. The other two joints and the fluke stick out
+  about 26 mm on one side, and the beak about 9 mm on the other. It is a big
+  charm.
+- **Its bottom is flat to the edge**, like the heart and rose. As the band
+  curls round a wrist, the neighbouring bars swing away from it freely.
+  **Bent backwards, the two joints beside it do not move**, the same trade as
+  the others. The flippers reach 14.9 mm along the band, so two dolphins at
+  `charms = 3` would touch. One dolphin between smaller charms is fine.
+
 ## Two colours
 
 `-D accent=true` prints **the middle of the band in a second colour**: a
@@ -566,13 +620,15 @@ projects/bracelet/
     ├── butterfly-charm/butterfly-charm.scad  # a charm that snaps onto it
     ├── ladybug-charm/ladybug-charm.scad      # another, in two colours
     ├── heart-charm/heart-charm.scad          # a heart, turnable with `angle`
-    └── rose-charm/rose-charm.scad            # a rose with thin petals
+    ├── rose-charm/rose-charm.scad            # a rose with thin petals
+    └── dolphin-charm/dolphin-charm.scad      # a dolphin with a bendy tail
 ```
 
 The bracelet exports as **one separate shell per bar** — 11 at the default
 size, 15 at `wrist=180` — with the clasp plates fused onto the two end bars.
 They are not supposed to touch. The pin and each charm export as one
-piece.
+piece, except the dolphin, which is four: the body and three tail segments,
+printed in place.
 
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
@@ -582,6 +638,7 @@ piece.
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 18.3 × 7.8 mm | its own bottom and legs, 197 mm² in one piece |
 | `heart-charm` | `heart-charm` | 23.0 × 19.0 × 8.0 mm at 0° | its own flat bottom, 307 mm² in one piece |
 | `rose-charm` | `rose-charm` | 22.1 × 22.4 × 10.5 mm | its own flat bottom, 263 mm² in one piece |
+| `dolphin-charm` | `dolphin-charm` | 29.8 × 50.9 × 13.3 mm | its own flat bottom, 472 mm² in 4 pieces |
 
 `charm_reach` in `bracelet.scad` spaces the stations for a **16 mm** charm,
 the butterfly. Charms may be bigger than that (the ladybug is 20.6 mm along
@@ -665,6 +722,8 @@ openscad -o projects/bracelet/exports/butterfly-charm-butterfly-charm.stl \
          projects/bracelet/models/butterfly-charm/butterfly-charm.scad
 openscad -o projects/bracelet/exports/ladybug-charm-ladybug-charm.stl \
          projects/bracelet/models/ladybug-charm/ladybug-charm.scad
+openscad -o projects/bracelet/exports/dolphin-charm-dolphin-charm.stl \
+         projects/bracelet/models/dolphin-charm/dolphin-charm.scad
 
 # two colours, in two steps. OpenSCAD writes each colour as a SEPARATE
 # object (--enable=lazy-union keeps them apart), and a slicer would load
