@@ -63,18 +63,19 @@ body = [
     [-14.0, 1.55, 1.90],
     [-12.8, 1.75, 2.20],
     [-12.1, 2.15, 2.75],    // the crease where the beak meets the melon
-    [-11.3, 3.00, 3.80],    // the forehead slopes down to it
-    [-10.4, 3.95, 4.85],
-    [ -9.6, 4.80, 5.80],    // the melon rises
-    [ -8.8, 5.6, 6.8],
-    [ -7.2, 6.5, 8.0],
-    [ -5.0, 7.0, 8.6],
-    [ -2.0, 7.1, 8.7],      // the head's crown
-    [  1.0, 6.9, 8.5],
-    [  4.0, 6.5, 8.0],
-    [  7.0, 5.9, 7.3],
-    [ 10.0, 5.4, 6.7],
-    [ 13.0, 5.0, 6.2],
+    [-11.3, 2.90, 3.60],    // from here the head swells steadily, its
+    [-10.4, 3.55, 4.40],    //   growth only ever slowing (a row that grows
+    [ -9.6, 4.05, 5.00],    //   slower than the next leaves a ridge round
+    [ -8.8, 4.50, 5.55],    //   the head)
+    [ -7.2, 5.30, 6.50],    // the head: smaller than the torso behind it
+    [ -5.0, 6.10, 7.50],
+    [ -2.0, 6.75, 8.20],
+    [  1.0, 7.05, 8.60],
+    [  3.5, 7.1, 8.7],      // the torso at its fullest, under the fin
+    [  6.0, 6.8, 8.4],
+    [  8.5, 6.2, 7.7],
+    [ 10.5, 5.7, 7.0],
+    [ 13.0, 5.1, 6.3],
     [ 16.0, 4.8, 5.9],
     [ 19.0, 4.6, 5.6],
     [ 22.0, 4.6, 5.3],
@@ -95,15 +96,15 @@ n_sect  = 48;               // points round each ring
 // the body. The trailing edge moving BACK as it rises is the only overhang
 // (the curl), asserted under 40.
 fin = [
-    [ 6.6, -7.8, 6.6, 1.7],     // root, inside the body
-    [ 7.4, -7.0, 6.4, 1.55],    // still under the body's back at the rear
-    [ 8.2, -6.0, 5.0, 1.45],    //   so the trailing fillet grows out of it
-    [ 9.0, -3.8, 4.2, 1.3],     // the leading edge climbs gently
-    [10.0, -1.6, 3.9, 1.1],     // the trailing edge at its most forward
-    [11.0,  0.3, 4.1, 0.9],
-    [12.0,  2.0, 4.6, 0.75],    // the tip curls back
-    [12.6,  3.1, 4.9, 0.62],
-    [12.9,  3.6, 4.95, 0.52],   // the top, domed over
+    [ 6.8, -6.0, 6.6, 1.7],     // root, inside the body
+    [ 8.4, -4.6, 6.4, 1.55],    // still under the body's back at the rear
+    [ 9.0, -3.4, 5.0, 1.45],    //   so the trailing fillet grows out of it
+    [ 9.6, -2.0, 4.3, 1.3],     // the leading edge climbs gently
+    [10.4, -0.6, 4.0, 1.1],     // the trailing edge at its most forward
+    [11.3,  1.0, 4.2, 0.9],
+    [12.3,  2.6, 4.7, 0.75],    // the tip curls back
+    [12.9,  3.6, 5.0, 0.62],
+    [13.2,  4.1, 5.05, 0.52],   // the top, domed over
 ];
 fin_cap = 0.35;             // the dome's height over the top row
 fin_n   = 6;                // spline samples per row
@@ -144,7 +145,7 @@ infl_d    = 4;              // the profile's step, degrees
 
 // dimples: eyes [s, z, radius, depth] and the blowhole [s, radius, depth]
 eye      = [-7.6, 5.0, 0.95, 0.6];
-blowhole = [-7.0, 0.55, 0.8];
+blowhole = [-7.6, 0.5, 0.5];   // shallow: the head is low over the pin hole here
 
 // ------------------------------------------------------------------ joints
 joints  = [10.7, 18.2, 25.7];   // where the tail bends, along the spine

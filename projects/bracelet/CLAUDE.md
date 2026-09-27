@@ -908,18 +908,36 @@ and the band were not touched.**
   `hp_wall − 0.05`, z > 0, minus `dolphin()`): empty nominal, dy −1.5 and
   dz −1.0; leaks at dz −2.2 / −3 and dy −10 (controls).
 
+- **Fullest at mid-torso** (later, from a silhouette picture: "the widest
+  part should be closer to the middle of the torso, rather than the head").
+  Height and width used to peak at s −2 (the "head's crown", 8.7 / 7.1).
+  Now they peak at **s 3.5, under the fin**, at the same 8.7 / 7.1. The
+  head swells from the crease with its growth rate ONLY EVER SLOWING. A
+  first table where one row grew slower than the next left a visible ridge
+  round the forehead, because the Hermite overshoots. The fin rows were
+  raised ~0.6 at the rear (the body is taller there, and the fillet would
+  have been buried) and moved back ~1.4 at the front. The root row was
+  dropped to z 6.8 so it stays under the lower head.
+  - **Costs: the head is now low over the pin holes.** The envelope test
+    (below) is empty at nominal and dz −0.6, and leaks at dz −1.0 (the
+    margin was 1–2.2). The old blowhole (s −7.0, 0.8 deep) cut INTO the
+    hole's wall: it leaked at nominal, and the wall check read 0.31 there.
+    It is now **[−7.6, 0.5, 0.5]**, which stays empty at depth 1.0 and at
+    s −7.2. Do not lower the head any further without re-running the
+    envelope test.
+
 **Invariants:**
 
 - **4 shells** (carrier + 3), OpenSCAD genus **3** (`1 − 4 + 6`: each joint
-  is one hole in A's wall, one in B's loop). 29.8 × 50.87 × 13.25,
-  vol 2509.3.
-- Bed: **471.7 mm² in 4 islands**; the tail islands are 49.8 / 47.9 / 21.9.
+  is one hole in A's wall, one in B's loop). 29.8 × 50.87 × 13.55,
+  vol ≈ 2465.
+- Bed: **474.9 mm² in 4 islands** (carrier 353.9, then 50.3 / 47.6 / 23.1).
   More than 4 islands means a sliver; fewer means segments welded.
 - `check_overhangs`: 6 BRIDGE (crossbars at z 1.5, top rails at z 3.3), no
   SUPPORT.
 - After the fluke and fin changes, re-run on the final version:
-  - the joint harness at joints 0 and 2: yaw ±23, pitch ±23 and diagonal
-    ±20 empty; yaw/pitch 35 HIT;
+  - the joint harness at all three joints (after the mid-torso reshape):
+    yaw ±23, pitch ±23 and diagonal ±20 empty; yaw/pitch 35 HIT;
   - connectivity, overhangs (6 BRIDGE) and stability;
   - walls: nothing on the fin; the lobe tips read 0.6–0.7. One sample read
     0.05 at a joint-1 pocket side (unchanged geometry, sampling noise

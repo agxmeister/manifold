@@ -535,10 +535,12 @@ grows ring by ring, so the rose opens out from the middle.
 **Added 2026-09-27, not printed yet.** Reworked the same day: the fluke now
 tilts up, and the tail hangs on chain-link rings that bend in every
 direction. Later that day the fluke's lobes were swept back into a smaller V, and the
-dorsal fin and the beak were reshaped like a real dolphin's.
+dorsal fin and the beak were reshaped like a real dolphin's. Then the body
+was reshaped so that it is fullest in the middle of the torso, under the
+fin, with a smaller head tapering to the beak.
 
 A chubby cartoon dolphin **50.9 mm long, 29.8 mm across the flippers and
-13.3 mm tall**. It has a big round head whose forehead slopes down to a slim beak,
+13.6 mm tall**. It is fullest under the fin. The head is smaller, and its forehead slopes down to a slim beak,
 dimpled eyes and a blowhole, and a dorsal fin with a long sloping front
 edge, a tip that curls back and a curved-in back edge. The flippers and the fluke
 are each one smooth inflated surface over a rounded outline, with no creases
@@ -638,7 +640,7 @@ printed in place.
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 18.3 × 7.8 mm | its own bottom and legs, 197 mm² in one piece |
 | `heart-charm` | `heart-charm` | 23.0 × 19.0 × 8.0 mm at 0° | its own flat bottom, 307 mm² in one piece |
 | `rose-charm` | `rose-charm` | 22.1 × 22.4 × 10.5 mm | its own flat bottom, 263 mm² in one piece |
-| `dolphin-charm` | `dolphin-charm` | 29.8 × 50.9 × 13.3 mm | its own flat bottom, 472 mm² in 4 pieces |
+| `dolphin-charm` | `dolphin-charm` | 29.8 × 50.9 × 13.6 mm | its own flat bottom, 475 mm² in 4 pieces |
 
 `charm_reach` in `bracelet.scad` spaces the stations for a **16 mm** charm,
 the butterfly. Charms may be bigger than that (the ladybug is 20.6 mm along
