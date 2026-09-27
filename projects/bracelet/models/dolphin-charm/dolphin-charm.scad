@@ -12,8 +12,8 @@
 // fluke, and it hangs past the band's edge where it is free to move.
 //
 // THE JOINTS PRINT IN PLACE, and each is a pair of interlocked RINGS, like
-// two links of a chain, so the tail bends up, down and sideways and twists a
-// little. At each joint the front segment (A) ends in a WALL with a slot
+// two links of a chain, so the tail bends sideways, nods up and down and
+// twists a little. At each joint the front segment (A) ends in a WALL with a slot
 // through it, and a CROSSBAR bridges the slot at mid height. The rear
 // segment (B) reaches forward through the slot in a closed LOOP — a rail on
 // the bed, an upright in a pocket in A, and a rail over the top — that hooks
@@ -30,13 +30,32 @@
 //   upright   A's wall       B's front, a cone
 //
 // Nothing is cantilevered: B's bottom rail and upright stand on the bed, its
-// top rail is a bridge from the upright to B's body, and the crossbar is a
+// top rail is a bridge from the upright to B's nose, and the crossbar is a
 // bridge between the two halves of A's wall, which stand on the bed. Every
-// clearance is `bed_gap` sideways and `v_gap` vertically. A's rear and B's
-// front are cones round the joint, each `bend`/2 back from square, and A's
-// pocket and slot
-// are sized for the loop swung `bend` degrees, so the joint bends `bend`
-// degrees in any direction before anything but the loop meets.
+// clearance is `bed_gap` sideways and `v_gap` vertically. A's pocket and slot
+// are sized for the loop swung `bend` degrees.
+//
+// THE LINK IS HIDDEN, like a flexi toy's: A's skin runs on `hood_d` past the
+// joint as a HOOD over B's NOSE, and A roofs the pocket and slot over, so
+// from outside a joint is a groove with B's rounded nose at the bottom:
+//
+//        A's roof: a BRIDGE over the tunnels and the nose, at `z_roof`
+//     ___________________________        __ B's shoulder, an elliptic cone
+//    |   ________________________|     /     round the joint's centre
+//    |  | pocket | slot | cavity |    /
+//    |  |  (B's upright,  (B's   |   /   B
+//    |  |  loop and nose)  nose) |  /
+//   -------------------------------------------- bed
+//                          hood_d ^  ^ the groove
+//
+// The cavity and the nose are solids of revolution about the joint's
+// vertical axis, so a sideways turn never changes the gap between them. The
+// nose's top is flat under A's flat roof, `v_gap` apart, so the joint nods
+// only about 12 degrees up and down; it bends `bend` sideways and twists
+// about 15. B's shoulder is an elliptic cone, `bend` wide sideways and `nod`
+// up and down, so turned that far it still clears the hood's square rear
+// face. The cavity's ceiling slopes at `cav_a` from vertical, a ramp off the
+// hood's walls, then the flat roof bridges it.
 //
 // IT PRINTS SEAT DOWN, exactly as modelled, all segments at once, flat
 // bottomed like the heart and the rose (the same trade: no backward bend on
@@ -75,14 +94,15 @@ body = [
     [  6.0, 6.8, 8.4],
     [  8.5, 6.2, 7.7],
     [ 10.5, 5.7, 7.0],
-    [ 13.0, 5.1, 6.3],
-    [ 16.0, 4.8, 5.9],
-    [ 19.0, 4.6, 5.6],
-    [ 22.0, 4.6, 5.3],
-    [ 25.0, 4.6, 5.1],
-    [ 27.5, 4.2, 4.6],
-    [ 29.0, 3.0, 3.6],
-    [ 30.2, 1.6, 2.7],      // ends inside the raised fluke (asserted)
+    [ 13.0, 5.35, 6.4],     // the tail: stout enough for a hood over
+    [ 16.0, 5.15, 6.05],    //   each joint (roof over the tunnels,
+    [ 19.0, 5.05, 5.85],    //   asserted)
+    [ 22.0, 5.0, 5.7],
+    [ 25.0, 5.05, 5.75],
+    [ 27.5, 4.8, 5.75],
+    [ 29.0, 4.6, 5.4],
+    [ 30.6, 3.4, 4.4],
+    [ 31.8, 1.6, 2.7],      // ends inside the raised fluke (asserted)
 ];
 sect_p  = 2.4;
 ds      = 0.25;             // station step along the spine
@@ -129,7 +149,8 @@ fluke_half = [[ 0.0, 27.3], [ 2.8, 27.7], [ 6.2, 29.2], [ 9.6, 31.0],
 // outline scaled by `fluke_scale` about the root, which keeps the sweep
 fluke_sweep = 0.6;
 fluke_scale = 0.75;
-function fluke_sc(q) = [fluke_scale * q[0], fluke_half[0][1] + fluke_scale * (q[1] - fluke_half[0][1])];
+fluke_back  = 1.6;          // and moved back, clear of the last joint's shoulder
+function fluke_sc(q) = [fluke_scale * q[0], fluke_back + fluke_half[0][1] + fluke_scale * (q[1] - fluke_half[0][1])];
 fluke_sw  = [for (q = fluke_half) fluke_sc([q[0], q[1] + fluke_sweep * q[0]])];
 fluke_pts = concat(fluke_sw, [fluke_sc([0, 32.2])],
                    [for (i = [len(fluke_sw) - 1 : -1 : 1]) [-fluke_sw[i][0], fluke_sw[i][1]]]);
@@ -149,23 +170,31 @@ blowhole = [-7.6, 0.5, 0.5];   // shallow: the head is low over the pin hole her
 
 // ------------------------------------------------------------------ joints
 joints  = [10.7, 18.2, 25.7];   // where the tail bends, along the spine
-bend    = 25;           // how far each joint bends, any direction, degrees
+bend    = 25;           // how far each joint bends sideways, degrees
+nod     = 15;           // and up and down: A's roof over the nose's flat top
+                        //   stops it at about 12 anyway
 bed_gap = 0.5;          // sideways clearance — two first-layer beads 0.3
                         //   apart weld, so 0.5 wherever parts share the bed
 v_gap   = 0.5;          // vertical clearance over and under the crossbar
 loop_w  = 1.8;          // B's loop, across (x)
 rail_h  = 1.0;          // its bottom rail's height — 5 layers
-rail_min = 0.9;         // the least of its top rail, under the body's top
+rail_t  = 0.8;          // its top rail, flat topped — 4 layers
 up_t    = 1.0;          // its upright, along the spine
-bar_t   = 1.2;          // A's crossbar, high
+bar_t   = 1.0;          // A's crossbar, high
 wall_t  = 1.4;          // A's wall (and crossbar), along the spine
-swing_room = 0.7;       // extra pocket in front of the upright, which moves
+swing_room = 0.4;       // extra pocket in front of the upright, which moves
                         //   along the spine as the joint bends up and down
 horn_min = 1.0;         // the least of A's wall beside the slot and pocket
 a_flat_r = 2.5;         // A's rear face is flat this far round the joint, so
                         //   the wall beside the slot keeps its full `wall_t`
                         //   (a cone right to the axis thinned it to 0.3); it
                         //   costs about a degree of `bend` there
+// The hood, which hides the link: A's skin runs on past the joint over B's
+// NOSE, and A roofs the pocket and slot, so the link is closed in.
+hood_d  = 1.8;          // how far behind the joint A's hood and roof reach
+hood_t  = 0.9;          // the least of the hood's side wall
+roof_min = 0.8;         // the least of A's roof over the tunnels and the nose
+cav_a   = 40;           // the cavity's ceiling slope, from vertical
 
 // Along the spine, from the joint (the crossbar's middle):
 slot_w  = loop_w + 2*bed_gap;           // 2.8 — the slot through A's wall
@@ -174,12 +203,20 @@ y_uf    = y_ur - up_t;                  // -2.2 — and its front
 y_b0    = wall_t/2 + bed_gap;           //  1.2 — B's cone starts
 z_bar0  = rail_h + v_gap;               //  1.5 — the crossbar's underside
 z_bar1  = z_bar0 + bar_t;               //  2.7 — its top
-z_c     = (z_bar0 + z_bar1) / 2;        //  2.1 — the joint's centre
-z_rail  = z_bar1 + v_gap;               //  3.2 — the top rail's underside
+z_c     = (z_bar0 + z_bar1) / 2;        //  2.0 — the joint's centre
+z_rail  = z_bar1 + v_gap;               //  3.0 — the top rail's underside
+z_n     = z_rail + rail_t;              //  3.8 — the loop's and the nose's top
+z_roof  = z_n + v_gap;                  //  4.3 — A's roof over them, underside
+// B's shoulder, behind the hood: an elliptic cone, y >= sh_d +
+// norm([x tan(bend), dz tan(nod)]) about the joint's centre. Turned up to
+// `bend` sideways or `nod` up and down (and in between), every point of it
+// stays `bed_gap` behind the hood's rear face (y' >= sh_d cos(bend)).
+sh_d    = (hood_d + bed_gap) / cos(bend);   // 2.54
+loop_end = y_b0 + 0.5;                      //  1.7 — the loop ends inside the nose
 // A's pocket, half-width at its front: the upright swung `bend` either way
 pocket_hw = loop_w/2 * cos(bend) + (up_t + bed_gap + wall_t/2 + swing_room) * sin(bend) + bed_gap;
-y_pf    = y_uf - swing_room - bed_gap;  // -3.4 — the pocket's front
-loop_r  = -y_pf - bed_gap;              //  2.9 — the loop's front, round the joint
+y_pf    = y_uf - swing_room - bed_gap;  // -3.1 — the pocket's front
+loop_r  = -y_pf - bed_gap;              //  2.6 — the loop's front, round the joint
 big     = 100;
 
 // ---------------------------------------------------------------- envelope
@@ -206,20 +243,23 @@ s_last  = body[len(body) - 1][0];
 function env_min(x0, x1, y0, y1) = min([for (x = [x0 : (x1 - x0)/6 : x1 + 0.001],
                                              y = [y0 : 0.2 : y1 + 0.001]) env(x, y)]);
 for (j = [0 : len(joints) - 1]) let(s = joints[j]) {
-    // the top rail over the hole, under the body's top and the loop's disc
-    assert(env_min(-loop_w/2, loop_w/2, s + y_ur, s + y_b0 + 1) >= z_rail + rail_min,
-           str("joint ", j, ": the body is too low for the loop's top rail"));
+    // A's roof over the pocket and slot, and over the cavity's flat top,
+    // under the body's top
+    assert(env_min(-pocket_hw, pocket_hw, s + y_pf, s + wall_t/2) >= z_roof + roof_min,
+           str("joint ", j, ": the body is too low for A's roof over the link"));
+    assert(env_min(-cav_r(j, z_roof), cav_r(j, z_roof), s, s + hood_d) >= z_roof + roof_min,
+           str("joint ", j, ": the body is too low for A's roof over the nose"));
     // A's wall beside the slot, and beside the pocket, at the bed
     assert(bw(s) - slot_w/2 >= horn_min,
            str("joint ", j, ": A's wall beside the slot is a sliver"));
     assert(bw(s + y_pf) - pocket_hw >= horn_min,
            str("joint ", j, ": A's wall beside the pocket is a sliver"));
-    if (j > 0) assert(s - joints[j-1] + y_pf - y_b0 >= 2.5,
+    if (j > 0) assert(s - joints[j-1] + y_pf - sh_d >= 1.5,
            str("joints ", j-1, " and ", j, " are too close: a segment has no middle"));
 }
 // the loop swung `bend` sideways still passes the slot
 assert(loop_w/cos(bend) + wall_t*tan(bend) <= slot_w, "the slot is too narrow for the loop to swing");
-assert(z_c + sqrt(loop_r*loop_r - y_ur*y_ur) >= z_rail + rail_min,
+assert(z_c + sqrt(loop_r*loop_r - y_ur*y_ur) >= z_n,
        "the loop's disc leaves too little top rail over the hole");
 // the crossbar turns freely inside the loop's hole, any direction
 assert(norm([wall_t/2, bar_t/2]) < min(wall_t/2 + bed_gap, bar_t/2 + v_gap),
@@ -306,8 +346,12 @@ fluke_o = as_ccw(spline(fluke_pts));
 assert(star_ok(flip_o, flip_mid), "the flipper's outline is not star-shaped about its middle");
 assert(star_ok(fluke_o, fluke_mid), "the fluke's outline is not star-shaped about its middle");
 fluke_root = min([for (q = fluke_o) q[1]]);
-assert(fluke_root >= joints[len(joints) - 1] + y_b0,
-       "the fluke reaches forward into the segment in front");
+// the fluke starts behind the last joint's shoulder (at the bed), or out
+// beyond the body's side where the lobes are out of A's reach: a shoulder
+// cutting through it leaves knife edges
+assert(min([for (q = fluke_o) abs(q[0]) > bw(joints[len(joints) - 1]) + bed_gap ? big
+        : q[1] - joints[len(joints) - 1] - sh_d - norm([q[0] * tan(bend), z_c * tan(nod)])]) >= 0,
+       "the fluke reaches forward into the last joint's groove");
 // the tail stock must end INSIDE the raised fluke, not poke out under it:
 // at its end its top is above the fluke's underside (x = 0)
 assert(bh(s_last) >= (s_last - fluke_root) * tan(fluke_a) - fluke_skirt,
@@ -352,9 +396,9 @@ module dimples() {
         cylinder(r = blowhole[1], h = 5, $fn = 16);
 }
 
-module dolphin() difference() {
+module dolphin(with_fluke = true) difference() {
     intersection() {
-        union() { body_env(); fin(); flippers(); fluke(); }
+        union() { body_env(); fin(); flippers(); if (with_fluke) fluke(); }
         translate([-big/2, -big/2, 0]) cube(big);
     }
     dimples();
@@ -379,34 +423,112 @@ module pocket_2d() {
 // back from square: turned `bend` degrees, one lies parallel to the other.
 module cone() cylinder(h = big, r1 = 0, r2 = big * tan(90 - bend/2), $fn = 96);
 
-// What A keeps at joint j: everything up to its wall's rear face — flat out
-// to `a_flat_r` round the joint, a cone beyond — less the pocket and slot through its full
-// height, plus the crossbar across the slot.
+// ------------------------------------------------------------------- hood
+// Behind A's wall, A's hood hollows out a CAVITY round B's nose. Both are
+// solids of revolution about the joint's VERTICAL axis, so B turning sideways
+// never changes the gap between them; up, down and diagonally the nose's
+// flat top dips under A's flat roof, `v_gap` of play, about 12 degrees.
+// The cavity's radius at each height keeps `hood_t` of wall inside the body,
+// and it never narrows upward faster than `cav_a` from vertical: its ceiling
+// is a ramp off the hood's walls, then a flat bridge at `z_roof`.
+function hw(s, z) = let(w = bw(s), h = bh(s))    // the body's half-width at z
+    z >= h ? 0 : w * pow(1 - pow(max(z, 0)/h, sect_p), 1/sect_p);
+cav_zs = [for (z = [0 : 0.1 : z_roof - 0.001]) z, z_roof];
+function hw_min(j, z) = min([for (y = [wall_t/2 : 0.1 : hood_d + 0.001]) hw(joints[j] + y, z)]);
+// ...and at the top, `roof_min` of roof over the flat ceiling's edge
+function cav_lim(j, z) = z < z_roof - 0.001 ? hw_min(j, z) - hood_t
+    : min(hw_min(j, z) - hood_t, hw_min(j, z_roof + roof_min));
+function cav_r(j, z) = min([for (z2 = cav_zs) if (z2 >= z) cav_lim(j, z2) + tan(cav_a)*(z2 - z)]);
+function cav_prof(j) = [for (z = cav_zs) [cav_r(j, z), z]];
+module cav_2d(j) let(p = cav_prof(j))
+    polygon(concat([[p[0][0], -1]], p, [for (i = [len(p) - 1 : -1 : 0]) [-p[i][0], p[i][1]]], [[-p[0][0], -1]]));
+module cavity(j) rotate_extrude($fn = 96) intersection() {
+    cav_2d(j);
+    translate([0, -2]) square(big);
+}
+// B's nose: the cavity shrunk `bed_gap` all round, so its top is at `z_n`
+module nose(j) rotate_extrude($fn = 96) intersection() {
+    offset(delta = -bed_gap) cav_2d(j);
+    translate([0, -2]) square([big, z_n + 2]);
+}
+// How far A reaches behind its wall, from the joint's centre: its hood, the
+// body's ring at the joint carried back `hood_d`. B beyond this (the fluke's
+// lobes) can turn any way without meeting A, so it is not cut to the shoulder.
+function reach(j) = let(s = joints[j], w = bw(s), h = bh(s))
+    norm([max([for (t = [0 : 2 : 180]) let(c = cos(t), sn = sin(t))
+        norm([w * pow(abs(c), 2/sect_p), h * pow(sn, 2/sect_p) - z_c])]), hood_d]);
+
+for (j = [0 : len(joints) - 1]) {
+    assert(min([for (z = cav_zs) cav_r(j, z)]) > bed_gap + 0.5,
+           str("joint ", j, ": no room for a nose in the cavity"));
+    // the loop's rear end is buried in the nose, not poking into the groove
+    assert(cav_r(j, z_roof) - bed_gap >= norm([loop_w/2, loop_end]) + 0.2,
+           str("joint ", j, ": the loop's end pokes out of the nose"));
+    assert(cav_r(j, 0) >= sqrt(pow(pocket_hw, 2) + pow(wall_t/2, 2)),
+           str("joint ", j, ": the cavity is narrower than the pocket behind the wall"));
+}
+echo(str("dolphin hood: cavity r at the bed ", [for (j = [0 : len(joints) - 1]) cav_r(j, 0)],
+         ", at the roof ", [for (j = [0 : len(joints) - 1]) cav_r(j, z_roof)],
+         ", reach ", [for (j = [0 : len(joints) - 1]) reach(j)]));
+
+// A's wall: everything up to its rear face — flat out to `a_flat_r` round the
+// joint, a cone beyond.
+module a_wall() intersection() {
+    translate([0, wall_t/2 + a_flat_r * tan(bend/2), z_c]) rotate([90, 0, 0]) cone();
+    translate([-big/2, wall_t/2 - big, -1]) cube(big);
+}
+
+// What A keeps at joint j: everything up to `hood_d` behind the joint, less
+// the cavity behind its wall and the pocket and slot under its roof, plus the
+// crossbar across the slot. Behind the wall it stops at its `reach`.
 module a_keep(j) translate([0, joints[j], 0]) {
     difference() {
-        intersection() {
-            translate([0, wall_t/2 + a_flat_r * tan(bend/2), z_c]) rotate([90, 0, 0]) cone();
-            translate([-big/2, wall_t/2 - big, -1]) cube(big);
+        translate([-big/2, hood_d - big, -1]) cube(big);
+        difference() {
+            union() {
+                cavity(j);
+                difference() {
+                    translate([-big/2, -big/2, -1]) cube(big);
+                    translate([0, 0, z_c]) sphere(reach(j), $fn = 96);
+                    cube([2 * bw(joints[j]), big, big], center = true);
+                }
+            }
+            a_wall();
         }
-        translate([0, 0, -2]) linear_extrude(big) pocket_2d();
+        translate([0, 0, -2]) linear_extrude(z_roof + 2) pocket_2d();
     }
     translate([-slot_w/2 - 0.5, -wall_t/2, z_bar0]) cube([slot_w + 1, wall_t, bar_t]);
 }
 
-// What B keeps at joint j: a cone with its tip
-// `y_b0` behind the joint, plus the loop — a bar `loop_w` wide from the
-// upright's front back into B's body, less the hole round the crossbar.
+// What B keeps at joint j: behind a cone with its tip `y_b0` behind the joint,
+// the nose and the shoulder (and anything out of A's reach) — plus the loop, a
+// bar `loop_w` wide from the upright's front back into B's nose, less the
+// hole round the crossbar.
 module b_keep(j) translate([0, joints[j], 0]) {
-    translate([0, y_b0, z_c]) rotate([-90, 0, 0]) cone();
+    intersection() {
+        translate([0, y_b0, z_c]) rotate([-90, 0, 0]) cone();
+        union() {
+            nose(j);
+            translate([0, sh_d, z_c]) scale([1, 1, tan(bend) / tan(nod)]) rotate([-90, 0, 0])
+                cylinder(h = big, r1 = 0, r2 = big / tan(bend), $fn = 96);
+            // out of A's reach, and beyond the body's side: the fluke's lobes
+            difference() {
+                translate([-big/2, -big/2, -1]) cube(big);
+                translate([0, 0, z_c]) sphere(reach(j) + bed_gap, $fn = 96);
+                cube([2 * (bw(joints[j]) + bed_gap), big, big], center = true);
+            }
+        }
+    }
     difference() {
         intersection() {
-            translate([-loop_w/2, y_uf, -1]) cube([loop_w, y_b0 + 2 - y_uf, big]);
+            translate([-loop_w/2, y_uf, -1]) cube([loop_w, loop_end - y_uf, z_n + 1]);
             // in front of the joint, a disc round its axis: bending up or
             // down then never swings the loop toward the pocket's front (a
             // square upright reached it at 20 degrees under the tall head)
             union() {
                 translate([0, 0, z_c]) rotate([0, 90, 0]) cylinder(r = loop_r, h = big, center = true, $fn = 96);
                 translate([-big/2, 0, -1]) cube(big);
+                translate([-big/2, -big/2, -1]) cube([big, big, z_c + 1]);
             }
         }
         translate([-loop_w, y_ur, rail_h]) cube([2*loop_w, y_b0 + 3 - y_ur, z_rail - rail_h]);
@@ -418,7 +540,7 @@ module segment(k) {
     n = len(joints);
     difference() {
         intersection() {
-            dolphin();
+            dolphin(k == n);
             if (k > 0) b_keep(k - 1); else translate([-big/2, -big/2, -1]) cube(big);
             if (k < n) a_keep(k);     else translate([-big/2, -big/2, -1]) cube(big);
         }

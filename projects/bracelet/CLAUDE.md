@@ -804,7 +804,7 @@ and the band were not touched.**
 - Two roses at `charms = 3`, 130: stations 23.75 apart, so they clear by
   ≥ 1.07.
 
-## The dolphin charm — added 2026-09-27, unprinted
+## The dolphin charm — added 2026-09-27, unprinted (links hidden the same day)
 
 Asked for as "an articulated dolphin", from a photo of a chubby flexi dolphin
 (big round head, fin, flippers, two tail rings and a fluke). Same H-pin holes
@@ -926,39 +926,77 @@ and the band were not touched.**
     s −7.2. Do not lower the head any further without re-running the
     envelope test.
 
-**Invariants:**
+- **Links hidden, 2026-09-27 (last), on request**, from a flexi-dolphin
+  photo whose tail segments nest like rings ("make links between moving
+  parts hidden"). The chain link is unchanged in kind. The joint around it
+  changed:
+  - **A roofs its pocket and slot** (cut only up to `z_roof` 4.3, no longer
+    through the top) and its skin runs on `hood_d` 1.8 past the joint as a
+    **hood** over B's **nose**. The seam is a groove with B's nose at the
+    bottom.
+  - **Why the nose and cavity are solids of revolution about the joint's
+    VERTICAL axis.** A hood can only overlap B if the surfaces under it are
+    invariant under the turn. A nearly-square face (the old cones) cannot
+    slant backward over B. So under the hood everything is round about the
+    upright axis (yaw is free), and flat on top (nose top `z_n` 3.8 under
+    the roof at 4.3). That flat-on-flat is what limits pitch to ~12°. The user
+    accepted that before it was built ("±10–15° up/down").
+  - The cavity radius is solved per height (`cav_r`): `hood_t` 0.9 of wall
+    inside the body over y ∈ [wall, hood_d], `roof_min` 0.8 of roof over
+    the flat ceiling's edge, and never narrowing upward faster than `cav_a`
+    40° from vertical, so the ceiling is a ramp, then a bridge. The nose is
+    the cavity `offset(-bed_gap)`.
+  - **B's shoulder** (its body behind the groove) is an ELLIPTIC cone about
+    the joint centre: y ≥ `sh_d` + norm([x tan(bend), dz tan(nod)]), with
+    `sh_d` = (hood_d + gap)/cos(bend). This is the exact limiting case of
+    rotation safety against a SQUARE hood rear face. Split angles
+    (A's rim slanting forward too) fail at large radius. A plain round cone
+    (tan(bend) in z too) left the segment core 0.5 thick between the shoulder
+    and the next pocket; `nod` 15 fixed that.
+  - Beyond `reach` (the hood's farthest point from the joint centre) AND
+    outside the body's width, B is not cut to the shoulder. That spares the
+    fluke lobes. Without the width limit the sphere left knife slivers at
+    the body's bottom corners (134 wall samples at 0.0).
+  - Consequences: `bar_t` 1.2 → 1.0, the top rail flat at `rail_t` 0.8
+    (z 3.0–3.8), so z_c 2.1 → 2.0. `swing_room` 0.7 → 0.4 (pitch is roof-
+    limited now), pocket front −3.1, `loop_r` 2.6. The loop's disc clips
+    only its top half. The loop now ends at `loop_end` 1.7, inside the nose
+    (asserted): at 3.2 its tail stuck into the groove as a visible plate and
+    added a genus. The tail rows s 13–29 were fattened (≈ +0.4 wide, +0.5
+    tall at the rear joints) for the roof (asserted).
+  - **The fluke moved back `fluke_back` 1.6** (tail stock rows too), so the
+    last shoulder does not cut its root. That cut left 0.0–0.2 knife edges.
+    Asserted against the outline. Control: `-D fluke_back=0` fails it. Only
+    the last segment gets the fluke (`dolphin(with_fluke)`), or segment 2's
+    hood kept a fluke sliver. The dolphin is now 52.5 long.
 
-- **4 shells** (carrier + 3), OpenSCAD genus **3** (`1 − 4 + 6`: each joint
-  is one hole in A's wall, one in B's loop). 29.8 × 50.87 × 13.55,
-  vol ≈ 2465.
-- Bed: **474.9 mm² in 4 islands** (carrier 353.9, then 50.3 / 47.6 / 23.1).
-  More than 4 islands means a sliver; fewer means segments welded.
-- `check_overhangs`: 6 BRIDGE (crossbars at z 1.5, top rails at z 3.3), no
-  SUPPORT.
-- After the fluke and fin changes, re-run on the final version:
-  - the joint harness at all three joints (after the mid-torso reshape):
-    yaw ±23, pitch ±23 and diagonal ±20 empty; yaw/pitch 35 HIT;
-  - connectivity, overhangs (6 BRIDGE) and stability;
-  - walls: nothing on the fin; the lobe tips read 0.6–0.7. One sample read
-    0.05 at a joint-1 pocket side (unchanged geometry, sampling noise
-    against the documented 0.3–0.4). The layer raster was NOT re-run. The fluke's underside is still
-  one plane 40° from vertical.
-- Layer raster (`projection(cut)` of layer n minus layer n−1 grown 0.4, at
-  z = 0.1 + 0.2i + 0.013): only z 1.51 (8.40 mm²) and 3.31 (9.99 mm²) — the
-  bridges. The fluke leading edge leaves ≤ 0.013 mm² per layer. Control: a
-  1.5 × 3 mm ledge at z 4 flags at 4.11.
-- Wall check `--nozzle 0.4`: the flipper tip at the bed (0.37), the pocket
-  sides meeting the domed top (0.3–0.4), and the tilted fluke's acute lower
-  rim corners (0.01 at the bed line y 28.65, ~0.5 along the leading edge;
-  across the tilt the rim is 1.0).
-- Joint harness (`intersection(segment(k−1), segment(k)` turned about
-  (0, joints[k−1], z_c)), all three joints: rest empty; yaw ±20/±23 empty,
-  35 HIT; pitch ±20/±23 empty, ±35 HIT; diagonal [1,0,1] ±20 empty; roll 10
-  HIT at joints 1–2 (0.07 / 0.01), 15 HIT at all. Displacement dx/dy/dz ±0.4
-  empty, ±0.6 HIT.
-- Not re-run after the rework: the pin harness and the band swing. The
-  carrier's holes and its bottom over the band are unchanged. The pocket
-  front (7.3) stays behind the holes' walls by the existing assert (7.16).
+**Invariants (after hiding the links):**
+
+- **4 shells** (carrier + 3), genus **3**. 29.84 × 52.47 × 13.55,
+  vol ≈ 2585.6.
+- Bed: **480.9 mm² in 4 islands** (359.1 / 47.5 / 45.7 / 28.5). Each nose
+  joins its shoulder above the bed and on it: still one island per segment.
+- `check_overhangs`: **9 BRIDGE**: crossbars z 1.5, top rails z 3.0, hood
+  roofs z 4.3 (5.5–7.1 span). No SUPPORT, no lifted features; the 40°
+  ceilings are not flagged.
+- Layer raster (same method): only z 1.513 (8.40 mm²), 3.113 (9.88) and
+  4.313 (40.35, the roofs). The roof's anchors are A's hood/pocket walls,
+  on the bed. The y 27.4 section shows the arch continuous over the nose.
+- Joint harness, all three joints: rest empty; yaw ±23 empty, 35 HIT;
+  pitch ±12 empty, −16 empty, +16 HIT; diagonal [1,0,±1] 15 empty; roll 10
+  and 15 empty; dx/dy/dz ±0.4 empty, dz +0.7 HIT.
+- Wall check `--nozzle 0.4`: 28 samples (the original had 26). The flipper
+  tip (0.40–0.78), the fluke's rim and lobe tips (0.54–0.8), the top rails
+  (0.80). Two samples read 0.03 on the last hood's rear rim edge
+  (y 27.5, x ±2.5, z 3.6–4.1). The section there shows ≥ 0.9 of wall, so
+  this is edge sampling.
+- **Seen from outside**: at rest the link is invisible from the top, sides
+  and 3/4. At a near-full sideways bend (20° + 8° up), looking straight into
+  the open side of the groove, the loop's rails can be glimpsed deep in the
+  hood. That is inherent (the nose swings aside in the cavity), and the
+  README says so.
+- Not re-run: the pin harness and the band swing. The carrier's front and
+  holes are unchanged; the pocket front is now 7.6 (assert ≥ 7.16).
 - Two dolphins at `charms = 3` collide (29.8 along the band, stations 23.75
   apart). Not asserted; say so if asked for more than one.
 

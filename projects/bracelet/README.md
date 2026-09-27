@@ -537,10 +537,13 @@ tilts up, and the tail hangs on chain-link rings that bend in every
 direction. Later that day the fluke's lobes were swept back into a smaller V, and the
 dorsal fin and the beak were reshaped like a real dolphin's. Then the body
 was reshaped so that it is fullest in the middle of the torso, under the
-fin, with a smaller head tapering to the beak.
+fin, with a smaller head tapering to the beak. Later still, **the links
+between the tail segments were hidden**, the way a flexi toy's are: each
+segment's skin runs on over the next one's rounded nose, so every joint looks
+like a groove between two rings.
 
-A chubby cartoon dolphin **50.9 mm long, 29.8 mm across the flippers and
-13.6 mm tall**. It is fullest under the fin. The head is smaller, and its forehead slopes down to a slim beak,
+A chubby cartoon dolphin **52.5 mm long, 29.8 mm across the flippers and
+13.5 mm tall**. It is fullest under the fin. The head is smaller, and its forehead slopes down to a slim beak,
 dimpled eyes and a blowhole, and a dorsal fin with a long sloping front
 edge, a tip that curls back and a curved-in back edge. The flippers and the fluke
 are each one smooth inflated surface over a rounded outline, with no creases
@@ -548,10 +551,10 @@ anywhere. **The fluke is tilted up 50°** at the end of the tail, and its two lo
 are swept back so that from above they are about 120° apart. It lies **across the band**,
 the same way the heart does. The head, body, fin and flippers are one solid,
 and that solid holds the pin's two holes. Behind it, the **tail is three
-loose segments**, the last one the fluke. Each joint bends **about 23° in
-any direction**: up, down, sideways or between. It also twists about 10°,
-and there is 0.5 mm of play on top of that. Over three joints the tail
-curls about 70° each way.
+loose segments**, the last one the fluke. Each joint bends **about 23°
+sideways** and **about 12° up or down**, and anything in between. It also
+twists about 15°, and there is 0.5 mm of play on top of that. Over three
+joints the tail curls about 70° sideways and about 35° up or down.
 
 ![the tail curled up and sideways](previews/dolphin-charm-dolphin-charm-bend.png)
 
@@ -565,17 +568,28 @@ curls about 70° each way.
     in a pocket in the front segment, and a rail over the top.
   - The loop cannot come off the crossbar. There is 0.5 mm of clearance all
     round it.
+- **The links are hidden.** The front segment roofs over its pocket and
+  slot, and its skin carries on 1.8 mm past the joint as a **hood** over the
+  next segment's rounded **nose**. From outside, a joint is a groove with the
+  nose at the bottom, and the link is out of sight. The nose is round about
+  the joint's upright axis, so it turns sideways inside the hood without the
+  gap changing. Its top is flat under the hood's flat roof, which is what
+  limits the up-and-down bend to about 12°. At a full sideways bend, looking
+  straight into the open side of the groove, you can just see the link
+  deep inside the hood.
 - **The fluke prints without support.** Its flat underside rises from the
   bed at 50°, so every layer lands on the one below.
 - **Nothing hangs in the air.** The only flat undersides are the three
-  crossbars and the three loop top rails, each a bridge of about 3 mm
-  between two parts that stand on the bed. No supports. **No brim**: a brim
+  crossbars and the three loop top rails, each a bridge of about 3 mm, and
+  the three hood roofs, a bridge of 5–7 mm. Each spans between two parts
+  that stand on the bed. The hood's ceiling slopes down to its walls at 40°
+  from vertical. No supports. **No brim**: a brim
   would weld the segments together, just as it welds the band's hinges.
 - **Work the tail after printing.** Bend each joint every way a few times,
   until it moves freely.
 - **The tail hangs past the band's edge.** Only the head, body and first
   tail joint are over the band. The other two joints and the fluke stick out
-  about 26 mm on one side, and the beak about 9 mm on the other. It is a big
+  about 28 mm on one side, and the beak about 9 mm on the other. It is a big
   charm.
 - **Its bottom is flat to the edge**, like the heart and rose. As the band
   curls round a wrist, the neighbouring bars swing away from it freely.
@@ -640,7 +654,7 @@ printed in place.
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 18.3 × 7.8 mm | its own bottom and legs, 197 mm² in one piece |
 | `heart-charm` | `heart-charm` | 23.0 × 19.0 × 8.0 mm at 0° | its own flat bottom, 307 mm² in one piece |
 | `rose-charm` | `rose-charm` | 22.1 × 22.4 × 10.5 mm | its own flat bottom, 263 mm² in one piece |
-| `dolphin-charm` | `dolphin-charm` | 29.8 × 50.9 × 13.6 mm | its own flat bottom, 475 mm² in 4 pieces |
+| `dolphin-charm` | `dolphin-charm` | 29.8 × 52.5 × 13.5 mm | its own flat bottom, 481 mm² in 4 pieces |
 
 `charm_reach` in `bracelet.scad` spaces the stations for a **16 mm** charm,
 the butterfly. Charms may be bigger than that (the ladybug is 20.6 mm along
