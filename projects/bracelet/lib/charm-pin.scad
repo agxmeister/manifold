@@ -75,8 +75,9 @@ hp_leg_w  = 1.0;    // the leg's original width. Since 2026-09-27 each leg is
                     //   the lower hook and does not move.
 hp_grow   = 0.6;    // a leg, grown INWARD, its whole length
 hp_s      = 4.6;    // a leg's centre off the H's axis
-hp_cb_h   = 0.65;   // the crossbar, top to bottom — THE spring. Meant to be
-                    //   under the 1.2 mm wall threshold, like the clasp's leaf.
+hp_cb_h   = 1.0;    // the crossbar, top to bottom — THE spring. Its hold goes
+                    //   as cb_h^3. 1.0 since 2026-09-27 (see "a stiff
+                    //   crossbar"): at 0.65 the pin was too soft to hold.
                     //   0.76 until 2026-09-27, when the straight legs cut its
                     //   free length 8.2 -> 7.0: strain goes as depth / length,
                     //   so it came down to hold 2.9 / 3.8 %.
@@ -85,20 +86,25 @@ hp_fillet = 0.3;    // inside corners where the crossbar meets a leg — the
                     //   spring's roots. recess >= fillet keeps the fillets
                     //   below the charm's seat face (asserted).
 
-hp_hook_lo = 0.85;  // how far a LOWER hook stands out from its leg — 0.70
-                    //   until 2026-09-26, when the pin still left the bar
-                    //   with a light pull (see "longer bar hooks")
-hp_hook_up = 0.90;  // how far an UPPER hook stands out — 0.75 until
-                    //   2026-09-27 (see "near-square catches")
-hp_lead   = 44;     // the LOWER hook's lead-in, degrees from vertical: steeper
-                    //   = easier in. (The upper one is whatever runs from its
+hp_hook_lo = 1.00;  // how far a LOWER hook stands out from its leg — 0.70
+                    //   until 2026-09-26, 0.85 until 2026-09-28: each time
+                    //   the pin still left the bar with a pull (see "longer
+                    //   bar hooks" and "bar hooks like the charm's")
+hp_hook_up = 1.00;  // how far an UPPER hook stands out — 0.75, then 0.90
+                    //   until 2026-09-27 (see "a stiff crossbar")
+hp_lead   = 50;     // the LOWER hook's lead-in, degrees from vertical: steeper
+                    //   = easier in. 44 until 2026-09-28; blunter, it rises
+                    //   less and keeps the hook low on its lever. (The upper one is whatever runs from its
                     //   tip to the leg's top, `hp_lead_up`.)
 hp_roof_lead = 42;  // the slope of a charm chamber's roof, from vertical —
                     //   35 until the taller upper tip came up under it
-hp_under  = 1.5;    // charm left under the upper hooks' shoulders. It sets
+hp_under  = 1.35;   // charm left under the upper hooks' shoulders. It sets
                     //   the charm's lever — see "the spring" and "near-square
-                    //   catches". 1.0 until 2026-09-27.
-hp_tip_lo = 0.3;    // straight flat at the LOWER hook's edge, never a point
+                    //   catches". 1.0, then 1.5 until 2026-09-27: the longer
+                    //   hook's lead-in needs the room above it.
+hp_tip_lo = 0.6;    // straight flat at the LOWER hook's edge, never a point.
+                    //   0.3 until 2026-09-28 — under a bead, like the upper
+                    //   tip's was: the printer rounded the catch away
 hp_tip_up = 0.6;    // the same on the UPPER hook — 0.3 until 2026-09-27.
                     //   0.3 is under a bead: the slicer laid the tooth's
                     //   outer 0.3 mm as one blob of a line and rounded the
@@ -131,6 +137,14 @@ hp_leg_lo = 3.45;   // how far the lower legs reach below the seat. Fixed — th
                     //   printed length — so the pin, the pocket's hooks and
                     //   every charm's holes did not move when the bar thinned
 hp_wall   = 1.2;    // charm wall around its two holes
+hp_mouth_v = 0.8;   // the bar pocket's mouth: a chamfer down the leg slot's
+hp_mouth_u = 0.5;   //   outer wall, this deep and this wide at the top.
+                    //   0.6 x 0.3 until the bar's hooks grew (2026-09-28)
+                    //   and turned the legs 32 deg going in. It
+                    //   was 0.4 x 0.15 until the 1.0 crossbar dropped the
+                    //   pivot: going in, the leg above the pivot swings out
+                    //   into the mouth's top (0.19 mm^3 in the harness, still
+                    //   0.06 at the last lift the hook is fully deflected)
 
 // ------------------------------------------------------------------ derived
 hp_uo     = hp_s + hp_leg_w/2;                  // 5.10 — leg's outer face
@@ -222,7 +236,7 @@ hp_boss_u = 2*hp_c_out + 2*hp_wall;
 
 assert(hp_v_end - hp_v_fl >= hp_fit - 1e-9,
        str("the lower legs bottom out in the pocket: ", hp_v_end - hp_v_fl, " mm under them"));
-assert(hp_lead < 45, "the lower hook's lead-in is steeper than 45 — too hard to push in");
+assert(hp_lead <= 50, "the lower hook's lead-in is blunter than 50 — too hard to push in");
 // A ceiling in the bar: up to 60 it steps in under a bead a layer; past 80
 // it is a flat bridge between the slot's walls. Between the two it is neither.
 assert(hp_catch_lo >= 45 && (hp_catch_lo <= 60 || hp_catch_lo >= 80) && hp_catch_lo <= 90,
@@ -292,12 +306,37 @@ assert(hp_recess >= hp_fillet,
 // stands off the grown face, so the charm's chambers moved in 0.6
 // (`hp_c_in` 2.45). With no taper the hole's outer wall is set by the leg's
 // top corner: `hp_c_out` 6.44, about where the outward growth had it.
-assert(hp_strain_up <= 0.029,
+// A STIFF CROSSBAR, 2026-09-27 (last). The step-free pin printed and the
+// charms were still loose — the pin wobbly, charms and pins both letting go.
+// The user: the crossbar is too thin to hold. They are right: a hook's force
+// goes as cb_h^3, and 0.65 was barely two beads. `hp_cb_h` 0.65 -> 1.0 (3.6x
+// the stiffness) and `hp_hook_up` 0.90 -> 1.00, with `hp_under` 1.5 -> 1.35
+// so the longer hook's lead-in stays under 44. The charm holds ~3.9x harder
+// on paper. The crossbar grows DOWN (the recess is fixed), so the pivot drops:
+// the charm's lever lengthens, the bar's shortens, and `hp_keep` rises.
+//   * THE COST IS STRAIN: 4.9 % per charm, 6.2 % once, going into the bar —
+//     past what PLA takes. The pins are printed in ABS, which the user chose
+//     knowing this. If a crossbar cracks going in, 0.9 gives 4.5 / 5.4 %.
+//   * The lower hooks were NOT lengthened: with the pivot lower their turn
+//     going in would reach 8.3 %, and `hp_out` is the band's width limit.
+//   * `hp_c_out` 6.46 -> 6.66: every charm refitted, the band's pocket
+//     deepened (the crossbar's slot) — band, pins and charms all reprint.
+assert(hp_strain_up <= 0.050,
        str("the crossbar bends to ", 100*hp_strain_up,
-           "% every time a charm goes on — past the 2.9% this project's flexures run at"));
-assert(hp_strain_cb <= 0.038,
+           "% every time a charm goes on — past the 5.0% allowed an ABS pin"));
+// BAR HOOKS LIKE THE CHARM'S, 2026-09-28. The stiff pin printed: "sits
+// quite good in a charm, but still loosy in a bracelet" — the pin pulls out
+// of the bar. The user saw the upper hooks looked bigger, and they were:
+// 0.85 past the wall on a 0.6 tip, against 0.70 on a 0.3 tip. The lower
+// hooks now match: `hp_hook_lo` 0.85 -> 1.00 (0.85 past the wall) and
+// `hp_tip_lo` 0.3 -> 0.6. That costs turn on the short lever — 8.3 % at the
+// old 44 lead-in — so `hp_lead` 44 -> 50 keeps the hook lower on its leg:
+// 8.0 % going in, once per pin, in ABS. The user chose this knowing it may
+// crack; 6.2 % survived. `hp_out` 6.25: the band keeps its width and the
+// pocket's end walls go 2.0 -> 1.85 (bracelet.scad). Charms are untouched.
+assert(hp_strain_cb <= 0.082,
        str("the crossbar bends to ", 100*hp_strain_cb,
-           "% as the pin goes into the bar — past the 3.8% allowed for that one-off bend"));
+           "% as the pin goes into the bar — past the 8.2% allowed for that one-off bend"));
 assert(hp_room_lo < hp_ui_g - hp_fillet - 0.8,
        "the legs' inward room eats the bar between the two leg slots");
 assert(hp_c_in >= 2.0, "the charm's two chambers leave under 4 mm of charm between them");
@@ -359,9 +398,9 @@ function hp_bar_pocket_pts() = [
     [hp_out,             hp_v_fl],
     [hp_out,             hp_b_sh(hp_out)],
     [hp_uo + hp_fit,     hp_b_sh(hp_uo + hp_fit)],
-    [hp_uo + hp_fit,     -0.4],
-    [hp_uo + 2*hp_fit,   0],
-    [hp_uo + 2*hp_fit,   1],
+    [hp_uo + hp_fit,     -hp_mouth_v],
+    [hp_uo + hp_fit + hp_mouth_u, 0],
+    [hp_uo + hp_fit + hp_mouth_u, 1],
     [hp_ui_g - hp_room_lo, 1],
 ];
 

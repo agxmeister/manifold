@@ -3,7 +3,92 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
-## Step-free H-pin legs — 2026-09-27 (final), unprinted
+## Bar hooks like the charm's — 2026-09-28, PRINTED AND CONFIRMED ("Printed well")
+
+The stiff pin printed: "sits quite good in a charm, but still loosy in a
+bracelet". The user confirmed the pin *pulls out* (not a rattle), and noticed
+the upper hooks looked bigger. They were: 0.85 past the wall on a 0.6 tip,
+against 0.70 on a 0.3 tip. Offered: tip only (6.1 %), tip + longer hook
+(~8 %), or a U-shaped longer crossbar (a redesign). **The user chose tip +
+longer hook.**
+
+- `hp_hook_lo` 0.85 → 1.00, `hp_tip_lo` 0.3 → 0.6, `hp_lead` 44 → 50.
+  - At 44 this is 9.2 %. Going blunter to 50 lowers the hook on its short lever.
+  - The assert is now `hp_lead <= 50`, and `hp_strain_cb <= 0.082`.
+- Lever lo 1.51, insertion turn 32.2°, **strain 8.04 % going in** (per charm
+  4.90, unchanged). `hp_keep` 0.33. `hp_out` 6.25.
+- `bracelet.scad`: `band_w/2 - hp_out >= 1.8` (was 2.0). The end wall is 1.85,
+  still thicker than the 1.1 beside the pocket. `hp_fill_u` 7.05 ≤ 7.1.
+- Mouth `hp_mouth_v`/`hp_mouth_u` 0.6/0.3 → 0.8/0.5. At 0.6/0.3 the −33.2°
+  leg hit it: 0.278 / 0.125 / 0.018 at lift 0 / 0.1 / 0.2. 0.8/0.45 still
+  read 0.008 at lift 0.
+- Upper half, `hp_c_out` and every charm are unchanged. Charms printed for the
+  stiff pin fit.
+- Harness: bar seated 0.0000, dz +0.1 / dx, dy 0.12 empty, dy 0.2 0.289.
+  Release −19.67° lift 1.2 / 2.0 / 2.3: 0.594 / 0.391 / 0.069 (was 0.089 at
+  1.2). 1.3× release at 1.2: 0.151. Insert −33.2° lift 0 → 3.3: empty; 0.9×
+  (−29.0°) at 1.0: 0.024. Charm rows as below, unchanged.
+- Pin: 12.2 × 6.9 × 3.5, 1 shell, no overhangs. Lower tip wall 0.98 (was
+  0.68). Band c3: 11 shells, 46 regions, no SUPPORT. Accent 3MF regenerated.
+
+## Stiff crossbar, longer charm hooks — 2026-09-27 (last), printed: good in a charm, pulls out of the bar
+
+The step-free pin (next section) printed and was "still very loose", wobbly,
+with charms and pins both letting go. The user asked for a wider crossbar and
+longer hooks. A first question quoted ~5–6 % strain for "1.0 + both hooks".
+That was wrong: the thicker crossbar drops the pivot and shortens the bar's
+lever, so longer LOWER hooks reach **8.3 %** going in. The user was told and
+re-chose **`hp_cb_h` 0.65 → 1.0, `hp_hook_up` 0.90 → 1.00, lower hooks
+unchanged**. **Pins are printed in ABS** (user), and the strain asserts were
+raised to 5.0 % (per charm) and 6.3 % (insertion).
+
+- `hp_under` 1.5 → 1.35 keeps `hp_lead_up` at 40.4° (< 44).
+- Pivot −0.80. Levers 1.62 / 2.48. Turns 24.76° / 19.67°. Strain 4.90 / 6.17 %.
+  `hp_keep` 0.144. `hp_c_out` 6.66, `hp_c_in` 2.35. Paper hold force (∝
+  h³·turn/(L·arm²)) is ~3.9× the 0.65 pin's.
+- **New: `hp_mouth_v` 0.6 / `hp_mouth_u` 0.3.** They were a fixed
+  0.4 × 0.15 mouth chamfer. With the lower pivot, the leg above the pivot
+  swings out into the mouth going in. At 1.03× insertion that read 0.194 /
+  0.103 / 0.063 / 0.028 / 0.005 mm³ at lift 0 / 0.1 / 0.15 / 0.2 / 0.25, at
+  y 5.25–5.54, z −0.6…0. The hook is still fully deflected to lift ~0.15, so
+  this was real, not the old floor-edge artefact. 0.6 × 0.25 still hit at
+  lift 0 (0.037) and 0.8 × 0.2 at 0.15. 0.6 × 0.3 is empty at every lift.
+- Charms refitted:
+  - heart: `length` 19 → 19.4 (notch 8.20 ≥ 8.16, at any angle);
+  - ladybug: `sh_b` 8.8 → 9.1, `hd_y` 8.2 → 8.5 (6.999 over gable ends,
+    need 6.95);
+  - dolphin: `joints` [11.0, 18.2] → [11.2, 18.4]. Moving only the first
+    joint fails the segment-middle assert.
+  - Butterfly and rose pass with no change.
+- Checks: pin 1 shell, no overhangs, adhesion 0.6. The thinnest walls are the
+  crossbar (1.00) and the lower hook tip (0.68, as before). Charms 1 shell
+  (dolphin 4), only BRIDGE regions. Heart wall-check low point 1.04 at
+  (0, 7.59, 5.74), the known gable-top trade. Band c3: 11 shells, 46 regions,
+  no SUPPORT. Both accent 3MFs regenerated.
+- Not re-run: the Euclidean hole-wall minkowski pass and the band swing
+  harness.
+
+Harness (same lib-only blocks, turned leg rotated in 2D about (`hp_s`,
+`hp_pivot`)):
+
+| test | reads |
+|---|---|
+| bar ∩ pin seated / dz +0.10 / −0.05 | 0.0000 / empty / 0.789 |
+| bar dz 0.05 dx/dy 0.12; dy 0.20 | empty; 0.322 |
+| bar ∩ leg −19.67° (release), lift 1.2 / 2.0 / 2.5 | 0.089 / 0.088 / empty (the hook has left the bar) |
+| bar ∩ leg −25.50° (1.03×), lift 0 → 3.3 | empty everywhere; 0.9× at lift 1.0: 0.0088 |
+| charm ∩ pin seated, dz +0.10, dx/dy 0.12 | empty |
+| charm ∩ pin dz +0.25 / −0.25 / dy 0.2 (controls) | 0.595 / 0.093 / 0.367 |
+| charm ∩ leg −20.26° (1.03×), 0 → 3.3 | empty at every step |
+| charm ∩ leg 0.9× −17.7° at −0.6 | empty. The tip sits 2.1 inward of the pivot, so the cos term adds ~0.1 mm; the 0.8× control hits (0.047 at −0.9) |
+| charm ∩ leg unturned −1.0; 1.6× seated (controls) | 2.448; 1.351 |
+| charm ∩ leg unturned lift 0.10 / 0.14 / 0.20 | empty / empty / 0.149 |
+
+**Harness trap, hit here:** in zsh, `set -- $c` does not word-split. The
+override came through malformed, every run exported nothing, and the whole
+sweep read "empty". Always keep a known-hit control row in a sweep.
+
+## Step-free H-pin legs — 2026-09-27 (final), printed: "still very loose"
 
 The user rejected the notches below ("No, once again, as on the picture - wide
 leg, step-free"). Each leg is now `hp_ui_g`..`hp_uo` top to bottom, and

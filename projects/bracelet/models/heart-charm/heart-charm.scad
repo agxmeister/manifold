@@ -55,7 +55,8 @@ angle    = 0;               // the heart's turn in plan, degrees anticlockwise
 //   x = sin(t)^3,  y = 13 cos t - 5 cos 2t - 2 cos 3t - cos 4t,
 // with three changes, each one number:
 width    = 23;              // across the lobes
-length   = 19;              // lobes' top to point — wider than long
+length   = 19.4;            // lobes' top to point — wider than long. 19 until
+                            //   the 2026-09-27 stiff pin grew the holes to 6.66
 side_q   = 1.6;             // x = sin^q, not sin^3: fuller, rounder sides
 round_e  = 0.15;            // rounds the point and the notch's bottom: x runs
                             //   out linearly there instead of as a cube

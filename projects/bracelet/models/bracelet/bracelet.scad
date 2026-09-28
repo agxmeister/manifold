@@ -485,7 +485,9 @@ assert(hp_fill_u <= band_w/2 - corner_r,
        "the chamfer fill runs into the bar's rounded corners");
 assert(hp_slot_x/2 < h - 1.0,
        "the H-pin's pocket reaches the knuckle arms");
-assert(band_w/2 - hp_out >= 2.0,
+// 2.0 until 2026-09-28, when the bar's hooks grew; the walls beside the
+// pocket are only 1.1, so 1.8 at its ends is still the thicker wall.
+assert(band_w/2 - hp_out >= 1.8,
        str("only ", band_w/2 - hp_out, " mm of bar beyond the pocket's end"));
 
 // A charm has a FLAT BOTTOM and it is wider than its bar, so it

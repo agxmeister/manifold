@@ -373,7 +373,63 @@ costs as little turn as possible.
 - The charms did not change. **Reprint the pin and the band together**: the
   new pin does not fit a band printed before this change.
 
-### A thicker pin with thicker legs (2026-09-27, later) — not printed yet
+### Bracelet hooks as big as the charm's (2026-09-28) — printed and confirmed
+
+The stiff pin printed and sat well in a charm, but still pulled out of the
+bracelet. Its bracelet hooks were visibly smaller than its charm hooks: 0.70 mm
+past the wall on a 0.3 mm tip, against 0.85 on a 0.6 tip. A 0.3 mm tip is
+under one print line, so the printer rounds the catch away. That was the same
+fault the charm hooks had before they grew.
+
+- **The bracelet hooks match the charm's now: 1.0 mm, reaching 0.85 past the
+  wall, on a 0.6 mm tip** (were 0.85, 0.70 and 0.3).
+- **Their lead-in is blunter, 50°** (was 44°). Pushing the pin into the
+  bracelet takes more force. In return the hook sits lower on its leg, and
+  that saves the crossbar some bend.
+- When a charm is pulled off, 0.33 mm of the bracelet hooks still catches
+  (was 0.14).
+- **The cost: the crossbar bends 8.0 % once, as the pin goes into the
+  bracelet** (was 6.2 %, which your ABS pins survived). This one may crack. If
+  it does, `hp_lead = 55` gives 7.4 %, or `hp_hook_lo = 0.95` about 7.4 %.
+  Charms going on and off are unchanged at 4.9 %.
+- The pocket's mouth is wider again (0.8 mm deep, 0.5 wide at the top) so the
+  legs' tops clear it on the bigger turn. The pocket reaches 0.15 mm closer to
+  the band's edges. The band keeps its 16.2 mm width, and 1.85 mm of bar is
+  left beyond each end.
+- **Reprint the band with charm stations and the pins.** The charm side of the
+  pin did not change, so **the charms printed for the stiff pin still fit.**
+
+### A stiff crossbar and longer charm hooks (2026-09-27, last) — printed: good in a charm, loose in the bracelet
+
+The thicker pin printed and the charms were still loose: the pin wobbled, and
+charms and pins both let go. The crossbar was the weak part. It is the spring
+that presses every hook into its catch, and at 0.65 mm it was barely two print
+lines. A spring's force grows with the cube of its thickness.
+
+- **The crossbar is 1.0 mm** (was 0.65), about 3.6× stiffer. It thickens
+  downward, into the bar; its top still sits 0.3 mm under the bar's top face.
+- **The charm's hooks are longer: 1.0 mm, reaching 0.85 past the wall** (were
+  0.90 and 0.75). They sit 0.15 mm lower on their legs to keep the ramp above
+  them at 40°. On paper a charm now holds about 4× as hard.
+- **The bracelet's hooks did not change.** With the thicker crossbar they
+  would have to turn so far going in that the crossbar would bend 8 %. They
+  hold better anyway: 0.14 mm of them still catches when a charm is pulled off.
+- **The cost is bend.** The crossbar bends 4.9 % each time a charm goes on and
+  6.2 % once, when the pin goes into the bracelet. That is too much for PLA,
+  so **print the pins in ABS**. If a crossbar cracks going in,
+  `hp_cb_h = 0.9` gives 4.5 % and 5.4 %.
+- **The bracelet's pocket has a wider mouth** (0.6 mm deep, 0.3 mm wide at the
+  top). On the bigger turn, the top of each leg swung out into the old one.
+- The charms' holes are 0.2 mm longer (6.66 mm from the middle), and three
+  charms were refitted around them:
+  - the heart is 19.4 mm long (was 19);
+  - the ladybug's shell is 0.6 mm longer and its head moved 0.3 mm out;
+  - the dolphin's first two tail joints are 0.2 mm further back.
+
+  The butterfly and the rose fit without changes.
+- **Reprint the band with charm stations, the pins and every charm you use.**
+
+### A thicker pin with thicker legs (2026-09-27, later) — printed, still loose
 
 The near-square catches printed a little better, but not enough: the pin is
 so small that the printer smoothed the catches away. So the pin grew:
@@ -860,15 +916,15 @@ python3 tools/multicolor-3mf.py /tmp/ladybug.3mf \
   same bridges, same no-brim rule.
 
 - **Print the pin lying flat, exactly as modelled** — no rotation, no supports,
-  no brim. It is 2.8 mm tall on 24 mm² of its own face; `-D copies=6` lays out
+  no brim. It is 3.5 mm tall on its own flat face; `-D copies=6` lays out
   a batch, which exports as that many separate shells.
 - **Print the butterfly bottom down, exactly as modelled** — no rotation, no
   supports, no brim. It stands on the face that sits on the bracelet, 146 mm²
   of it.
-- **Same material and settings as the band**, and **three perimeters**: the
-  pin's crossbar is 0.76 mm and its legs 1.0 mm, about two lines each. The
-  crossbar is the spring and is meant to be thin; one fat perimeter would print
-  it as a single weak line.
+- **Print the pins in ABS**, with **three perimeters**. The pin's crossbar is
+  1.0 mm and its legs 1.6 mm. The crossbar is the spring and bends up to 6 %
+  going in (8 % since 2026-09-28), which PLA won't survive. One fat perimeter would print it as a
+  single weak line.
 - **Print the ladybug the same way**, bottom down, no supports, no brim, 197
   mm² on the bed. Its holes are the butterfly's exactly, so it fits the pin
   the same way.
