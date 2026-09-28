@@ -56,10 +56,11 @@
 $fa = 2;
 $fs = 0.3;
 
-// The H-pin every charm snaps onto, and the pocket it snaps into. Variables and
-// modules only — including it draws nothing. Everything it defines is named
-// `hp_*`, so nothing in it shadows the HINGE pin's `pin_d` / `pin_z`.
-include <../../lib/charm-pin.scad>
+// The two charm mounts: the U-pin and stem (`st_*`), which includes the H-pin
+// (`hp_*`) — the stem is the H's upper half, and the charms' holes are the
+// H's. Variables and modules only — including it draws nothing. Nothing in
+// either shadows the HINGE pin's `pin_d` / `pin_z`.
+include <../../lib/charm-stem.scad>
 
 // ------------------------------------------------------------------- sizing
 wrist   = 130;   // wrist circumference in mm. 130 is the 4-year-old this was
@@ -410,11 +411,19 @@ x_det   = x_lock + det_off;
 
 // --------------------------------------------------------------- the charms
 // OPTIONAL. `charms` bars along the band get a POCKET sunk into their top face.
-// A loose H-shaped pin (models/pin) snaps down into it with the hooks
-// on its lower legs, its crossbar sinks just under the bar's top, and the
-// charm (models/butterfly-charm) snaps onto the upper legs. See the lib. Leave
-// it at 0 and the bracelet is exactly the plain band.
+// With `mount = "u-pin"` a charm's stem (models/stem) drops into it and a
+// U-pin (models/u-pin) slides in along the band to hold it; with "h-pin" a
+// loose H-pin (models/pin) snaps into it and the charm snaps onto that. See
+// the two libs. Leave it at 0 and the bracelet is exactly the plain band.
 charms      = 0;     // how many charm stations, odd. 0 = none.
+mount       = "u-pin";  // how a charm is held (see the README):
+                        //   "u-pin" — the charm is locked on its own stem
+                        //     (models/stem), the stem is pinned in the bar by
+                        //     a U-pin (models/u-pin) slid in along the band,
+                        //     and a LOCK TOOTH on the bar before holds the
+                        //     U-pin in. Since 2026-09-28, unprinted.
+                        //   "h-pin" — the loose H-pin (models/pin), snapped
+                        //     into the bar and into the charm. Printed.
 charm_reach = 16;    // the widest charm this spacing has to keep apart —
                      //   models/butterfly-charm spans 15.8 mm along the band.
 
@@ -512,6 +521,28 @@ assert(charms == 0 || charm_reach/2 <= (pitch_min - body) + body/2,
        str("a ", charm_reach, " mm charm overhangs past the neighbouring bar's",
            " face at pitch_min — it would jam the joint"));
 
+assert(mount == "u-pin" || mount == "h-pin", str("unknown mount \"", mount, "\""));
+
+// THE U-PIN MOUNT. Its U-pin enters the gap BEFORE a station through the
+// channel between the knuckle clusters — the neighbour's lugs are its walls —
+// and slides along the band through the station bar's end walls. The lock
+// tooth stands in that channel on the bar before. See lib/charm-stem.scad.
+st_gap = pitch - body;
+assert(mount != "u-pin" || rows % 2 == 0,
+       "the U-pin needs the channel between two knuckle clusters at the band's middle — an even `rows`");
+assert(abs(st_chan - (row_pitch - body)/2) < 1e-9,
+       str("the lib's channel half-width ", st_chan, " is not the band's ",
+           (row_pitch - body)/2));
+assert(st_co + 0.3 <= st_chan,
+       str("the U-pin's bight is ", st_co, " wide either side, the channel ", st_chan));
+assert(st_slide(st_gap) + 0.5 <= st_travel(body),
+       str("flat, a U-pin can slide out ", st_slide(st_gap), " of the ",
+           st_travel(body), " it needs to let the stem go"));
+assert(st_slide(st_gap) >= 1.0,
+       "the lock tooth leaves the U-pin no room to move");
+assert(st_v_cl_lo + thick >= hp_floor + hp_fit,
+       "the U-pin's bores reach the bar's floor");
+
 // A pocket adds no height at all — it is a hole — so the stud sets it.
 top_z       = post_top + head_h;
 
@@ -528,7 +559,12 @@ echo(str("cols=", cols, " rows=", rows,
          "  knuckle cap at bed=", knuck_foot,
          "  knuckle underside=", knuck_slope, "deg",
          "  pin first layer=", pin_flat_w));
-if (charms > 0)
+if (charms > 0 && mount == "u-pin")
+    echo(str(charms, " U-pin station(s) in bar(s) ", charm_ix, " of ", cols,
+             ", lock teeth on bar(s) ", [for (c = charm_ix) c - 1],
+             " — U-pin slides ", st_slide(st_gap), " of the ", st_travel(body),
+             " it needs; crossbar ", 100*st_strain_up, "% as the charm goes on"));
+if (charms > 0 && mount == "h-pin")
     echo(str(charms, " H-pin pocket(s) in bar(s) ", charm_ix, " of ", cols,
              " — ", hp_slot_x, " x ", 2*hp_out, " x ", hp_bar - hp_floor,
              " deep, wall ", hp_wall_bar, " along the band, floor ", hp_floor,
@@ -720,7 +756,14 @@ module clasp_keyhole() {
 // An H-pin station: the pocket, cut down from bar `col`'s top face, running
 // across the band.
 module charm_h_station(col) {
-    translate([col*pitch, band_cy, thick]) charm_h_pocket();
+    translate([col*pitch, band_cy, thick])
+        if (mount == "u-pin") charm_stem_pocket(body);
+        else charm_h_pocket();
+}
+
+// The lock tooth on the bar before station `col`.
+module charm_lock_tooth(col) {
+    translate([(col - 1)*pitch, band_cy, 0]) charm_stem_tooth(body, thick);
 }
 
 // The chamfer fill at a station (see `hp_fill_u`): a block the bar's full
@@ -739,6 +782,7 @@ module bracelet() {
             union() {
                 for (c = [0:cols-1]) bar(c);
                 for (c = charm_ix) charm_h_seat(c);
+                if (mount == "u-pin") for (c = charm_ix) charm_lock_tooth(c);
                 clasp_stud();
                 clasp_keyhole();
             }
