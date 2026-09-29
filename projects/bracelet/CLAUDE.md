@@ -3,76 +3,20 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
-## The U-pin mount — 2026-09-28, unprinted. The default `mount`
+## The H-pin is the only mount — rolled back 2026-09-29
 
-The user asked for a mount that comes off "only using a tool", then proposed a
-U-pin "inserted from the side of the bracelet's link... when the bracelet is
-bended. While the bracelet is on the hand, U pin cannot be removed due to
-other links." They chose **a lock tooth** and **the charm permanent on its
-stem**. `lib/charm-stem.scad` (`st_*`, includes `charm-pin.scad`),
-`models/stem`, `models/u-pin`, and `mount` in `bracelet.scad`
-(`"u-pin"` default, `"h-pin"` still there).
+Three other mounts were tried after the H-pin and all were removed at the
+user's request, back to the H-pin as the one design (no `mount` switch):
+- **U-pin** (charm locked on a stem, a U-pin slid along the band, a lock
+  tooth): committed 4b8d994, never printed. The user found four moving parts
+  too many.
+- **Twist-key** (a loose key twist-locks into bar and charm): PRINTED AND
+  FAILED — "the key is small, it deformates easily and doesn't sit in the
+  holes".
+- **Slider** (the charm's saddle threads onto the plain band through a
+  tunnel, clicks on a bar): the user didn't like it; never printed.
 
-**Geometry that decided it (measured, do not re-derive by hand):**
-- The only free path along the band between two bars is the **channel between
-  the knuckle clusters**, |u| < 2.1 (`st_chan`, asserted against
-  `row_pitch`/`body`; needs an even `rows`, asserted). The U-pin is 3.5 wide.
-- A **backward** fold can't release anything: every charm binds a backward
-  bend (butterfly at 50°, the others from 0.5–20°), with or without the tooth.
-- Without a tooth a **forward** fold frees a pin at 45–55°, too close to a
-  wrist (~36° per joint). With the 2.0 tooth, a pin pulled 4.8 (enough to
-  free the foot) still hits it at 75° and is clear at 80° (130, 180, 200),
-  85° at the tightest pitch (170, 11.22).
-- **"Permanent charm on its stem" was built as a LOCK, not an 88° catch.**
-  The stub slots hug the stem's legs (no `hp_room_lo`), so they can't turn
-  and the upper hooks can't let go. The catch angle, the charm holes and every
-  charm stay byte-identical. The charm snaps on OFF the bar, and comes off
-  again off the bar. The user was told. If they want it glued-permanent
-  off the bar too, an ~88° `hp_catch_up` means refitting and reprinting every
-  charm.
-
-**Numbers:** neck 0.8, U-pin legs 1.2 × 1.2 at u 0.55–1.75, z 1.55–2.75;
-foot 3.4 × 0.85 (z 0.55–1.40); well |u| ≤ 1.9, floor 0.4 (`st_floor`, two
-layers); bores z 1.35–2.90 (`st_bore_lo` 0.2 — at `hp_fit` 0.15 the floor
-sat exactly on `accent_lo` 1.4 and the stripe grew zero-volume sheets).
-Crossbar with the neck fixed: `st_strain_up` **6.13 %**, once, asserted
-≤ 6.5 (ABS). Slide room `st_slide` 2.0–2.8 across wrist 115–230, against
-`st_travel` 4.75, asserted `slide + 0.5 ≤ travel`.
-
-**Harness** (`brh.scad`: bracelet.scad minus the accent tail, include
-absolute; `cbar(k)` = `bar(k)` + seat and station only if k == c, + tooth only
-if k == c − 1. **Unioning the seat into the neighbour gave a bogus 26 mm³
-bind at +20°**, with the H-pin too. Negative A = the wrist direction, about
-((c − 0.5)·pitch, ·, `pin_z`)):
-
-| test | reads |
-|---|---|
-| stem ∩ bar seated / dz −0.1 / dx, dy 0.1 / dx, dy 0.2 | 0.0 / 0.805 / empty / 1.08, 0.90 |
-| U-pin ∩ bar / dz −0.15 / ±0.25 / dy 0.2 | empty / empty / 0.26 / 0.48 |
-| U-pin ∩ stem / dz ±0.2 / dy 0.1 / 0.2 | empty / 0.44–0.45 / 0.002 / 0.24 |
-| U-pin slid out 2.4 / 2.55, flat, vs the tooth bar | empty / 0.158 |
-| seated U-pin vs tooth bar, A +60 … −100 / −110 | empty / 0.33 (joint bind, control) |
-| U-pin slid 4.8, A 0 / −45 / −60 / −70 / −75 / −80 / −90 | 8.17 / 5.56 / 2.21 / 0.67 / 0.17 / empty / empty |
-| insertion path S 5.5 / 6.5 / 7.3 / 9 at −80 and −90 | empty |
-| joint swing with tooth, ±100 | empty (+110 hits, as the band always did) |
-| stem leg turned 0/1/2/3° / 5 / 10 / 19.7 (release) | empty / 0.12 / 0.87 / 2.35 — locked |
-| each charm ∩ stem / dy 0.3 control | empty / 1.44 (dolphin via imported STL: its `body` clashes) |
-| each charm vs tooth bar at −40 / −80 / −90 | empty (all five) |
-
-**Invariants (130, `charms = 3`):** 11 shells, **genus 43** (+4 per
-station: well + two through-bores), and at every wrist 115–230 genus = old
-formula + 12. **First layer 1775.8 mm²** (+23.6, the teeth) in 11 islands.
-46 BRIDGE, no SUPPORT (the bore roofs: 1.1 × 1.5, z 2.9). Accent: base 23
-shells, stripe **41** (32 + six 1.232 mm³ pillars between the bores + the
-station bar's stripe split in two by the well, ×3). Volumes sum to the plain
-c3 (6364.046). Stem: 1 shell, no overhangs, min wall 0.80 (the neck). U-pin:
-1 shell, 1.20.
-
-**Byte-identical after this change:** plain band, `-w180`, pin, butterfly,
-heart, rose, dolphin, and `-D mount="h-pin"` c3 ==
-`exports/bracelet-bracelet-c3-hpin.stl` (the old `-c3`).
-`exports/bracelet-bracelet-c3.stl` and `-c3-accent.3mf` are now the U-pin
-band.
+Don't offer these again as they were.
 
 ## Bar hooks like the charm's — 2026-09-28, PRINTED AND CONFIRMED ("Printed well")
 
@@ -495,8 +439,7 @@ five charms. The lib draws
 nothing — variables, functions and modules only — so every model `include`s
 it.
 
-**Two mounts now: the U-pin (default, `lib/charm-stem.scad`) and the H-pin**
-(see the top section). Two came before the H-pin — a ball pin fused to the
+**The H-pin is the ONLY mount.** Two came before it — a ball pin fused to the
 bar with clip-on socket charms (flower, heart, kitten, puppy, frog), and a loose
 double-ended M4 screw through the bar (the star). Both printed and worked. The
 user judged the H-pin the best and had the other two removed, charms and all,
@@ -516,10 +459,7 @@ touch them:
 openscad -o /tmp/b.stl models/bracelet/bracelet.scad && cmp /tmp/b.stl exports/bracelet-bracelet.stl
 openscad -o /tmp/b180.stl -D wrist=180 models/bracelet/bracelet.scad && cmp /tmp/b180.stl exports/bracelet-bracelet-w180.stl
 openscad -o /tmp/c3.stl -D charms=3 models/bracelet/bracelet.scad && cmp /tmp/c3.stl exports/bracelet-bracelet-c3.stl
-openscad -o /tmp/c3h.stl -D charms=3 -D 'mount="h-pin"' models/bracelet/bracelet.scad && cmp /tmp/c3h.stl exports/bracelet-bracelet-c3-hpin.stl
 openscad -o /tmp/p.stl models/pin/pin.scad && cmp /tmp/p.stl exports/pin-pin.stl
-openscad -o /tmp/s.stl models/stem/stem.scad && cmp /tmp/s.stl exports/stem-stem.stl
-openscad -o /tmp/u.stl models/u-pin/u-pin.scad && cmp /tmp/u.stl exports/u-pin-u-pin.stl
 openscad -o /tmp/f.stl models/butterfly-charm/butterfly-charm.scad && cmp /tmp/f.stl exports/butterfly-charm-butterfly-charm.stl
 openscad -o /tmp/l.stl models/ladybug-charm/ladybug-charm.scad && cmp /tmp/l.stl exports/ladybug-charm-ladybug-charm.stl
 openscad -o /tmp/h.stl models/heart-charm/heart-charm.scad && cmp /tmp/h.stl exports/heart-charm-heart-charm.stl
@@ -560,8 +500,7 @@ relief slots run into the entry hole**, so the keyhole is one hole, not three.
 One extra hole means a relief has stopped reaching the entry hole and the
 detent leaves have silently become rigid ribs.
 
-**An H-pin pocket adds no hole and no shell** (a U-pin station adds 4 to the
-genus): `mount="h-pin"`, `charms = 3` reads genus 31 and 11
+**A pocket adds no hole and no shell**: `charms = 3` reads genus 31 and 11
 shells at the default, 43 and 15 at 180.
 
 A connectivity checker reporting "15 disconnected pieces ... will NOT print as
@@ -626,8 +565,7 @@ for a multi-material printer.
 - **`charms = 0` must export byte-for-byte the plain band** in
   `exports/bracelet-bracelet.stl`. Cheapest regression test here.
 - **Shell count `cols` and the genus are unchanged at any `charms`.**
-- **H-pin mount only:** (the U-pin's teeth add 23.6 mm², see the top section)
-  **the first layer is unchanged** — 1812.5 mm² in 11 islands (2471.5 in 16
+- **The first layer is unchanged** — 1812.5 mm² in 11 islands (2471.5 in 16
   at 180). The pocket keeps `hp_floor` = 0.6 mm of bar under it, so the first
   layer never sees it.
 - **The swing test with a butterfly seated**: clear to ±40°, binds at 60°, at

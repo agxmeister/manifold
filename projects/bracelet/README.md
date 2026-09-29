@@ -232,22 +232,12 @@ full-width bar foot, so there is far more of it than the old tile grid had.
 ## Charms
 
 `charms` bars along the band — the middle one and every third bar either side
-of it — carry a charm. There are **two mounts**, picked with `mount` in
-`bracelet.scad`; every charm fits both, unchanged:
-
-- **`"u-pin"`, the default since 2026-09-28 — unprinted.** The charm is
-  locked on its own **stem**, and the stem is pinned into the bar by a
-  **U-pin** that only comes out with the band rolled tight. See *The U-pin
-  mount* below.
-- **`"h-pin"`** — a loose **H-pin** snapped in at both ends, described next.
-  Printed; it holds well in a charm but pulls out of the bar.
-
-Five charms are built: a 3D **butterfly**, a two-colour
+of it — carry a charm, hung on an **H-pin** snapped in at both ends. Four charms are built for it: a 3D **butterfly**, a two-colour
 **ladybug**, a puffy **heart** that can be turned to any angle, a
 **rose** with thin, ruffled petals, and an articulated **dolphin** whose tail
 bends every way.
 
-Two earlier mounts came before the H-pin — a ball pin fused to the bar with
+Two earlier mounts came before this one — a ball pin fused to the bar with
 clip-on charms, and a loose double-ended screw — and both printed and worked.
 This one proved the best, and on 2026-09-24 the other two were removed along
 with their charms (a flower, heart, kitten, puppy, frog and star). They are in
@@ -280,62 +270,6 @@ half whose hooks point **out** goes into the bracelet.
 
 `charms` in `bracelet.scad` cuts the pockets; `models/pin`
 is the pin and `models/butterfly-charm` is the charm built for it.
-
-### The U-pin mount (2026-09-28) — unprinted
-
-Asked for as a mount that can only be undone with a tool. A U-shaped pin goes
-in from the side of the charm's bar, and while the bracelet is on the wrist
-the bars next to it stop it from coming out.
-
-```
-  along the band, through the middle of the band:
-
-   bar before          gap          charm bar
-  ┌──────────┐┌────┐          ┌─────────────────┐
-  │          ││tooth│  ▐bight══╪══ U-pin legs ═══╡  ← over the stem's foot
-  └──────────┘└────┘          └─────────────────┘
-```
-
-- **The stem** (`models/stem`) is the H-pin's upper half: the same legs,
-  crossbar and hooks, so it snaps into any charm. Its lower legs have no
-  hooks. A thin neck with a foot hangs from the crossbar's middle. It drops
-  into a pocket in the bar.
-- **The U-pin** (`models/u-pin`, 7.2 × 3.5 × 1.2 mm) slides along the band
-  through two bores in the bar, one leg either side of the neck and just over
-  the foot. Its closed end sits in the gap before the charm bar, in the
-  4.2 mm channel between the two hinge clusters.
-- **The lock tooth.** The bar before a station has a solid 2 mm tooth in
-  that channel. With the joint flat, or bent the way a wrist bends it, the
-  U-pin can slide out only 2.0–2.8 mm (by wrist size). It needs 4.75 to let
-  the stem go. **Only rolling that one joint forward to about 80°** (85° at
-  the tightest bar spacing) swings the tooth out of its way. A wrist bends
-  each joint about 36°. Bending the band backwards can't free it: the charm
-  itself stops a backward bend long before.
-- **The charm is locked on its stem while the stem is in a bar.** To let go,
-  the charm's hooks need the stem's legs to turn, and the stem's lower legs
-  sit in snug slots. They can turn 3–5° of the 19.7° needed. Off the bar the
-  charm comes off its stem with a firm pull, as before. So each charm gets
-  its own stem, and you swap the charm and stem together.
-- Nothing here springs in the bar, so there is nothing left to pull out of
-  it. The charms, the H-pin and the plain band are unchanged byte for byte.
-
-To fit a charm:
-1. Snap the charm onto its stem first, off the bracelet (in the bar its legs
-   can't turn, so it won't go on there).
-2. Push the stem straight down into the pocket.
-3. Roll the joint on the **lower-numbered side** of the charm bar (the side
-   with the tooth) forward, tightly, to 80–90°.
-4. Slide the U-pin in along the band until its closed end meets the bar.
-5. Let the joint back.
-
-To take it off, roll that joint tight again, push the U-pin out from the far
-side with a toothpick on its leg tips, and lift the charm and stem out.
-
-What it cost the band: a well and two bores at each station, so the genus
-rises by 4 per station (31 → 43 at `charms = 3`), and a tooth on the bar
-before, which adds 23.6 mm² of first layer (1775.8 mm² in the same 11
-islands). The bores' roofs are two 1.1 mm bridges per station, and the floor
-under the well is 0.4 mm (two layers).
 
 ### The H prints lying flat, so its hooks are free
 
@@ -809,13 +743,9 @@ picks the actual filaments.
 projects/bracelet/
 ├── lib/charm-pin.scad                    # the H-pin mount: the pin, the pocket in
 │                                         #   the bar and the holes in the charm
-├── lib/charm-stem.scad                   # the U-pin mount: the stem, the U-pin,
-│                                         #   the stem's pocket and the lock tooth
 └── models/
     ├── bracelet/bracelet.scad            # the whole bracelet — one printed object
-    ├── stem/stem.scad                    # a charm's stem (U-pin mount)
-    ├── u-pin/u-pin.scad                  # the U-pin that holds a stem in
-    ├── pin/pin.scad                      # the loose H-shaped pin (H-pin mount)
+    ├── pin/pin.scad                      # the loose H-shaped pin
     ├── butterfly-charm/butterfly-charm.scad  # a charm that snaps onto it
     ├── ladybug-charm/ladybug-charm.scad      # another, in two colours
     ├── heart-charm/heart-charm.scad          # a heart, turnable with `angle`
@@ -832,8 +762,6 @@ printed in place.
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
 | `bracelet` | `bracelet` | 151.3 × 16.2 × 4.7 mm | all 11 bars' own flat feet |
-| `stem` | `stem` | 10.2 × 6.9 × 3.5 mm | its own face, 35 mm² |
-| `u-pin` | `u-pin` | 7.2 × 3.5 × 1.2 mm | its own face, 18.5 mm² |
 | `pin` | `pin` | 11.9 × 6.9 × 2.8 mm | its own face, 24 mm² |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 18.6 × 7.0 mm | its own bottom, 146 mm² in one piece |
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 18.3 × 7.8 mm | its own bottom and legs, 197 mm² in one piece |
@@ -981,19 +909,6 @@ python3 tools/multicolor-3mf.py /tmp/ladybug.3mf \
   plate pushed slightly away from the stud's end bar as you drop it on — its
   tip comes down right beside that bar. To release, push
   it back past the detent and lift the head out.
-
-### The U-pin mount
-
-- **Print the stem and the U-pin lying flat, exactly as modelled.** No
-  rotation, no supports, no brim. Neither has an overhang.
-- **Print the stems in ABS**, like the H-pins. The crossbar bends about 6 %
-  once, when the charm snaps on. The neck is 0.8 mm (two lines). Leave
-  thin-wall handling on.
-- `exports/bracelet-bracelet-c3.stl` is the U-pin band now. The H-pin band is
-  `exports/bracelet-bracelet-c3-hpin.stl`. The two-colour
-  `bracelet-bracelet-c3-accent.3mf` is the U-pin band too.
-- Old H-pin bands don't take stems, and U-pin bands don't take H-pins.
-  Charms fit both.
 
 ### The H-pin and the charms
 
