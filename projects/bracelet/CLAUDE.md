@@ -3,10 +3,73 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
-## The H-pin is the only mount — rolled back 2026-09-29
+## The dovetail H-pin — 2026-09-30, UNPRINTED. The only mount
 
-Three other mounts were tried after the H-pin and all were removed at the
-user's request, back to the H-pin as the one design (no `mount` switch):
+The pin's BOTTOM is a dovetail that slides across the band into a groove
+through a station bar and clicks (a lip on a spring leaf in the groove's
+floor, a pit under the pin). Its TOP is the H-pin's upper half, exactly
+(`hp_pin_2d` above `hp_cb_bot`), so **every charm's `charm_h_holes` fits
+unchanged: no charm file changed**. `lib/charm-dovetail.scad` (`dt_*`)
+includes `lib/charm-pin.scad` (`hp_*`). The H's lower legs, lower hooks and
+`charm_h_pocket` there are dead code the band no longer uses.
+
+**How it got here (the user's decisions, 2026-09-29/30):**
+1. The user sketched an hourglass pin: dovetail into the bar, dovetail into
+   the charm, lip + pit. With both dovetails parallel, no rigid stop keeps
+   the charm on the pin. Anything slid on can slide back off, and a blind end
+   and a shoulder stop the SAME direction. I first offered a "stepped head"
+   that I claimed locked it, and had to retract it.
+2. So it became CROSSED (top dovetail along the band) with a tooth on the bar
+   top in a slot under the charm. The user then said the top "doesn't
+   conform the charm geometry" and asked for the H-pin's top half on the
+   dovetail bottom, printed horizontally. That is this pin; the tooth, the
+   slot and the charm's dovetail groove are gone.
+
+**Geometry that is forced, not chosen:**
+- The H's crossbar sits at −0.3..−1.3 (as in the H-pin), so a CHANNEL
+  (`hp_slot_x` 3.8 wide) runs across the bar top, 1.75 deep. It removes the
+  top of any groove under it, so the dovetail is BELOW the channel: waist at
+  −1.75, 45° flank to the foot at ±1.75 (`hp_t`/2), foot sides 0.55, pin
+  bottom −3.05, floor/leaf 1.0.
+- The foot's half-width = `hp_t`/2, so on its side the H's face and the
+  dovetail's foot both touch the bed. The foot's straight side must be ≥ 0.5
+  or the dovetail stands on a sub-bead line (asserted).
+- The neck (2.0 × 0.8 along y) fuses the crossbar's middle. That shortens
+  the spring: strain ×7/(7 − 0.8) = 5.5 % per charm (H-pin 4.9), grip +13 %.
+  At 0.6 the neck flagged as a single-bead wall. The user was told 5.5 % in ABS.
+- CHARM FIRST, then pin into the bar. In the bar the channel's floor blocks
+  the legs: the release turn swings the legs' outer feet to −2.34
+  (`dt_leg_foot`). Harness: turned rigid legs hit the bar from ~45 % of
+  `hp_turn_up`, with the hooks still ~0.47 over their shoulders. So a charm
+  cannot come off while its pin is in the bar.
+
+**Checks:** pin 6.5 × 16 × 3.5 on its side, 1 shell, 36 mm² in 2 patches
+(the foot strip 0.7 wide joins at 0.9 mm), no overhang past 45. Thin-wall
+flags are the neck (0.8), the crossbar (1.0, the H's spring) and the walls
+beside the pits (0.95), all accepted. Band c3: 11 shells, overhangs
+identical to the plain band (40), plain band byte-identical. The heart,
+imported from its unchanged export, was used as the charm in the harness.
+
+**Harness** (scratch `h.scad` + `vol.py`, `intersection(){part(A);part(B)}`,
+volume off the ASCII STL; bar = a 6 × 16.2 × 4.2 block minus `dt_bar_cut`;
+"pindefl" turns each leg + half-crossbar outside the neck by `defl` ×
+`hp_turn_up` about (±`hp_ui_g`, `hp_pivot`) and drops it `defl` ×
+`dt_end_drop`):
+
+| test | reads |
+|---|---|
+| pin UP ∩ bar / low 0.15 / CONTROL up 0.05 / CONTROL x 0.2 | 0-vol flank sheet / empty / 0.94 / 1.82 |
+| pin ∩ lip seated / 1.5 from home | 0.22 (preload) / 0.97 (ride) |
+| pin ∩ heart seated / pin low 0.15 | empty / 0-vol sheet at the catch (`hp_vfit`) |
+| heart ∩ bar | seat sheet only |
+| pindefl ∩ bar at 0 / 30 / 40 / 50 / 100 % | empty / empty / empty / 0.04 / 1.07 |
+| pin + heart sliding in at 1, 6, 16 mm | seat sheet only |
+
+**Not printed. Not checked in a slicer.**
+
+## Mounts tried and removed — rolled back 2026-09-29
+
+Three mounts came after the H-pin and all were removed at the user's request:
 - **U-pin** (charm locked on a stem, a U-pin slid along the band, a lock
   tooth): committed 4b8d994, never printed. The user found four moving parts
   too many.
@@ -16,7 +79,8 @@ user's request, back to the H-pin as the one design (no `mount` switch):
 - **Slider** (the charm's saddle threads onto the plain band through a
   tunnel, clicks on a bar): the user didn't like it; never printed.
 
-Don't offer these again as they were.
+Don't offer these again as they were. The whole H-pin (below) printed and
+held, but kept pulling out of the bar; its upper half lives on in this pin.
 
 ## Bar hooks like the charm's — 2026-09-28, PRINTED AND CONFIRMED ("Printed well")
 

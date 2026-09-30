@@ -56,10 +56,12 @@
 $fa = 2;
 $fs = 0.3;
 
-// The H-pin every charm snaps onto, and the pocket it snaps into. Variables and
-// modules only — including it draws nothing. Everything it defines is named
-// `hp_*`, so nothing in it shadows the HINGE pin's `pin_d` / `pin_z`.
-include <../../lib/charm-pin.scad>
+// The dovetail H-pin every charm hangs on, and the channel, groove and leaf
+// it needs in a bar. It includes lib/charm-pin.scad for the H's upper half.
+// Variables and modules only — including it draws nothing. Everything in
+// them is named `dt_*` / `hp_*`, so nothing shadows the HINGE pin's `pin_d` /
+// `pin_z`.
+include <../../lib/charm-dovetail.scad>
 
 // ------------------------------------------------------------------- sizing
 wrist   = 130;   // wrist circumference in mm. 130 is the 4-year-old this was
@@ -85,9 +87,10 @@ row_pitch = 10.2;         // spacing of the knuckle clusters ACROSS the band.
                           //   Deliberately NOT `pitch`: the band's width must
                           //   not change when the length solver breathes the
                           //   joints, so this one is fixed. It was 11.6 (a
-                          //   17.6 band); 10.2 (2026-09-26) is the narrowest
-                          //   the H-pin pocket allows — 2.0 mm of bar left
-                          //   beyond each end of it, asserted below.
+                          //   17.6 band); 10.2 (2026-09-26) was the narrowest
+                          //   the old H-pin pocket allowed. The dovetail pin
+                          //   runs the band's full width, so it only has to
+                          //   match it (`dt_len`, asserted below).
 corner_r  =  1.0;         // plan-view corner radius of a bar
 
 ch_run    = 0.5;          // TOP chamfer only. The bottom stays flat and full
@@ -409,11 +412,12 @@ x_lock  = x_l - kh_lock;
 x_det   = x_lock + det_off;
 
 // --------------------------------------------------------------- the charms
-// OPTIONAL. `charms` bars along the band get a POCKET sunk into their top face.
-// A loose H-shaped pin (models/pin) snaps down into it with the hooks
-// on its lower legs, its crossbar sinks just under the bar's top, and the
-// charm (models/butterfly-charm) snaps onto the upper legs. See the lib. Leave
-// it at 0 and the bracelet is exactly the plain band.
+// OPTIONAL. `charms` bars along the band become STATIONS: a shallow channel
+// and a dovetail groove under it run right across the bar, and the groove's
+// floor is cut into a spring LEAF with a LIP on it. A charm snaps onto the
+// H-shaped top of the pin (models/pin), and the pin's dovetail slides into
+// the groove from the band's +y edge until it clicks. See the lib. Leave it
+// at 0 and the bracelet is exactly the plain band.
 charms      = 0;     // how many charm stations, odd. 0 = none.
 charm_reach = 16;    // the widest charm this spacing has to keep apart —
                      //   models/butterfly-charm spans 15.8 mm along the band.
@@ -464,31 +468,34 @@ assert(charms == 0 || (charm_ix[0] >= 1 && charm_ix[charms-1] <= cols - 2),
            charms, " charms every ", charm_step, " bars need more than ",
            cols, " bars; lower `charms`"));
 
-// The H-pin's pocket runs ACROSS the bar: `hp_slot_x` of the 6.0 mm along the
-// band, the rest left as wall either side; the full chamber width across it,
-// well inside the band's width; and `hp_floor` of bar under it, so the first
-// layer never sees it. It stays inside |x| < h - 1.0 too, where the knuckle
-// arms begin, so it cuts nothing but plain bar.
-hp_wall_bar = (body - hp_slot_x) / 2;                   // 1.10
-// At a station the bar's top chamfer is FILLED IN, so the wall beside the
-// pocket keeps its full 1.1 up to the rim instead of 0.6. The chamfer is only
-// cosmetic — the hinge does the articulating — and the fill is flush with the
-// slab's faces below it, so it adds no overhang and no layer step. The charm
-// covers it. `hp_fill_u` is how far it runs across the band, either side.
-hp_fill_u   = hp_out + 0.8;                             // 6.90
-assert(hp_bar == thick,
-       str("the H-pin's pocket is drawn for a ", hp_bar, " mm bar but a bar is ",
+// A station's channel and groove run ACROSS the bar, right through it: the
+// channel `dt_ch_w` wide, leaving `(body - dt_ch_w)/2` of wall either side;
+// the groove `2*dt_g_w` at its foot, leaving `h - dt_g_w`. Both stay inside
+// |x| < h - 1.0, where the knuckle arms begin. The pin runs the band's width,
+// 0.1 short at each end.
+//
+// THE GROOVE SPLITS THE BAR IN TWO along its length, joined only by the
+// floor under the groove beyond the leaf (`dt_floor` thick, `2*dt_g_w`
+// wide). The band's pull crosses a station there. It is ~9 mm^2 of PLA
+// printed along its layers, and it carries nothing but the band's tension.
+dt_wall_bar = h - dt_g_w;                               // 1.00
+dt_floor_run = (band_w/2 - dt_root) + (dt_tip - dt_slot + band_w/2);
+// At a station the bar's top chamfer is FILLED IN, so the walls beside the
+// channel keep their full width up to the rim. The chamfer is only cosmetic — the
+// hinge does the articulating — and the fill is flush with the slab's faces
+// below it, so it adds no overhang and no layer step. The charm covers it.
+dt_fill_u   = band_w/2 - corner_r;                      // 7.10
+assert(dt_bar == thick,
+       str("the dovetail groove is drawn for a ", dt_bar, " mm bar but a bar is ",
            thick, " thick"));
-assert(hp_wall_bar >= 1.0,
-       str("only ", hp_wall_bar, " mm of bar beside the pocket"));
-assert(hp_fill_u <= band_w/2 - corner_r,
-       "the chamfer fill runs into the bar's rounded corners");
-assert(hp_slot_x/2 < h - 1.0,
-       "the H-pin's pocket reaches the knuckle arms");
-// 2.0 until 2026-09-28, when the bar's hooks grew; the walls beside the
-// pocket are only 1.1, so 1.8 at its ends is still the thicker wall.
-assert(band_w/2 - hp_out >= 1.8,
-       str("only ", band_w/2 - hp_out, " mm of bar beyond the pocket's end"));
+assert(dt_wall_bar >= 1.0,
+       str("only ", dt_wall_bar, " mm of bar beside the groove's foot"));
+assert((body - dt_ch_w)/2 >= 1.0,
+       str("only ", (body - dt_ch_w)/2, " mm of bar beside the channel"));
+assert(dt_g_w <= h - 1.0, "the dovetail groove reaches the knuckle arms");
+assert(abs(dt_len - (band_w - 0.2)) < 1e-9,
+       str("the pin is ", dt_len, " long for a ", band_w, " mm band — it should be 0.1 short each end"));
+assert(dt_floor_run >= 8, str("only ", dt_floor_run, " mm of floor joins the two halves of a station bar"));
 
 // A charm has a FLAT BOTTOM and it is wider than its bar, so it
 // rests on whatever the band's top surface is out to its own radius. That is
@@ -512,7 +519,7 @@ assert(charms == 0 || charm_reach/2 <= (pitch_min - body) + body/2,
        str("a ", charm_reach, " mm charm overhangs past the neighbouring bar's",
            " face at pitch_min — it would jam the joint"));
 
-// A pocket adds no height at all — it is a hole — so the stud sets it.
+// A station adds no height at all — it is a cut — so the stud sets it.
 top_z       = post_top + head_h;
 
 echo(str("cols=", cols, " rows=", rows,
@@ -529,9 +536,13 @@ echo(str("cols=", cols, " rows=", rows,
          "  knuckle underside=", knuck_slope, "deg",
          "  pin first layer=", pin_flat_w));
 if (charms > 0)
-    echo(str(charms, " H-pin pocket(s) in bar(s) ", charm_ix, " of ", cols,
-             " — ", hp_slot_x, " x ", 2*hp_out, " x ", hp_bar - hp_floor,
-             " deep, wall ", hp_wall_bar, " along the band, floor ", hp_floor,
+    echo(str(charms, " dovetail station(s) in bar(s) ", charm_ix, " of ", cols,
+             " — channel ", dt_ch_w, " x ", dt_ch_d, ", groove ", 2*dt_g_w,
+             " wide at its foot, ", dt_bar - dt_floor,
+             " deep, wall ", dt_wall_bar, "; leaf ", dt_leaf_l, " x ", 2*dt_leaf_w,
+             " x ", dt_floor, ", lip ", dt_lip_h, ", bent ", dt_preload, " at rest, ",
+             dt_ride, " going in (", 100*dt_strain, "%); floor joining the halves ",
+             dt_floor_run, " mm",
              charms < 2 ? ""
                  : str(", closest pair ", charm_sep * pitch, " mm apart")));
 // ------------------------------------------------------------------ modules
@@ -717,33 +728,40 @@ module clasp_keyhole() {
     }
 }
 
-// An H-pin station: the pocket, cut down from bar `col`'s top face, running
-// across the band.
-module charm_h_station(col) {
-    translate([col*pitch, band_cy, thick]) charm_h_pocket();
+// A station: the groove and the leaf's slots, cut from bar `col`, z = 0 at
+// its top face.
+module charm_station_cut(col) {
+    translate([col*pitch, band_cy, thick]) dt_bar_cut();
 }
 
-// The chamfer fill at a station (see `hp_fill_u`): a block the bar's full
+// ... and what goes back once it is cut: the lip on the leaf.
+module charm_station_add(col) {
+    translate([col*pitch, band_cy, thick]) dt_bar_add();
+}
+
+// The chamfer fill at a station (see `dt_fill_u`): a block the bar's full
 // `body` along the band, from below the chamfer's foot to the top face.
-module charm_h_seat(col) {
+module charm_seat(col) {
     translate([col*pitch, band_cy, thick - ch_rise - 0.1])
-        translate([-body/2, -hp_fill_u, 0]) cube([body, 2*hp_fill_u, ch_rise + 0.1]);
+        translate([-body/2, -dt_fill_u, 0]) cube([body, 2*dt_fill_u, ch_rise + 0.1]);
 }
 
 // With no charms the band is written out in full, NOT wrapped in the
 // difference() the pockets need: at `charms = 0` its export has to stay
 // byte-for-byte the file the printed bracelet was cut from.
 module bracelet() {
-    if (charms > 0)
+    if (charms > 0) {
         difference() {
             union() {
                 for (c = [0:cols-1]) bar(c);
-                for (c = charm_ix) charm_h_seat(c);
+                for (c = charm_ix) charm_seat(c);
                 clasp_stud();
                 clasp_keyhole();
             }
-            for (c = charm_ix) charm_h_station(c);
+            for (c = charm_ix) charm_station_cut(c);
         }
+        for (c = charm_ix) charm_station_add(c);
+    }
     else {
         for (c = [0:cols-1]) bar(c);
         clasp_stud();

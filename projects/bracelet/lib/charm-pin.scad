@@ -1,5 +1,12 @@
 // charm-pin — how a charm hangs on the bracelet: the H-PIN mount.
 //
+// SINCE 2026-09-30 THE PIN KEEPS ONLY THE H's UPPER HALF: its lower legs are
+// replaced by a dovetail that slides into the bar (lib/charm-dovetail.scad,
+// which includes this file). Everything here about the UPPER half — the
+// crossbar, the upper legs and hooks, and every charm's two holes — is still
+// live. The bar's pocket (`charm_h_pocket`), the lower hooks and their
+// asserts describe the H-pin as it was; the band no longer uses them.
+//
 // A flat H. Two upright LEGS joined by a CROSSBAR, a small HOOK on every leg.
 // The lower half pushes down into a pocket in a bar and its hooks snap under
 // shoulders at the foot of the pocket; the charm pushes down over the upper

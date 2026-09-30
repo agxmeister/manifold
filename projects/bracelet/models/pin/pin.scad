@@ -1,51 +1,48 @@
-// pin — the loose H-shaped pin that snaps a charm onto a bracelet.
+// pin — the dovetail H-pin that holds a charm on a bracelet.
 //
-// Two legs and a crossbar, a hook at every leg end. The lower half pushes
-// down into a pocket in a bracelet bar until the crossbar bottoms out and the
-// lower hooks snap under the pocket's shoulders; the charm then pushes down
-// over the upper half and the upper hooks snap into its holes. The crossbar
-// ends up sunk in the bar, the charm sits flat on the bar, and the pin is not
-// on show anywhere.
+// The H-pin's upper half — a crossbar and two legs with hooks pointing in —
+// on a DOVETAIL instead of the H's lower legs. The charm snaps down over the
+// legs exactly as it did onto the H-pin, into the same two holes. The
+// dovetail slides across the band into a groove in a bar and clicks.
 //
-// THE TWO HALVES ARE THE SAME LENGTH BUT NOT THE SAME. The half whose hooks
-// point OUTWARD goes into the bracelet; the half whose hooks point INWARD takes
-// the charm.
+// PUT THE CHARM ON FIRST, in your hand, then push pin and charm into the bar
+// from the band's edge until the pin clicks and sits flush. Once it is in,
+// the charm cannot come off: its legs have no room to let go. Push the pin
+// out with a toothpick from the other edge first.
 //
-// PRINT IT LYING FLAT, exactly as modelled. That is the whole trick of this
-// part: the H is a 2D outline extruded `hp_t` straight up, so its hooks are
-// just corners of the outline and there is nothing on it that overhangs. The
-// crossbar — the spring — flexes in the plane of the bed, along its perimeters.
+// THE PIN IS THE SAME BOTH WAYS ROUND: a pit and a lead chamfer under each
+// end of the dovetail, so it clicks whichever end goes in first.
 //
-// Both halves go in the same way: the legs TURN and the crossbar bends between
-// them. Into the bar, the upper legs splay out as the lower hooks go in; onto
-// the charm, the upper legs splay out again and the lower hooks back off their
-// shoulders a little, then everything springs home. Put the pin in the
-// bracelet first, then the charm on the pin.
+// PRINT IT ON ITS SIDE, exactly as this file lays it out: the H flat on the
+// bed as the H-pin printed, so its hooks are corners of an outline and the
+// crossbar — the spring — flexes along its perimeters. The dovetail lies
+// beside it on its foot's side; its flank leans out at 45 degrees, and the
+// neck bridges 0.45 mm to the crossbar. No support.
 //
-// All the geometry and every number live in lib/charm-pin.scad, beside the
-// pockets and holes they have to match.
+// All the geometry and every number live in lib/charm-dovetail.scad, and the
+// H's in lib/charm-pin.scad, beside the groove and holes they have to match.
 
 $fa = 2;
 $fs = 0.3;
 
-include <../../lib/charm-pin.scad>
+include <../../lib/charm-dovetail.scad>
 
 copies  = 1;      // how many to lay out; `-D copies=6` for a batch
-spacing = 2*(hp_uo + hp_hook_lo) + 3;   // centre to centre, side by side
+spacing = (hp_v_top - dt_bot) + 3;   // centre to centre, side by side
 
 assert(copies >= 1, "copies must be at least 1");
 
-echo(str("H-pin: ", 2*(hp_uo + hp_hook_lo), " x ", hp_v_top - hp_v_end, " x ", hp_t,
-         " mm, legs ", hp_uo - hp_ui_g, " wide, ", 2*hp_ui_g, " apart inside; ",
-         -hp_v_end, " mm into the bar, ", hp_v_top, " into the charm"));
-echo(str("hooks ", hp_hook_lo, " / ", hp_hook_up, " (", hp_defl_lo, " / ", hp_defl_up,
-         " past the wall), lead-in ", hp_lead,
-         " deg into the bar, ", hp_lead_up, " into the charm; catch ", hp_catch_lo, " deg in the bar, ",
-         hp_catch_up, " deg in the charm; levers ", hp_arm_lo, " / ", hp_arm_up,
-         "; crossbar ", hp_cb_h, " at ", 100*hp_strain_cb, "% strain going in, ", 100*hp_strain_up, "% per charm; lower hooks keep ",
-         hp_keep, " when the charm lets go"));
+echo(str("dovetail H-pin: ", dt_len, " x ", hp_v_top - dt_bot, " x ", hp_t,
+         " mm on its side; neck ", 2*dt_w_lo, " x ", dt_neck_y,
+         "; crossbar ", hp_cb_h, " at ", 100*dt_strain_up, "% per charm (x", dt_stiffen,
+         " the H-pin's grip); a leg's foot would swing to ", dt_leg_foot,
+         " to let a charm go, the channel stops it at ", dt_waist,
+         "; leaf bent ", dt_preload, " at rest and ", dt_ride, " going in (",
+         100*dt_strain, "%)"));
 
-module pin_printed() linear_extrude(hp_t) hp_pin_2d();
+// Laid on its side: the assembled x (along the band) becomes up, so the H's
+// face and the dovetail's foot both land on the bed.
+module pin_printed() translate([0, 0, hp_t/2]) rotate([0, -90, 0]) dt_pin();
 
 for (i = [0 : copies - 1])
     translate([i * spacing, 0, 0]) pin_printed();
