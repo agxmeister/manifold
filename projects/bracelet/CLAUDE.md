@@ -3,7 +3,66 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
-## The dovetail H-pin — 2026-09-30, UNPRINTED. The only mount
+## The dovetail H-pin — 2026-09-30, PRINTED WELL. The only mount
+
+**2026-10-01, SMALLER CHARM HOLES (unprinted).** The user: shrink the holes
+and keep the charm shapes. `hp_c_out` / `hp_c_in` are LEFT as they were
+(6.66 / 2.45), because the butterfly, heart, ladybug, rose and dolphin size
+themselves from them. New `hp_h_out` 5.25 / `hp_h_in` 2.7 in
+charm-pin.scad are used only by `hp_charm_hole_pts` and the gables. The
+dovetail lib asserts the pin fits them: leg room needed 5.19, hook tip 2.88
+− fit ≥ 2.7, lead-in under the roof ≥ `hp_gap`. Proof the shapes held: old
+export − new export is EMPTY for all five, except a 0-vol sliver at the
+chamber floor, and new − old is 52.03 mm³ each, all inside x ±1.9, y ±6.66,
+z 0..5.55. Harness: all five seated on the pin EMPTY; legs bent by their
+full swing (rotated about `dt_root_z`) with the heart half on, and seated,
+EMPTY; CONTROL bent 1.6× hits the outer wall (1.03); CONTROL lifted 0.2 →
+catch; CONTROL shifted 0.2 → a leg. Overhang counts and SUPPORT (0)
+unchanged on all five.
+
+**2026-10-01 (last), DEEP DOVETAIL (unprinted).** The user sketched deeper V
+notches in the pin's sides, for grip. `dt_foot_h` is now the parameter (0.5,
+the print strip) and `dt_w_lo` is derived. The waist went −1.75 → −1.6, the
+floor/leaf 1.0 → 0.8 (`dt_leaf_l` 6.5 → 5.7, so the click is ~0.8× as
+firm), and the pin's bottom is −3.25. Flank 1.15 at 45°, waist 1.2,
+`dt_grip` 0.6 → 1.0. The raised waist shortened the legs' lever to 3.36,
+so `dt_hook` 0.65 → 0.62 (0.47 overlap; the min assert went 0.5 → 0.45),
+at 5.0 %. The overhang check now flags the 45° flanks: the band 46 regions,
+6 of them SUPPORT on the groove's flank, and the pin one RAMP. At
+`--threshold 45.5` both are clean (the band back to 40). It is the 45°
+boundary only, the same ceiling as before, just taller. Harness as before,
+all pass (CONTROL x 0.25 → 5.0).
+
+**2026-10-01 (later), SPRING LEGS ON A BLOCK (unprinted).** The user, after
+the solid fill: "make H legs thinner, and hooks a bit shorter", plus the block
+the full pin length up to the crossbar's top (their sketch). I showed that
+legs rooted at the block's top (lever ~2.4) only stay under 5 % at 0.6 legs
+with a 0.3 overlap. The user chose a 0.5 SLOT either side of each leg down
+to `dt_root_z` (waist + 0.15, so every layer of the leg is in the
+full-thickness block). `dt_leg_t` 0.8, `dt_hook` 0.65 (0.5 over the
+shoulder; 0.7 gave 5.3 %), lever 3.51, `dt_leg_strain` 4.86 %, top swings
+0.83 (hole wall clear by 1.5). The leg's inner face and catch stay at
+`hp_ui_g` / `hp_v_uc` / `hp_catch_up`, so `charm_h_holes` still fits.
+`dt_block` + `dt_legs` replace `dt_fill` + `dt_pin_up` (`hp_pin_2d` is no
+longer used by the pin). Harness: heart seated empty; CONTROL lifted 0.2 →
+hooks catch (0.175); CONTROL shifted 0.4 → hits a leg; bar and sliding as
+before. Pin 1 shell, no overhang, 39.6 mm²; the thin-wall flags are the 0.8
+legs. Plain band byte-identical.
+
+**2026-10-01, SOLID FILL (superseded the same day).** The pin printed well. The user asked
+why a "small bridge" (the 0.8 mm neck) joined the crossbar to the dovetail.
+I explained the gap was the H's spring room. The user disagreed: "Charm sits
+on hooks, this gap is useless." So `dt_fill` now fills it solid, `hp_t` ×
+2·`hp_uo` under the H's whole bottom edge. The neck, the spring strain
+(`dt_strain_up`) and the in-bar lock (`dt_leg_foot`) are gone: the legs no
+longer turn, and a charm snaps on by the hooks' own give. The channel's
+floor dropped `dt_gv` below the waist (`dt_ch_fl` −1.90) so the fill keeps
+0.15 of room to sit low. That costs 0.15 of the flank: `dt_grip` 0.60 a
+side (was 0.75). Harness: pin UP ∩ bar a 0-vol sheet, low 0.14 a 0-vol
+sheet, CONTROL low 0.2 → 2.75, CONTROL up 0.05 → 0.92, heart seated empty,
+sliding seat sheets only. Pin 1 shell, no overhang, 40.8 mm². The plain band
+is byte-identical to 0d41592. What follows about the neck, the 5.5 % strain
+and the charm being locked in the bar describes the 0d41592 print.
 
 The pin's BOTTOM is a dovetail that slides across the band into a groove
 through a station bar and clicks (a lip on a spring leaf in the groove's

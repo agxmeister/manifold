@@ -245,11 +245,11 @@ holes and fits unchanged**. Only the band and the pin are new
 
 ### The dovetail H-pin
 
-The pin is two proven halves fused at a neck:
+The pin is two halves on one solid block:
 
-- its **top** is the H-pin's upper half, exactly: the crossbar and the two
-  legs with their hooks pointing in. The charm snaps down over the legs into
-  its two holes, as it always did, and the crossbar is still the spring;
+- its **top** is two legs with hooks pointing in, standing where the H-pin's
+  upper legs stood, so the charm snaps down over them into its two holes, as
+  it always did. The legs are the spring;
 - its **bottom** is a **dovetail**, 16 mm long, running **across** the band.
   It replaces the H's lower legs. It slides into a dovetail **groove** through
   a station bar, from the band's edge, and clicks.
@@ -259,9 +259,9 @@ The pin is two proven halves fused at a neck:
 
       charm  |   |  <- a leg         charm  |< >|     |< >|   upper legs
   -----------|   |------ bar top     -------|   |-----|   |-- bar top
-      bar    |___|  <- crossbar,            |===============|  crossbar
-              |_|      in the channel               ||         neck
-             /___\  <- dovetail     _______/________\________  dovetail
+      bar    |###|  <- block,              ####| |#####| |####  block, a slot
+             |###|     in the channel      ####|_|#####|_|####  beside each leg
+             /___\  <- dovetail     _______/_________________  dovetail
              |___|
           ==/\=====  lip on the leaf
 ```
@@ -270,26 +270,45 @@ The crossbar is sunk 0.3 mm under the bar top, as in the H-pin, in a shallow
 **channel** (3.8 × 1.75 mm) that runs across the bar top with the groove
 under it. The charm sits flat on the bar.
 
-**The click.** The groove's floor under the pin is a **spring leaf**, 6.5 × 2.9
-× 1 mm, cut free on three sides. A 0.6 mm **lip** on it drops into a **pit**
+**The block and the spring legs** (2026-10-01, unprinted). Under the legs
+the pin is one solid block, its full 16 mm length, from the dovetail up to
+0.3 mm under the bar top. The legs are the spring:
+- each leg is **0.8 mm** thick (the H-pin's were 1.6) and stands in a
+  **0.5 mm slot** either side, cut into the block down to 0.15 mm above the
+  dovetail's waist, so it bends from there, a 3.4 mm lever;
+- the hooks stand in **0.62 mm** (the H-pin's 1.0) and lap the charm's
+  shoulder by **0.47 mm**. A leg bends **5.0 %** as a charm goes on, in ABS;
+- the legs' inner faces and the hooks' catch angle are the H-pin's, so the
+  charm's shoulders meet them where they always did.
+
+**Smaller charm holes** (2026-10-01). The holes were sized for the H-pin's
+thick legs swinging on a bending crossbar. Each now runs 1.9 mm across the
+band instead of 3.3: its outer wall at 5.25 mm from the centre (6.66
+before), its chamber's inner wall at 2.7 (2.45). Their depth is unchanged.
+**Every charm keeps its shape exactly.** Only the holes changed, and each
+charm gained the same 52 mm³ of material, all of it inside the old holes.
+Charms printed with the old holes still take the new pin.
+
+The first version (0d41592, printed well) joined the dovetail to an H-pin
+crossbar by a 0.8 mm neck and let the crossbar bend. The block stands 0.15 mm
+clear of the channel's floor, so the pin can still sit a little lower if it
+prints fat.
+
+**A deep dovetail** (2026-10-01): its flanks run 1.15 mm at 45° from a
+0.5 mm straight foot to a **1.2 mm waist**, so the groove holds it **1.0 mm
+a side** (0.6 before). The room came from the leaf, 1.0 → 0.8 mm (and
+shorter, to click about as firmly), and from the waist rising 0.15 mm, which
+cost the hooks 0.03 mm.
+
+**The click.** The groove's floor under the pin is a **spring leaf**, 5.7 × 2.9
+× 0.8 mm, cut free on three sides. A 0.6 mm **lip** on it drops into a **pit**
 under the pin. Going in, the lip rides the pin's underside for the last 3 mm,
-bending the leaf 0.45 mm (2.2 % strain). **The leaf's tip dips about 0.6 mm
+bending the leaf 0.45 mm (2.3 % strain). **The leaf's tip dips about 0.6 mm
 below the band's underside as it bends.** Push the pin in with the band in
 your hand, not flat on a table. At rest the leaf is still bent 0.1 mm, which
 presses the pin **up** against the groove's flanks, so the pin does not
 rattle in the bar. On the wrist the skin holds the leaf up, so the pin cannot
 be pushed out while the bracelet is worn.
-
-**In the bar, the charm cannot come off.** A charm lets go by turning the
-pin's legs about the crossbar, and that swings the legs' feet down. In the
-bar the channel's floor stops them at about 45 % of the turn, while the
-hooks still overlap their shoulders by about 0.5 mm. So put the charm on
-the pin **before** the pin goes into the bar, and take it off after.
-
-**The crossbar is a little stiffer than the H-pin's.** The neck holds the
-middle 0.8 mm of it straight, so the rest bends harder: **5.5 %** strain per
-charm (the H-pin's was 4.9 %), and the charm grips about 13 % harder. That
-is why the pin prints in ABS.
 
 The pin is **the same both ways round**: a pit and a lead chamfer under each
 end, so it clicks whichever end goes in first. It sits 0.1 mm inside both
@@ -302,9 +321,9 @@ dovetail's, channel's and leaf's numbers live in `lib/charm-dovetail.scad`
 
 ### Putting a charm on, and taking it off
 
-1. **Snap the charm onto the pin in your hand**: press it straight down over
-   the two legs until its underside meets the crossbar's level, as with the
-   H-pin.
+1. **Snap the charm onto the pin**, in your hand or with the pin already in
+   the bar: press it straight down over the two legs until it sits flat, as
+   with the H-pin.
 2. **Hold the band in your hand, and push the pin, with the charm on it,
    into a station's groove** from either edge of the band, until it clicks
    and sits flush with both edges.
@@ -316,8 +335,8 @@ dovetail's, channel's and leaf's numbers live in `lib/charm-dovetail.scad`
 ### What it costs the band
 
 - **The channel and groove split a station bar in two along its length.** The
-  halves are joined only by the groove's floor beyond the leaf: 9.2 mm of it,
-  1.0 × 3.9 mm in section, about 9 mm² of PLA printed along its layers. It
+  halves are joined only by the groove's floor beyond the leaf: 10 mm of it,
+  0.8 × 3.9 mm in section, about 8 mm² of PLA printed along its layers. It
   carries nothing but the band's tension.
 - The walls are **1.1 mm** beside the channel and **1.05 mm** beside the
   groove's foot.
@@ -739,16 +758,15 @@ python3 tools/multicolor-3mf.py /tmp/ladybug.3mf \
 - The stations change nothing about how the band prints — same first layer,
   same bridges, same no-brim rule. The leaf's slots are 0.5 mm, wide enough to
   stay open on the first layer.
-- **Print the pin on its side, exactly as modelled**: the H lies flat on the
-  bed as the H-pin did, so its hooks are corners of an outline and the
-  crossbar flexes along its perimeters. The dovetail lies beside it on its
-  foot's side, its flank leaning out at 45°; the neck bridges 0.45 mm to the
-  crossbar. No supports, no brim. `-D copies=6` lays out a batch, which
+- **Print the pin on its side, exactly as modelled**: the legs and block lie
+  flat on the bed as the H-pin did, so the hooks are corners of an outline
+  and the legs flex in the bed plane. The dovetail's foot lies on the bed
+  beside the block, its flank leaning out at 45°. The slots beside the legs
+  are 0.5 mm, wide enough not to weld. No supports, no brim. `-D copies=6` lays out a batch, which
   exports as that many separate shells.
-- **Print the pins in ABS**, with **three perimeters**. The crossbar is 1.0 mm
-  and bends 5.5 % per charm, which PLA won't survive; the neck is 0.8 mm
-  and carries every pull on the charm.
-- The band stays **PLA**: its leaf bends 2.2 %, and only while a pin goes in.
+- **Print the pins in ABS**. The legs are 0.8 mm, two perimeters each, and
+  bend 5.0 % as a charm goes on, which PLA won't survive.
+- The band stays **PLA**: its leaf bends 2.3 %, and only while a pin goes in.
 - **Print the butterfly bottom down, exactly as modelled** — no rotation, no
   supports, no brim. It stands on the face that sits on the bracelet, 146 mm²
   of it.
@@ -761,10 +779,12 @@ python3 tools/multicolor-3mf.py /tmp/ladybug.3mf \
 - **Print the rose the same way**, bottom down, no supports, no brim, 263
   mm² on the bed. Its petals are 0.9 mm, two perimeters. Leave thin-wall
   handling on and do not print it with a single fat perimeter.
-- The charm's fit on the pin is the H-pin's, proven: 0.15 mm round the legs
-  in every slot, 0.15 mm of play over each hook. The dovetail's fit is **not
+- The charm's fit on the pin: 0.15 mm round the legs' inner faces and of
+  play over each hook, as with the H-pin. Outside each leg the hole leaves
+  0.95 mm, room for the leg to swing out 0.83 mm as a charm goes on. The dovetail's fit is **not
   proven yet**: the leaf holds the pin up against the groove's flanks, with
-  0.2 mm beside its foot and 0.15 mm round the crossbar in the channel.
+  0.2 mm beside its foot, 0.15 mm round the crossbar in the channel and
+  under the block.
 - To assemble and remove, see *Putting a charm on, and taking it off*, above.
 
 ### The ladybug in two colours

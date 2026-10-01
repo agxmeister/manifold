@@ -429,19 +429,30 @@ module charm_h_pocket() hp_stand(hp_slot_x) union() {
 // stops at flat eaves, and `charm_h_holes` puts a 45-degree gable on them.
 function hp_c_sh(u) = hp_v_uc + (hp_ui_g - u) * hp_cr / hp_hook_up - hp_vfit;
 function hp_c_rf(u) = hp_roof - (hp_ui_g - u) / tan(hp_roof_lead);
+// THE HOLES ARE SMALLER THAN `hp_c_out` / `hp_c_in` SAY (2026-10-01). Those
+// two were sized for the H-pin's 1.6 mm legs swinging on a bending crossbar,
+// and several charms build their own shapes from them, so they stay. The
+// holes themselves are cut to `hp_h_out` / `hp_h_in`, sized for the
+// dovetail pin's 0.8 mm spring legs and 0.62 mm hooks: lib/charm-dovetail.scad
+// asserts that pin fits them. Old charms, with the big holes, still take the
+// new pin.
+hp_h_out  = 5.25;   // a hole's outer wall (`hp_c_out` 6.66)
+hp_h_in   = 2.7;    // a chamber's inner wall (`hp_c_in` 2.45)
+assert(hp_h_out <= hp_c_out && hp_h_in >= hp_c_in,
+       "the holes grew past what the charms were shaped around");
 function hp_charm_hole_pts() = [
     [hp_ui_g - hp_fit, -1],
-    [hp_c_out,       -1],
-    [hp_c_out,       hp_roof],
+    [hp_h_out,       -1],
+    [hp_h_out,       hp_roof],
     [hp_ui_g - hp_fit, hp_roof],
     [hp_ui_g - hp_fit, hp_c_rf(hp_ui_g - hp_fit)],
-    [hp_c_in,        hp_c_rf(hp_c_in)],
-    [hp_c_in,        hp_c_sh(hp_c_in)],
+    [hp_h_in,        hp_c_rf(hp_h_in)],
+    [hp_h_in,        hp_c_sh(hp_h_in)],
     [hp_ui_g - hp_fit, hp_c_sh(hp_ui_g - hp_fit)],
 ];
 assert(hp_c_rf(hp_ui_g - hp_fit) - (hp_v_ut + hp_tip_up + (hp_hook_up - hp_fit) * hp_lr_up / hp_hook_up)
        >= hp_gap, "the charm's chamber roof comes down onto the hook's lead-in");
-assert(hp_c_rf(hp_c_in) - hp_c_sh(hp_c_in) >= 0.2,
+assert(hp_c_rf(hp_h_in) - hp_c_sh(hp_h_in) >= 0.2,
        "the charm's chamber pinches shut at its inner wall");
 
 // The two holes, cut UP from z = 0 (the charm's seat face).
@@ -452,9 +463,9 @@ module charm_h_holes() {
     }
     // the gables: 45-degree roofs over each leg's end, running along u
     for (s = [-1, 1])
-        translate([0, s*(hp_ui_g - hp_fit + hp_c_out)/2, 0])
+        translate([0, s*(hp_ui_g - hp_fit + hp_h_out)/2, 0])
             rotate([90, 0, 0])
-                linear_extrude(hp_c_out - (hp_ui_g - hp_fit), center = true)
+                linear_extrude(hp_h_out - (hp_ui_g - hp_fit), center = true)
                     // walls carried a millimetre down into the hole, so the
                     // gable meets them square instead of leaving a ledge
                     polygon([[-hp_slot_x/2, hp_roof - 1], [hp_slot_x/2, hp_roof - 1],
