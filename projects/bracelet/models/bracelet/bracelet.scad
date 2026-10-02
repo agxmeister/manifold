@@ -476,8 +476,10 @@ assert(charms == 0 || (charm_ix[0] >= 1 && charm_ix[charms-1] <= cols - 2),
 //
 // THE GROOVE SPLITS THE BAR IN TWO along its length, joined only by the
 // floor under the groove beyond the leaf (`dt_floor` thick, `2*dt_g_w`
-// wide). The band's pull crosses a station there. It is ~9 mm^2 of PLA
-// printed along its layers, and it carries nothing but the band's tension.
+// wide). The band's pull crosses a station there. Since 2026-10-02 the
+// floor is 1.75 thick (`dt_floor`), not 0.8: ~6.8 mm^2 in section, and
+// 1.75^3 / 0.8^3 ~ 10x as stiff against the bar folding along the groove,
+// which is what bent the bars with a pin in.
 dt_wall_bar = h - dt_g_w;                               // 1.00
 dt_floor_run = (band_w/2 - dt_root) + (dt_tip - dt_slot + band_w/2);
 // At a station the bar's top chamfer is FILLED IN, so the walls beside the
@@ -540,7 +542,7 @@ if (charms > 0)
              " — channel ", dt_ch_w, " x ", dt_ch_d, ", groove ", 2*dt_g_w,
              " wide at its foot, ", dt_bar - dt_floor,
              " deep, wall ", dt_wall_bar, "; leaf ", dt_leaf_l, " x ", 2*dt_leaf_w,
-             " x ", dt_floor, ", lip ", dt_lip_h, ", bent ", dt_preload, " at rest, ",
+             " x ", dt_leaf_t, " under a ", dt_floor, " floor, lip ", dt_lip_h, ", bent ", dt_preload, " at rest, ",
              dt_ride, " going in (", 100*dt_strain, "%); floor joining the halves ",
              dt_floor_run, " mm",
              charms < 2 ? ""

@@ -436,8 +436,10 @@ function hp_c_rf(u) = hp_roof - (hp_ui_g - u) / tan(hp_roof_lead);
 // dovetail pin's 0.8 mm spring legs and 0.62 mm hooks: lib/charm-dovetail.scad
 // asserts that pin fits them. Old charms, with the big holes, still take the
 // new pin.
-hp_h_out  = 5.25;   // a hole's outer wall (`hp_c_out` 6.66)
-hp_h_in   = 2.7;    // a chamber's inner wall (`hp_c_in` 2.45)
+hp_h_out  = 5.7;    // a hole's outer wall (`hp_c_out` 6.66). 5.25 until
+                    //   2026-10-02, when the legs thickened to 1.1
+hp_h_in   = 2.55;   // a chamber's inner wall (`hp_c_in` 2.45). 2.7 until
+                    //   2026-10-02, when the hooks grew to 0.8
 assert(hp_h_out <= hp_c_out && hp_h_in >= hp_c_in,
        "the holes grew past what the charms were shaped around");
 function hp_charm_hole_pts() = [

@@ -5,6 +5,60 @@ applies; the rules here are bracelet-only and win where they add detail.
 
 ## The dovetail H-pin — 2026-09-30, PRINTED WELL. The only mount
 
+**2026-10-02 (last), SHALLOW DOVETAIL, RECESSED LEAF (unprinted).** The user:
+reduce the pin's base height, "dovetail should be shallow. Otherwise bracelet
+links become a bit bended when the pin is in place." The 3.4 deep groove left
+0.8 of floor joining the bar's halves. Now `dt_waist` −0.8 (block 0.5),
+`dt_floor` 1.75 (`dt_fl_top` −2.45), pin bottom −2.3, flank 1.0, waist 1.5,
+`dt_grip` 0.85. The floor no longer is the leaf: `dt_leaf_t` 1.0 at the
+bottom of a `dt_pocket` 0.75 pocket, and the lip rises on a post to the
+floor's level. `dt_leaf_l` 6.45 for 2.5 %. I first recommended a spring
+TONGUE in the pin's foot and had to retract it: a full-width tongue rising
+hits the groove's undercut, and a narrow one is cantilevered over air when
+the pin prints on its side. Pin 5.75 × 16 × 3.5, 1 shell; thin flags 0.37
+(the end chamfer's wedge), 0.51 (the 0.5 block over the narrower waist),
+0.6 (the foot by the pits). Band 40 regions, plain byte-identical. Harness
+all pass (UP 0-vol; CONTROL up 1.31, x 3.63; lip preload 0.10, rides to
+2.4; five charms seated EMPTY; lift → catch).
+
+**2026-10-02 (later), SLOTS REMOVED (unprinted).** The print of the slotted
+pin: "These grooves make legs very fragile. Please, remove them." Removed:
+the legs grow straight out of the block, solid, and nothing on the pin flexes
+(`dt_leg_slots`, `dt_spine`, `dt_root_z`, `dt_leg_strain` and the swing
+assert are gone). Legs 1.0, hooks 0.75 (0.6 over the shoulder); the click,
+dovetail and holes are unchanged. I told the user once that a charm now has
+to give the whole 0.6 a side itself; if one will not snap on, shorten
+`dt_hook`. Pin 1 shell, 41 mm²; the thin flags are the end chamfer's wedge
+(0.44) and the foot beside the pits (0.6). Harness: all five charms seated
+EMPTY, CONTROL lift → catch, bar and click as before.
+
+**2026-10-02, BIGGER HOOKS, STRONGER LEGS, A FIRMER CLICK (superseded: slots removed).**
+The 0b49186 print: "hooks are very small", "H legs are very weak", and the
+pin slid out sideways (the user's answer to which way it came loose). I
+offered the bending crossbar back for big hooks with strong legs. The user
+chose to KEEP SPRING LEGS. So the lever got longer instead: the legs' slots
+now run down through the dovetail to `dt_spine` (0.4) over its straight
+foot, `dt_root_z` −2.35, lever 4.28. `dt_leg_t` 0.8 → 1.0, `dt_hook`
+0.62 → 0.75 (0.6 over the shoulder, asserted ≥ 0.6), 4.9 %.
+- **Spine:** slotting down to the foot (my first try) left the five segments
+  on a 0.5 strip that would snap and bend instead of the legs. Hence
+  `dt_spine` and `dt_spine_a` ≥ 2.8 (2.99).
+- **Click:** `dt_click_a` 30° from vertical for the lip and the pit
+  (~2× the release push), pit 0.35 → 0.45, lip 0.6 → 0.7, `dt_lead` 0.4 →
+  0.7 (it must out-reach `dt_ride` 0.55). Lip and pit moved to y ±6 to clear
+  the legs' slots. `dt_leaf_l` 5.85 keeps the leaf at 2.49 %. The pit and
+  lip are only `dt_lip_w` 1.1 wide: a full-width pit undercut the foot's
+  edges to 0.2.
+- **Holes:** `hp_h_out` 5.25 → 5.7 and `hp_h_in` 2.7 → 2.55, still inside
+  `hp_c_out` / `hp_c_in`, so the charm shapes are unchanged (old − new EMPTY
+  for all five; new − old 34.96 mm³ each).
+- **Thin-wall flags accepted:** 0.44 (the end chamfer's wedge), 0.54 (the
+  pit's top corner against the flank), 0.6 (the foot's edges beside the pit).
+- **Harness, all pass:** pin ∩ bar UP 0-vol, CONTROL up 1.44; lip seated
+  0.09, riding 0.5–1.0 from home, empty from 2.4; all five charms seated
+  empty; bent legs with a charm half on and seated empty, CONTROL 1.5× hits;
+  CONTROL lifted 0.2 → catch 0.21.
+
 **2026-10-01, SMALLER CHARM HOLES (unprinted).** The user: shrink the holes
 and keep the charm shapes. `hp_c_out` / `hp_c_in` are LEFT as they were
 (6.66 / 2.45), because the butterfly, heart, ladybug, rose and dolphin size
