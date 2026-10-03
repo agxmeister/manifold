@@ -44,7 +44,8 @@ the collar is that partner.
 straight down: the round rim flexes into a slight rounded triangle to get past
 them, then clicks back under. The skirt stands 1.3 mm clear of the rim so the
 rim has room to bulge between the lugs. That missing room is why the first
-version was too stiff to push on. To take it off, lift the tab.
+version was too stiff to push on. To take it off, lift the tab. It sits right outside one lug, so that lug
+comes off first.
 
 **Screw cap + collar.**
 

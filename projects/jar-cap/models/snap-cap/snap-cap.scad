@@ -62,18 +62,18 @@ module lug() {
                                    [for (k = [0:m-1]) n*m + k]]));
 }
 
-// Flat tongue level with the ceiling, so it prints on the bed. Sits between
-// two lugs, where the flange flexes most easily.
+// Flat tongue level with the ceiling, so it prints on the bed. Sits right
+// outside a lug, so pulling it lifts that lug straight off the flange. The
+// first print had it between two lugs, across from the third: hard to open.
 module tab() {
-    rotate(180 / lugs)
-        translate([skirt_ri, -tab_w / 2, 0])
-            hull() {
-                cube([1, tab_w, top_t]);
-                translate([wall + tab_l - tab_w / 4, tab_w / 4, 0])
-                    cylinder(r = tab_w / 4, h = top_t, $fn = 48);
-                translate([wall + tab_l - tab_w / 4, 3 * tab_w / 4, 0])
-                    cylinder(r = tab_w / 4, h = top_t, $fn = 48);
-            }
+    translate([skirt_ri, -tab_w / 2, 0])
+        hull() {
+            cube([1, tab_w, top_t]);
+            translate([wall + tab_l - tab_w / 4, tab_w / 4, 0])
+                cylinder(r = tab_w / 4, h = top_t, $fn = 48);
+            translate([wall + tab_l - tab_w / 4, 3 * tab_w / 4, 0])
+                cylinder(r = tab_w / 4, h = top_t, $fn = 48);
+        }
 }
 
 module snap_cap() {
