@@ -1,7 +1,7 @@
 // collar — the jar's missing thread.
 //
 // A ring that slides up the jar from its narrow bottom and stops under the
-// flange, gripping the straight top of the wall lightly so it stays there.
+// flange. It sits loose on the wall; the screw-cap pulls it up and holds it.
 // Its top face carries the flange from below and its outside is the external
 // thread the screw-cap runs on; a ribbed band below the thread is where you
 // hold it while screwing the cap on.
@@ -9,7 +9,8 @@
 include <../../lib/common.scad>
 
 /* [Fit] */
-bore_fit = -0.2;    // bore minus jar wall diameter: negative grips the wall
+bore_fit = 1.5;     // bore minus jar wall diameter. -0.2 (a light grip) jammed
+                    //   just short of the flange on the 2026-10-04 print
 
 /* [Body] */
 grip_h  = 6;        // ribbed band below the thread

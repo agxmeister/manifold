@@ -50,15 +50,16 @@ comes off first.
 **Screw cap + collar.**
 
 1. Slide the **collar** onto the jar from the **bottom**, threaded end first,
-   and push it all the way up under the flange. Its bore grips the straight top
-   of the jar wall lightly, so it stays there. It's meant to live on the jar.
+   and push it all the way up under the flange. It sits loose on the wall, so
+   hold it up there while you start the cap.
 2. Hold the collar by its ribbed band and screw the **cap** on clockwise. Two
    turns pull the collar up under the flange and the cap's seal ring down on
    top of it, clamping the flange between them. There is no hard stop: the
    squeezed flange is the stop, so don't overtighten.
 
-The collar only works if the jar has nothing wider than 85.2 mm below the
-rim, so it can slide up from the bottom. Check that before printing it.
+The collar's bore is 86.9 mm, so the jar can't be wider than that anywhere
+below the rim. The first collar's 85.2 mm bore jammed just short of the
+flange.
 
 ## Parameters
 
@@ -76,13 +77,12 @@ model's own fit is at the top of its file.
 | `grip`                   | snap-cap    | 0.6     | how far the lugs reach under the flange (mm)    |
 | `skirt_gap`              | snap-cap    | 1.3     | room for the rim to flex between lugs (mm)      |
 | `snap_gap`               | snap-cap    | 0.4     | axial room for the flange under the lugs (mm)   |
-| `bore_fit`               | collar      | -0.2    | bore minus jar wall diameter; negative grips    |
+| `bore_fit`               | collar      | 1.5     | bore minus jar wall diameter (mm)               |
 
 **Snap cap too hard to push on:** raise `snap_gap` (0.6), or lower `grip`
 (0.4). **Rattles once on:** lower `snap_gap` (0.2). **Pops off too
-easily:** raise `grip` (0.8). **Collar slides down the jar:** make
-`bore_fit` more negative (-0.4). **Collar won't go up the jar:** make it
-less negative (0). **Thread too tight or too loose:** adjust `thread_slop`.
+easily:** raise `grip` (0.8). **Collar won't go up the jar:** raise
+`bore_fit` (2.0). **Collar too sloppy:** lower it (1.0). **Thread too tight or too loose:** adjust `thread_slop`.
 
 ## Printing
 
