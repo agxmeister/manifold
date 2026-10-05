@@ -346,6 +346,55 @@ dovetail's, channel's and leaf's numbers live in `lib/charm-dovetail.scad`
   layer, same no-brim rule.
 - The plain band (`charms = 0`) is **byte for byte** unchanged.
 
+### The cone pin — a second mount, on trial
+
+A second mount, **on trial** beside the dovetail H-pin: `mount = "cone"` in
+`bracelet.scad` and in a charm picks it. So far only the **heart** has a cone
+socket. Reworked after the first print (2026-10-04), and the reworked
+version **printed well** (2026-10-05).
+
+- **The pin goes in from underneath.** Its foot is a round **cone** that seats
+  in a countersink in the bar's underside, flush with the skin side. Its
+  shaft runs up through a plain hole and carries an **M5 thread** above the
+  bar.
+- **The charm screws down onto it** until it clamps the bar between itself
+  and the cone. Because the cone is round, the charm can face any way. To turn
+  it, loosen it, turn it and tighten it again.
+- **The bar has no thread.** It has a hole and a countersink, 1.1 mm off the
+  bar's centre, towards the side whose gap is **filled**. A bar is only 6 mm
+  along the band. On one side, the knuckles beside the gap between the
+  knuckle clusters are that bar's own fork lugs, so that gap is filled
+  completely: one wide lug with the lugs' own shape, out to their ends. It
+  swings exactly as they do, so the band bends exactly as before. The gap on
+  the other side is flanked by the neighbour's knuckles and stays open.
+
+What the first print changed:
+- **The ball and click fingers are gone.** They added no hold. The thread is
+  longer instead: 5 mm in the charm, about 2 turns (was 1.3).
+- **The 15° position ridges are gone**, from the band and from the charm.
+  They were too small to print.
+- **The cone is solid.** The slot that split it into a spring is gone. It
+  keeps only the flat it prints on.
+- **The pin is thicker:** M5 instead of M3, and the cone is 6.7 mm across
+  instead of 4.5.
+- **The cone is long.** It tapers all the way from the foot to where the
+  thread starts, about 13° from the axis, so it bears on the bar over 3 mm
+  instead of 1. A steep wedge pushes the bar's walls apart hard, so screw a
+  charm down firmly, not with force.
+
+**Putting a charm on:**
+
+1. Push the pin up into the bar from underneath and keep a finger on it.
+2. Screw the charm down onto it until it is tight on the bar.
+3. To take it off, unscrew it. The pin drops out of the bottom.
+
+**What it costs:**
+
+- The heart for this mount is **9.2 mm tall instead of 8.0**. The socket is
+  5.5 mm deep with a coned end, plus a millimetre of heart over it.
+- Same 11 shells, same 40 hinge bridges as the plain band. The
+  countersink is a 13° ceiling, so it adds no overhang.
+
 ### What came before
 
 A ball pin fused to the bar and a loose double-ended screw both printed and
@@ -587,9 +636,12 @@ projects/bracelet/
 │                                         #   leaf in the bar (includes charm-pin)
 ├── lib/charm-pin.scad                    # the H's upper half and every charm's two
 │                                         #   holes
+├── lib/charm-cone.scad                   # the cone pin: its thread, the bar's hole,
+│                                         #   countersink and boss, a charm's socket
 └── models/
     ├── bracelet/bracelet.scad            # the whole bracelet — one printed object
     ├── pin/pin.scad                      # the dovetail H-pin
+    ├── cone-pin/cone-pin.scad            # the cone pin (on trial)
     ├── butterfly-charm/butterfly-charm.scad  # a charm that snaps onto it
     ├── ladybug-charm/ladybug-charm.scad      # another, in two colours
     ├── heart-charm/heart-charm.scad          # a heart, turnable with `angle`
@@ -607,9 +659,11 @@ printed in place.
 |---|---|---|---|
 | `bracelet` | `bracelet` | 151.3 × 16.2 × 4.7 mm | all 11 bars' own flat feet |
 | `pin` | `pin` | 6.5 × 16.0 × 3.5 mm, on its side | its H's face and the dovetail's foot, 36 mm² |
+| `cone-pin` | `cone-pin` | 6.7 × 9.1 × 5.1 mm, lying down | its flat, 35 mm² |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 18.6 × 7.0 mm | its own bottom, 146 mm² in one piece |
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 18.3 × 7.8 mm | its own bottom and legs, 197 mm² in one piece |
 | `heart-charm` | `heart-charm` | 23.0 × 19.0 × 8.0 mm at 0° | its own flat bottom, 307 mm² in one piece |
+| `heart-charm` | `heart-charm-cone` | 23.0 × 19.4 × 9.2 mm | its own flat bottom, 306 mm² in one piece |
 | `rose-charm` | `rose-charm` | 22.1 × 22.4 × 10.5 mm | its own flat bottom, 263 mm² in one piece |
 | `dolphin-charm` | `dolphin-charm` | 29.8 × 52.5 × 13.5 mm | its own flat bottom, 481 mm² in 4 pieces |
 
@@ -696,6 +750,16 @@ openscad -D charms=3 \
 openscad -D copies=6 \
          -o projects/bracelet/exports/pin-pin.stl \
          projects/bracelet/models/pin/pin.scad
+# the cone pin mount, on trial: a band cut for it, the pin, a heart for it
+openscad -D charms=3 -D 'mount="cone"' \
+         -o projects/bracelet/exports/bracelet-bracelet-c3-cone.stl \
+         projects/bracelet/models/bracelet/bracelet.scad
+openscad -D copies=6 \
+         -o projects/bracelet/exports/cone-pin-cone-pin.stl \
+         projects/bracelet/models/cone-pin/cone-pin.scad
+openscad -D 'mount="cone"' \
+         -o projects/bracelet/exports/heart-charm-heart-charm-cone.stl \
+         projects/bracelet/models/heart-charm/heart-charm.scad
 openscad -o projects/bracelet/exports/butterfly-charm-butterfly-charm.stl \
          projects/bracelet/models/butterfly-charm/butterfly-charm.scad
 openscad -o projects/bracelet/exports/ladybug-charm-ladybug-charm.stl \
@@ -785,6 +849,17 @@ python3 tools/multicolor-3mf.py /tmp/ladybug.3mf \
   0.2 mm beside its foot, 0.15 mm round the crossbar in the channel and
   under the block.
 - To assemble and remove, see *Putting a charm on, and taking it off*, above.
+
+### The cone pin
+
+- **Print the cone pin lying down, exactly as modelled, in ABS.** It lies on
+  a flat along its whole length. No supports, no brim.
+- The **cone band** prints like the plain band, with the same no-brim rule.
+  The countersinks open on the bed side and close in at 13° from vertical.
+- **The cone heart prints bottom down**, like every charm. Its thread opens on
+  the bed, and the end of the bore is a 45° cone.
+- **Printed and confirmed** on 2026-10-05. The thread is the M4 screw's
+  printed tooth and fit (0.15 mm), at M5.
 
 ### The ladybug in two colours
 

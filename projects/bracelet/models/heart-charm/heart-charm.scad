@@ -1,4 +1,6 @@
-// heart-charm — a puffy 3D heart, and a charm for the H-PIN mount.
+// heart-charm — a puffy 3D heart, and a charm for the H-PIN mount. With
+// `mount = "cone"` it is cut for the cone pin instead (lib/charm-cone.scad),
+// and stands 9.2 tall to cover that socket.
 //
 // It snaps onto the upper half of an H-shaped pin (models/pin) whose lower
 // half is already snapped into a pocket in a bracelet bar — exactly like the
@@ -47,8 +49,14 @@ $fa = 2;
 $fs = 0.3;
 
 include <../../lib/charm-pin.scad>
+include <../../lib/charm-cone.scad>
 
 angle    = 0;               // the heart's turn in plan, degrees anticlockwise
+mount    = "h";             // "h": the two holes of the dovetail H-pin;
+                            //   "cone": the cone pin's socket (lib/charm-cone),
+                            //   on trial — an M5 thread with a coned end
+assert(mount == "h" || mount == "cone",
+       str("unknown mount \"", mount, "\" — \"h\" or \"cone\""));
 
 // ------------------------------------------------------------------ the heart
 // The outline, in the heart's own frame: the classic heart curve
@@ -65,7 +73,10 @@ notch_up = 5;               // lifts the top of the heart, the notch most: 1.5 m
                             //   cannot live under. A narrow lift raised a bump
                             //   in the notch instead; this one is cos(t)^6, as
                             //   broad as the lobes, so the top stays two curves
-height   = 8.0;             // the pillow's crown
+height   = mount == "cone" ? 9.2 : 8.0;
+                            // the pillow's crown. The cone socket stands
+                            //   `cn_need` = 8.75 tall over the axis (thread,
+                            //   its coned end, roof), so that heart is puffier
 prof_p   = 4.0;             // its profile: 2 = elliptical, more = fuller
                             //   shoulders before it rounds down to the bed
 n_t      = 240;             // stations round the outline
@@ -130,6 +141,16 @@ assert(shine_gap >= hp_wall, str("only ", shine_gap, " mm between the shine's ar
 assert(shine_flare + (90 - shine_slope) >= 75,
        "the shine's downhill lip comes out sharper than 75 degrees");
 
+// The socket's roof must stay under the heart with `cn_roof` over it: check
+// the surface over the bore's edge too, where the coned end is lowest but
+// the surface has fallen furthest.
+roof_min = min([for (t = ts) let(r = norm(edge(t)))
+                       surf_z(cn_hole_maj/2 / r) - cn_bore]);
+assert(mount != "cone" || height - cn_apex >= cn_roof,
+       str("only ", height - cn_apex, " mm of heart over the socket's roof"));
+assert(mount != "cone" || roof_min >= cn_roof,
+       str("only ", roof_min, " mm of heart over the chamber's rim"));
+
 echo(str("heart: ", width, " x ", length, " x ", height, " mm, turned ", angle,
          " deg; notch at ", notch_y, ", point at ", tip_y));
 
@@ -179,7 +200,7 @@ module shine() intersection() {
 
 module heart_charm() difference() {
     rotate(angle) difference() { heart(); shine(); }
-    charm_h_holes();
+    if (mount == "cone") cn_charm_cut(); else charm_h_holes();
 }
 
 heart_charm();

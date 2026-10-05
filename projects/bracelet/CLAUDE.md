@@ -3,7 +3,108 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
-## The dovetail H-pin — 2026-09-30, PRINTED WELL. The only mount
+## The cone pin — 2026-10-04, reworked after its first print; PRINTED GOOD 2026-10-05. ALONGSIDE the dovetail
+
+The user's design: a pin with a CONE at its foot, inserted from under the
+band into a countersink in a station bar, and an M5 THREAD on top that the
+charm screws onto, clamping the bar. It stays **alongside** the dovetail
+H-pin "for a while". `mount = "cone"` in `bracelet.scad` and in
+`heart-charm.scad` (the only charm converted; 9.2 tall for it).
+`lib/charm-cone.scad` is `cn_*`, `models/cone-pin`. Exports:
+`bracelet-bracelet-c3-cone`, `cone-pin-cone-pin`,
+`heart-charm-heart-charm-cone`.
+
+**The first print (M3, split cone, ball click, 15° ridges) and the user's
+verdict, all done:**
+- The BALL + click fingers "do not add any fixation". Removed; thread
+  3.5 → 5.0 in the charm (1.26 → 1.91 turns).
+- The 15° RIDGES "were not printed in the bracelet - too small" (0.3 tall,
+  ~0.7 wide). Removed, along with the charm's groove ring. There is no angle
+  fixation now; the charm holds by the clamp.
+- The SLOT splitting the cone "is not needed". It is a true cone now, with
+  only the bed flat (the top flat was relief for the split halves, so it is
+  gone too).
+- "Make the pin thicker", with a screenshot circling a ~6.4 mm hole that
+  reached into the gap between knuckle clusters, offset ~1 mm toward it.
+
+**Where the room comes from. Read this before moving anything.** The bar is
+6.0 along the band. On its **+x side** (the fork side), the knuckles beside
+the gap between the two clusters are the bar's OWN fork lugs (y ±2.1 ..
+±3.5 about `band_cy`). That gap is FILLED COMPLETELY: `charm_seat` adds
+`xz_extrude(band_cy ± cn_boss_y 2.6) knuckle_2d(pitch/2, +1, h − 1)`, one
+wide lug with the lugs' exact profile, out to their ends, fused 0.5 into
+each. It stays inside the lugs' swing envelope, so the joint swings exactly
+as a plain one. The pin's axis is **`cn_off` 1.1 toward +x**. Asserts:
+−x wall `h − (cn_cs_r − cn_off)` 0.75; +x chord 2.76 ≤ lugs' far faces − 0.7.
+
+**A cone station keeps the bar's top bevels** (user, 2026-10-04): the chamfer
+fill in `charm_seat` is dovetail-only now. The hole stays ≥ 0.8 clear of
+the −x bevel's foot (asserted; 0.95). The dovetail c3 export is still
+byte-identical.
+
+**What the user wants here, after three misreads (2026-10-04):**
+- "Fill the gap" meant the +x gap, OUT TO THE KNUCKLES' ENDS (the old boss
+  stopped at 5.2). It did not mean the −x gap.
+- "Do not change links": a version that mirrored the station's −x joint
+  (forks on both sides) was rejected outright.
+- "Keep the hole as is": 1.1 off-centre.
+- The −x gap is flanked by the NEIGHBOUR's swinging lugs and STAYS OPEN. A
+  narrow −x boss was also built and dropped.
+- A top-down render of interleaved knuckles once read as "no boss".
+  Probe the solid with small `intersection()` boxes instead.
+- A harness that placed the pin at `X + cn_off` after `cn_off` was
+  removed read EMPTY everywhere except the controls. Expect the seated
+  contact SHEET, not EMPTY, and read the log's warnings.
+
+**Geometry:** M5 × 2.3, the M4 tooth (e1425c5) at M5: ceiling 31.5°,
+female crest 0.45, fit 0.15. Hole 5.3. Countersink 6.7 at the bed. **The
+cone is LONG** (user's sketch, later 2026-10-04): it runs from the foot to
+the thread's start with no straight shaft, so `cn_cs_a` is SOLVED, 12.94°
+from the axis. The countersink is 3.05 tall, and the seated contact runs z
+0.10–3.05. Costs, told to the user once: the wedge spreads the bar ~4.4× the
+clamp's pull (35° was ~1.4×), and a cone printed `e` fat radially sits
+~4.4·e higher, so `cn_sink` 0.5 covers e ≤ ~0.11. If bars split at the
+countersink, go back toward 35°. The pin's foot is recessed 0.1 inside
+the underside. Bed flat `cn_flat` 1.75 (thread leaves the bed at 44.4°, cone
+at 31.8°). **The thread starts `cn_sink` 0.5 DOWN inside the bar**: with the
+smooth shaft ending exactly at the top face, a cone printed a hair fat
+stands the shoulder proud. The charm then tightens on the pin, not the bar,
+and rattles. The male is rotated `−cn_sink/pitch·360` so its phase stays
+referenced to the seat face, like the charm's. Without that, every
+screw-path harness step collides. That is a phase artefact only; a real
+charm just catches at another angle. Charm bore 5.5 (0.5 dead depth past the
+male's tip), 45° coned end, apex 7.75, `cn_need` 8.75 ≤ heart 9.2 (also
+asserted over the bore's rim).
+
+**Checks:** pin 6.7 × 9.1 × 5.1 lying, 1 shell, 35.4 mm², no overhang. Thin
+flags: thread tip and start wedges, and the cone's rim knife (55° wedge),
+all accepted. Heart-cone 1 shell, 306 mm², one BRIDGE (the groove's
+truncated top), thin flags at the thread's ends. Band c3-cone: 11 shells,
+genus 34 (31 + one through-hole per station), 1697.9 mm² in 11 islands, 40
+BRIDGE (= the plain band). Plain, -w180, -c3, pin and heart exports are
+byte-identical.
+
+**Harness** (scratch: `band.scad` = bracelet.scad with includes made
+absolute and the `if (accent)` tail cut; `station()` =
+`difference(){union(){bar(5);charm_seat(5);} charm_station_cut(5);}` at
+`-D mount="cone" -D charms=3`; the heart imported from its export at the
+pin's axis; the pin moved down `d` along the screw path,
+`rotate(-d/pitch·360)`):
+
+| test | reads |
+|---|---|
+| pin ∩ station seated / up 0.05 / down 0.05 | 0-vol sheet z 0.10–3.05 (the long cone) / 0.441 / empty |
+| pin ∩ heart along the path, d 0 … 5.3 | empty at every step |
+| same, d 1.15 straight (CONTROL, no twist) | 2.37 |
+| pin up 0.55 past seat | 0.067 at z 4.20–4.25: the shaft's shoulder, 0.5 under the face |
+| heart ∩ (station + bars 4, 6) seated / dz −0.2 | 0-vol sheet / 34.4 |
+| bar 6 (+x) swung vs station: ±24 / ±60 / ±100 | empty |
+| … at 115 / −115, station vs plain bar(5) (CONTROL) | 0.375 vs 0.545 / 4.05 vs 3.09 — binds where the hinge does |
+| fill probes, 0.5 × 0.2 × 3 boxes: +x at x 6.0 y 1.5, x 7.0 y 0; −x at x −4.5 y 0 | solid / solid / empty (open) |
+
+Not run: a slicer, the layer raster. **Printed 2026-10-05: "Printed good"** — band, pin and heart as exported (M5, long 12.9° cone, +x gap filled, bevels kept).
+
+## The dovetail H-pin — 2026-09-30, PRINTED WELL. The proven mount
 
 **2026-10-02 (last), SHALLOW DOVETAIL, RECESSED LEAF (unprinted).** The user:
 reduce the pin's base height, "dovetail should be shallow. Otherwise bracelet
