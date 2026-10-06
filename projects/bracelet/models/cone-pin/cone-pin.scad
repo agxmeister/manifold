@@ -6,8 +6,11 @@
 // charm down onto it until it is tight: the charm clamps the bar between
 // itself and the cone. To turn a charm, loosen it, turn it, tighten it again.
 //
-// PRINT IT LYING DOWN, on its flat, exactly as this file lays it out, in ABS
-// as the H-pins were. No support.
+// The foot has a HEX SOCKET for a `cn_key` (2.5 mm) hex key: hold the pin
+// with it from under the band while the charm screws on.
+//
+// PRINT IT STANDING UP, on its foot, exactly as this file lays it out, in
+// ABS as the H-pins were. No support.
 //
 // All the geometry and every number live in lib/charm-cone.scad, beside the
 // bar's hole and the charm's socket they have to match.
@@ -18,13 +21,15 @@ $fs = 0.3;
 include <../../lib/charm-cone.scad>
 
 copies  = 1;      // how many to lay out; `-D copies=6` for a batch
-spacing = 2*cn_cs_r + 3;   // centre to centre, side by side
+spacing = 2*cn_cs_r + 3;   // centre to centre, in a row
 
 assert(copies >= 1, "copies must be at least 1");
 
 echo(str("cone pin: ", cn_len, " mm long, M", cn_maj, " x ", cn_pitch, " (",
          cn_turns, " turns), cone ", 2*cn_cs_r, " at ", cn_cs_a,
-         " deg (shoulder ", cn_seat, "); flat ", cn_flat, " off the axis"));
+         " deg (shoulder ", cn_seat, "); foot ", cn_recess,
+         " inside the bar; hex socket ", cn_key_af, " AF x ", cn_key_d,
+         " (wall ", cn_key_wall_min, ")"));
 
 for (i = [0 : copies - 1])
     translate([i * spacing, 0, 0]) cn_pin_printed();

@@ -31,9 +31,11 @@
 // so the band bends exactly as before. (The -x gap is flanked by the
 // NEIGHBOUR's lugs, which swing past it, so it stays open.)
 
-// THE PIN PRINTS LYING DOWN, on a flat along its whole length, like the old
-// M4 screw (e1425c5, printed and confirmed). The CHARM prints seat-down: the
-// thread's mouth on the bed, the bore's blind end a 45-degree cone.
+// THE PIN PRINTS STANDING UP, on its round foot, thread up (2026-10-05; it
+// first printed lying on a flat; standing, the cone and thread print round).
+// The foot carries a HEX SOCKET for a hex key, so the pin can be held or
+// turned from under the band. The CHARM prints seat-down: the thread's mouth
+// on the bed, the bore's blind end a 45-degree cone.
 //
 // This file draws nothing — variables, functions and modules only. Everything
 // is named `cn_*`.
@@ -101,12 +103,19 @@ cn_boss_y = 2.6;    // the fill's half-width across the band: the gap between
 
 // ---------------------------------------------------------------- the pin
 cn_shaft  = cn_maj; // the smooth shaft through the bar
-cn_recess = 0.1;    // the pin's foot stops this far inside the bar's
+cn_recess = 0.4;    // the pin's foot stops this far inside the bar's
                     //   underside, so nothing stands proud against the skin
-cn_flat   = 1.75;   // axis to the flat it prints on. Two bounds: past
-                    //   r*cos(45) of the thread's crest = 1.768 the shaft
-                    //   leaves the bed past 45 degrees; under the core
-                    //   (`cn_minor`/2 = 2.1) or the grooves' roots hang
+                    //   even if the cone seats a little deep (was 0.1)
+cn_foot_ch = 0.3;   // the foot's rim chamfered this far in, over
+cn_foot_cz = 0.45;  //   this height (34 deg): the first layer's elephant's
+                    //   foot stays off the countersink, which a fat rim on
+                    //   a 12.9-degree cone would ride up ~4.4x
+cn_key    = 3.0;    // the hex key it takes, across flats (2.5 until 2026-10-06)
+cn_key_fit = 0.05;  // clearance a side in the socket: the least that lets a
+                    //   key in (0.15 at 2.5 mm; the user wants it tight)
+cn_key_d  = 2.5;    // the socket's straight depth; its end is a hex cone
+cn_key_ch = 0.3;    // a 45-degree lead-in at the socket's mouth
+cn_key_wall = 0.8;  // the least cone left round the socket's corners
 
 // ------------------------------------------------------------ the charm
 cn_roof   = 1.0;    // the least a charm may leave over its bore's apex
@@ -117,6 +126,10 @@ cn_base   = -cn_bar + cn_recess;                        // -4.10 — pin's foot
 cn_base_r = cn_cs_r - cn_recess * tan(cn_cs_a);         // its radius there
 cn_cone_top = -cn_bar + (cn_cs_r - cn_shaft/2) / tan(cn_cs_a);
 cn_len    = cn_thread - cn_base;                        // overall
+cn_key_af = cn_key + 2*cn_key_fit;                      // socket, across flats
+cn_key_r  = cn_key_af / sqrt(3);                        //   and across corners/2
+cn_cone_r = function(z) cn_shaft/2 + (-cn_sink - z) * tan(cn_cs_a);
+cn_key_wall_min = cn_cone_r(cn_base + cn_key_d) - cn_key_r;
 cn_bore   = cn_thread + cn_lead;                        // a charm's bore
 cn_apex   = cn_bore + cn_hole_min/2;                    // its coned end, 45 deg
 cn_need   = cn_apex + cn_roof;                          // a charm's least height
@@ -128,19 +141,17 @@ function cn_ceil_gen(r, f) = atan(r / sqrt(pow(cn_pitch/(2*PI), 2)
 cn_ceiling = cn_ceil_gen(cn_hole_maj/2, cn_hi_f);
 cn_crest_f = cn_pitch - ((cn_crest + 2*cn_fit) + cn_hi_f + (cn_lo + cn_fit));
 cn_turns   = (cn_thread - cn_tip) / cn_pitch;
-cn_ov_thr  = 90 - acos(cn_flat / (cn_maj/2));           // shaft leaves the bed
-cn_ov_cone = 90 - acos(cn_flat / cn_base_r);            // cone leaves the bed
 cn_seat    = cn_cs_r - cn_hole/2;                       // the cone's shoulder
 
 assert(cn_ceiling <= 45,
        str("the charm's groove roof hangs at ", cn_ceiling, " deg from vertical"));
 assert(cn_crest_f >= 0.4, str("the female thread's crest is only ", cn_crest_f));
 assert(cn_turns >= 1.75, str("only ", cn_turns, " turns of thread in the charm"));
-assert(cn_ov_thr <= 45,
-       str("the thread leaves the bed at ", cn_ov_thr, " deg — lower cn_flat"));
-assert(cn_ov_cone <= 45,
-       str("the cone leaves the bed at ", cn_ov_cone, " deg — lower cn_flat"));
-assert(cn_flat < cn_minor/2, "the flat misses the thread's core");
+assert(cn_key_wall_min >= cn_key_wall,
+       str("only ", cn_key_wall_min, " mm of cone round the hex socket"));
+assert(cn_base + cn_key_d + cn_key_r < -cn_sink + cn_thread - cn_tip,
+       "the hex socket's cone runs out of the thread's tip");
+assert(atan(cn_foot_ch / cn_foot_cz) <= 40, "the foot's chamfer is too flat");
 assert(cn_seat >= 0.6, str("the cone's shoulder is only ", cn_seat, " wide"));
 assert(cn_cs_a <= 40, "the countersink's ceiling is too flat to print");
 assert(cn_cs_h < cn_bar - 1.0, "the countersink runs up most of the bar");
@@ -209,13 +220,14 @@ module cn_female(depth) intersection() {
 }
 
 // ------------------------------------------------------------- the pin
-// Assembled, seated. Lie it down with `cn_pin_printed`.
+// Assembled, seated. Stand it up with `cn_pin_printed`.
 module cn_pin() difference() {
     union() {
         // the cone and the shaft, one profile turned about the axis
         rotate_extrude($fn = 120) polygon([
             [0, cn_base],
-            [cn_base_r, cn_base],
+            [cn_base_r - cn_foot_ch, cn_base],
+            [cn_cone_r(cn_base + cn_foot_cz), cn_base + cn_foot_cz],
             [cn_shaft/2, -cn_sink],
             [0, -cn_sink],
         ]);
@@ -226,12 +238,19 @@ module cn_pin() difference() {
         translate([0, 0, -cn_sink]) rotate(-cn_sink/cn_pitch*360)
             cn_male(cn_thread + cn_sink);
     }
-    // the flat it prints on, the whole length
-    translate([-5, -cn_flat - 5, cn_base - 1]) cube([10, 5, cn_len + 2]);
+    // the hex socket in the foot: a lead-in, the straight hex, a hex cone
+    // for its end (45 degrees at the corners, steeper on the flats)
+    translate([0, 0, cn_base - 1]) {
+        cylinder(r = cn_key_r, h = 1 + cn_key_d, $fn = 6);
+        translate([0, 0, 1 + cn_key_d - 0.01])
+            cylinder(r1 = cn_key_r, r2 = 0, h = cn_key_r, $fn = 6);
+        cylinder(r1 = cn_key_r + cn_key_ch + 1, r2 = cn_key_r,
+                 h = 1 + cn_key_ch, $fn = 6);
+    }
 }
 
-// Lying on its flat: assembled -y goes down, the axis runs along -y.
-module cn_pin_printed() translate([0, 0, cn_flat]) rotate([90, 0, 0]) cn_pin();
+// Standing on its foot, thread up.
+module cn_pin_printed() translate([0, 0, -cn_base]) cn_pin();
 
 // -------------------------------------------------------------- the bar
 // CUT from a station bar, in the PIN's frame: the plain hole, and the

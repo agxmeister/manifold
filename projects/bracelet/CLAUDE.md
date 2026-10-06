@@ -64,8 +64,8 @@ from the axis. The countersink is 3.05 tall, and the seated contact runs z
 0.10–3.05. Costs, told to the user once: the wedge spreads the bar ~4.4× the
 clamp's pull (35° was ~1.4×), and a cone printed `e` fat radially sits
 ~4.4·e higher, so `cn_sink` 0.5 covers e ≤ ~0.11. If bars split at the
-countersink, go back toward 35°. The pin's foot is recessed 0.1 inside
-the underside. Bed flat `cn_flat` 1.75 (thread leaves the bed at 44.4°, cone
+countersink, go back toward 35°. The pin's foot is recessed 0.1 (0.4 since the standing pin) inside
+the underside. Lying pin only (removed): bed flat `cn_flat` 1.75 (thread leaves the bed at 44.4°, cone
 at 31.8°). **The thread starts `cn_sink` 0.5 DOWN inside the bar**: with the
 smooth shaft ending exactly at the top face, a cone printed a hair fat
 stands the shoulder proud. The charm then tightens on the pin, not the bar,
@@ -76,7 +76,7 @@ charm just catches at another angle. Charm bore 5.5 (0.5 dead depth past the
 male's tip), 45° coned end, apex 7.75, `cn_need` 8.75 ≤ heart 9.2 (also
 asserted over the bore's rim).
 
-**Checks:** pin 6.7 × 9.1 × 5.1 lying, 1 shell, 35.4 mm², no overhang. Thin
+**Checks (the lying pin, superseded below):** pin 6.7 × 9.1 × 5.1 lying, 1 shell, 35.4 mm², no overhang. Thin
 flags: thread tip and start wedges, and the cone's rim knife (55° wedge),
 all accepted. Heart-cone 1 shell, 306 mm², one BRIDGE (the groove's
 truncated top), thin flags at the thread's ends. Band c3-cone: 11 shells,
@@ -103,6 +103,32 @@ pin's axis; the pin moved down `d` along the screw path,
 | fill probes, 0.5 × 0.2 × 3 boxes: +x at x 6.0 y 1.5, x 7.0 y 0; −x at x −4.5 y 0 | solid / solid / empty (open) |
 
 Not run: a slicer, the layer raster. **Printed 2026-10-05: "Printed good"** — band, pin and heart as exported (M5, long 12.9° cone, +x gap filled, bevels kept).
+
+**2026-10-05 (later): pin STANDS UP, hex socket, foot deeper — UNPRINTED.**
+The user asked for the pin to print vertically with "a hole for a hexagon
+screwdriver" in the bottom. The bottom stays ROUND: I first asked about a hex
+key in the bar or a hex head, and both were wrong. They also asked for it "a
+bit shorter, so the pin sits fully inside the bracelet". That means the foot
+goes deeper (`cn_recess` 0.1 → 0.4). The thread is unchanged.
+`cn_flat` and its asserts are gone; `cn_pin_printed` stands it on its
+foot. The socket takes a `cn_key` 2.5 key: 2.8 AF (`cn_key_fit` 0.15), 2.5
+deep, a `$fn=6` cone end (45° at the corners), 0.3 lead-in at the mouth.
+The cone's wall at the corners is 1.07 at the socket's top (asserted ≥ 0.8).
+The foot's rim is chamfered 0.3 × 0.45 (`cn_foot_ch`/`cn_foot_cz`): on a
+12.9° cone, a 0.1 elephant's foot at the rim would lift the pin ~0.44.
+Pin 6.3 × 6.3 × 8.8, 1 shell, 21.4 mm², adhesion 1.9. One BRIDGE at z 3.3+
+(the male's −z flanks, 53° from vertical, 0.4 deep). Thin flags at the
+thread's ends, as before. Fit vs `cn_bar_cut`: seated = 0-vol sheet z
+−3.35…−1.15, down 0.05 → empty, up 0.05 (CONTROL) → 0.457. Band and heart
+are untouched; neither reads the pin's foot.
+
+**2026-10-06: socket → 3 mm key, tight — UNPRINTED.** The 2.5 socket didn't
+fit the user's screwdrivers. The user said "switch to 3 mm, and reduce the
+clearance to minimum". So `cn_key` 3.0, `cn_key_fit` 0.05 (3.1 AF). I read
+"minimum" as the least that still lets a key in, not 0. The depth stays 2.5.
+The corner wall is 0.89 at the socket's top (≥ 0.8 asserted). That wall is
+the source of the extra 0.8–1.2 thin flags; nothing new under 0.8. 19.8 mm²,
+1 shell, same one BRIDGE. If the key jams, raise `cn_key_fit` first.
 
 ## The dovetail H-pin — 2026-09-30, PRINTED WELL. The proven mount
 
