@@ -130,6 +130,22 @@ The corner wall is 0.89 at the socket's top (≥ 0.8 asserted). That wall is
 the source of the extra 0.8–1.2 thin flags; nothing new under 0.8. 19.8 mm²,
 1 shell, same one BRIDGE. If the key jams, raise `cn_key_fit` first.
 
+## The screwdriver — 2026-10-07, UNPRINTED
+
+"A screwdriver that a kid can use to attach and detach charms": a hex key
+for the cone pin's foot socket (`cn_key_af` 3.1). `models/screwdriver`,
+export `screwdriver-screwdriver`. Prints LYING FLAT (bit on a flat, layers
+along it for torsion). Bit `cn_key − 2·key_fit` = 2.9 AF, 4.0 long, 0.3 tip
+chamfer; round shaft r 4 cut flat at the bed; a 32 mm teardrop paddle 8
+thick with a 6 mm string hole. 65 × 32 × 8, 1 shell, 1033 mm², no
+overhang, wall ≥ 2.9.
+
+Fit harness (scratch: the file with its include absolute and the call
+stripped; tool turned bit-up, `rotate([0,0,90])` to match the socket's
+`$fn=6`, tip at `cn_base + d`, ∩ `cn_pin()`): d 2.5 EMPTY; dx 0.1 EMPTY;
+CONTROLS dx 0.2 → 0.49, spin 30° → 0.32, d 2.85 → 0.05 (the cone end).
+In zsh, build `-D` lists in bash arrays — word-splitting trap again.
+
 ## The dovetail H-pin — 2026-09-30, PRINTED WELL. The proven mount
 
 **2026-10-02 (last), SHALLOW DOVETAIL, RECESSED LEAF (unprinted).** The user:

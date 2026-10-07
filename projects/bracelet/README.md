@@ -397,10 +397,18 @@ What changed after the second print:
   bar's underside instead of 0.1, so it never sticks out. The foot's rim is
   chamfered, so a squashed first layer can't lift the cone off its seat.
 
+**The screwdriver.** `models/screwdriver` is a hex key for the pin's foot,
+sized for a child's hand: a 2.9 mm hex bit (0.1 mm a side in the socket),
+4 mm long, on a round shaft and a flat 32 mm paddle that is pinched and
+twisted like a door key. The paddle has a hole for a string, so the key can
+stay with the bracelet. The bit reaches the end of the socket with the shaft
+still 1.5 mm clear of the band. It is not printed yet. If it is loose in the
+socket, lower `key_fit`; if it won't go in, raise it.
+
 **Putting a charm on:**
 
 1. Push the pin up into the bar from underneath. Hold it there with a finger,
-   or with a 3 mm hex key in its foot.
+   or with the screwdriver (or a 3 mm hex key) in its foot.
 2. Screw the charm down onto it until it is tight on the bar. The key stops
    the pin from turning with it.
 3. To take it off, unscrew it. The pin drops out of the bottom.
@@ -659,6 +667,7 @@ projects/bracelet/
     ├── bracelet/bracelet.scad            # the whole bracelet — one printed object
     ├── pin/pin.scad                      # the dovetail H-pin
     ├── cone-pin/cone-pin.scad            # the cone pin (on trial)
+    ├── screwdriver/screwdriver.scad      # a kid's hex key for the cone pin
     ├── butterfly-charm/butterfly-charm.scad  # a charm that snaps onto it
     ├── ladybug-charm/ladybug-charm.scad      # another, in two colours
     ├── heart-charm/heart-charm.scad          # a heart, turnable with `angle`
@@ -677,6 +686,7 @@ printed in place.
 | `bracelet` | `bracelet` | 151.3 × 16.2 × 4.7 mm | all 11 bars' own flat feet |
 | `pin` | `pin` | 6.5 × 16.0 × 3.5 mm, on its side | its H's face and the dovetail's foot, 36 mm² |
 | `cone-pin` | `cone-pin` | 6.3 × 6.3 × 8.8 mm, standing | its foot, a ring round the hex socket, 20 mm² |
+| `screwdriver` | `screwdriver` | 65.0 × 32.0 × 8.0 mm, lying flat | its paddle and shaft, 1033 mm² in one piece |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 18.6 × 7.0 mm | its own bottom, 146 mm² in one piece |
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 18.3 × 7.8 mm | its own bottom and legs, 197 mm² in one piece |
 | `heart-charm` | `heart-charm` | 23.0 × 19.0 × 8.0 mm at 0° | its own flat bottom, 307 mm² in one piece |
@@ -777,6 +787,8 @@ openscad -D copies=6 \
 openscad -D 'mount="cone"' \
          -o projects/bracelet/exports/heart-charm-heart-charm-cone.stl \
          projects/bracelet/models/heart-charm/heart-charm.scad
+openscad -o projects/bracelet/exports/screwdriver-screwdriver.stl \
+         projects/bracelet/models/screwdriver/screwdriver.scad
 openscad -o projects/bracelet/exports/butterfly-charm-butterfly-charm.stl \
          projects/bracelet/models/butterfly-charm/butterfly-charm.scad
 openscad -o projects/bracelet/exports/ladybug-charm-ladybug-charm.stl \
@@ -880,6 +892,14 @@ python3 tools/multicolor-3mf.py /tmp/ladybug.3mf \
 - **Printed and confirmed** on 2026-10-05, with the pin lying down. The
   standing pin with the hex socket is **not printed yet**. The thread is the
   M4 screw's printed tooth and fit (0.15 mm), at M5.
+
+### The screwdriver
+
+- **Print it lying flat**, on the paddle's underside, as modelled. The bit
+  lies on one of its flats, so its layers run along it and twisting it does
+  not split them apart. No supports, no brim. PLA or ABS.
+- **Not printed yet.** The fit was checked against the pin's socket in
+  OpenSCAD only.
 
 ### The ladybug in two colours
 
