@@ -17,7 +17,8 @@ coxa_swing = 15;    // the same at the body, where the legs sit closer
 claw_len   = 5;     // how far the claw's point reaches past its last bulb
 
 // --- body ---
-head_rx    = 9.5;    // cephalothorax half-width
+head_rx    = 10.75;  // cephalothorax half-width; wide enough that the middle
+                    //   legs' bulbs sink ~1 mm into it, like the outer ones
 head_ry    = 12;    // cephalothorax half-length
 head_h     = 8.5;    // cephalothorax height
 head_y     = 0;     // cephalothorax centre
