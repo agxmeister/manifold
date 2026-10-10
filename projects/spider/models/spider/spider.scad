@@ -1,9 +1,11 @@
 // spider.scad — an articulated, print-in-place spider.
 //
 // One print, no assembly: a body with eight leg sockets, and eight legs of
-// round segments. Each joint is the ball-and-socket from joint.scad, so
-// every leg segment swings, nods and twists. Prints flat as exported, no
-// supports.
+// links. Each joint is the hidden ring joint from joint.scad: a tab with a
+// window on one link, threaded by a crossbar inside the hood of the next,
+// ring through ring like a chain, so every link swings, nods and twists. The
+// body's sockets are hoods too, built into the coxae round the head, so the
+// first rings are hidden in the body. Prints flat as exported, no supports.
 
 include <joint.scad>
 
@@ -11,16 +13,21 @@ include <joint.scad>
 segments   = 4;     // leg segments per leg, the last one is the claw
 leg_angles = [38, 72, 106, 142];  // leg directions, deg from straight ahead,
                                   //   mirrored for the left side
-socket_at  = 14.5;    // distance of each body socket from the body centre
-leg_swing  = 20;    // how far a segment swings either way, deg
-coxa_swing = 15;    // the same at the body, where the legs sit closer
-claw_len   = 5;     // how far the claw's point reaches past its last bulb
+socket_at  = 15;    // distance of each socket's crossbar from the body
+                    //   centre; the coxae there merge into a ring round the head
+stub_from  = [8, 3, 3, 3];  // where each coxa starts, from the body centre,
+                    //   buried in the head
+coxa_h     = 7;     // the coxae's height, below the head's flanks, so each
+                    //   coxa comes out of the head's side without a step
+coxa_wall_h = 5.5;  // the coxae's straight sides; high, to roof the cavity
+pitch      = 16;    // joint to joint along a leg
+claw_len   = 8;     // how far the claw's point reaches past its shoulder
 
 // --- body ---
-head_rx    = 10.75;  // cephalothorax half-width; wide enough that the middle
-                    //   legs' bulbs sink ~1 mm into it, like the outer ones
-head_ry    = 12;    // cephalothorax half-length
-head_h     = 8.5;    // cephalothorax height
+head_rx    = 12;    // cephalothorax half-width
+head_ry    = 13;    // cephalothorax half-length
+head_h     = 10;    // cephalothorax height; its flanks are higher than
+                    //   the coxae where they come out of it
 head_y     = 0;     // cephalothorax centre
 belly_rx   = 11;    // abdomen half-width
 belly_ry   = 14;    // abdomen half-length
@@ -30,7 +37,7 @@ dome_from  = 0.3;   // fraction of each body part's height taken by its
                     //   side (leaning in, never past 45 deg) before the dome
 
 // --- face ---
-eye_r      = 0.55;   // eye dimple radius
+eye_r      = 0.5;    // eye dimple radius
 fang_len   = 3.5;     // fang reach in front of the head
 fang_r     = 1.4;   // fang root radius
 fang_x     = 2.3;   // fang offset either side of the centre line
@@ -63,7 +70,7 @@ function socket_pos(i) = socket_at * [sin(leg_dir(i)), cos(leg_dir(i)), 0];
 module at_socket(i)
     translate(socket_pos(i)) rotate([0, 0, rot(leg_dir(i))]) children();
 
-module body()
+module body() {
     difference() {
         union() {
             translate([0, head_y, 0])  body_dome(head_rx, head_ry, head_h);
@@ -73,13 +80,16 @@ module body()
                 translate([0, head_y - head_ry + 2, 0]) cylinder(r = 3.5, h = 4);
                 translate([0, belly_y + belly_ry - 2, 0]) cylinder(r = 3.5, h = 4);
             }
-            for (i = [0 : 2 * len(leg_angles) - 1]) at_socket(i) bulb();
+            // the coxae: a hood for each leg
+            for (i = [0 : 2 * len(leg_angles) - 1])
+                at_socket(i) hood_solid(stub_from[i % len(leg_angles)] - socket_at, coxa_h, coxa_wall_h);
             fangs();
         }
-        for (i = [0 : 2 * len(leg_angles) - 1])
-            at_socket(i) socket_cut(coxa_swing);
+        for (i = [0 : 2 * len(leg_angles) - 1]) at_socket(i) cavity();
         eyes();
     }
+    for (i = [0 : 2 * len(leg_angles) - 1]) at_socket(i) crossbar();
+}
 
 // Two fangs lying on the bed at the front, pointed tips forward and down.
 module fangs()
@@ -94,7 +104,7 @@ module fangs()
 // Eight small eyes, dimpled into the front of the head.
 module eyes() {
     // [x, fraction of head_ry ahead of the head's centre]
-    pts = [[-1.1, 0.84], [1.1, 0.84], [-3.2, 0.84], [3.2, 0.84],
+    pts = [[-0.92, 0.84], [0.92, 0.84], [-2.75, 0.84], [2.75, 0.84],
            [-1.8, 0.7], [1.8, 0.7], [-3.9, 0.62], [3.9, 0.62]];
     for (p = pts) {
         // a point on the dome at x = p.x, y = p.y * head_ry
@@ -105,20 +115,31 @@ module eyes() {
     }
 }
 
-// The claw: the last segment's bulb drawn out into a point on the bed.
-module claw()
+// The claw: the last link drawn out into a point on the bed.
+module claw() {
+    link_start(body_x + 3);
     hull() {
-        bulb(h = bulb_h - 1);
-        translate([bulb_r + claw_len - 0.5, 0, 0]) cylinder(r = 0.5, h = 1.2);
+        link_body(body_x, body_x + 3);
+        translate([body_x + claw_len - 0.5, 0, 0]) cylinder(r = 0.5, h = 1.2);
     }
-
-// One leg segment, its ball at the origin and its bulb at x = pitch.
-module segment(last) {
-    ball();
-    neck(pitch);
-    translate([pitch, 0, 0])
-        if (last) claw(); else hood(leg_swing);
 }
+
+// One leg link: its tab round the origin, its own hood at x = pitch.
+module segment(last) {
+    if (last) claw();
+    else {
+        difference() {
+            union() {
+                link_start(pitch);
+                translate([pitch, 0, 0]) knuckle();
+            }
+            translate([pitch, 0, 0]) cavity();
+        }
+        translate([pitch, 0, 0]) crossbar();
+    }
+}
+
+assert(body_x < pitch + cavity_rear - 1, "the link is too short for its hood's cavity");
 
 module leg()
     for (k = [0 : segments - 1])
