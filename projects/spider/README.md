@@ -24,7 +24,7 @@ spider/
 
 | Component | Print size (as exported) | Prints on           |
 | --------- | ------------------------ | ------------------- |
-| `spider`  | 135 x 109 x 18 mm        | its belly, as is    |
+| `spider`  | 135 x 111 x 18 mm        | its belly, as is    |
 
 It comes off the bed as 34 loose-but-linked pieces: the body (head), the
 abdomen, and 8 legs of 4 links each, the last one the foot.
@@ -54,14 +54,17 @@ flat face; the previous link's front is that face swung through ±25°, round
 in the middle and set back a little at the sides, so the link swings
 freely. Neither ring can open, so the links can't come apart.
 
-The body's sockets are sunk in the **head**, a low round dome standing on
-the bed (46 mm across, 16 mm tall, its straight side 10 mm, the legs are 8). Each leg sits in a
+The body's sockets are sunk in the **head**, a flattened half ball standing
+on the bed (50 mm across, 16 mm tall, the legs are 8). Its profile is a
+superellipse rather than an ellipse, so it stays full almost to its edge and
+then rounds down to the bed: no straight side, but still high enough at the
+legs to stand over them. Each leg sits in a
 **niche** in the head, cut to the same 45° seam as the links: the first link
 is cut like every other link, and the niche's back wall leans over it. The
-niche is an **arched cutout**, as if a ball (9 mm radius, centred where
-the leg crosses the head's rim, on the bed) were taken out of the head, past
-the leg's seam: a round arch in the head's 10 mm side over each leg, its
-top a short bridge. Neighbouring balls run into each other, so nothing of
+niche is an **arched cutout**, as if a ball (9 mm radius, centred on the
+bed under the top of the leg's seam, drawn outwards into a tunnel) were
+taken out of the head, past the leg's seam: a round arch in the head's side
+over each leg, its top a short bridge. Neighbouring balls run into each other, so nothing of
 the head comes down to the bed between the legs. The legs sit 30° apart, as
 close as their first links allow. Two
 **fangs** lean down the head's front, rooted under the eyes, their tips
@@ -138,7 +141,7 @@ scale.
 | `rough_n`, `rough_d` | spider | 120, 0.15–0.35 | dents and bumps per link, and their depth (mm) |
 | `socket_at`    | spider | 13.5    | how far out from the body centre its crossbars sit (mm) |
 | `leg_angles`   | spider | 43 73 103 133 | leg directions, deg from straight ahead  |
-| `waist_at`     | spider | 27      | how far behind the body centre the waist's crossbar sits, inside the abdomen (mm) |
+| `waist_at`     | spider | 29      | how far behind the body centre the waist's crossbar sits, inside the abdomen (mm) |
 
 The body (`head_*`, `belly_*`) and face (`eye_r`, `fang_*`) are at the top
 of `spider.scad`.

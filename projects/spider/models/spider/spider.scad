@@ -36,12 +36,13 @@ rough_a    = 80;    // dents reach this far round the link from its top, each
 bump_a     = 50;    // bumps only this far, where they print without sagging
 
 // --- body ---
-head_r     = 23;    // the head's footprint, a disc on the bed: it reaches past
+head_r     = 25;    // the head's footprint, a disc on the bed: it reaches past
                     //   the top of each socket's seam, so the seam is a niche
-                    //   in the head
-head_wall  = 10;    // the head's straight side, up from the bed: taller
-                    //   than the legs, so each leg's arch has head over it
+                    //   in the head, under its full height
 head_h     = 16;    // the head's height at its centre; the legs are `link_h`
+head_n     = 3;     // the head's roundness: a flattened half ball, fuller
+                    //   than an ellipse towards its edge, so it stands over
+                    //   the legs' arches
 head_y     = 0;     // cephalothorax centre
 waist_at   = head_r + 4;  // the waist's crossbar, behind the head's centre,
                     //   inside the abdomen: the abdomen is the hood, the
@@ -95,19 +96,20 @@ function socket_pos(i) = socket_at * [sin(leg_dir(i)), cos(leg_dir(i)), 0];
 module at_socket(i)
     translate(socket_pos(i)) rotate([0, 0, rot(leg_dir(i))]) children();
 
+// The head's profile: a flattened half ball, a superellipse of exponent
+// `head_n` (2 is an ellipse; more keeps it fuller towards its edge before
+// it rounds down to the bed). Its height at a distance r from its centre.
+function head_prof(r) = head_h * pow(max(1 - pow(min(r / head_r, 1), head_n), 0), 1 / head_n);
 // The head's top at a point (x, y) from its centre.
-function head_z(x, y) = head_wall + (head_h - head_wall)
-                        * sqrt(max(1 - (x * x + y * y) / (head_r * head_r), 0));
+function head_z(x, y) = head_prof(norm([x, y]));
 
-// The cephalothorax: a low round dome standing on the bed, a straight side
-// then a half-ellipsoid, solid round the legs' sockets, so the first rings
-// are inside it.
+// The cephalothorax: a flattened half ball standing on the bed, solid round
+// the legs' sockets, so the first rings are inside it. Its side meets the
+// bed upright, so its edge is not a knife edge. Convex, so drawn as a hull,
+// which keeps the minkowski round it (cutting the abdomen) clean.
 module head()
-    translate([0, head_y, 0]) hull() {
-        cylinder(r = head_r, h = head_wall, $fn = 96);
-        translate([0, 0, head_wall]) scale([head_r, head_r, head_h - head_wall])
-            intersection() { sphere(1, $fn = 96); cylinder(r = 1, h = 1, $fn = 96); }
-    }
+    translate([0, head_y, 0]) hull() rotate_extrude($fn = 128)
+        polygon(concat([[0, 0]], [for (k = [0 : 47]) let(r = head_r * sin(90 * k / 48)) [r, head_prof(r)]], [[head_r, 0]]));
 
 // The head and the fangs, with an arched cutout for each leg, as if a ball
 // were taken out of the head where the leg leaves it, only past the leg's
@@ -125,16 +127,15 @@ module head_cut()
         at_waist() waist_seam(seam_r + gap, seam_c + seam_v);
     }
 
-// The ball: centred on the leg's line where it crosses the head's rim, on
-// the bed, big enough to take the first link, `gap` clear, as far as it is
-// inside the head; swung through the niche.
-ball_at = head_r - socket_at;   // from the socket's crossbar
-ball_r  = 9;                    // the arch's radius at the rim: the
-                                //   first link's top fits under it, the
-                                //   head's rim (`head_wall`) stands over it
+// The ball: centred on the leg's line under the top of its seam, on the
+// bed, big enough to take the first link, `gap` clear; drawn out past the
+// head's rim, so it is an arched tunnel; swung through the niche.
+ball_at = seam_c + seam_v + link_h;   // from the socket's crossbar
+ball_r  = 9;                    // the arch's height: the first link's top
+                                //   fits under it
 module leg_ball()
-    hull() for (t = [-niche_swing, niche_swing]) rotate([0, 0, t])
-        translate([ball_at, 0, 0]) sphere(ball_r, $fn = 96);
+    hull() for (t = [-niche_swing, niche_swing], x = [ball_at, head_r - socket_at + ball_r])
+        rotate([0, 0, t]) translate([x, 0, 0]) sphere(ball_r, $fn = 96);
 
 // The waist's seam: a leg's seam turned about the waist's crossbar, so it is
 // the same all round and the abdomen swings freely: everything within
@@ -277,8 +278,8 @@ module segment(last, seed = 1) {
     }
 }
 
-assert(head_wall >= roof_z + roof_min, "the head is too low to roof the sockets' mouths");
-assert(head_wall >= ball_r + 0.8, "the head's rim is too low to stand over the legs' arches");
+assert(head_z(socket_at + seam_r, 0) >= roof_z + roof_min, "the head is too low to roof the sockets' mouths");
+assert(head_z(socket_at + ball_at, 0) >= ball_r + 0.8, "the head is too low to stand over the legs' arches");
 // Seen from the waist's crossbar, the head stays ahead of it however far the
 // abdomen swings.
 assert(asin(head_r / waist_at) + swing < 88, "the abdomen would swing into the head");
