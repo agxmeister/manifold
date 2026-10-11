@@ -23,7 +23,16 @@ niche_swing = 3;    // how far a first link swings in its niche, each way
                     //   head between neighbouring niches too thin
 pitch      = 13.5;  // joint to joint along a leg; as short as it gets with
                     //   the previous seam leaving this link tall enough to roof its cavity
-claw_len   = 8;     // how far the claw's point reaches past its shoulder
+claw_len   = 8;     // how far the foot reaches past its shoulder
+toe_r      = 4;     // the foot's end: rounded over this length, full width
+
+// --- rough skin: random dents and bumps over the top of every link ---
+rough_n    = 90;    // per link
+rough_r    = [1.5, 3];     // their radius, at random between: wide and
+rough_d    = [0.15, 0.35]; //   shallow, so they run into each other
+rough_y    = 4.2;   // dents reach this far either side of the centre line,
+bump_y     = 3;     //   bumps only this far, where the top is flat enough
+                    //   for them to print
 
 // --- body ---
 head_r     = 23;    // the head's footprint, a disc on the bed: it reaches past
@@ -176,21 +185,63 @@ module eyes() {
     for (p = pts) translate([p[0], head_y + p[1], head_z(p[0], p[1])]) sphere(eye_r, $fn = 16);
 }
 
+// The link's top at y from its centre line, and its slope across there.
+function link_top(y) = link_wall_h + (link_h - link_wall_h) * sqrt(1 - pow(2 * y / link_w, 2));
+function link_slope(y) = atan((link_h - link_wall_h) * 4 * y / (link_w * link_w)
+                              / sqrt(1 - pow(2 * y / link_w, 2)));
+
+// A rough skin over the link's top from x0 to x1: spheres set along the
+// top's normal, standing out as low bumps or sunk as shallow dents, of
+// random size and depth. `seed` varies the pattern from link to link.
+// rough(true) gives the bumps, rough(false) the dents.
+module rough(x0, x1, seed, bumps) {
+    r = rands(0, 1, 5 * rough_n, seed);
+    for (i = [0 : rough_n - 1]) {
+        bump = r[5 * i + 4] < 0.5;
+        if (bump == bumps) {
+            y   = (2 * r[5 * i + 1] - 1) * (bump ? bump_y : rough_y);
+            rad = rough_r[0] + (rough_r[1] - rough_r[0]) * r[5 * i + 2];
+            d   = rough_d[0] + (rough_d[1] - rough_d[0]) * r[5 * i + 3];
+            a   = (y < 0 ? -1 : 1) * link_slope(abs(y));
+            x   = x0 + (x1 - x0) * r[5 * i];
+            // shrunk so none reaches the seams' sharp top edges: behind, the
+            // previous link's seam; ahead, this link's own (set back at the
+            // sides, where it is swung)
+            room = min(x - (seam_c + seam_v + link_top(y)),
+                       x1 - (seam_c + link_h) + (seam_c + link_top(y) - abs(y) * sin(swing)) / cos(swing) - x) - 0.3;
+            rr  = min(rad, room);
+            dd  = min(d, rr / 4);
+            if (rr >= rough_r[0] / 2)
+                translate([x, y, link_top(y)])
+                    rotate([-a, 0, 0]) translate([0, 0, bump ? dd - rr : rr - dd]) sphere(rr, $fn = 24);
+        }
+    }
+}
+
 // One leg link: its tab round the origin, its own knuckle at x = pitch, or
 // drawn out into a point on the bed if it is the claw. It butts up to the
 // next link at a seam, and its rear is cut to the previous link's seam (or
 // the head's niche).
-module segment(last) {
+module segment(last, seed = 1) {
     tab(); neck();
     difference() {
         union() {
             link_body(0, last ? body_x + 3 : pitch);
-            if (last) hull() {
-                link_body(body_x, body_x + 3);
-                translate([body_x + claw_len - 0.5, 0, 0]) cylinder(r = 0.5, h = 1.2);
+            // the foot: the link's full section, its end rounded
+            if (last) intersection() {
+                hull() {
+                    link_body(body_x, body_x + claw_len - toe_r);
+                    translate([body_x + claw_len - toe_r, 0, 0])
+                        scale([toe_r, link_w / 2, link_h]) sphere(1, $fn = 48);
+                }
+                translate([0, -BIG / 2, 0]) cube(BIG);
             }
             else translate([pitch, 0, 0]) link_body(-0.01, seam_c + link_h + 1);
+            // a rough skin, the whole length (the foot's up to its rounded
+            // end); the seams cut it
+            rough(0, last ? body_x + claw_len - toe_r : pitch + seam_c + link_h, seed, true);
         }
+        rough(0, last ? body_x + claw_len - toe_r : pitch + seam_c + link_h, seed, false);
         seam_back();
         if (!last) translate([pitch, 0, 0]) { seam_front(); cavity(neck_roof, jaws = false); }
     }
@@ -215,14 +266,14 @@ assert(body_x < pitch + cavity_rear - 1, "the link is too short for its hood's c
 assert(pitch - stop_r - seam_c - seam_v >= roof_z + roof_min, "the seam cuts into the cavity's roof");
 assert(pitch + cavity_rear - seam_c - seam_v >= stop_z + roof_min, "the seam cuts into the droop stop");
 
-module leg()
+module leg(seed = 0)
     for (k = [0 : segments - 1])
-        translate([k * pitch, 0, 0]) segment(k == segments - 1);
+        translate([k * pitch, 0, 0]) segment(k == segments - 1, 1 + 13 * seed + 101 * k);
 
 module spider() {
     body();
     abdomen();
-    for (i = [0 : 2 * len(leg_angles) - 1]) at_socket(i) leg();
+    for (i = [0 : 2 * len(leg_angles) - 1]) at_socket(i) leg(i);
 }
 
 spider();

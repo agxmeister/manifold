@@ -25,12 +25,14 @@ spider/
 | `spider`  | 134 x 124 x 18 mm        | its belly, as is    |
 
 It comes off the bed as 34 loose-but-linked pieces: the body (head), the
-abdomen, and 8 legs of 4 links each, the last one the claw.
+abdomen, and 8 legs of 4 links each, the last one the foot.
 
 ## How the joints work
 
 Each leg is one rounded bar lying on the bed (9.4 mm wide, 8 mm tall), cut
-into links at **seams**. Side on, a seam stands straight up for its lower
+into links at **seams**, with a **rough skin** of random shallow dents and
+low bumps over the top of each link (shrunk near the seams so none reaches
+their sharp top edges), and ending in a foot with a rounded, full-width end. Side on, a seam stands straight up for its lower
 half and then leans forward at 45° to the top, a 0.6 mm gap across it, the
 tops flush: each link's front leans over the next link's rear.
 
@@ -116,10 +118,11 @@ scale.
 | `neck_w`, `neck_h` | joint | 3.0, 3.6 | neck section (mm)                         |
 | `swing`        | joint  | 25      | side-to-side swing the cavity allows (deg)     |
 | `droop`        | joint  | 30      | how far a link nods down before the droop stop (deg) |
-| `segments`     | spider | 4       | links per leg, the last one the claw           |
+| `segments`     | spider | 4       | links per leg, the last one the foot            |
 | `pitch`        | spider | 13.5    | joint to joint along a leg (mm)                |
 | `seam_r`       | joint  | 4.75    | the seam's upright part, ahead of the crossbar (mm) |
 | `seam_gap`     | joint  | 0.6     | across the seam (mm)                           |
+| `rough_n`, `rough_d` | spider | 90, 0.15–0.35 | dents and bumps per link, and their depth (mm) |
 | `socket_at`    | spider | 13.5    | how far out from the body centre its crossbars sit (mm) |
 | `leg_angles`   | spider | 37 71 105 139 | leg directions, deg from straight ahead  |
 | `waist_at`     | spider | 15.5    | how far behind the body centre the waist's crossbar sits (mm) |
