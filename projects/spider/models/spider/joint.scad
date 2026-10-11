@@ -42,7 +42,10 @@ roof_min   = 1.0;   // the least of the knuckle over the cavity's roof
 // --- link (the visible block) ---
 link_w      = 9.4;  // link width
 link_h      = 8;    // link height at the top of its dome
-link_wall_h = 4.5;  // height of the link's straight side before the dome
+link_r      = link_w / 2;       // the link is round, a cylinder lying on
+link_cz     = link_h - link_r;  //   the bed with its axis this high, sunk
+                                //   into the bed so its underside meets it
+                                //   no flatter than 45 deg
 
 // --- tab (ring two) ---
 tab_t      = 2.0;   // tab thickness
@@ -129,7 +132,19 @@ module profile(w, h, wall_h)
         }
         translate([-w / 2, 0]) square([w, h]);
     }
-module link_profile() profile(link_w, link_h, link_wall_h);
+link_base   = 4.45; // half-width on the bed: the round side runs straight
+                    //   down to here, so the cavity's swept mouth leaves
+                    //   >= 0.77 walls at the front corners (a true circle
+                    //   meets the bed only 3.35 out, and the mouth breaks out)
+module link_profile()
+    intersection() {
+        hull() {
+            translate([0, link_cz]) circle(link_r, $fn = 64);
+            translate([-link_base, 0]) square([2 * link_base, 0.01]);
+        }
+        translate([-link_w / 2, 0]) square([link_w, link_h]);
+    }
+assert(link_cz <= link_r * sin(45) + 0.01, "the link's round underside is flatter than 45 deg at the bed");
 
 // The link block, solid, from x0 to x1.
 module link_body(x0, x1)
