@@ -5,9 +5,8 @@ supports. The legs are chains of rounded links joined **ring through ring**,
 like a chain, with the rings hidden. Each link ends in a round knuckle with a
 crossbar inside it. The next link's narrow neck runs into the knuckle's
 mouth, and the tab on its end hooks over that crossbar. The legs plug into
-the body the same way. At the waist it is turned round: the abdomen holds
-the knuckle, and the body's neck runs into it, so the joint is hidden under
-the abdomen. Every link
+the body the same way, and so does the abdomen: its nose tucks in under the
+head's back edge, the way each link tucks under the one before. Every link
 swings side to side, nods up and down, and twists a little, about 30° at
 most.
 
@@ -24,7 +23,7 @@ spider/
 
 | Component | Print size (as exported) | Prints on           |
 | --------- | ------------------------ | ------------------- |
-| `spider`  | 135 x 111 x 18 mm        | its belly, as is    |
+| `spider`  | 148 x 121 x 18 mm        | its belly, as is    |
 
 It comes off the bed as 34 loose-but-linked pieces: the body (head), the
 abdomen, and 8 legs of 4 links each, the last one the foot.
@@ -38,7 +37,7 @@ for the joint's cavity inside). It is cut into links at **seams**, with a
 **rough skin** of random shallow dents and low bumps round each link —
 dents down to just above its widest point, bumps only over its top half
 (all shrunk near the seams so none reaches their sharp edges) — and ends in
-a foot with a half-ball end. Side on, a seam stands straight up for its lower
+a foot with a half-ball end, as long as the other links. Side on, a seam stands straight up for its lower
 half and then leans forward at 45° to the top, a 0.6 mm gap across it, the
 tops flush: each link's front leans over the next link's rear.
 
@@ -70,14 +69,15 @@ close as their first links allow. Two
 **fangs** lean down the head's front, rooted under the eyes, their tips
 lying on the bed.
 
-The **abdomen** is a separate piece, a big egg that is itself the ninth
-knuckle, the waist: the cavity and its crossbar are inside its front, and a
-tab on a neck out of the head's back hangs on that crossbar. The seam
-between them is a leg's seam turned round the crossbar, upright round the
-mouth and then leaning 45° forward, so the abdomen's front is a round nose
-leaning over a round 45° bowl in the head's back, and the joint is hidden
-under it. Being round, the seam lets the abdomen swing the full ±25°; it
-nods ~3° nose-down (10°+ the other way) and rolls ~3°.
+The **abdomen** is a separate piece, a big egg hung on a ninth joint, the
+waist, like one more leg: the cavity and its crossbar are in the head, just
+inside its back edge, and the abdomen's tab and neck hang on that crossbar.
+Its nose is a leg link cut to a leg's seam, and it goes in under the head's
+back edge. The head's shape is unchanged from above. Only underneath, at
+the back, is its edge lifted at 45° over the nose, the way a link's front
+leans over the next link. Above that the egg follows the head round, `gap`
+clear of it however far it swings. The abdomen swings ±25°, droops 30°
+(the droop stop), lifts ~3° and rolls ~3°+.
 
 The cavity is the tab and the neck swept through ±25°, so the link swings
 freely. The seam is tight, so a link barely nods up: its rear top runs into
@@ -97,8 +97,8 @@ neighbouring leg, or the niche on the outer side of the front and back legs. The
 which adds a little. The **droop stop** is a ledge in the back of the
 cavity, round the tab's far end. As a link nods down, the tab's far end
 swings back and up, and at 30° its foot lands on the ledge. The back legs
-never reach the abdomen at the body joint, and the abdomen swings the full
-25° past them. Further out, neighbouring legs stop each other at full swing.
+swing the full ±25° past the abdomen, and the abdomen swings the full ±25°
+past them. Further out, neighbouring legs stop each other at full swing.
 
 It all prints in place, flat:
 
@@ -141,7 +141,7 @@ scale.
 | `rough_n`, `rough_d` | spider | 120, 0.15–0.35 | dents and bumps per link, and their depth (mm) |
 | `socket_at`    | spider | 13.5    | how far out from the body centre its crossbars sit (mm) |
 | `leg_angles`   | spider | 43 73 103 133 | leg directions, deg from straight ahead  |
-| `waist_at`     | spider | 29      | how far behind the body centre the waist's crossbar sits, inside the abdomen (mm) |
+| `belly_tuck`   | spider | 3       | how far the abdomen's nose reaches in under the head's back edge, on the bed (mm); sets `waist_at` (16.75), the waist's crossbar behind the body centre, inside the head |
 
 The body (`head_*`, `belly_*`) and face (`eye_r`, `fang_*`) are at the top
 of `spider.scad`.
