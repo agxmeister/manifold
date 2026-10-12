@@ -3,11 +3,11 @@
 // One print, no assembly: a body with eight leg sockets, eight legs of
 // links, and an abdomen on a ninth joint at the waist, its nose tucked
 // under the head's back edge.
-// Each joint is the hidden ring joint from joint.scad: a tab with a
-// window on one link, threaded by a crossbar inside the hood of the next,
-// ring through ring like a chain, so every link swings, nods and twists.
-// Along a leg the links butt up to each other at 45 deg seams, and the first
-// link sits in a niche in the head, cut to the same seam.
+// Each joint is the ring joint from joint.scad: an upright ring (a tab with
+// a window) on one link, through a ring lying round a roofed hole in the
+// next (its crossbar through the window), like a chain, both hidden, so
+// every link swings, nods and twists. Along a leg the links butt up to each other at upright seams; the
+// first link sits in a niche in the head whose back leans over it at 45 deg.
 // Prints flat as exported, no supports.
 
 include <joint.scad>
@@ -18,15 +18,14 @@ leg_angles = [43, 73, 103, 133];  // leg directions, deg from straight ahead,
                                   //   evenly spaced, as close as the first
                                   //   links' rear corners allow; mirrored for
                                   //   the left side
-socket_at  = 13.5;  // distance of each socket's crossbar from the body
-                    //   centre; its hood is the head itself
+socket_at  = 15.75;  // distance of each socket's crossbar from the body
+                    //   centre; the head is solid round it
 niche_swing = 3;    // how far a first link swings in its niche, each way
                     //   (plus the slack of the gap), in its arched cutout
-pitch      = 13.5;  // joint to joint along a leg; as short as it gets with
-                    //   the previous seam leaving this link tall enough to roof its cavity
-foot_end   = pitch + seam_c + link_h;  // how far the foot reaches past its
-                    //   joint: as far as the top of any other link's front,
-                    //   so the foot is as long as the other links
+pitch      = 13.5;  // joint to joint along a leg
+foot_end   = pitch + seam_r;  // how far the foot reaches past its joint: as
+                    //   far as any other link's front, so the foot is as long
+                    //   as the other links
                     // the foot ends in a half ball, the link's own radius
 
 // --- rough skin: random dents and bumps round every link ---
@@ -58,8 +57,8 @@ head_y     = 0;     // cephalothorax centre
 belly_tuck = 3;     // how far the abdomen's nose reaches in under the
                     //   head's back edge, on the bed
 waist_at   = head_r - belly_tuck - seam_r - gap;  // the waist's crossbar,
-                    //   behind the head's centre, inside the head: the head
-                    //   is the hood, the abdomen hangs on it by a tab, and
+                    //   behind the head's centre, inside the head: the
+                    //   head holds the crossbar, the abdomen hangs on it by a tab, and
                     //   its nose is cut to the seam the head's edge leans over
 belly_rx   = 13;    // abdomen half-width
 belly_ry   = 21;    // abdomen half-length
@@ -137,16 +136,16 @@ module head_cut()
         union() { head(); fangs(); head_rough(true); }
         head_rough(false);
         for (i = [0 : 2 * len(leg_angles) - 1]) at_socket(i) intersection() {
-            seam_front(niche_swing, 2 * ball_r + 2);
+            seam_front(niche_swing, 2 * ball_r + 2, seam_up);
             leg_ball();
         }
-        at_waist() seam_front(swing, waist_w);
+        at_waist() seam_front(swing, waist_w, seam_up);
     }
 
 // The ball: centred on the leg's line under the top of its seam, on the
 // bed, big enough to take the first link, `gap` clear; drawn out past the
 // head's rim, so it is an arched tunnel; swung through the niche.
-ball_at = seam_c + seam_v + link_h;   // from the socket's crossbar
+ball_at = seam_rear(link_h, seam_up);  // from the socket's crossbar
 ball_r  = 9;                    // the arch's height: the first link's top
                                 //   fits under it
 waist_w = 2 * ball_r + 6;       // how wide the head's edge is lifted over the
@@ -162,18 +161,18 @@ module leg_ball()
 joints = 2 * len(leg_angles) + 1;
 module at_joint(k) if (k < joints - 1) at_socket(k) children(); else at_waist() children();
 
-// A joint's room in the solid head, like a link's cavity. A leg's is swept
+// A joint's room in the solid head, a link's hole under a cone. A leg's is swept
 // only a little past the niche, which stops the first link, and the full
 // sweep only within the leg's width, where its rear drops as it droops; the
 // waist's is swept the full `swing`, for the abdomen.
 module joint_room(k)
     at_joint(k) if (k < joints - 1) {
-        cavity(neck_roof, jaws = false, sw = 10);
+        cavity(true, sw = 10);
         intersection() {
-            cavity(neck_roof, jaws = false);
+            cavity(true);
             translate([0, -link_w / 2, -1]) cube([BIG, link_w, BIG]);
         }
-    } else cavity(neck_roof, jaws = false);
+    } else cavity(true);
 
 module body() {
     difference() {
@@ -181,10 +180,10 @@ module body() {
         for (k = [0 : joints - 1]) joint_room(k);
         eyes();
     }
-    // each joint's crossbar and droop stop, kept out of its neighbours'
-    // rooms (the sockets are close: a droop stop reaches the next one's)
+    // each joint's crossbar, kept out of its neighbours' rooms (the sockets
+    // are close together)
     for (k = [0 : joints - 1]) difference() {
-        at_joint(k) { crossbar(); droop_stop(); }
+        at_joint(k) crossbar();
         for (j = [0 : joints - 1]) if (j != k) joint_room(j);
     }
 }
@@ -193,7 +192,7 @@ module body() {
 // inside the head; +x points back, along the abdomen, as a leg's does.
 module at_waist() translate([0, head_y - waist_at, 0]) rotate([0, 0, -90]) children();
 
-// The abdomen, a separate piece: an egg on a tab and neck that hang on the
+// The abdomen, a separate piece: an egg on a tab that hangs on the
 // waist's crossbar inside the head, so it swings, nods and twists like a
 // leg's link on the one before. Its nose, a link wide, is cut to the
 // seam, as a link's rear is, and goes in under the head's back edge, which
@@ -201,7 +200,7 @@ module at_waist() translate([0, head_y - waist_at, 0]) rotate([0, 0, -90]) child
 // `swing`.
 module abdomen()
     at_waist() {
-        tab(); neck();
+        tab();
         difference() {
             union() {
                 translate([belly_front + belly_ry, 0, 0]) body_dome(belly_ry, belly_rx, belly_h);
@@ -214,9 +213,12 @@ module abdomen()
                 }
         }
         // the nose: a leg's link, cut to the seam, under the head's edge
-        intersection() {
-            link_body(0, belly_front + belly_ry / 2);
-            seam_zone(seam_r + gap, seam_c + seam_v);
+        difference() {
+            intersection() {
+                link_body(0, belly_front + belly_ry / 2);
+                seam_zone(seam_r + gap, seam_up + gap - seam_v);
+            }
+            bevels(seam_r + gap, false);
         }
     }
 
@@ -245,7 +247,7 @@ module eyes() {
 // bumps or sunk as shallow dents, of random size and depth. `seed` varies
 // the pattern from link to link. rough(true) gives the bumps, rough(false)
 // the dents.
-module rough(x0, x1, seed, bumps) {
+module rough(x0, x1, seed, bumps, first = false, last = false) {
     r = rands(0, 1, 5 * rough_n, seed);
     for (i = [0 : rough_n - 1]) {
         bump = r[5 * i + 4] < 0.5;
@@ -257,10 +259,12 @@ module rough(x0, x1, seed, bumps) {
             d   = rough_d[0] + (rough_d[1] - rough_d[0]) * r[5 * i + 3];
             x   = x0 + (x1 - x0) * r[5 * i];
             // shrunk so none reaches the seams' sharp edges: behind, the
-            // previous link's seam; ahead, this link's own (set back at the
-            // sides, where it is swung)
-            room = min(x - (seam_c + seam_v + z),
-                       x1 - (seam_c + link_h) + (seam_c + z - abs(y) * sin(swing)) / cos(swing) - x) - 0.3;
+            // previous link's seam (leaning in the head's niche); ahead,
+            // this link's own (set back at the sides, where it is swung),
+            // and the rim of its hole (round the crossbar, out to its back)
+            room = min(x - seam_rear(z, first ? seam_up : BIG),
+                       last ? BIG : pitch + (seam_r - abs(y) * sin(swing)) / cos(swing) - x,
+                       last ? BIG : norm([x - pitch, y]) - stop_r - gap) - 0.3;
             rr  = min(rad, room);
             dd  = min(d, rr / 4);
             if (rr >= rough_r[0] / 2)
@@ -329,59 +333,53 @@ module belly_rough(bumps) {
     }
 }
 
-// One leg link: its tab round the origin, its own knuckle at x = pitch, or
-// drawn out into a point on the bed if it is the claw. It butts up to the
-// next link at a seam, and its rear is cut to the previous link's seam (or
-// the head's niche).
-module segment(last, seed = 1) {
-    tab(); neck();
+// One leg link: its tab round the origin, its own hole and crossbar at
+// x = pitch, or drawn out into a foot if it is the last. It butts up to the
+// next link at a seam, and its rear is cut to the previous link's seam (or,
+// the first, to the head's niche).
+module segment(first, last, seed = 1) {
+    up = first ? seam_up : BIG;
+    tab();
     difference() {
         union() {
-            link_body(0, last ? body_x + 3 : pitch);
+            link_body(0, last ? link_x + 3 : pitch);
             // the foot: the link's full section, ending in a half ball
             if (last) intersection() {
                 hull() {
-                    link_body(body_x, foot_end - link_r);
+                    link_body(link_x, foot_end - link_r);
                     translate([foot_end - link_r, 0, link_cz]) sphere(link_r, $fn = 48);
                 }
                 translate([0, -BIG / 2, 0]) cube(BIG);
             }
-            else translate([pitch, 0, 0]) link_body(-0.01, seam_c + link_h + 1);
+            else translate([pitch, 0, 0]) link_body(-0.01, seam_r + 1);
             // a rough skin, the whole length (the foot's up to its rounded
-            // end); the seams cut it
-            rough(0, last ? foot_end - link_r : pitch + seam_c + link_h, seed, true);
+            // end); the seams and the hole cut it
+            rough(0, last ? foot_end - link_r : pitch + seam_r, seed, true, first, last);
         }
-        rough(0, last ? foot_end - link_r : pitch + seam_c + link_h, seed, false);
-        seam_back();
-        if (!last) translate([pitch, 0, 0]) { seam_front(); cavity(neck_roof, jaws = false); }
+        rough(0, last ? foot_end - link_r : pitch + seam_r, seed, false, first, last);
+        seam_back(up);
+        if (!last) translate([pitch, 0, 0]) { seam_front(); cavity(); }
     }
-    // the crossbar and the droop stop, inside the link's section and behind
-    // the previous seam
-    if (!last) difference() {
-        translate([pitch, 0, 0]) intersection() {
-            union() { crossbar(); droop_stop(); }
-            link_body(-knuckle_r, knuckle_r);
-        }
-        seam_back();
-    }
+    if (!last) translate([pitch, 0, 0]) crossbar();
 }
+link_x = seam_r + gap;   // the link's rear, behind its tab
 
-assert(head_z(socket_at + seam_r, 0) >= roof_z + roof_min, "the head is too low to roof the sockets' mouths");
+// The head is high enough over its rooms' cones, and over the legs' arches.
+for (r = [0 : 0.5 : room_front + body_ext]) {
+    assert(head_z(socket_at + r, 0) >= cone_top - r + roof_min, "the head is too low over the sockets' rooms");
+    assert(head_prof(waist_at + r) >= cone_top - r + roof_min, "the head is too low over the waist's room");
+}
 assert(head_z(socket_at + ball_at, 0) >= ball_r + 0.8, "the head is too low to stand over the legs' arches");
-// The head roofs the waist's cavity and mouth, behind its edge.
-assert(head_prof(waist_at + seam_r) >= neck_roof + roof_min, "the head is too low to roof the waist's mouth");
-assert(head_prof(waist_at + neck_x + 0.5 + gap) >= roof_z + roof_min, "the head is too low to roof the waist's cavity");
 // The head reaches past the top of each socket's seam, so it is a niche.
-assert(head_r - socket_at >= seam_c + seam_v + link_h, "the head stops short of the legs' niches");
-
-// The previous seam leaves the link tall enough over its cavity: over the
-// tab's room, and behind it over the droop stop.
-assert(pitch - stop_r - seam_c - seam_v >= roof_z + roof_min, "the seam cuts into the cavity's roof");
-assert(pitch + cavity_rear - seam_c - seam_v >= stop_z + roof_min, "the seam cuts into the droop stop");
+assert(head_r - socket_at >= ball_at, "the head stops short of the legs' niches");
+// A link is solid between its rear and its hole.
+assert(pitch - stop_r - seam_rear(link_h, seam_up) >= 2, "the link is too short between its rear and its hole");
+// The crossbar's ends stay in the cheeks, clear of the next link's swept rear.
+assert((seam_r - bar_len / 2 * sin(swing)) / cos(swing) >= bar_w / 2, "the crossbar sticks out of the cheeks");
 
 module leg(seed = 0)
     for (k = [0 : segments - 1])
-        translate([k * pitch, 0, 0]) segment(k == segments - 1, 1 + 13 * seed + 101 * k);
+        translate([k * pitch, 0, 0]) segment(k == 0, k == segments - 1, 1 + 13 * seed + 101 * k);
 
 module spider() {
     body();
