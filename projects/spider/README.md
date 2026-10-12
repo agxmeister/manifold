@@ -47,6 +47,18 @@ tops flush: each link's front leans over the next link's rear.
 - **Inner end**: a narrow neck runs out of the link's rear and ends in a
   flat upright **tab** with a window through it.
 
+The rings are as big as the round link allows. The tab is 2.8 mm thick.
+Its top is a half circle round the crossbar, and its window is round too
+(cut flat top and bottom), so the tab is a ring at least 1.2 mm thick all
+round the window (1.0 under it). The crossbar is 2 mm along the link and
+1.8 mm tall, with its edges cut off at 45°, so it fits a smaller round
+window and can still turn in it however far the link swings. Above the crossbar the cavity
+is only the tab's own room: its round top, swept through the swing, with
+45° corners. It is tall only in the middle, where the link is tall too, so
+the link's walls stay ≥ 1.2 mm. In the head, each socket's crossbar and
+droop stop are kept out of the neighbouring sockets' cavities, since the
+sockets sit close together.
+
 The neck runs into the previous link's mouth, and the tab sits in the cavity
 with the crossbar through its window, all hidden. The next link's rear is a
 flat face; the previous link's front is that face swung through ±25°, round
@@ -79,6 +91,14 @@ leans over the next link. Above that the egg follows the head round, `gap`
 clear of it however far it swings. The abdomen swings ±25°, droops 30°
 (the droop stop), lifts ~3° and rolls ~3°+.
 
+The head and the abdomen carry the same **rough skin** as the legs, spots
+of the same size and depth set along the surface. On the head it covers
+only the part above the legs' arches (10 mm up), so no spot reaches a cut
+edge, and it skips the eyes; over the head's back, where the abdomen hugs
+it, there are dents but no bumps. On the abdomen the dents cover its whole
+dome, the bumps only its back half above the legs' tops, so neither the
+head nor a swinging back leg ever meets a bump.
+
 The cavity is the tab and the neck swept through ±25°, so the link swings
 freely. The seam is tight, so a link barely nods up: its rear top runs into
 the previous link's front. Turning the outer link about the crossbar, with
@@ -88,15 +108,16 @@ nothing else moving (a 3D check):
 | --------------- | ------- | ---------------------------------- |
 | swing           | ±25°    | the crossbar in the window          |
 | nod up          | ~3°     | its rear against the previous link's front, across the seam |
-| nod down        | 30°     | the tab's far end on the droop stop |
+| nod down        | ~29°    | the tab's far end on the droop stop |
 | twist           | ±15°    | the tab against the crossbar        |
 
-Swinging and drooping fully at once, they touch. On the head the first links
+Swinging and drooping fully at once, they touch (25° + 20°); 25° + 10° and
+20° + 25° are free. On the head the first links
 nod and droop the same way, but swing only about ±6°: against the
 neighbouring leg, or the niche on the outer side of the front and back legs. The crossbar can also slide in the window and the tab along the crossbar,
 which adds a little. The **droop stop** is a ledge in the back of the
 cavity, round the tab's far end. As a link nods down, the tab's far end
-swings back and up, and at 30° its foot lands on the ledge. The back legs
+swings back and up, and at about 30° its foot lands on the ledge. The back legs
 swing the full ±25° past the abdomen, and the abdomen swings the full ±25°
 past them. Further out, neighbouring legs stop each other at full swing.
 
@@ -104,10 +125,9 @@ It all prints in place, flat:
 
 - The tab, the neck and the knuckle's walls stand on the bed, at least
   0.5 mm apart.
-- The crossbar is a short bridge (4.3 mm) across the cavity, 0.7 mm above the
-  tab's foot. The window's top (3.5 mm), the cavity's roof and the droop
-  stop's ledge (2.4 mm up) are short bridges too, and so is each mouth's
-  roof, 4.5 mm up.
+- The crossbar is a short bridge (about 5 mm) across the cavity, 0.7 mm above
+  the tab's foot, with 45° sides. The window's flat top (2.2 mm), the top of the cavity's roof and the droop stop's ledge
+  (2.6 mm up) are short bridges too, and so is each mouth's roof, 4.5 mm up.
 - The cavity is open underneath, onto the bed. The seams' leaning fronts
   are 45° overhangs, so they print without support; the gap across them is
   0.6 mm (0.85 mm upright), as an overhang sags a little.
@@ -128,9 +148,11 @@ scale.
 | `link_h`       | joint  | 8       | link height (mm)                               |
 | `link_base`    | joint  | 4.45    | link half-width on the bed (mm)                |
 | `knuckle_r`    | joint  | 5.5     | knuckle radius (mm)                            |
-| `tab_t`        | joint  | 2.0     | tab thickness (mm)                             |
-| `win_w`        | joint  | 3.0     | window length; the crossbar slides in it (mm)  |
-| `bar_w`, `bar_h` | joint | 1.6, 1.8 | crossbar section (mm)                       |
+| `tab_t`        | joint  | 2.8     | tab thickness (mm)                             |
+| `foot_h`, `top_bar` | joint | 1.0, 1.6 | the tab under and over its window (mm)    |
+| `win_r`        | joint  | 1.785   | the round window's radius; the crossbar slides and turns in it (mm) |
+| `bar_w`, `bar_h` | joint | 2.0, 1.8 | crossbar section (mm)                       |
+| `bar_ch`       | joint  | 0.6     | the crossbar's 45° edge cuts (mm)              |
 | `neck_w`, `neck_h` | joint | 3.0, 3.6 | neck section (mm)                         |
 | `swing`        | joint  | 25      | side-to-side swing the cavity allows (deg)     |
 | `droop`        | joint  | 30      | how far a link nods down before the droop stop (deg) |
@@ -139,6 +161,7 @@ scale.
 | `seam_r`       | joint  | 4.75    | the seam's upright part, ahead of the crossbar (mm) |
 | `seam_gap`     | joint  | 0.6     | across the seam (mm)                           |
 | `rough_n`, `rough_d` | spider | 120, 0.15–0.35 | dents and bumps per link, and their depth (mm) |
+| `head_rough_n`, `belly_rough_n` | spider | 600, 450 | spots scattered over the head and the abdomen (about half land where they are allowed) |
 | `socket_at`    | spider | 13.5    | how far out from the body centre its crossbars sit (mm) |
 | `leg_angles`   | spider | 43 73 103 133 | leg directions, deg from straight ahead  |
 | `belly_tuck`   | spider | 3       | how far the abdomen's nose reaches in under the head's back edge, on the bed (mm); sets `waist_at` (16.75), the waist's crossbar behind the body centre, inside the head |

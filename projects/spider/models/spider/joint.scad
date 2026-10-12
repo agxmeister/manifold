@@ -8,8 +8,9 @@
 //          rounded end with a CAVITY inside it and a MOUTH in front. A
 //          CROSSBAR runs across the cavity, under the hood's roof, so the
 //          hood and the crossbar make ring one, hidden.
-//   tab    the inner end of the outer link: a flat upright tab with a WINDOW
-//          through it (ring two), on a narrow NECK. The tab sits in the
+//   tab    the inner end of the outer link: a flat upright tab, round on
+//          top, with a round WINDOW through it (ring two), on a narrow
+//          NECK. The tab sits in the
 //          cavity with the crossbar through its window. The neck runs out of
 //          the mouth into the outer link, whose rear end is hollowed to wrap
 //          round the knuckle with only a small gap.
@@ -23,7 +24,8 @@
 //   - the tab, the neck and the hood's walls stand on the bed, apart;
 //   - the crossbar is a short bridge across the cavity, clear above the
 //     tab's foot;
-//   - the window's top and the hood's roof are short bridges;
+//   - the window's top and the hood's roof are short bridges (the
+//     crossbar's edges and the cavity's top corners are cut off at 45 deg);
 //   - the cavity is open underneath, onto the bed.
 //
 // Coordinates: the crossbar runs along y over the origin, bed = z 0, the
@@ -48,20 +50,25 @@ link_cz     = link_h - link_r;  //   the bed with its axis this high, sunk
                                 //   no flatter than 45 deg
 
 // --- tab (ring two) ---
-tab_t      = 2.0;   // tab thickness
+tab_t      = 2.8;   // tab thickness
 foot_h     = 1.0;   // the tab's foot, under the window
-win_w      = 3.0;   // window length along the link; the crossbar slides in it
-tip_post   = 1.0;   // the tab's far end, behind the window
-top_bar    = 1.0;   // the tab's top, over the window
-front_post = 0.8;   // the tab in front of the window, before the neck
+win_r      = 1.785;  // the window is round about the crossbar's axis, cut
+                    //   flat top and bottom; the crossbar slides and turns in it
+tip_post   = 1.4;   // the tab's far end, behind the window
+top_bar    = 1.6;   // the tab's top, over the window; the top is a half
+                    //   circle round the crossbar's axis
+front_post = 1.2;   // the tab in front of the window, before the neck
 
 // --- neck (the outer link's narrow end, in the mouth) ---
 neck_w     = 3.0;   // neck width
 neck_h     = 3.6;   // neck height; the hood's roof over it sets the nod up
 
 // --- hood (ring one) ---
-bar_w      = 1.6;   // crossbar width, along the link
+bar_w      = 2.0;   // crossbar width, along the link
 bar_h      = 1.8;   // crossbar height
+bar_ch     = 0.6;   // the crossbar's edges are cut off at 45 deg by this,
+                    //   so it turns in a smaller round window
+ring_min   = 1.2;   // the least of the tab round its window
 swing      = 25;    // side to side, each way: the cavity is the tab and the
                     //   neck swept through this
 droop      = 30;    // how far the outer link can nod down before the tab's
@@ -79,10 +86,12 @@ knuckle_wall_h = roof_z + roof_min;       // the knuckle's straight side: its
                                           //   roof covers the mouth right out
                                           //   to its edge, over the next
                                           //   link's neck, then a low dome
+win_w      = 2 * win_r;                   // window length along the link
 tip_x      = -win_w / 2 - tip_post;       // the tab's far end
 neck_x     = win_w / 2 + front_post;      // where the neck starts
-tab_reach  = roof_z - pivot_z - 0.15;     // the tab's top stays this close to
-                                          //   the axis, so it turns under the roof
+tab_reach  = tab_h - pivot_z;             // the tab's top is a half circle
+                                          //   round the axis, so it turns
+                                          //   under the roof
 // The knuckle's top at radius r: the link's section turned about the axis.
 function knuckle_top(r) = knuckle_wall_h + (link_h - knuckle_wall_h)
                           * sqrt(max(1 - pow(r / knuckle_r, 2), 0));
@@ -118,10 +127,13 @@ stop_z     = pivot_z - tip_x * sin(droop) + stop_h * cos(droop);  // the ledge
 
 assert(stop_h > -pivot_z, "the droop stop is lower than the tab's foot");
 assert(neck_w > tab_t, "the neck must be wider than the tab");
-assert(win_w >= bar_w / cos(swing) + tab_t * tan(swing),
-       "the window is too short for the crossbar to swing through `swing`");
-assert(norm([win_w / 2, tab_h - pivot_z]) <= tab_reach + 0.01,
-       "the tab's top over the window would catch the roof as it nods");
+// Swung through `swing`, the crossbar crosses the tab obliquely: its side
+// edges reach this far along the tab, at the tab's faces.
+assert(norm([bar_w / 2 / cos(swing) + tab_t / 2 * tan(swing), bar_h / 2 - bar_ch]) <= win_r,
+       "the window is too small for the crossbar to swing through `swing`");
+win_fn     = 48;
+assert(tab_reach - win_r / cos(180 / win_fn) >= ring_min, "the tab's ring round the window is too thin");
+assert(-tip_x > tab_reach, "the tab's far end must reach past its round top");
 
 // The link's cross-section in (y, z): straight sides, then a dome.
 module profile(w, h, wall_h)
@@ -174,7 +186,15 @@ module tab()
                     cylinder(r = tab_reach, h = BIG, center = true, $fn = 64);
             }
         }
-        translate([-win_w / 2, -BIG / 2, foot_h]) cube([win_w, BIG, win_top - foot_h]);
+        rotate([90, 0, 0]) linear_extrude(BIG, center = true) window();
+    }
+
+// The window, in (x, z): round about the crossbar's axis (never smaller
+// than `win_r`), cut flat at the tab's foot and over the crossbar.
+module window()
+    intersection() {
+        translate([0, pivot_z]) circle(r = win_r / cos(180 / win_fn), $fn = win_fn);
+        translate([-BIG / 2, foot_h]) square([BIG, win_top - foot_h]);
     }
 
 // The neck, from the tab to the shoulder.
@@ -232,8 +252,23 @@ module tab_room_plan()
 // blunt faces, not knife edges (`jaws`; a leg link has no round knuckle).
 jaw_t     = 0.8;
 jaw_angle = swing + asin((neck_w / 2 + gap) / (knuckle_r - jaw_t)) + 1;
+// Above the crossbar's axis the cavity is only the tab's own room, swept
+// through the swing: its half circle top, `roof_gap` clear, with the top
+// corners cut off at 45 deg, `gap` clear of the tab's square edges (a
+// self-supporting ceiling). So it is tall only near the middle, where the
+// round link is tall too.
+dome_k     = tab_reach + tab_t / 2 + gap * sqrt(2);  // the corner cut:
+                                          //   r + |y| <= dome_k, r round the axis
+module tab_dome()
+    translate([0, 0, pivot_z]) intersection() {
+        translate([0, 0, -0.01]) linear_extrude(tab_reach + roof_gap) offset(r = gap) tab_plan();
+        rotate([90, 0, 0]) cylinder(r = tab_reach + roof_gap, h = BIG, center = true, $fn = 64);
+        for (m = [0, 1]) mirror([0, m, 0]) rotate([90, 0, 0])
+            cylinder(r1 = 0, r2 = 2 * dome_k, h = 2 * dome_k, center = true, $fn = 64);
+    }
 module cavity(mouth_roof = roof_z, jaws = true, sw = swing) {
-    translate([0, 0, -1]) linear_extrude(roof_z + 1) swept(sw) offset(r = gap) tab_room_plan();
+    translate([0, 0, -1]) linear_extrude(pivot_z + 1) swept(sw) offset(r = gap) tab_room_plan();
+    for (t = [-sw : 5 : sw - 5]) hull() { rotate(t) tab_dome(); rotate(t + 5) tab_dome(); }
     translate([0, 0, -1]) linear_extrude(mouth_roof + 1) {
         swept(sw) offset(delta = gap) neck_plan();
         if (jaws) difference() {
@@ -246,7 +281,14 @@ module cavity(mouth_roof = roof_z, jaws = true, sw = swing) {
 
 // Ring one: the crossbar across the cavity, buried in the knuckle's walls.
 module crossbar()
-    translate([-bar_w / 2, -(knuckle_r - 0.6), bar_z]) cube([bar_w, 2 * knuckle_r - 1.2, bar_h]);
+    translate([0, 0, pivot_z]) rotate([90, 0, 0])
+        linear_extrude(2 * knuckle_r - 1.2, center = true)
+            octagon(bar_w, bar_h, bar_ch);
+
+// A w x h rectangle, centred, its corners cut off at 45 deg by c.
+module octagon(w, h, c)
+    polygon([[-w / 2 + c, -h / 2], [w / 2 - c, -h / 2], [w / 2, -h / 2 + c], [w / 2, h / 2 - c],
+             [w / 2 - c, h / 2], [-w / 2 + c, h / 2], [-w / 2, h / 2 - c], [-w / 2, -h / 2 + c]]);
 
 // The droop stop: a ledge in the back of the cavity, round the tab's far end
 // with `gap` to spare, from `stop_z` up to the roof. Its underside is a

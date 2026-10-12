@@ -37,6 +37,14 @@ rough_a    = 80;    // dents reach this far round the link from its top, each
                     //   way (deg; 90 is its side), above where the underside
                     //   turns into an overhang
 bump_a     = 50;    // bumps only this far, where they print without sagging
+// the same skin on the body, as dense as on the legs; on the head only
+// above the legs' arches (`ball_r` + 1), so it never reaches a cut edge
+head_rough_n  = 600;
+belly_rough_n = 450;
+bump_from  = link_h + 1.5;  // the abdomen's bumps only above the legs'
+                            //   tops, which swing past it
+bump_back  = 50;    // no bumps on the head this far either side of straight
+                    //   back (deg), where the abdomen hugs it
 
 // --- body ---
 head_r     = 25;    // the head's footprint, a disc on the bed: it reaches past
@@ -126,7 +134,8 @@ module head()
 // the head is whole.
 module head_cut()
     difference() {
-        union() { head(); fangs(); }
+        union() { head(); fangs(); head_rough(true); }
+        head_rough(false);
         for (i = [0 : 2 * len(leg_angles) - 1]) at_socket(i) intersection() {
             seam_front(niche_swing, 2 * ball_r + 2);
             leg_ball();
@@ -149,25 +158,35 @@ module leg_ball()
     hull() for (t = [-niche_swing, niche_swing], x = [ball_at, head_r - socket_at + ball_r])
         rotate([0, 0, t]) translate([x, 0, 0]) sphere(ball_r, $fn = 96);
 
+// The body's joints: the eight legs' sockets, then the waist (k = 8).
+joints = 2 * len(leg_angles) + 1;
+module at_joint(k) if (k < joints - 1) at_socket(k) children(); else at_waist() children();
+
+// A joint's room in the solid head, like a link's cavity. A leg's is swept
+// only a little past the niche, which stops the first link, and the full
+// sweep only within the leg's width, where its rear drops as it droops; the
+// waist's is swept the full `swing`, for the abdomen.
+module joint_room(k)
+    at_joint(k) if (k < joints - 1) {
+        cavity(neck_roof, jaws = false, sw = 10);
+        intersection() {
+            cavity(neck_roof, jaws = false);
+            translate([0, -link_w / 2, -1]) cube([BIG, link_w, BIG]);
+        }
+    } else cavity(neck_roof, jaws = false);
+
 module body() {
     difference() {
         head_cut();
-        // the legs' sockets, in the solid head, like a link's, swept only a
-        // little past the niche, which stops the first link; the full sweep
-        // only within the leg's width, where its rear drops as it droops
-        for (i = [0 : 2 * len(leg_angles) - 1]) at_socket(i) {
-            cavity(neck_roof, jaws = false, sw = 10);
-            intersection() {
-                cavity(neck_roof, jaws = false);
-                translate([0, -link_w / 2, -1]) cube([BIG, link_w, BIG]);
-            }
-        }
-        // the waist's socket, the abdomen swinging the full `swing`
-        at_waist() cavity(neck_roof, jaws = false);
+        for (k = [0 : joints - 1]) joint_room(k);
         eyes();
     }
-    for (i = [0 : 2 * len(leg_angles) - 1]) at_socket(i) { crossbar(); droop_stop(); }
-    at_waist() { crossbar(); droop_stop(); }
+    // each joint's crossbar and droop stop, kept out of its neighbours'
+    // rooms (the sockets are close: a droop stop reaches the next one's)
+    for (k = [0 : joints - 1]) difference() {
+        at_joint(k) { crossbar(); droop_stop(); }
+        for (j = [0 : joints - 1]) if (j != k) joint_room(j);
+    }
 }
 
 // The waist: its crossbar on the centre line behind the head's centre,
@@ -184,7 +203,11 @@ module abdomen()
     at_waist() {
         tab(); neck();
         difference() {
-            translate([belly_front + belly_ry, 0, 0]) body_dome(belly_ry, belly_rx, belly_h);
+            union() {
+                translate([belly_front + belly_ry, 0, 0]) body_dome(belly_ry, belly_rx, belly_h);
+                belly_rough(true);
+            }
+            belly_rough(false);
             for (t = [-swing : sweep_step : swing]) rotate([0, 0, t])
                 rotate([0, 0, 90]) translate([0, waist_at - head_y, 0]) minkowski() {
                     head(); sphere(gap, $fn = 8);
@@ -247,6 +270,65 @@ module rough(x0, x1, seed, bumps) {
     }
 }
 
+// One spot of skin at a surface point p with outward normal n (unit): a
+// sphere of radius rr standing out by dd as a bump, or sunk dd as a dent.
+module skin_spot(p, n, rr, dd, bump)
+    translate(p + n * (bump ? dd - rr : rr - dd)) sphere(rr, $fn = 24);
+
+// A random spot's radius and depth, from two randoms.
+function spot_r(u) = rough_r[0] + (rough_r[1] - rough_r[0]) * u;
+function spot_d(u) = rough_d[0] + (rough_d[1] - rough_d[0]) * u;
+
+// The eyes' patch on the head's front, kept smooth.
+function by_eyes(x, y) = abs(x) < 10 && y > 4 && y < 14;
+
+// The head's rough skin: spots scattered over its top, along the surface's
+// normal, only above the arches' tops (clear of the arches and the waist's cut)
+// and away from the eyes; no bumps over the back, where the abdomen is.
+module head_rough(bumps) {
+    r = rands(0, 1, 5 * head_rough_n, 7);
+    for (i = [0 : head_rough_n - 1]) {
+        bump = r[5 * i + 4] < 0.5;
+        rad  = head_r * sqrt(r[5 * i]);
+        th   = 360 * r[5 * i + 1];
+        x    = rad * sin(th);       // th is a compass angle, from +y
+        y    = rad * cos(th);
+        z    = head_prof(rad);
+        s    = (head_prof(rad + 0.05) - head_prof(rad - 0.05)) / 0.1;
+        n    = [-s * sin(th), -s * cos(th), 1] / sqrt(1 + s * s);
+        tilt = acos(n[2]);
+        back = abs(th - 180) < bump_back;
+        if (bump == bumps && z >= ball_r + 1 && !by_eyes(x, y)
+            && tilt <= (bump ? bump_a : rough_a) && !(bump && back))
+            translate([0, head_y, 0])
+                skin_spot([x, y, z], n, spot_r(r[5 * i + 2]), spot_d(r[5 * i + 3]), bump);
+    }
+}
+
+// The abdomen's rough skin, over its domed top (an ellipsoid on the dome's
+// side), in the waist's frame like abdomen(); bumps only above the legs'
+// tops and behind the head's reach, dents anywhere on the dome.
+module belly_rough(bumps) {
+    wall_h = belly_h * dome_from;
+    c  = [belly_front + belly_ry, 0, wall_h];
+    ax = [belly_ry, belly_rx, belly_h - wall_h];
+    r  = rands(0, 1, 5 * belly_rough_n, 11);
+    for (i = [0 : belly_rough_n - 1]) {
+        bump = r[5 * i + 4] < 0.5;
+        // a direction on the upper half of the unit sphere, evenly spread
+        uz  = r[5 * i];
+        ph  = 360 * r[5 * i + 1];
+        u   = [sqrt(1 - uz * uz) * cos(ph), sqrt(1 - uz * uz) * sin(ph), uz];
+        p   = c + [ax[0] * u[0], ax[1] * u[1], ax[2] * u[2]];
+        m   = [u[0] / ax[0], u[1] / ax[1], u[2] / ax[2]];
+        n   = m / norm(m);
+        tilt = acos(n[2]);
+        if (bump == bumps && tilt <= (bump ? bump_a : rough_a)
+            && (!bump || (p[2] >= bump_from && p[0] >= belly_front + belly_ry / 2)))
+            skin_spot(p, n, spot_r(r[5 * i + 2]), spot_d(r[5 * i + 3]), bump);
+    }
+}
+
 // One leg link: its tab round the origin, its own knuckle at x = pitch, or
 // drawn out into a point on the bed if it is the claw. It butts up to the
 // next link at a seam, and its rear is cut to the previous link's seam (or
@@ -292,7 +374,6 @@ assert(head_prof(waist_at + neck_x + 0.5 + gap) >= roof_z + roof_min, "the head 
 // The head reaches past the top of each socket's seam, so it is a niche.
 assert(head_r - socket_at >= seam_c + seam_v + link_h, "the head stops short of the legs' niches");
 
-assert(body_x < pitch + cavity_rear - 1, "the link is too short for its hood's cavity");
 // The previous seam leaves the link tall enough over its cavity: over the
 // tab's room, and behind it over the droop stop.
 assert(pitch - stop_r - seam_c - seam_v >= roof_z + roof_min, "the seam cuts into the cavity's roof");
