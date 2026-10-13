@@ -28,22 +28,28 @@ foot_end   = pitch + seam_r;  // how far the foot reaches past its joint: as
                     //   as the other links
                     // the foot ends in a half ball, the link's own radius
 
-// --- rough skin: random dents and bumps round every link ---
-rough_n    = 120;   // per link
-rough_r    = [1.5, 3];     // their radius, at random between: wide and
-rough_d    = [0.15, 0.35]; //   shallow, so they run into each other
-rough_a    = 80;    // dents reach this far round the link from its top, each
-                    //   way (deg; 90 is its side), above where the underside
-                    //   turns into an overhang
-bump_a     = 50;    // bumps only this far, where they print without sagging
-// the same skin on the body, as dense as on the legs; on the head only
-// above the legs' arches (`ball_r` + 1), so it never reaches a cut edge
-head_rough_n  = 600;
-belly_rough_n = 450;
-bump_from  = link_h + 1.5;  // the abdomen's bumps only above the legs'
-                            //   tops, which swing past it
-bump_back  = 50;    // no bumps on the head this far either side of straight
-                    //   back (deg), where the abdomen hugs it
+// --- curvy skin: smooth, wide swells over every link and the body ---
+// Swells set at random, summed and softly capped, so they run into each
+// other as gentle waves with no edge or crease. Only ever added, never cut
+// in, so no wall or roof gets thinner; faded out near the bed, the seams
+// and the cut edges, where the shape must stay exact.
+swell_h    = 0.8;   // how high a link's skin rises at most (mm)
+swell_s    = [2.5, 3.5];  // a swell's spread (sigma, mm), at random between
+leg_swells = 10;    // per link, half swells, half hollows
+swell_a    = [20, 55];    // round a link from its top (deg): full swells up
+                    //   to the first, none past the second; lower down a
+                    //   swell's flank would face the bed and sag
+head_swells  = 60;  // scattered over the head, half swells, half hollows
+belly_swells = 60;
+body_swell_h = 1.0; // on the head and the abdomen
+body_swell_s = [3.0, 4.5];
+swell_from = 10;    // the head's swells only above the legs' arches (ball_r)
+belly_from = 9.5;   // the abdomen's only above the legs' tops, which swing
+                    //   past it, and only on its back part
+swell_back = [50, 70];  // none on the head's outer part (`swell_rim` out)
+                        //   this far either side of straight back (deg),
+                        //   where the abdomen hugs it; full past the second
+swell_rim  = [15, 18];
 
 // --- body ---
 head_r     = 25;    // the head's footprint, a disc on the bed: it reaches past
@@ -133,8 +139,7 @@ module head()
 // the head is whole.
 module head_cut()
     difference() {
-        union() { head(); fangs(); head_rough(true); }
-        head_rough(false);
+        union() { head(); fangs(); head_swells(); }
         for (i = [0 : 2 * len(leg_angles) - 1]) at_socket(i) intersection() {
             seam_front(niche_swing, 2 * ball_r + 2, seam_up);
             leg_ball();
@@ -204,9 +209,8 @@ module abdomen()
         difference() {
             union() {
                 translate([belly_front + belly_ry, 0, 0]) body_dome(belly_ry, belly_rx, belly_h);
-                belly_rough(true);
+                belly_swells();
             }
-            belly_rough(false);
             for (t = [-swing : sweep_step : swing]) rotate([0, 0, t])
                 rotate([0, 0, 90]) translate([0, waist_at - head_y, 0]) minkowski() {
                     head(); sphere(gap, $fn = 8);
@@ -242,95 +246,117 @@ module eyes() {
     for (p = pts) translate([p[0], head_y + p[1], head_z(p[0], p[1])]) sphere(eye_r, $fn = 16);
 }
 
-// A rough skin round the link from x0 to x1: spheres set along the round
-// surface's normal, at an angle `a` round from its top, standing out as low
-// bumps or sunk as shallow dents, of random size and depth. `seed` varies
-// the pattern from link to link. rough(true) gives the bumps, rough(false)
-// the dents.
-module rough(x0, x1, seed, bumps, first = false, last = false) {
-    r = rands(0, 1, 5 * rough_n, seed);
-    for (i = [0 : rough_n - 1]) {
-        bump = r[5 * i + 4] < 0.5;
-        if (bump == bumps) {
-            a   = (2 * r[5 * i + 1] - 1) * (bump ? bump_a : rough_a);
-            y   = link_r * sin(a);
-            z   = link_cz + link_r * cos(a);
-            rad = rough_r[0] + (rough_r[1] - rough_r[0]) * r[5 * i + 2];
-            d   = rough_d[0] + (rough_d[1] - rough_d[0]) * r[5 * i + 3];
-            x   = x0 + (x1 - x0) * r[5 * i];
-            // shrunk so none reaches the seams' sharp edges: behind, the
-            // previous link's seam (leaning in the head's niche); ahead,
-            // this link's own (set back at the sides, where it is swung),
-            // and the rim of its hole (round the crossbar, out to its back)
-            room = min(x - seam_rear(z, first ? seam_up : BIG),
-                       last ? BIG : pitch + (seam_r - abs(y) * sin(swing)) / cos(swing) - x,
-                       last ? BIG : norm([x - pitch, y]) - stop_r - gap) - 0.3;
-            rr  = min(rad, room);
-            dd  = min(d, rr / 4);
-            if (rr >= rough_r[0] / 2)
-                translate([x, y, z])
-                    rotate([-a, 0, 0]) translate([0, 0, bump ? dd - rr : rr - dd]) sphere(rr, $fn = 24);
-        }
-    }
+// --- the curvy skin ---------------------------------------------------------
+
+// 0 at e0 rising smoothly to 1 at e1 (either way round).
+function ramp(e0, e1, x) = let(t = min(max((x - e0) / (e1 - e0), 0), 1)) t * t * (3 - 2 * t);
+
+// n random swells and hollows over the patch u x v: [u, v, height (+ a
+// swell, - a hollow), spread].
+function swells(n, u, v, h, s, seed) =
+    let(r = rands(0, 1, 4 * n, seed))
+    [for (i = [0 : n - 1]) [u[0] + (u[1] - u[0]) * r[4 * i], v[0] + (v[1] - v[0]) * r[4 * i + 1],
+                            h * (r[4 * i + 2] < 0.5 ? -1 : 1) * (0.6 + 1.2 * abs(r[4 * i + 2] - 0.5)),
+                            s[0] + (s[1] - s[0]) * r[4 * i + 3]]];
+
+// The skin's rise at (u, v), `lo` to h: the swells and hollows summed
+// and squeezed smoothly into that range, so where they crowd together they
+// run into one gentle rise or dip rather than a peak.
+function rise(sw, u, v, h, lo = skin_min) =
+    let(t = [for (b = sw) b[2] * exp(-(pow(u - b[0], 2) + pow(v - b[1], 2)) / (2 * b[3] * b[3]))])
+    lo + (h - lo) / (1 + exp(-3 * (t * [for (b = sw) 1]) / h));
+
+// On the head and the abdomen the skin is a cap laid over the plain shape.
+// How far out it stands at a point with fade weight w and rise d. Faded
+// out it lies `skin_in` inside the plain surface, and a hollow's bottom stays
+// `skin_min` out of it, so the skin crosses the surface only in the fades,
+// cleanly, never grazing it (grazing leaves loose crumbs in the union).
+skin_in  = 0.2;
+skin_min = 0.2;
+function skin(w, d) = w * (d + skin_in) - skin_in;
+
+// A cap over a surface with a centre: rings[k][j] its top, ring after ring
+// out from `top` (all rings the same length, going round counter-clockwise
+// seen from above), closed by upright sides down to a flat floor at zb.
+module skin_cap(top, rings, zb) {
+    nr = len(rings);
+    nt = len(rings[0]);
+    last = rings[nr - 1];
+    pts = concat([top], [for (ring = rings) each ring],
+                 [for (p = last) [p[0], p[1], zb]], [[top[0], top[1], zb]]);
+    T = function(k, j) 1 + k * nt + (j % nt);
+    B = function(j) 1 + nr * nt + (j % nt);
+    bc = 1 + nr * nt + nt;
+    polyhedron(pts, concat(
+        [for (j = [0 : nt - 1]) [0, T(0, j + 1), T(0, j)]],
+        [for (k = [0 : nr - 2], j = [0 : nt - 1]) [T(k, j), T(k, j + 1), T(k + 1, j + 1), T(k + 1, j)]],
+        [for (j = [0 : nt - 1]) [T(nr - 1, j), T(nr - 1, j + 1), B(j + 1), B(j)]],
+        [for (j = [0 : nt - 1]) [bc, B(j), B(j + 1)]]));
 }
 
-// One spot of skin at a surface point p with outward normal n (unit): a
-// sphere of radius rr standing out by dd as a bump, or sunk dd as a dent.
-module skin_spot(p, n, rr, dd, bump)
-    translate(p + n * (bump ? dd - rr : rr - dd)) sphere(rr, $fn = 24);
-
-// A random spot's radius and depth, from two randoms.
-function spot_r(u) = rough_r[0] + (rough_r[1] - rough_r[0]) * u;
-function spot_d(u) = rough_d[0] + (rough_d[1] - rough_d[0]) * u;
-
-// The eyes' patch on the head's front, kept smooth.
-function by_eyes(x, y) = abs(x) < 10 && y > 4 && y < 14;
-
-// The head's rough skin: spots scattered over its top, along the surface's
-// normal, only above the arches' tops (clear of the arches and the waist's cut)
-// and away from the eyes; no bumps over the back, where the abdomen is.
-module head_rough(bumps) {
-    r = rands(0, 1, 5 * head_rough_n, 7);
-    for (i = [0 : head_rough_n - 1]) {
-        bump = r[5 * i + 4] < 0.5;
-        rad  = head_r * sqrt(r[5 * i]);
-        th   = 360 * r[5 * i + 1];
-        x    = rad * sin(th);       // th is a compass angle, from +y
-        y    = rad * cos(th);
-        z    = head_prof(rad);
-        s    = (head_prof(rad + 0.05) - head_prof(rad - 0.05)) / 0.1;
-        n    = [-s * sin(th), -s * cos(th), 1] / sqrt(1 + s * s);
-        tilt = acos(n[2]);
-        back = abs(th - 180) < bump_back;
-        if (bump == bumps && z >= ball_r + 1 && !by_eyes(x, y)
-            && tilt <= (bump ? bump_a : rough_a) && !(bump && back))
-            translate([0, head_y, 0])
-                skin_spot([x, y, z], n, spot_r(r[5 * i + 2]), spot_d(r[5 * i + 3]), bump);
-    }
+// A link's block from 0 to x1, its round top lifted by the swells. It is the
+// link's own surface, not a skin laid over it, so the swells run into the
+// plain link with no edge. They fade out round the flanks (`swell_a`) and
+// over 3 mm into xa and xb, clear of the seams' edges; seed 0: plain.
+module curvy_link(x1, xa, xb, seed) {
+    vm = link_r * swell_a[1] * PI / 180;
+    sw = seed ? swells(leg_swells, [xa - 1, xb + 1], [-vm, vm], swell_h, swell_s, seed) : [];
+    nx = ceil(x1 / 0.3);
+    m  = link_n + 3;    // points round the section
+    pts = [for (i = [0 : nx]) let(x = x1 * i / nx, wx = ramp(xa, xa + 3, x) * ramp(xb, xb - 3, x))
+        each [for (p = link_pts(function(a) seed && wx > 0
+                      ? wx * ramp(swell_a[1], swell_a[0], abs(a - 90))
+                           * rise(sw, x, link_r * (90 - a) * PI / 180, swell_h, 0)
+                      : 0)) [x, p[0], p[1]]]];
+    P = function(i, j) i * m + (j % m);
+    polyhedron(pts, concat(
+        [for (i = [0 : nx - 1], j = [0 : m - 1]) [P(i, j), P(i + 1, j), P(i + 1, j + 1), P(i, j + 1)]],
+        [[for (j = [0 : m - 1]) P(0, j)], [for (j = [m - 1 : -1 : 0]) P(nx, j)]]));
 }
 
-// The abdomen's rough skin, over its domed top (an ellipsoid on the dome's
-// side), in the waist's frame like abdomen(); bumps only above the legs'
-// tops and behind the head's reach, dents anywhere on the dome.
-module belly_rough(bumps) {
+// The head's skin: its top above the legs' arches, lifted by the swells
+// (straight up, it is nearly flat there), fading in over 2 mm above
+// `swell_from`; none over the back, where the abdomen is, nor round the eyes.
+module head_swells() {
+    ze = swell_from - 1;    // the cap's edge, well below its swells
+    zb = ze - 1;            // and its floor, under the edge
+    rm = head_r * pow(1 - pow(ze / head_h, head_n), 1 / head_n);
+    sw = swells(head_swells, [-head_r, head_r], [-head_r, head_r], body_swell_h, body_swell_s, 7);
+    nr = 48;
+    rings = [for (k = [1 : nr]) [for (j = [0 : 119])
+        let(r = rm * k / nr, th = 360 - 3 * j,  // compass angle, from +y
+            x = r * sin(th), y = r * cos(th), z = head_prof(r),
+            w = ramp(swell_from, swell_from + 2, z)
+              * (1 - (1 - ramp(swell_back[0], swell_back[1], abs(th - 180))) * ramp(swell_rim[0], swell_rim[1], r))
+              * ramp(1, 2.2, norm([x / 9, (y - 9.2) / 4])))
+        [x, y, z + skin(w, rise(sw, x, y, body_swell_h))]]];
+    translate([0, head_y, 0]) skin_cap([0, 0, head_h + rise(sw, 0, 0, body_swell_h)], rings, zb);
+}
+
+// The abdomen's skin: its dome above the legs' tops (`belly_from`), on its
+// back part, pushed out along the dome's normal by the swells (its sides are
+// steep); clear of where it is cut round the head. In the waist's frame,
+// like abdomen().
+module belly_swells() {
     wall_h = belly_h * dome_from;
-    c  = [belly_front + belly_ry, 0, wall_h];
-    ax = [belly_ry, belly_rx, belly_h - wall_h];
-    r  = rands(0, 1, 5 * belly_rough_n, 11);
-    for (i = [0 : belly_rough_n - 1]) {
-        bump = r[5 * i + 4] < 0.5;
-        // a direction on the upper half of the unit sphere, evenly spread
-        uz  = r[5 * i];
-        ph  = 360 * r[5 * i + 1];
-        u   = [sqrt(1 - uz * uz) * cos(ph), sqrt(1 - uz * uz) * sin(ph), uz];
-        p   = c + [ax[0] * u[0], ax[1] * u[1], ax[2] * u[2]];
-        m   = [u[0] / ax[0], u[1] / ax[1], u[2] / ax[2]];
-        n   = m / norm(m);
-        tilt = acos(n[2]);
-        if (bump == bumps && tilt <= (bump ? bump_a : rough_a)
-            && (!bump || (p[2] >= bump_from && p[0] >= belly_front + belly_ry / 2)))
-            skin_spot(p, n, spot_r(r[5 * i + 2]), spot_d(r[5 * i + 3]), bump);
-    }
+    hz = belly_h - wall_h;
+    cx = belly_front + belly_ry;
+    ze = belly_from - 1;
+    zb = ze - 1;
+    pm = sqrt(1 - pow((ze - wall_h) / hz, 2));
+    sw = swells(belly_swells, [cx - belly_ry, cx + belly_ry], [-belly_rx, belly_rx],
+                body_swell_h, body_swell_s, 11);
+    wf = function(x, z) ramp(belly_from, belly_from + 5, z)
+                      * ramp(belly_front + 0.55 * belly_ry, belly_front + 0.9 * belly_ry, x);
+    nr = 40;
+    rings = [for (k = [1 : nr]) [for (j = [0 : 119])
+        let(p = pm * k / nr, f = 3 * j,
+            x = cx + belly_ry * p * cos(f), y = belly_rx * p * sin(f),
+            z = wall_h + hz * sqrt(1 - p * p),
+            m = [cos(f) * p / belly_ry, sin(f) * p / belly_rx, sqrt(1 - p * p) / hz],
+            n = m / norm(m))  // the dome's normal
+        ([x, y, z] + n * skin(wf(x, z), rise(sw, x, y, body_swell_h)))]];
+    skin_cap([cx, 0, belly_h + skin(wf(cx, belly_h), rise(sw, cx, 0, body_swell_h))], rings, zb);
 }
 
 // One leg link: its tab round the origin, its own hole and crossbar at
@@ -342,7 +368,10 @@ module segment(first, last, seed = 1) {
     tab();
     difference() {
         union() {
-            link_body(0, last ? link_x + 3 : pitch);
+            // the link, curvy but for the first, which is mostly in the head
+            curvy_link(last ? foot_end - link_r : pitch + seam_r + 1, seam_rear(link_h) + 0.3,
+                       last ? foot_end - link_r : pitch + seam_r - link_r * sin(swing) - 0.3,
+                       first ? 0 : seed);
             // the foot: the link's full section, ending in a half ball
             if (last) intersection() {
                 hull() {
@@ -351,12 +380,7 @@ module segment(first, last, seed = 1) {
                 }
                 translate([0, -BIG / 2, 0]) cube(BIG);
             }
-            else translate([pitch, 0, 0]) link_body(-0.01, seam_r + 1);
-            // a rough skin, the whole length (the foot's up to its rounded
-            // end); the seams and the hole cut it
-            rough(0, last ? foot_end - link_r : pitch + seam_r, seed, true, first, last);
         }
-        rough(0, last ? foot_end - link_r : pitch + seam_r, seed, false, first, last);
         seam_back(up);
         if (!last) translate([pitch, 0, 0]) { seam_front(); cavity(); }
     }

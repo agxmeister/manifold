@@ -120,14 +120,17 @@ link_base   = 4.45; // half-width on the bed: the round side runs straight
                     //   down to here, so the cheeks beside the swept hole
                     //   keep their thickness down to the bed (a true circle
                     //   meets the bed only 3.35 out)
-module link_profile()
-    intersection() {
-        hull() {
-            translate([0, link_cz]) circle(link_r, $fn = 64);
-            translate([-link_base, 0]) square([2 * link_base, 0.01]);
-        }
-        translate([-link_w / 2, 0]) square([link_w, link_h]);
-    }
+// The link's section: round over the top, its sides running straight down,
+// tangent to the round, to `link_base` either side on the bed. The round is
+// drawn from the right side's tangent point (`link_tan`, deg round from +y
+// level with the axis) over the top to the left's; `d(a)` lifts it at a.
+link_tan    = atan2(-link_cz, link_base) + acos(link_r / norm([link_base, link_cz]));
+link_n      = 64;   // facets round the top
+function link_pts(d = function(a) 0) = concat([[link_base, 0]],
+    [for (k = [0 : link_n]) let(a = link_tan + (180 - 2 * link_tan) * k / link_n)
+        [0, link_cz] + (link_r + d(a)) * [cos(a), sin(a)]],
+    [[-link_base, 0]]);
+module link_profile() polygon(link_pts());
 assert(link_cz <= link_r * sin(45) + 0.01, "the link's round underside is flatter than 45 deg at the bed");
 
 // The link block, solid, from x0 to x1.

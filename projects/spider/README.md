@@ -22,7 +22,7 @@ spider/
 
 | Component | Print size (as exported) | Prints on           |
 | --------- | ------------------------ | ------------------- |
-| `spider`  | 141 x 121 x 18 mm        | its belly, as is    |
+| `spider`  | 141 x 121 x 19 mm        | its belly, as is    |
 
 It comes off the bed as 34 loose-but-linked pieces: the body (head), the
 abdomen, and 8 legs of 4 links each, the last one the foot.
@@ -31,11 +31,15 @@ abdomen, and 8 legs of 4 links each, the last one the foot.
 
 Each leg is one round bar lying on the bed, a cylinder 9.4 mm across with
 its top at 8 mm, its sides running almost straight down to the bed (8.9 mm
-wide there). It is cut into links at upright **seams**, tops flush, with a
-**rough skin** of random shallow dents and low bumps round each link —
-dents down to just above its widest point, bumps only over its top half,
-all shrunk near the seams and kept off the thin roof over the joint — and ends in a foot with a half-ball end, as long as the other
-links. The joint is two rings, one lying flat and one standing up, like the
+wide there). It is cut into links at upright **seams**, tops flush. Each
+link but the first, which is mostly inside the head, has a **curvy skin**:
+smooth, wide swells and hollows over its top, up to 0.8 mm high and a few
+mm across, running into each other like gentle waves. They never cut into
+the link, so the roof over the joint keeps its thickness. They fade out
+over 3 mm before each seam, so the tops still meet flush. They also fade
+out down its flanks (none past 55° from the top), where a swell's
+underside would face the bed and sag. The leg ends in a foot with a
+half-ball end, as long as the other links. The joint is two rings, one lying flat and one standing up, like the
 links of a chain:
 
 - **Ring one, lying flat**: the front of a link has a **hole** in it, open
@@ -96,13 +100,14 @@ the back, is its edge lifted at 45° over the nose. Above that the egg
 follows the head round, `gap` clear of it however far it swings. The
 abdomen swings ±25°, droops 30° (the droop stop), lifts ~3° and rolls ~5°.
 
-The head and the abdomen carry the same **rough skin** as the legs, spots
-of the same size and depth set along the surface. On the head it covers
-only the part above the legs' arches (10 mm up), so no spot reaches a cut
-edge, and it skips the eyes; over the head's back, where the abdomen hugs
-it, there are dents but no bumps. On the abdomen the dents cover its whole
-dome, the bumps only its back half above the legs' tops, so neither the
-head nor a swinging back leg ever meets a bump.
+The head and the abdomen carry the same **curvy skin**, a little bigger
+(up to 1 mm, 3–4.5 mm spread). On the head it covers only the part above
+the legs' arches (10 mm up), so it never reaches a cut edge. It fades out
+round the eyes and over the back of the head's rim, where the abdomen hugs
+it. On the abdomen it covers the back of the dome above the legs' tops,
+pushed out along the surface. It fades in gently up the steep sides, so
+neither the head nor a swinging back leg ever meets it. It replaces the
+earlier rough skin of small dents and bumps, which didn't print well.
 
 Turning the outer link about the crossbar, with nothing else moving (a 3D
 check):
@@ -164,8 +169,11 @@ scale.
 | `segments`     | spider | 4       | links per leg, the last one the foot            |
 | `pitch`        | spider | 13.5    | joint to joint along a leg (mm)                |
 | `seam_gap`     | joint  | 0.6     | across the head's leaning seams (mm); the leg seams are `gap` |
-| `rough_n`, `rough_d` | spider | 120, 0.15–0.35 | dents and bumps per link, and their depth (mm) |
-| `head_rough_n`, `belly_rough_n` | spider | 600, 450 | spots scattered over the head and the abdomen (about half land where they are allowed) |
+| `swell_h`, `swell_s` | spider | 0.8, 2.5–3.5 | a link's curvy skin: how high it rises, and a swell's spread (mm) |
+| `leg_swells`   | spider | 10      | swells and hollows per link                    |
+| `swell_a`      | spider | 20, 55  | round a link from its top: full swells to the first, none past the second (deg) |
+| `body_swell_h`, `body_swell_s` | spider | 1.0, 3–4.5 | the same on the head and the abdomen (mm) |
+| `head_swells`, `belly_swells` | spider | 60, 60 | swells and hollows scattered over the head and the abdomen |
 | `socket_at`    | spider | 15.75   | how far out from the body centre its crossbars sit (mm) |
 | `leg_angles`   | spider | 43 73 103 133 | leg directions, deg from straight ahead  |
 | `belly_tuck`   | spider | 3       | how far the abdomen's nose reaches in under the head's back edge, on the bed (mm); sets `waist_at` (19), the waist's crossbar behind the body centre, inside the head |
