@@ -83,11 +83,13 @@ ceiling a 45° cone round the crossbar's upright axis, so it is
 self-supporting however far the tab swings. Each leg sits in a **niche** in
 the head: the first link's rear is cut to a seam that stands up 4.7 mm and
 then leans forward at 45°, and the niche's back wall leans over it the same
-way. The niche is an **arched cutout**, as if a ball (9 mm radius, centred
-on the bed under the top of the leg's seam, drawn outwards into a tunnel)
-were taken out of the head, past the leg's seam: a round arch in the head's
-side over each leg. Neighbouring balls run into each other, so nothing of
-the head comes down to the bed between the legs. The legs sit 30° apart, as
+way, and goes on leaning at 45° out to the head's side (about 9 mm up), so
+the head's whole underside over the legs grows off the wall under it, layer
+by layer, and nothing over the legs hangs in the air. (Round arches here,
+one per leg, left floating regions: their crowns were flat and the
+cusps between neighbouring arches hung in mid-air.) The neighbouring legs'
+leans run into each other, so nothing of the head comes down to the bed
+between the legs. The legs sit 30° apart, as
 close as their first links allow. Two **fangs** lean down the head's front,
 rooted under the eyes, their tips lying on the bed.
 
@@ -102,7 +104,7 @@ abdomen swings ±25°, droops 30° (the droop stop), lifts ~3° and rolls ~5°.
 
 The head and the abdomen carry the same **curvy skin**, a little bigger
 (up to 1 mm, 3–4.5 mm spread). On the head it covers only the part above
-the legs' arches (10 mm up), so it never reaches a cut edge. It fades out
+where the head leans over the legs (10 mm up), so it never reaches a cut edge. It fades out
 round the eyes and over the back of the head's rim, where the abdomen hugs
 it. On the abdomen it covers the back of the dome above the legs' tops,
 pushed out along the surface. It fades in gently up the steep sides, so
@@ -189,8 +191,7 @@ sag would weld it. **Tab stuck to a roof:** raise `roof_gap` (0.8) for the head;
 
 - No supports, no brim. It prints flat exactly as exported. Nothing in it
   overhangs past 45°, apart from the short bridges of the crossbars and the
-  leg roofs' ridges, the windows' small arches, and the tops of the head's
-  arches over the legs.
+  leg roofs' ridges and the windows' small arches.
 - 0.2 mm layers, 0.4 mm nozzle. The bed needs to be at least 141 x 121 mm.
 - Keep the first layer clean: elephant's foot is what welds print-in-place
   joints. If a joint is stuck when it comes off the bed, swing the link
