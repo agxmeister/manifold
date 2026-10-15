@@ -15,15 +15,26 @@ include <joint.scad>
 
 // --- legs ---
 segments   = 4;     // leg segments per leg, the last one is the claw
-leg_angles = [43, 73, 103, 133];  // leg directions, deg from straight ahead,
-                                  //   evenly spaced, as close as the first
-                                  //   links' rear corners allow; mirrored for
-                                  //   the left side
-socket_at  = 15.75;  // distance of each socket's crossbar from the body
+leg_angles = [25, 58, 94, 155];  // leg directions, deg from straight ahead,
+                                 //   fanned out like a real spider's: the
+                                 //   front pair reaching forward, the back
+                                 //   pair back beside the abdomen; mirrored
+                                 //   for the left side
+socket_angles = [32, 68, 102, 140];  // where each leg's socket sits round
+                    //   the head, deg from straight ahead: a leg leaves the
+                    //   head's side, not its centre, so the back pair start
+                    //   from its back corners, either side of the waist
+socket_at  = 13;    // distance of each socket's crossbar from the body
                     //   centre; the head is solid round it
 niche_swing = 3;    // how far a first link swings in its niche, each way
                     //   (plus the slack of the gap), under the head's lean
 pitch      = 13.5;  // joint to joint along a leg
+leg_bend   = [[15, 15, 15], [5, 5, 5], [15, 20, 15], [14, 2, 20]];
+                    // each leg is printed bent at its joints, a link on the
+                    //   one before, deg toward the back (minus: toward the
+                    //   front), like a resting spider's, so the legs draw in
+                    //   round the abdomen; the joints swing ±`swing` from
+                    //   straight, so a bent joint swings on from there
 foot_end   = pitch + seam_r;  // how far the foot reaches past its joint: as
                     //   far as any other link's front, so the foot is as long
                     //   as the other links
@@ -46,7 +57,7 @@ body_swell_h = 1.0; // on the head and the abdomen
 body_swell_s = [3.0, 4.5];
 swell_from = 10;    // the head's swells only above where its lean over the
                     //   legs comes out at its side (about 9 mm up)
-belly_from = 9.5;   // the abdomen's only above the legs' tops, which swing
+belly_from = 8.5;   // the abdomen's only above the legs' tops, which swing
                     //   past it, and only on its back part
 swell_back = [50, 70];  // none on the head's outer part (`swell_rim` out)
                         //   this far either side of straight back (deg),
@@ -54,10 +65,10 @@ swell_back = [50, 70];  // none on the head's outer part (`swell_rim` out)
 swell_rim  = [15, 18];
 
 // --- body ---
-head_r     = 25;    // the head's footprint, a disc on the bed: it reaches past
+head_r     = 22;    // the head's footprint, a disc on the bed: it reaches past
                     //   the top of each socket's seam, so the seam is a niche
                     //   in the head, under its full height
-head_h     = 16;    // the head's height at its centre; the legs are `link_h`
+head_h     = 14;    // the head's height at its centre; the legs are `link_h`
 head_n     = 3;     // the head's roundness: a flattened half ball, fuller
                     //   than an ellipse towards its edge, so it stands over
                     //   the legs
@@ -68,9 +79,9 @@ waist_at   = head_r - belly_tuck - seam_r - gap;  // the waist's crossbar,
                     //   behind the head's centre, inside the head: the
                     //   head holds the crossbar, the abdomen hangs on it by a tab, and
                     //   its nose is cut to the seam the head's edge leans over
-belly_rx   = 13;    // abdomen half-width
-belly_ry   = 21;    // abdomen half-length
-belly_h    = 18;    // abdomen height
+belly_rx   = 11;    // abdomen half-width
+belly_ry   = 17;    // abdomen half-length
+belly_h    = 15;    // abdomen height
 belly_front = 6;    // the egg's front (its round top's tip), behind the
                     //   waist's crossbar, about under the head's edge; a
                     //   leg's link runs on from it, under the edge, to the seam
@@ -109,10 +120,14 @@ module body_dome(rx, ry, h, wall_h = undef, lean = 0.15) {
 // mirrored.
 function leg_dir(i) = i < len(leg_angles) ? leg_angles[i]
                                           : -leg_angles[i - len(leg_angles)];
+function socket_dir(i) = i < len(socket_angles) ? socket_angles[i]
+                                                : -socket_angles[i - len(socket_angles)];
 // Compass angle (deg from +y, clockwise) -> OpenSCAD rotation about z
 // that turns +x onto it.
 function rot(a) = 90 - a;
-function socket_pos(i) = socket_at * [sin(leg_dir(i)), cos(leg_dir(i)), 0];
+function socket_pos(i) = socket_at * [sin(socket_dir(i)), cos(socket_dir(i)), 0];
+// A point r out along socket i's leg from its crossbar, in plan.
+function along(i, r) = [socket_pos(i)[0], socket_pos(i)[1]] + r * [sin(leg_dir(i)), cos(leg_dir(i))];
 
 module at_socket(i)
     translate(socket_pos(i)) rotate([0, 0, rot(leg_dir(i))]) children();
@@ -145,18 +160,28 @@ module head_cut()
     difference() {
         union() { head(); fangs(); head_swells(); }
         for (i = [0 : 2 * len(leg_angles) - 1]) at_socket(i)
-            seam_front(niche_swing, lean_w, seam_up);
+            let(w = lean_w[i % len(leg_angles)]) lean(i < len(leg_angles) ? w : [w[1], w[0]]);
         at_waist() seam_front(swing, waist_w, seam_up);
     }
 
-lean_w  = 20;                   // how wide the head leans over each leg: the
-                                //   neighbouring legs' leans meet (sockets
-                                //   are ~8 apart), so no pillar is left
-                                //   between them
-waist_w = lean_w + 4;           // how wide the head's edge is lifted over the
-                                //   abdomen's nose, swung through `swing`: past
-                                //   the back legs' leans, so no pillar of head
-                                //   (narrower) or thin ridge is left between them
+lean_w  = [[10, 6], [10, 10], [10, 10], [6, 14]];
+                                // how far the head leans over each leg either
+                                //   side of it, [behind, ahead]: wide enough
+                                //   that neighbouring legs' leans meet, so no
+                                //   pillar of head is left between them, but
+                                //   narrow on the front pair's inner side, for
+                                //   the fangs, and on the back pair's, for the
+                                //   waist's cheeks
+// A leg's lean: the seam's front swung through `niche_swing`, `sides` wide
+// either side of the leg ([-y, +y] in the socket's frame: on the right side
+// +y is the leg's front side, on the mirrored left side its back).
+module lean(sides)
+    for (t = [-niche_swing : 1 : niche_swing]) rotate([0, 0, t])
+        translate([0, (sides[1] - sides[0]) / 2, 0]) seam_zone(seam_r, seam_up, sides[0] + sides[1]);
+waist_w = 12;                   // how wide the head's edge is lifted over the
+                                //   abdomen's nose, swung through `swing`: no
+                                //   wider, or it cuts away the head round the
+                                //   back legs' sockets, either side of it
 
 // The body's joints: the eight legs' sockets, then the waist (k = 8).
 joints = 2 * len(leg_angles) + 1;
@@ -386,19 +411,30 @@ link_x = seam_r + gap;   // the link's rear, behind its tab
 
 // The head is high enough over its rooms' cones, and over the legs' arches.
 for (r = [0 : 0.5 : room_front + body_ext]) {
-    assert(head_z(socket_at + r, 0) >= cone_top - r + roof_min, "the head is too low over the sockets' rooms");
+    for (i = [0 : len(leg_angles) - 1])
+        assert(head_z(along(i, r)[0], along(i, r)[1]) >= cone_top - r + roof_min, "the head is too low over the sockets' rooms");
     assert(head_prof(waist_at + r) >= cone_top - r + roof_min, "the head is too low over the waist's room");
 }
 // The head reaches past the top of each socket's seam, so it is a niche.
-assert(head_z(socket_at + seam_rear(link_h, seam_up), 0) >= link_h + 1, "the head stops short of the legs' niches");
+for (i = [0 : len(leg_angles) - 1]) let(p = along(i, seam_rear(link_h, seam_up)))
+    assert(head_z(p[0], p[1] - head_y) >= link_h + 1, "the head stops short of the legs' niches");
 // A link is solid between its rear and its hole.
 assert(pitch - stop_r - seam_rear(link_h, seam_up) >= 2, "the link is too short between its rear and its hole");
 // The crossbar's ends stay in the cheeks, clear of the next link's swept rear.
 assert((seam_r - bar_len / 2 * sin(swing)) / cos(swing) >= bar_w / 2, "the crossbar sticks out of the cheeks");
 
-module leg(seed = 0)
-    for (k = [0 : segments - 1])
-        translate([k * pitch, 0, 0]) segment(k == 0, k == segments - 1, 1 + 13 * seed + 101 * k);
+// Leg i from its k-th link out, each link printed swung by its bend on the
+// one before (toward the back on both sides, so the mirrored left side bends
+// the other way round in its own frame).
+module leg(i, k = 0)
+    if (k < segments) {
+        segment(k == 0, k == segments - 1, 1 + 13 * i + 101 * k);
+        translate([pitch, 0, 0]) rotate([0, 0, (i < len(leg_angles) ? -1 : 1) * bend(i, k + 1)])
+            leg(i, k + 1);
+    }
+function bend(i, k) = k < segments ? leg_bend[i % len(leg_angles)][k - 1] : 0;
+for (b = leg_bend, t = b)
+    assert(abs(t) <= swing - 5, "a leg is bent too far to swing on from there");
 
 module spider() {
     body();

@@ -22,7 +22,7 @@ spider/
 
 | Component | Print size (as exported) | Prints on           |
 | --------- | ------------------------ | ------------------- |
-| `spider`  | 141 x 121 x 19 mm        | its belly, as is    |
+| `spider`  | 127 x 114 x 16 mm        | its belly, as is    |
 
 It comes off the bed as 34 loose-but-linked pieces: the body (head), the
 abdomen, and 8 legs of 4 links each, the last one the foot.
@@ -74,7 +74,7 @@ top edge by 2 mm, so the rear doesn't swing into the previous link's
 cheeks as it droops or nods up at full swing.
 
 The body's sockets are sunk in the **head**, a flattened half ball standing
-on the bed (50 mm across, 16 mm tall, the legs are 8). Its profile is a
+on the bed (44 mm across, 14 mm tall, the legs are 8). Its profile is a
 superellipse rather than an ellipse, so it stays full almost to its edge and
 then rounds down to the bed: no straight side, but still high enough at the
 legs to stand over them. In the head the joints are the same, but hidden:
@@ -89,18 +89,35 @@ by layer, and nothing over the legs hangs in the air. (Round arches here,
 one per leg, left floating regions: their crowns were flat and the
 cusps between neighbouring arches hung in mid-air.) The neighbouring legs'
 leans run into each other, so nothing of the head comes down to the bed
-between the legs. The legs sit 30° apart, as
-close as their first links allow. Two **fangs** lean down the head's front,
+between the legs; the front pair's leans are narrow on their inner side,
+clear of the fangs, and the back pair's on theirs, clear of the waist.
+The legs are laid out like a real spider's: each leaves its own socket round
+the head's side (32°, 68°, 102° and 140° from straight ahead) and points its
+own way (25°, 58°, 94° and 155°), so the front pair reach forward and the
+back pair run back beside the abdomen. The legs print **bent at their
+joints** (`leg_bend`), the way a resting spider holds them: the front pair
+sweep out and back, the middle pairs curve back, and the back pair follow
+the abdomen's side about a millimetre clear of it, their feet curling in
+behind it. A joint can be bent this way because its hole is swept through
+the whole swing; it swings ±25° from straight, so from a 15° bend it swings
+on 10° one way and 40° the other. Curling the legs in is what keeps the whole
+print small. Fanned out this wide, the sockets
+pack in closer to the centre (13 mm) than legs spread evenly from it could,
+which is what keeps the head small; they are as close as the first links,
+swinging in their niches, and the rooms round the rings (at least 1.2 mm of
+head between neighbours) allow. Two **fangs** lean down the head's front,
 rooted under the eyes, their tips lying on the bed.
 
-The **abdomen** is a separate piece, a big egg hung on a ninth joint, the
+The **abdomen** is a separate piece, an egg (22 x 34 x 15 mm) hung on a ninth joint, the
 waist, like one more leg: the room and its crossbar are in the head, just
 inside its back edge, and the abdomen's tab hangs on that crossbar. Its
 nose is a leg link cut to the niche's seam, and it goes in under the head's
 back edge. The head's shape is unchanged from above. Only underneath, at
 the back, is its edge lifted at 45° over the nose. Above that the egg
 follows the head round, `gap` clear of it however far it swings. The
-abdomen swings ±25°, droops 30° (the droop stop), lifts ~3° and rolls ~5°.
+abdomen droops 30° (the droop stop), lifts ~3° and rolls ~5°; its joint
+swings ±25°, but with the back legs lying beside it the abdomen swings only
+~5–10° before it meets them (more if they swing out of the way).
 
 The head and the abdomen carry the same **curvy skin**, a little bigger
 (up to 1 mm, 3–4.5 mm spread). On the head it covers only the part above
@@ -127,8 +144,8 @@ then sits right at the window's edge). On the head the first links
 droop the same 30° but swing only about ±5°, against the neighbouring leg
 or the niche, and nod up ~3°, against the niche's leaning back wall. The
 crossbar can also slide in the window and the tab along the crossbar,
-which adds a little. The back legs swing the full ±25° past the abdomen,
-and the abdomen swings the full ±25° past them. Further out, neighbouring
+which adds a little. The abdomen stops the back legs swinging in towards it, and
+they stop the abdomen (see above). Further out, neighbouring
 legs stop each other at full swing.
 
 It all prints in place, flat:
@@ -176,9 +193,12 @@ scale.
 | `swell_a`      | spider | 20, 55  | round a link from its top: full swells to the first, none past the second (deg) |
 | `body_swell_h`, `body_swell_s` | spider | 1.0, 3–4.5 | the same on the head and the abdomen (mm) |
 | `head_swells`, `belly_swells` | spider | 60, 60 | swells and hollows scattered over the head and the abdomen |
-| `socket_at`    | spider | 15.75   | how far out from the body centre its crossbars sit (mm) |
-| `leg_angles`   | spider | 43 73 103 133 | leg directions, deg from straight ahead  |
-| `belly_tuck`   | spider | 3       | how far the abdomen's nose reaches in under the head's back edge, on the bed (mm); sets `waist_at` (19), the waist's crossbar behind the body centre, inside the head |
+| `socket_at`    | spider | 13      | how far out from the body centre its crossbars sit (mm) |
+| `socket_angles` | spider | 32 68 102 140 | where each socket sits round the head, deg from straight ahead |
+| `leg_angles`   | spider | 25 58 94 155 | leg directions, deg from straight ahead  |
+| `leg_bend`     | spider | [15,15,15] [5,5,5] [15,20,15] [14,2,20] | each leg's joints bent as printed, deg toward the back (at most `swing` − 5) |
+| `lean_w`       | spider | [10,6] [10,10] [10,10] [6,14] | how far the head leans over each leg on either side (mm) |
+| `belly_tuck`   | spider | 3       | how far the abdomen's nose reaches in under the head's back edge, on the bed (mm); sets `waist_at` (16), the waist's crossbar behind the body centre, inside the head |
 
 The body (`head_*`, `belly_*`) and face (`eye_r`, `fang_*`) are at the top
 of `spider.scad`.
@@ -192,7 +212,7 @@ sag would weld it. **Tab stuck to a roof:** raise `roof_gap` (0.8) for the head;
 - No supports, no brim. It prints flat exactly as exported. Nothing in it
   overhangs past 45°, apart from the short bridges of the crossbars and the
   leg roofs' ridges and the windows' small arches.
-- 0.2 mm layers, 0.4 mm nozzle. The bed needs to be at least 141 x 121 mm.
+- 0.2 mm layers, 0.4 mm nozzle. The bed needs to be at least 127 x 114 mm.
 - Keep the first layer clean: elephant's foot is what welds print-in-place
   joints. If a joint is stuck when it comes off the bed, swing the link
   firmly once and it breaks free. Then work every joint in every direction a few
