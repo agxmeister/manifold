@@ -6,7 +6,8 @@
 // Each joint is the ring joint from joint.scad: an upright ring (a tab with
 // a window) on one link, through a ring lying round a roofed hole in the
 // next (its crossbar through the window), like a chain, both hidden, so
-// every link swings, nods and twists. Along a leg the links butt up to each other at upright seams; the
+// every link swings, nods and twists, about 15 deg. Along a leg each link's
+// narrow neck goes into the collar on the one before, which stops it; the
 // first link sits in a niche in the head whose back leans over it at 45 deg,
 // the head's underside rising on at 45 deg out to its edge over the legs.
 // Prints flat as exported, no supports.
@@ -29,7 +30,7 @@ socket_at  = 13;    // distance of each socket's crossbar from the body
 niche_swing = 3;    // how far a first link swings in its niche, each way
                     //   (plus the slack of the gap), under the head's lean
 pitch      = 13.5;  // joint to joint along a leg
-leg_bend   = [[15, 15, 15], [5, 5, 5], [15, 20, 15], [14, 2, 20]];
+leg_bend   = [[10, 10, 10], [5, 5, 5], [10, 10, 10], [10, 2, 10]];
                     // each leg is printed bent at its joints, a link on the
                     //   one before, deg toward the back (minus: toward the
                     //   front), like a resting spider's, so the legs draw in
@@ -380,18 +381,18 @@ module belly_swells() {
     skin_cap([cx, 0, belly_h + skin(wf(cx, belly_h), rise(sw, cx, 0, body_swell_h))], rings, zb);
 }
 
-// One leg link: its tab round the origin, its own hole and crossbar at
-// x = pitch, or drawn out into a foot if it is the last. It butts up to the
-// next link at a seam, and its rear is cut to the previous link's seam (or,
-// the first, to the head's niche).
+// One leg link: its tab round the origin, its own collar and crossbar at
+// x = pitch, or drawn out into a foot if it is the last. Its rear is a neck
+// in the previous link's collar (or, the first, a plain tab in the head's
+// niche, cut to the seam there).
 module segment(first, last, seed = 1) {
-    up = first ? seam_up : BIG;
-    tab();
+    x0 = first ? seam_rear(link_h, seam_up) : sh_x;     // where it is full width
+    if (first) tab(); else neck();
     difference() {
         union() {
             // the link, curvy but for the first, which is mostly in the head
-            curvy_link(last ? foot_end - link_r : pitch + seam_r + 1, seam_rear(link_h) + 0.3,
-                       last ? foot_end - link_r : pitch + seam_r - link_r * sin(swing) - 0.3,
+            curvy_link(last ? foot_end - link_r : pitch + lip_x + 1, x0 + 0.3,
+                       last ? foot_end - link_r : pitch + lip_x - 0.3,
                        first ? 0 : seed);
             // the foot: the link's full section, ending in a half ball
             if (last) intersection() {
@@ -402,8 +403,12 @@ module segment(first, last, seed = 1) {
                 translate([0, -BIG / 2, 0]) cube(BIG);
             }
         }
-        seam_back(up);
-        if (!last) translate([pitch, 0, 0]) { seam_front(); cavity(); }
+        if (first) seam_back(seam_up);
+        else translate([sh_x - BIG, -BIG / 2, -1]) cube(BIG);
+        if (!last) translate([pitch, 0, 0]) {
+            translate([lip_x, -BIG / 2, -1]) cube(BIG);
+            cavity();
+        }
     }
     if (!last) translate([pitch, 0, 0]) crossbar();
 }
@@ -419,9 +424,9 @@ for (r = [0 : 0.5 : room_front + body_ext]) {
 for (i = [0 : len(leg_angles) - 1]) let(p = along(i, seam_rear(link_h, seam_up)))
     assert(head_z(p[0], p[1] - head_y) >= link_h + 1, "the head stops short of the legs' niches");
 // A link is solid between its rear and its hole.
-assert(pitch - stop_r - seam_rear(link_h, seam_up) >= 2, "the link is too short between its rear and its hole");
-// The crossbar's ends stay in the cheeks, clear of the next link's swept rear.
-assert((seam_r - bar_len / 2 * sin(swing)) / cos(swing) >= bar_w / 2, "the crossbar sticks out of the cheeks");
+assert(pitch - stop_r - gap - max(sh_x, seam_rear(link_h, seam_up)) >= 2, "the link is too short between its rear and its hole");
+// The crossbar's ends stay in the collar's walls.
+assert(bar_len / 2 <= link_base - 0.6, "the crossbar sticks out of the collar");
 
 // Leg i from its k-th link out, each link printed swung by its bend on the
 // one before (toward the back on both sides, so the mirrored left side bends

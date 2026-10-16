@@ -3,11 +3,14 @@
 An **articulated spider**, printed in place: one print, no assembly, no
 supports. The legs are chains of rounded links joined **ring through ring**,
 like a chain, with the rings hidden, as on a flexi octopus: each link's
-front is a ring lying round a roofed hole, and the next link's rear is an
-upright ring hooked through it, straight off the link with no neck. The
-legs plug into the body the same way, and so does the abdomen: its nose tucks in
-under the head's back edge. Every link swings side to side, nods up and
-down, and twists a little, about 30° at most.
+front is a hollow **collar** with a ring lying round a roofed hole inside,
+and the next link's rear is a narrow **neck** that goes into the collar,
+an upright ring hooked through the first. So each link sits partly inside
+the one before, like a telescope, and it is the links themselves that stop
+each other: every link swings side to side, nods up and down, and twists a
+little, about 15° at most. The legs plug into the body with the same rings
+(a plain tab in a niche, no collar), and so does the abdomen: its nose
+tucks in under the head's back edge.
 
 ```
 spider/
@@ -22,7 +25,7 @@ spider/
 
 | Component | Print size (as exported) | Prints on           |
 | --------- | ------------------------ | ------------------- |
-| `spider`  | 127 x 114 x 16 mm        | its belly, as is    |
+| `spider`  | 131 x 119 x 16 mm        | its belly, as is    |
 
 It comes off the bed as 34 loose-but-linked pieces: the body (head), the
 abdomen, and 8 legs of 4 links each, the last one the foot.
@@ -42,19 +45,22 @@ underside would face the bed and sag. The leg ends in a foot with a
 half-ball end, as long as the other links. The joint is two rings, one lying flat and one standing up, like the
 links of a chain:
 
-- **Ring one, lying flat**: the front of a link has a **hole** in it, open
-  underneath and roofed over, with a **cheek** either side. Across the
-  hole's front, low down, a **crossbar** runs from cheek to cheek. The roof
+- **Ring one, lying flat**: the front of a link is a **collar**: the link
+  runs on 3 mm past its crossbar to its **lip**, hollow, with a **hole**
+  in it, open underneath and roofed over, a **cheek** either side. Across
+  the hole, low down, the **crossbar** runs from cheek to cheek. The roof
   is a 45° gable along the link, cut flat 1 mm under the link's top (a
-  1.7 mm bridge), and the hole opens forward through the link's front as a
-  mouth of the same pointed shape.
-- **Ring two, standing up**: the rear of the next link is a flat upright
-  **tab**, 2.8 mm thick, with a round **window** through it. It grows
-  straight out of the link's rear face and stands in the hole, its foot on
-  the bed, the crossbar through its window.
+  2.2 mm bridge), and the hole opens forward through the lip as a
+  **mouth** of the same pointed shape.
+- **Ring two, standing up**: the rear of the next link is a **neck**,
+  3.6 mm wide and 5.6 mm tall, round over the top like a small link. Its
+  far end is a thick upright **tab** with a round **window** through it;
+  the tab stands in the hole, its foot on the bed, the crossbar through
+  its window. The neck runs forward out of the mouth to the link's
+  **shoulder**, where it is full width again, 1.7 mm past the lip, so a
+  short stretch of neck shows between the two links.
 
-Both rings are hidden in the link; only a sliver of the tab shows across the
-seam, low down.
+Both rings are hidden in the collar; what shows is the neck going into it.
 
 The tab's top is a half circle round the crossbar and its window is round
 too (cut flat top and bottom), so the tab is a ring at least 1.2 mm thick
@@ -64,17 +70,19 @@ cut off at 45°, so it fits a smaller round window and can still turn in it
 however far the link swings. Neither ring can open, so the links can't come
 apart.
 
-The hole is the tab swept through ±25°, so the link swings freely. Its back
-is the **droop stop**: as a link nods down, the tab's far end swings back
-and up, and at 30° its foot reaches the back of the hole. The link's rear
-is a flat face, the previous link's front that face swung through ±25°
-(round in the middle, set back a little at the sides), 0.5 mm apart. The
-rear's bottom edge is bevelled at 45° up to the crossbar's height, and its
-top edge by 2 mm, so the rear doesn't swing into the previous link's
-cheeks as it droops or nods up at full swing.
+The links stop each other. The **mouth** is the neck swept through ±15°
+with no gap, 1 mm deep through the lip; the hole behind it is 0.5 mm
+clear of the neck all round, so only the lip touches. Swung 15°, the neck
+lies flat against the side of the mouth; nodded up 15°, its top comes up
+under the mouth's ceiling. The hole's back is the **droop stop**: as a
+link nods down, the tab's far end swings back and up, and at 15° its foot
+reaches the back of the hole. The shoulder's corners stay at least 0.3 mm
+clear of the lip, so the shoulder never takes over as the stop.
 
 The body's sockets are sunk in the **head**, a flattened half ball standing
-on the bed (44 mm across, 14 mm tall, the legs are 8). Its profile is a
+on the bed (44 mm across, 14 mm tall, the legs are 8). Its sockets use
+the plain ring joint: a 2.8 mm tab straight off the first link's rear,
+no neck or collar. Its profile is a
 superellipse rather than an ellipse, so it stays full almost to its edge and
 then rounds down to the bed: no straight side, but still high enough at the
 legs to stand over them. In the head the joints are the same, but hidden:
@@ -98,10 +106,11 @@ back pair run back beside the abdomen. The legs print **bent at their
 joints** (`leg_bend`), the way a resting spider holds them: the front pair
 sweep out and back, the middle pairs curve back, and the back pair follow
 the abdomen's side about a millimetre clear of it, their feet curling in
-behind it. A joint can be bent this way because its hole is swept through
-the whole swing; it swings ±25° from straight, so from a 15° bend it swings
-on 10° one way and 40° the other. Curling the legs in is what keeps the whole
-print small. Fanned out this wide, the sockets
+behind it. A joint can be bent this way because its mouth is swept through
+the whole swing; it swings ±15° from straight, so from a 10° bend it swings
+on 5° one way and 25° the other. Curling the legs in is what keeps the whole
+print small; with the stiffer joints the bends are at most 10°, so it is a
+little wider than before (131 x 119, was 127 x 114). Fanned out this wide, the sockets
 pack in closer to the centre (13 mm) than legs spread evenly from it could,
 which is what keeps the head small; they are as close as the first links,
 swinging in their niches, and the rooms round the rings (at least 1.2 mm of
@@ -115,8 +124,8 @@ nose is a leg link cut to the niche's seam, and it goes in under the head's
 back edge. The head's shape is unchanged from above. Only underneath, at
 the back, is its edge lifted at 45° over the nose. Above that the egg
 follows the head round, `gap` clear of it however far it swings. The
-abdomen droops 30° (the droop stop), lifts ~3° and rolls ~5°; its joint
-swings ±25°, but with the back legs lying beside it the abdomen swings only
+abdomen droops 15° (the droop stop), lifts ~3° and rolls ~5°; its joint
+swings ±15°, but with the back legs lying beside it the abdomen swings only
 ~5–10° before it meets them (more if they swing out of the way).
 
 The head and the abdomen carry the same **curvy skin**, a little bigger
@@ -129,20 +138,20 @@ neither the head nor a swinging back leg ever meets it. It replaces the
 earlier rough skin of small dents and bumps, which didn't print well.
 
 Turning the outer link about the crossbar, with nothing else moving (a 3D
-check):
+check, two leg links intersected at each pose):
 
 | motion          | free to | stopped by                         |
 | --------------- | ------- | ---------------------------------- |
-| swing           | ±25°    | the crossbar in the window          |
-| nod up          | 12°     | its rear top against the previous link's front |
-| nod down        | 30°     | the tab's foot on the back of the hole (the droop stop) |
-| twist           | ±15°    | the tab against the hole's sides    |
+| swing           | ±15°    | the neck against the side of the mouth |
+| nod up          | ~14°    | the neck's top under the mouth's ceiling |
+| nod down        | 15°     | the tab's foot on the back of the hole (the droop stop) |
+| twist           | ±12°    | the thick tab round the crossbar, the neck in the mouth |
 
-Swinging fully and drooping fully at once is free; at the full 25° swing it
-still nods up 7°, but twists only once it swings back to ~22° (the crossbar
-then sits right at the window's edge). On the head the first links
-droop the same 30° but swing only about ±5°, against the neighbouring leg
-or the niche, and nod up ~3°, against the niche's leaning back wall. The
+Swinging fully and drooping fully at once is free; at the full 15° swing
+it nods up about 7° before the neck meets the roof. On the head
+the first links droop the same 15° but swing only about ±5°, against the
+neighbouring leg or the niche, and nod up ~3°, against the niche's leaning
+back wall. The
 crossbar can also slide in the window and the tab along the crossbar,
 which adds a little. The abdomen stops the back legs swinging in towards it, and
 they stop the abdomen (see above). Further out, neighbouring
@@ -150,11 +159,13 @@ legs stop each other at full swing.
 
 It all prints in place, flat:
 
-- The tab, the cheeks and the link behind them stand on the bed, at least
-  0.5 mm apart.
+- The tab, the neck, the cheeks and the link behind them stand on the bed,
+  at least 0.5 mm apart (the neck and the lip's mouth about 0.5 mm, the
+  mouth swept wider than the neck).
 - The bridges in a leg joint are short: the crossbar, about 5 mm across
-  the hole, 0.7 mm above the tab's foot, with 45° sides, and the roof's
-  flat ridge, 1.7 mm wide. The window's round top is a small arch.
+  the hole, 0.7 mm above the tab's foot, with 45° sides; the roof's flat
+  ridge, 2.2 mm wide; the mouth's ceiling, about 2.3 mm across the 1 mm
+  lip. The window's round top is a small arch.
 - The holes are open underneath, onto the bed. Their roofs lean in at 45°
   (the legs' gables, the head's cones), and so do the niches' and the
   waist's leaning backs and the rear bevels.
@@ -176,15 +187,20 @@ scale.
 | `link_w`       | joint  | 9.4     | link width (mm)                                |
 | `link_h`       | joint  | 8       | link height (mm)                               |
 | `link_base`    | joint  | 4.45    | link half-width on the bed (mm)                |
-| `tab_t`        | joint  | 2.8     | tab thickness (mm)                             |
+| `tab_t`        | joint  | 2.8     | tab thickness in the body's sockets (mm)       |
+| `neck_w`       | joint  | 3.6     | a leg link's neck width, and its tab's thickness (mm) |
+| `lip_x`        | joint  | 3.0     | the collar's lip, ahead of the crossbar (mm)   |
+| `lip_t`        | joint  | 1.0     | how deep the mouth fits the neck with no gap (mm) |
+| `sh_gap`       | joint  | 0.3     | the least between the shoulder and the lip, swung; sets the shoulder at 4.7 (mm) |
+| `nod`          | joint  | 15      | how far a link nods up before its neck meets the mouth's ceiling (deg) |
 | `foot_h`, `top_bar` | joint | 1.0, 1.6 | the tab under and over its window (mm)    |
 | `win_r`        | joint  | 1.785   | the round window's radius; the crossbar slides and turns in it (mm) |
 | `bar_w`, `bar_h` | joint | 2.0, 1.8 | crossbar section (mm)                       |
 | `bar_ch`       | joint  | 0.6     | the crossbar's 45° edge cuts (mm)              |
 | `bar_len`      | joint  | 7.2     | crossbar length, cheek to cheek (mm)           |
-| `swing`        | joint  | 25      | side-to-side swing the hole allows (deg)       |
-| `droop`        | joint  | 30      | how far a link nods down before the tab's foot reaches the back of the hole (deg) |
-| `bevel_top`    | joint  | 2.0     | the link rear's top bevel; the bottom one runs up to the crossbar's height (mm) |
+| `swing`        | joint  | 15      | side-to-side swing the mouth allows (deg)      |
+| `droop`        | joint  | 15      | how far a link nods down before the tab's foot reaches the back of the hole (deg) |
+| `bevel_top`    | joint  | 2.0     | the first link rear's top bevel, in the head; the bottom one runs up to the crossbar's height (mm) |
 | `segments`     | spider | 4       | links per leg, the last one the foot            |
 | `pitch`        | spider | 13.5    | joint to joint along a leg (mm)                |
 | `seam_gap`     | joint  | 0.6     | across the head's leaning seams (mm); the leg seams are `gap` |
@@ -196,7 +212,7 @@ scale.
 | `socket_at`    | spider | 13      | how far out from the body centre its crossbars sit (mm) |
 | `socket_angles` | spider | 32 68 102 140 | where each socket sits round the head, deg from straight ahead |
 | `leg_angles`   | spider | 25 58 94 155 | leg directions, deg from straight ahead  |
-| `leg_bend`     | spider | [15,15,15] [5,5,5] [15,20,15] [14,2,20] | each leg's joints bent as printed, deg toward the back (at most `swing` − 5) |
+| `leg_bend`     | spider | [10,10,10] [5,5,5] [10,10,10] [10,2,10] | each leg's joints bent as printed, deg toward the back (at most `swing` − 5) |
 | `lean_w`       | spider | [10,6] [10,10] [10,10] [6,14] | how far the head leans over each leg on either side (mm) |
 | `belly_tuck`   | spider | 3       | how far the abdomen's nose reaches in under the head's back edge, on the bed (mm); sets `waist_at` (16), the waist's crossbar behind the body centre, inside the head |
 
@@ -212,7 +228,7 @@ sag would weld it. **Tab stuck to a roof:** raise `roof_gap` (0.8) for the head;
 - No supports, no brim. It prints flat exactly as exported. Nothing in it
   overhangs past 45°, apart from the short bridges of the crossbars and the
   leg roofs' ridges and the windows' small arches.
-- 0.2 mm layers, 0.4 mm nozzle. The bed needs to be at least 127 x 114 mm.
+- 0.2 mm layers, 0.4 mm nozzle. The bed needs to be at least 131 x 119 mm.
 - Keep the first layer clean: elephant's foot is what welds print-in-place
   joints. If a joint is stuck when it comes off the bed, swing the link
   firmly once and it breaks free. Then work every joint in every direction a few

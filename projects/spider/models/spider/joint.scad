@@ -17,10 +17,13 @@
 // it nods down, the tab's far end swings back, and at `droop` its foot
 // reaches the back of the hole: the droop stop.
 //
-// Both rings are hidden inside the inner link, like the octopus's: only a
-// glimpse of the tab shows across the seam, low down. On a leg the hole's
-// roof is a 45 deg gable along the link, cut flat just under the link's top;
-// in the body (solid and tall round the joint) it is a 45 deg cone.
+// Both rings are hidden inside the inner link, like the octopus's. On a leg
+// the tab is thick and runs on forward as a narrow NECK, and the inner
+// link's front is a COLLAR round it, so the outer link sits partly inside
+// the inner one and the two stop each other (see "the telescope" below);
+// the hole's roof is a 45 deg gable along the link, cut flat just under the
+// link's top. In the body (solid and tall round the joint) the tab is thin,
+// straight off the first link, and the roof is a 45 deg cone.
 //
 // Everything prints in place, standing on the bed or self-supporting:
 //   - the tab, the cheeks and the link behind stand on the bed, apart;
@@ -70,9 +73,9 @@ bar_ch     = 0.6;   // the crossbar's edges are cut off at 45 deg by this,
 bar_len    = 7.2;   // crossbar length, cheek to cheek: its ends sink into
                     //   the cheeks, short of the next link's swept rear
 ring_min   = 1.2;   // the least of the tab round its window
-swing      = 25;    // side to side, each way: the hole is the tab swept
+swing      = 15;    // side to side, each way: the hole is the tab swept
                     //   through this
-droop      = 30;    // how far the outer link can nod down before the tab's
+droop      = 15;    // how far the outer link can nod down before the tab's
                     //   far end reaches the back of the hole
 
 bar_z      = foot_h + under_gap;          // the crossbar's underside
@@ -96,14 +99,6 @@ room_top   = tab_h + roof_gap;            // over the tab's top
 // point r out from the upright axis is at least r^2 - (tab_t/2)^2 from the
 // axis along the tab; so the cone clears it by roof_gap if
 cone_top   = pivot_z + roof_gap + sqrt(2) * norm([tab_reach, tab_t / 2]);
-// On a leg the roof is a gable in the inner link's frame, z <= gable_k - |y|.
-// The tab swung through `swing`: its top edge at x along it (sqrt(tab_reach^2
-// - x^2) over the axis, tab_t/2 out) is at most x sin + tab_t/2 cos out from
-// the centre line, so the highest point of |y| + z is
-gable_k    = pivot_z + tab_reach * sqrt(1 + pow(sin(swing), 2)) + tab_t / 2 * cos(swing)
-             + gap * sqrt(2);
-gable_flat = link_h - roof_min;           // the ridge, cut flat: a bridge
-assert(gable_k - gable_flat <= 1, "the hole's flat ridge is too wide a bridge");
 BIG        = 60;
 
 assert(norm([tip_x, pivot_z]) > stop_r, "the tab's foot never reaches the droop stop");
@@ -139,24 +134,32 @@ module link_body(x0, x1)
 
 // --- ring two: the tab ------------------------------------------------------
 
-// The tab, in plan: a round far end, on into the link.
-module tab_plan()
+// The tab's far end, in plan, t thick: round (a thick one only at its
+// corners, so the window doesn't open out of its sides).
+function end_r(t) = t <= tab_t ? t / 2 : 1.0;
+module tab_end(t = tab_t)
+    hull() for (s = [-1, 1]) translate([tip_x + end_r(t), s * (t / 2 - end_r(t))]) circle(end_r(t));
+
+// The tab, in plan: its far end, on into the link.
+module tab_plan(t = tab_t)
     hull() {
-        translate([tip_x + tab_t / 2, 0]) circle(d = tab_t);
-        translate([0, -tab_t / 2]) square([tab_front + 0.5, tab_t]);
+        tab_end(t);
+        translate([0, -t / 2]) square([tab_front + 0.5, t]);
     }
 
-// The tab with its window. Above the crossbar's axis it is trimmed to
-// `tab_reach` round the axis, so it turns under anything over it.
-module tab()
+// The tab with its window, t thick. Above the crossbar's axis it is trimmed
+// to `tab_reach` round the axis, so it turns under anything over it. A leg's
+// (`neck`) is as thick as the neck and rounded over the top like it.
+module tab(t = tab_t, neck = false)
     difference() {
         intersection() {
-            linear_extrude(tab_h) tab_plan();
+            linear_extrude(tab_h) tab_plan(t);
             union() {
                 translate([-BIG / 2, -BIG / 2, -1]) cube([BIG, BIG, pivot_z + 1]);
                 translate([0, 0, pivot_z]) rotate([90, 0, 0])
                     cylinder(r = tab_reach, h = BIG, center = true, $fn = 64);
             }
+            if (neck) neck_bar(-BIG / 2, BIG / 2);
         }
         rotate([90, 0, 0]) linear_extrude(BIG, center = true) window();
     }
@@ -176,12 +179,12 @@ module swept(a, step = 5)
     for (t = [-a : step : a - step]) hull() { rotate(t) children(); rotate(t + step) children(); }
 
 // The tab's room, in plan: the tab, run back to the droop stop, `gap` all
-// round, and on forward by `ext` (convex).
-module room_plan(ext = 0)
-    offset(r = gap) hull() {
-        translate([-stop_r + gap + tab_t / 2, 0]) circle(d = tab_t);
-        tab_plan();
-        translate([ext, 0]) tab_plan();
+// round (`g`), and on forward by `ext` (convex).
+module room_plan(ext = 0, t = tab_t, g = gap)
+    offset(r = g) hull() {
+        translate([-(stop_r - gap) - tip_x, 0]) tab_end(t);
+        tab_plan(t);
+        translate([ext, 0]) tab_plan(t);
     }
 
 // The hole: the tab's room swept through `sw`, open onto the bed, under the
@@ -190,12 +193,7 @@ module room_plan(ext = 0)
 // is left between the two.
 body_ext   = 1.5;
 module cavity(in_body = false, sw = swing)
-    if (!in_body) intersection() {
-        translate([0, 0, -1]) linear_extrude(BIG) swept(sw) room_plan();
-        translate([-BIG / 2, 0, 0]) rotate([90, 0, 90]) linear_extrude(BIG)
-            polygon([[-(gable_k + 1), -1], [gable_k + 1, -1], [gable_k - gable_flat, gable_flat],
-                     [-(gable_k - gable_flat), gable_flat]]);
-    }
+    if (!in_body) collar_room();
     else intersection() {
         translate([0, 0, -1]) linear_extrude(cone_top + 1) swept(sw) room_plan(body_ext);
         translate([0, 0, -1]) cylinder(r1 = cone_top + 1, r2 = 0, h = cone_top + 1, $fn = 72);
@@ -211,9 +209,108 @@ module octagon(w, h, c)
     polygon([[-w / 2 + c, -h / 2], [w / 2 - c, -h / 2], [w / 2, -h / 2 + c], [w / 2, h / 2 - c],
              [w / 2 - c, h / 2], [-w / 2 + c, h / 2], [-w / 2, h / 2 - c], [-w / 2, -h / 2 + c]]);
 
+// --- the telescope: along a leg -------------------------------------------
+//
+// Along a leg the outer link's rear is a narrow NECK, the tab thickened to
+// `neck_w` and run on forward, round over the top like a small link. The
+// inner link's front is a COLLAR round it: the link runs on past the
+// crossbar to its LIP at `lip_x`, hollow, and the neck goes in through a
+// mouth in the lip, so the outer link sits partly inside the inner one.
+// The outer link's full width starts again at its SHOULDER, `sh_x`, a short
+// stretch of neck showing between the two.
+//
+// The links stop each other: swung through `swing` the neck lies flat
+// against the side of the mouth (the mouth is the neck swept through
+// `swing`, with no gap, `lip_t` deep; the room behind it has `gap` all
+// round, so only the lip touches). Nodding up, the shoulder's top edge
+// comes back onto the lip; nodding down, the tab's foot onto the back of
+// the hole (the droop stop, as before).
+
+neck_w     = 3.6;   // the neck's width; the tab is as thick
+lip_x      = 3.0;   // the collar's lip, ahead of the crossbar
+lip_t      = 1.0;   // how deep the mouth through the lip fits the neck
+sh_gap     = 0.3;   // the least between the shoulder and the lip, swung
+neck_r     = neck_w / 2;  // the neck's top is a half round, its sides
+neck_cz    = tab_h - neck_r;  //   upright under it; as high as the tab
+// The shoulder: just far enough out that, swung through `swing`, its
+// corners clear the lip by `sh_gap`.
+sh_x       = (lip_x + sh_gap + link_r * sin(swing)) / cos(swing);
+
+module neck_profile()
+    hull() {
+        translate([0, neck_cz]) circle(neck_r, $fn = 48);
+        translate([-neck_w / 2, 0]) square([neck_w, neck_cz]);
+    }
+module neck_bar(x0, x1)
+    translate([x0, 0, 0]) rotate([90, 0, 90]) linear_extrude(x1 - x0) neck_profile();
+
+// The outer link's rear along a leg: its tab and its neck, on into the
+// shoulder.
+module neck()
+    difference() {
+        union() {
+            tab(neck_w, true);
+            neck_bar(0, sh_x + 1);
+        }
+        rotate([90, 0, 0]) linear_extrude(BIG, center = true) window();
+    }
+
+nod        = 15;    // how far the outer link can nod up, its neck's top
+                    //   then up against the top of the mouth
+// Nodding up, the shoulder's top edge (link_h - pivot_z over the axis, sh_x
+// out) swings back; it would come onto the lip at this angle, later.
+nod_sh     = let(a = sh_x, b = link_h - pivot_z, c = lip_x)
+             acos(c / norm([a, b])) - atan2(b, a);  // a cos - b sin = c
+assert(nod_sh > nod, "the shoulder comes onto the lip before the neck stops");
+
+// The collar's roof is a gable in the inner link's frame, z <= gable_k - |y|,
+// cut flat at `gable_flat`. gable_k clears the top of the tab and the neck
+// inside the collar (x up to lip_x), swung, nodding up and down, by gap.
+function neck_top(x, y) = let(r = neck_cz + sqrt(max(0, neck_r * neck_r - y * y)))
+    x < 0 ? min(r, pivot_z + sqrt(max(0, tab_reach * tab_reach - x * x))) : r;
+// The top of the tab and neck, in the inner link's frame, at every pose:
+// [x, |y|, z]. Swung all the way it nods up only half as far (`nod_sw`):
+// past that, up against the roof.
+nod_sw     = 0.5;
+neck_env   = [for (x = [tip_x : 0.25 : lip_x + 2], y = [-neck_w / 2 : 0.25 : neck_w / 2],
+                   s = [-swing, -swing / 2, 0, swing / 2, swing],
+                   n = [-droop : 2.5 : nod * (1 - (1 - nod_sw) * abs(s) / swing) + 0.01])
+    let(z = neck_top(x, y) - pivot_z,
+        xn = x * cos(n) - z * sin(n), zn = x * sin(n) + z * cos(n))
+    [xn * cos(s) - y * sin(s), abs(xn * sin(s) + y * cos(s)), pivot_z + zn]];
+gable_k    = gap * sqrt(2) + max([for (p = neck_env) if (p[0] <= lip_x - lip_t + gap) p[1] + p[2]]);
+// The mouth's own ceiling, through the lip, fits the neck with no gap, so the
+// neck's top comes up against it at `nod`: a gable too, cut flat.
+mouth_k    = max([for (p = neck_env) if (p[0] >= lip_x - lip_t && p[0] <= lip_x) p[1] + p[2]]);
+mouth_flat = max([for (p = neck_env) if (p[0] >= lip_x - lip_t && p[0] <= lip_x) p[2]]);
+gable_flat = link_h - roof_min;           // the ridge, cut flat: a bridge, under 3 mm
+assert(gable_k - gable_flat <= 1.5, "the collar's flat ridge is too wide a bridge");
+// ... and the link's round top is still roof_min thick over the gable's slopes
+assert(link_r - (gable_k - link_cz) / sqrt(2) >= roof_min, "the collar's roof is too thin over its gable");
+
+// The hollow in the collar: the neck's room, `gap` round, swept, up to the
+// lip, and the mouth through the lip, under the gable. Open underneath.
+module collar_room() {
+    intersection() {
+        translate([0, 0, -1]) linear_extrude(BIG) intersection() {
+            swept(swing, 2.5) room_plan(BIG / 4, neck_w);
+            translate([-BIG / 2, -BIG / 2]) square([BIG / 2 + lip_x - lip_t, BIG]);
+        }
+        gable(gable_k, gable_flat);
+    }
+    intersection() {
+        translate([0, 0, -1]) linear_extrude(BIG) swept(swing, 2.5) room_plan(BIG / 4, neck_w, 0.01);
+        gable(mouth_k, mouth_flat);
+    }
+}
+// Everything under a 45 deg gable along x, z <= k - |y|, cut flat at f.
+module gable(k, f)
+    translate([-BIG / 2, 0, 0]) rotate([90, 0, 90]) linear_extrude(BIG)
+        polygon([[-(k + 1), -1], [k + 1, -1], [k - f, f], [-(k - f), f]]);
+
 // --- the seam: two links butting up to each other ---------------------------
 //
-// Where two links meet, the outer link's rear is a flat face just behind
+// In the body, where a leg's first link (or the abdomen) meets it, the outer link's rear is a flat face just behind
 // where its tab joins it; the inner link's front is that face swung through
 // `swing`, `gap` away, so the outer link swings freely: round in the middle,
 // set back a little at the sides. Along a leg the face stands straight up,
@@ -270,5 +367,7 @@ function seam_rear(z, up = BIG) =
     up >= BIG ? seam_r + gap + max(0, bevel_low - z, z - (link_h - bevel_top))
               : max(seam_r + gap + max(0, bevel_low - z), seam_r - up + seam_v + z);
 
+echo(str("telescope: shoulder ", sh_x, ", shoulder nod stop ", nod_sh, ", gable_k ", gable_k,
+         ", mouth ", mouth_k, " flat ", mouth_flat));
 echo(str("joint: droop stop ", stop_r, " behind the axis, tab ", tip_x, " .. ", tab_front,
          ", hole front ", room_front, ", closed ceiling cone ", cone_top, ", seam_up ", seam_up));
