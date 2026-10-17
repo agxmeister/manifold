@@ -32,12 +32,12 @@ advent-chimney/
 
 | Component   | Print size (as exported)  | Prints on                    | Count |
 | ----------- | ------------------------- | ---------------------------- | ----- |
-| `fireplace` | 162 x 104 x 107 mm        | its bottom, as it stands     | 1     |
+| `fireplace` | 162 x 104 x 114.5 mm      | its bottom, as it stands     | 1     |
 | `section`   | 70 x 50 x 32.8 mm         | its bottom, as it stands     | 24    |
 | `gate`      | 70 x 53.9 x 13 mm         | the plate, band standing up  | 24 (days 1 to 24) |
 | `cloud`     | 115 x 74 x 55 mm          | its flat underside           | 1     |
 
-Assembled, it is about 0.88 m tall: fireplace 107 mm, 24 sections of 30 mm,
+Assembled, it is about 0.89 m tall: fireplace 114.5 mm, 24 sections of 30 mm,
 then the cloud.
 
 ## How it works
@@ -57,8 +57,10 @@ ring of the section above. It slides out through a notch in the front wall
 of the piece below. At its front is a stone band across the chimney, over the
 joint, with the day number on it. The band stops the plate when it is all
 the way in, and its top edge is a lip to hook a finger under. Pull the gate
-out and the shaft is open all the way down. On the fireplace, the day 1 gate
-slides out along a trench across the mantel.
+out and the shaft is open all the way down. On the fireplace, the chimney
+starts with a one-course brick stub standing on the mantel shelf, and the
+day 1 pocket is in the stub's top. The stub lifts the gate's band 2 mm over
+the shelf, so the gate pulls straight out over it and the shelf stays solid.
 
 The pocket and the notch are open upward, so no part of the gate's path is
 ever printed over air. The first version put the gate in a slot through the
@@ -90,7 +92,7 @@ the top of its file.
 | `joint_gap`   | lib       | 0.15    | ring to pocket wall clearance, per side                |
 | `gate_t`      | lib       | 2.0     | gate plate thickness                                   |
 | `gate_side` / `gate_vgap` | lib | 0.3 / 0.2 | gate clearance to the pocket wall / to the ring above |
-| `trench_gap`  | fireplace | 0.5     | day 1 gate band to the trench's sides, per side        |
+| `stub_courses` | fireplace | 1      | brick courses of chimney on the mantel shelf, under the day 1 pocket |
 | `day`         | gate      | 1       | the number on the band                                 |
 | `band_h` / `band_t` / `lip` | gate | 13 / 3 / 3 | band height, thickness, pull lip reach     |
 | `fp_w` / `fp_d` / `fp_h` | fireplace | 150 / 90 / 107 | fireplace body size, to the mantel's top |
@@ -112,7 +114,7 @@ All parts print without support. PLA, 0.2 mm layers, 15 % infill.
   `openscad -D day=7 -o projects/advent-chimney/exports/gate-gate-07.stl projects/advent-chimney/models/gate/gate.scad`.
 - **fireplace**: upright. The arch's crown is pointed at 45°, and the funnel
   and the mantel's underside are 45°, so nothing needs support. It's the
-  base of an 0.88 m tower, so give it 3 walls and 20 % infill or more for
+  base of an 0.89 m tower, so give it 3 walls and 20 % infill or more for
   weight.
 - **cloud**: on its flat underside, the plug and the skirt round it on the
   bed. Each puff stands on a 45° cone.
@@ -124,10 +126,10 @@ one colour.
 
 | Part        | Filament 1 | Filament 2                   | Filament 3                     | Swaps per print |
 | ----------- | ---------- | ---------------------------- | ------------------------------ | --------------- |
-| `fireplace` | bricks     | mantel (corbel + shelf, top 13 mm) | hearth (slab, firebox floor, plinth, bottom 6 mm) | 2 |
+| `fireplace` | bricks (and the chimney stub on the shelf) | mantel (corbel + shelf, 11 mm band) | hearth (slab, firebox floor, plinth, bottom 6 mm) | 3 |
 | `cloud`     | cloud      | 4 snowflakes inlaid in the front, 1.2 mm deep | none            | about 90 (one per layer the flakes span, 18 mm) |
 
-The fireplace's colours are horizontal bands, so it needs only two filament
+The fireplace's colours are horizontal bands, so it needs only three filament
 changes. The snowflakes share layers with the cloud, so every layer they span
 costs a swap. They sit in one low row to keep that span to 18 mm.
 

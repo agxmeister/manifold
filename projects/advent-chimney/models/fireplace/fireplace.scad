@@ -4,9 +4,11 @@
 // chimney so the tall stack doesn't tip when a gate is pulled. The firebox
 // behind the arch narrows into a 45° smoke funnel straight up into the
 // chimney's shaft, so whatever drops lands on the hearth floor, in reach
-// through the arch. A mantel shelf runs round the top. In the middle of it
-// is the pocket the first section stands in, holding the day 1 gate, and a
-// trench across the mantel in front of it that the gate pulls out along.
+// through the arch. A mantel shelf runs round the top, solid all over but
+// for the shaft. The chimney starts on it: a stub of brick courses whose top
+// is the pocket the first section stands in, holding the day 1 gate. The
+// stub is tall enough that the gate's band clears the shelf, so the gate
+// pulls straight out over it.
 //
 // Prints upright, as it stands. The arch is round with a 45° point at its
 // crown, the funnel and the mantel's underside are 45°: no support.
@@ -14,10 +16,10 @@
 // COLOUR. `accent = false` (the default) writes the fireplace as one solid,
 // for the checks and a one-colour print. `accent = true` writes it as three
 // top-level objects that together are exactly that solid: the bricks, the
-// mantel (corbel and shelf, everything from `brick_h` up) and the hearth
-// (everything below `hearth_h`: the slab in front, the firebox floor and a
-// plinth round the body). Both are horizontal bands, so a print costs four
-// filament swaps. Export with --enable=lazy-union and convert with
+// mantel (corbel and shelf, from `brick_h` to `fp_h`; the chimney stub on
+// it is brick again) and the hearth (everything below `hearth_h`: the slab
+// in front, the firebox floor and a plinth round the body). All three are
+// horizontal bands, so a print costs three filament swaps. Export with --enable=lazy-union and convert with
 // tools/multicolor-3mf.py (see README).
 
 include <../../lib/chimney.scad>
@@ -45,8 +47,8 @@ mantel_color = "saddlebrown";
 hearth_color = "gray";
 layer        = 0.2;           // colour boundaries land on multiples of this
 
-/* [Gate trench] */
-trench_gap = 0.5;   // gate band to the trench's sides, per side
+/* [Chimney stub] */
+stub_courses = 1;   // brick courses of chimney standing on the shelf, under the day 1 pocket
 
 /* [Hearth] */
 hearth_o = 14;      // hearth slab reaching forward of the body
@@ -66,11 +68,12 @@ arch_top = floor_h + arch_sp + arch_r * sqrt(2);   // crown point
 box_top  = fp_h - mantel_t - fun_h - 2;   // firebox ceiling where the funnel starts
 brick_h  = fp_h - mantel_t - mantel_o;    // bricks end where the corbel starts
                                           //   (and the mantel colour begins)
+stub_h   = stub_courses * course;
+top_h    = fp_h + stub_h;                 // the stub's top, the joint under section 1
 
 assert(box_d >= in_d && box_w >= in_w, "firebox narrower than the chimney shaft");
 assert(arch_top <= box_top + 1, "arch crown cuts into the funnel");
-assert(fp_h - pocket_d > box_top + fun_h + 1, "day 1 pocket floor sits over the funnel");
-assert(fp_h - pocket_d >= brick_h + 1, "gate trench cuts below the mantel colour");
+assert(stub_h >= pocket_d + 1, "chimney stub too short: the day 1 gate's band hits the shelf");
 assert(abs((brick_h - hearth_h) / course - round((brick_h - hearth_h) / course)) < 1e-6,
        "bricks must end on a whole course");
 assert(abs(hearth_h / layer - round(hearth_h / layer)) < 1e-6
@@ -103,6 +106,8 @@ module fireplace_body() {
                 translate([-fp_w / 2 - mantel_o, -mantel_o, fp_h - mantel_t])
                     cube([fp_w + 2 * mantel_o, fp_d + mantel_o, mantel_t]);
             }
+            // the chimney's stub standing on the shelf
+            translate([0, ch_y, 0]) slab(fp_h - 0.01, stub_h + 0.01) ch_rect();
             // hearth slab in front
             translate([-arch_w / 2 - hearth_e, -hearth_o, 0])
                 cube([arch_w + 2 * hearth_e, hearth_o + 1, hearth_h]);
@@ -112,13 +117,16 @@ module fireplace_body() {
             translate([-box_w / 2, fp_wall, floor_h]) cube([box_w, box_d, box_top - floor_h]);
             translate([0, ch_y, box_top + fun_h]) slab(0, 0.01) ch_rect(-wall);
         }
-        translate([0, ch_y, 0]) slab(box_top + fun_h - 0.01, fp_h - box_top) ch_rect(-wall);
-        // the day 1 pocket under the first section, and the trench the gate
-        // slides out along (its band is as wide as the chimney)
-        translate([0, ch_y, fp_h]) {
-            pocket_cut(gate = true);
-            translate([-ch_w / 2 - trench_gap, -ch_y - mantel_o - 1, -pocket_d])
-                cube([ch_w + 2 * trench_gap, ch_y + mantel_o + 1, pocket_d + 1]);
+        translate([0, ch_y, 0]) slab(box_top + fun_h - 0.01, top_h - box_top - fun_h + 1)
+            ch_rect(-wall);
+        // the day 1 pocket under the first section, in the stub's top
+        translate([0, ch_y, top_h]) pocket_cut(gate = true);
+        // bricks on the stub; the course under section 1's is the other parity,
+        // so the bond runs on up the chimney (kept off the shelf's top)
+        intersection() {
+            mortar_cut(ch_w, ch_d, fp_h, top_h, y0 = ch_y,
+                       course0 = stub_courses % 2);
+            translate([-ch_w, ch_y - 1, fp_h]) cube([2 * ch_w, ch_d + 2, stub_h + 1]);
         }
         // the arch, through the front wall into the firebox
         translate([0, fp_wall + 1, floor_h]) rotate([90, 0, 0])
@@ -137,7 +145,7 @@ module fireplace_body() {
 }
 
 // Everything that isn't brick: the mantel band and the hearth band.
-module mantel_region() translate([-500, -500, brick_h]) cube([1000, 1000, 500]);
+module mantel_region() translate([-500, -500, brick_h]) cube([1000, 1000, fp_h - brick_h]);
 module hearth_region() translate([-500, -500, -1]) cube([1000, 1000, hearth_h + 1]);
 
 if (accent) {
