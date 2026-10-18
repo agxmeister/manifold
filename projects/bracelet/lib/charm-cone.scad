@@ -1,25 +1,28 @@
-// charm-cone — a second way to hang a charm on the bracelet: the CONE PIN.
-// It sits ALONGSIDE the dovetail H-pin (lib/charm-dovetail.scad) until it has
-// been proven on a print; `mount = "cone"` in bracelet.scad and in a charm
-// picks it.
+// charm-cone — the ONE way a charm hangs on the bracelet: the CONE PIN, a
+// bolt. (The H-pin and the dovetail H-pin before it are gone, 2026-10-18.)
 //
 // A pin with a CONE at its foot and an M5 THREAD on top. It goes into a
 // station bar FROM UNDERNEATH: the cone seats in a countersink in the bar's
 // underside, flush with it, and the thread stands up out of the bar's top.
-// The charm screws down onto the thread until it clamps the bar between
-// itself and the cone. The bar has no thread at all.
+// The charm sits on the bar and the pin is turned FROM BELOW with a hex key
+// (models/screwdriver) until it clamps the bar between the cone and the
+// charm. The bar has no thread at all.
 //
-// THE CONE IS ROUND, so a charm can be screwed down facing any way; it holds
-// by the clamp. A charm can be turned on the bracelet by loosening it, turning
-// it and tightening it again.
+// THE CHARM IS KEYED, NOT FREE. A half-round RIB stands on the bar's top,
+// across the band, through the pin's axis (split by the hole), and the
+// charm's underside has `360/cn_step` radial GROOVES. Set the charm down
+// with the rib in the grooves at the angle wanted — every `cn_step` = 45
+// degrees — and it cannot turn. That is why the PIN turns, not the charm: a
+// charm screwed down would have to spin through the rib for its last
+// millimetre. The cone is round, so the pin spins freely in its countersink.
 //
 // What the first print (2026-10-04) taught, all at the user's request:
 //   * the BALL at the thread's tip and the CLICK fingers round it added no
 //     hold worth having — gone; the thread is longer instead (1.26 -> 2 turns);
-//   * the 15-degree RIDGES on the bar did not print at all, too small — gone,
-//     with the charm's ring of grooves;
+//   * the 15-degree RIDGES on the bar did not print at all, too small (0.3
+//     tall) — gone. The rib that replaces them is 1.0 tall and 2.0 wide;
 //   * the SLOT that split the cone into a spring is not needed — the cone is
-//     a TRUE cone, with only the flat it prints on;
+//     a TRUE cone;
 //   * the pin was too thin — M3 -> M5, the cone 4.5 -> 6.7.
 //
 // WHERE THE ROOM FOR A FAT PIN COMES FROM. A bar is only 6.0 along the band.
@@ -33,9 +36,10 @@
 
 // THE PIN PRINTS STANDING UP, on its round foot, thread up (2026-10-05; it
 // first printed lying on a flat; standing, the cone and thread print round).
-// The foot carries a HEX SOCKET for a hex key, so the pin can be held or
-// turned from under the band. The CHARM prints seat-down: the thread's mouth
-// on the bed, the bore's blind end a 45-degree cone.
+// The foot carries a HEX SOCKET for a hex key: the pin is turned from under
+// the band. The CHARM prints seat-down: the thread's mouth and the grooves
+// on the bed, the bore's blind end a 45-degree cone, the grooves' roofs
+// gabled at 45 degrees.
 //
 // This file draws nothing — variables, functions and modules only. Everything
 // is named `cn_*`.
@@ -117,8 +121,28 @@ cn_key_d  = 2.5;    // the socket's straight depth; its end is a hex cone
 cn_key_ch = 0.3;    // a 45-degree lead-in at the socket's mouth
 cn_key_wall = 0.8;  // the least cone left round the socket's corners
 
+// ------------------------------------------------- the rib and the grooves
+// The rib: a half-round ridge on the bar's top, across the band (along y),
+// through the pin's axis, in two halves either side of the hole. Its ends
+// are quarter-spheres. It stands on the bar's top: no overhang anywhere.
+cn_rib_r   = 1.0;   // its radius: 2.0 wide, 1.0 tall
+cn_rib_in  = 4.3;   // its inner tips, from the pin's axis
+cn_rib_out = 7.0;   // its outer tips: inside the bar's flat top (7.6)
+cn_step    = 45;    // the angle between two grooves under a charm
+cn_g_fit   = 0.15;  // the grooves' clearance round the rib, every way
+// A groove is the rib's half-circle grown by `cn_g_fit`, gabled at 45
+// degrees above it (the charm prints seat-down, so its roof is a ceiling),
+// straight-ended `cn_g_fit` past the rib's tips.
+cn_g_r     = cn_rib_r + cn_g_fit;                       // 1.15
+cn_g_apex  = cn_g_r * sqrt(2);                          // 1.63 — its depth
+cn_g_in    = cn_rib_in - cn_g_fit;                      // 4.15
+cn_g_out   = cn_rib_out + cn_g_fit;                     // 7.15
+cn_g_web   = 2*cn_g_in*sin(cn_step/2) - 2*cn_g_r;       // between two grooves
+cn_g_ring  = cn_g_in - cn_hole_maj/2;                   // round the thread
+
 // ------------------------------------------------------------ the charm
 cn_roof   = 1.0;    // the least a charm may leave over its bore's apex
+cn_g_roof = 1.0;    // ... and over a groove's ridge
 
 // --------------------------------------------------------------- derived
 cn_cs_h   = (cn_cs_r - cn_hole/2) / tan(cn_cs_a);       // 3.05 — countersink
@@ -154,6 +178,12 @@ assert(cn_base + cn_key_d + cn_key_r < -cn_sink + cn_thread - cn_tip,
 assert(atan(cn_foot_ch / cn_foot_cz) <= 40, "the foot's chamfer is too flat");
 assert(cn_seat >= 0.6, str("the cone's shoulder is only ", cn_seat, " wide"));
 assert(cn_cs_a <= 40, "the countersink's ceiling is too flat to print");
+assert(360 % cn_step == 0 && (360/cn_step) % 2 == 0,
+       "the grooves must come in opposite pairs: the rib runs both ways");
+assert(cn_g_web >= 0.8, str("only ", cn_g_web, " mm between two grooves' inner ends"));
+assert(cn_g_ring >= 1.2, str("only ", cn_g_ring, " mm of charm round the thread"));
+assert(cn_rib_in >= cn_hole/2 + 1.0,
+       "the rib's inner tips come within 1.0 of the bar's hole");
 assert(cn_cs_h < cn_bar - 1.0, "the countersink runs up most of the bar");
 assert(abs(cn_cone_top + cn_sink) < 1e-9, "the cone must run up to the thread");
 
@@ -262,7 +292,34 @@ module cn_bar_cut() {
                  h = cn_cs_h + 0.5, $fn = 120);
 }
 
+// The rib, in the PIN's frame, z = 0 the bar's top: two pills, cut at the
+// top face (they are sunk 0.2 into the bar so they fuse).
+module cn_bar_rib() intersection() {
+    for (s = [-1, 1]) hull()
+        for (r = [cn_rib_in + cn_rib_r, cn_rib_out - cn_rib_r])
+            translate([0, s*r, 0]) sphere(r = cn_rib_r, $fn = 48);
+    translate([-cn_rib_r - 1, -cn_rib_out - 1, -0.2])
+        cube([2*cn_rib_r + 2, 2*cn_rib_out + 2, cn_rib_r + 0.2]);
+}
+
 // ------------------------------------------------------------ the charm
+// CUT from a charm, z = 0 at its seat face (the bed): every groove, one per
+// `cn_step` round the axis. Each is drawn from `cn_g_in` to `cn_g_out` along
+// +y and turned into place: a teardrop section (half-circle, 45-degree
+// gable) with square ends. It overruns the seat by 1 so it opens cleanly on
+// the bed.
+module cn_grooves() for (a = [0 : cn_step : 360 - cn_step]) rotate(a)
+    translate([0, cn_g_out, 0]) rotate([90, 0, 0])
+        linear_extrude(cn_g_out - cn_g_in) polygon([
+            [-cn_g_r, -1], [cn_g_r, -1],
+            for (t = [0 : 7.5 : 45]) [cn_g_r*cos(t), cn_g_r*sin(t)],
+            [0, cn_g_apex],
+            for (t = [135 : 7.5 : 180]) [cn_g_r*cos(t), cn_g_r*sin(t)],
+        ]);
+
+// The whole mount, cut from a charm.
+module cn_charm_mount() { cn_charm_cut(); cn_grooves(); }
+
 // CUT from a charm, z = 0 at its seat face (the bed): the thread, and the
 // bore's blind end coned at 45 degrees — a flat 4.5 mm disc there would be a
 // ceiling hanging over the thread.

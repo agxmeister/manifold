@@ -1,7 +1,10 @@
-// butterfly-charm — a 3D butterfly, and the charm that goes with the H-PIN mount.
+// butterfly-charm — a 3D butterfly, a charm for the CONE PIN.
 //
-// It snaps onto the upper half of an H-shaped pin (models/pin) whose
-// lower half is already snapped into a pocket in a bracelet bar.
+// It sits on a station bar with the bar's half-round rib in two of its
+// eight grooves, and the cone pin, turned from under the band with the hex
+// key, screws up into its threaded socket and clamps it down
+// (lib/charm-cone.scad). The grooves are 45 degrees apart, so it can sit
+// square to the band, along it, or at any multiple of 45 degrees.
 //
 // IT PRINTS SEAT DOWN — the face that lands on the bracelet is the face that
 // lands on the bed — and that is what lets it be a solid thing instead of a
@@ -14,13 +17,15 @@
 //     relieved just inside 45 degrees outside `x0`, so every layer lands on
 //     the one below;
 //   * the antennae lean out at `ant_lean`, inside the self-supporting cone;
-//   * the two holes open on the bed, and their far ends are gabled at 45
-//     degrees (see the lib).
+//   * the socket and the grooves open on the bed; the socket's blind end is
+//     a 45-degree cone and each groove's roof a 45-degree gable (the lib).
 //
-// WHY A BUTTERFLY. The H is 11 mm across, so the charm needs a 5.5 x 14 mm
-// lozenge of material around its legs. A butterfly's
-// BODY is that lozenge. It runs ACROSS the band and the wings along it, so the
-// wingspan is what `charm_reach` in bracelet.scad spaces.
+// THE THORAX HOLDS THE SOCKET. The socket is an M5 thread 5.5 deep with a
+// coned end, `cn_need` = 8.75 tall over the axis with its roof. The body
+// stays as low as it was (6.85) at its ends; in the middle a round THORAX
+// rises over the socket, and the hull of the two makes one smooth hump. The
+// body runs ACROSS the band and the wings along it, so the wingspan is what
+// `charm_reach` in bracelet.scad spaces (at the 0-degree position).
 //
 // THE FLAT BOTTOM STAYS WITHIN |x| <= `x0`. The band's top is a plane only
 // while it is still: turn a joint and the neighbour's knuckle ARM tilts up
@@ -28,30 +33,34 @@
 // band's top, that reaches r = 5.8 from the bar's centre; this charm is long
 // across the band, so its bottom is kept inside |x| = 5.0, the disc's reach at
 // the knuckle clusters' edge, and relieved beyond. The swing test in CLAUDE.md is the proof: clear to 40
-// degrees each way at wrist 130 and 180, binding at 60.
-//
-// The charm cannot swivel: two legs fix it square to the band.
+// degrees each way at wrist 130 and 180, binding at 60. Measured with the
+// butterfly square to the band; turned, its wings reach further along it.
 
 $fa = 2;
 $fs = 0.3;
 
-include <../../lib/charm-pin.scad>
+include <../../lib/charm-cone.scad>
 
 // ------------------------------------------------------------------ the body
-body_top  = hp_apex + hp_wall + 0.1;   // 6.85 — roofs the holes by a wall.
-                                 //   The +0.1 is for the ENDS, where the ridge
-                                 //   rounds away over each gable's far end.
-body_side = 3.9;                 // vertical sides up to here, then the round top.
-                                 //   High enough that the top clears the holes'
-                                 //   gables by a wall — asserted below.
-body_pad  = 0.3;                 // the body's foot, this much proud of the least
-                                 //   the holes need (`charm_h_boss_2d`)
+body_x    = 3.4;                 // the body's foot: half its width (along the band),
+body_y    = 7.95;                //   half its length (across it),
+body_cr   = 1.5;                 //   and its corners' radius. The H-pin's sizes,
+                                 //   kept so the butterfly keeps its shape
+body_top  = 6.85;                // the body's height at its ENDS
+body_side = 3.9;                 // vertical sides up to here, then the round top
 ridge_r   = 1.9;                 // the rounded top: a capsule along the body
-ridge_y   = hp_c_out + hp_wall + body_pad - ridge_r;   //   ... ending flush with the foot
+ridge_y   = body_y - ridge_r;    //   ... ending flush with the foot
+
+thx_wall  = 1.2;                 // the THORAX round the socket: this much wall
+thx_r     = cn_hole_maj/2 + thx_wall;   // 3.85 — round the thread's crests,
+thx_side  = cn_bore;             //   vertical as high as the thread runs,
+thx_top   = 9.3;                 //   and domed (a half-ellipsoid) to here —
+                                 //   the coned end + `cn_roof` need 8.75
 
 head_r    = 1.9;                 // the head, a round-topped post at the front
-head_y    = hp_c_out + hp_wall + 0.9;
-head_h    = 4.6;                 // top of the head
+head_y    = body_y + 0.6;
+head_h    = 5.4;                 // top of the head: 4.6 under the 6.85 body,
+                                 //   raised to stay in scale with the thorax
 ant_d     = 1.3;                 // the antennae: two leaning rods
 ant_lean  = 38;                  //   degrees from vertical — self-supporting
 ant_len   = 3.0;
@@ -76,9 +85,8 @@ wing_lift = 15;              // and the V: its top rises outward at this angle
 
 // Spots, cut into the wings' tops. A cone opening upward is all floor, so it
 // prints on a top face with nothing overhanging.
-spot_up   = [5.0, 3.6];      spot_up_d = 2.6;   // both 0.4 further out since the
-spot_lo   = [4.25, -4.5];    spot_lo_d = 1.4;   //   3.5 mm pin widened the body (2026-09-27);
-                                                //   the lower one also shrank, to stay inside x0
+spot_up   = [5.25, 3.6];     spot_up_d = 2.6;   // both moved out to clear the
+spot_lo   = [4.65, -4.5];    spot_lo_d = 1.4;   //   thorax (2026-10-18)
 spot_deep = 0.7;
 
 // ------------------------------------------------------------------- checks
@@ -91,21 +99,30 @@ assert(span <= 16.2,
        str("the wings span ", span, " — that outgrows `charm_reach` in bracelet.scad"));
 assert(tip_thick >= 1.2,
        str("the wing tips come out ", tip_thick, " mm thick — raise wing_root or wing_lift"));
-body_x    = hp_boss_x/2 + body_pad;                         // 3.40
-assert(spot_up[0] - spot_up_d/2 >= body_x + 0.1 && spot_lo[0] - spot_lo_d/2 >= body_x + 0.1,
+// The body's outline never reaches past max(body_x, thx_r): hull of the two.
+body_reach = max(body_x, thx_r);
+assert(spot_up[0] - spot_up_d/2 >= body_reach + 0.1 && spot_lo[0] - spot_lo_d/2 >= body_reach + 0.1,
        "a wing spot runs into the body");
 assert(ant_lean <= 40, "the antennae lean past what prints without support");
-// The body's round top has to clear each gable by a wall. The gable's slope and
-// the hull's roof are both near 45 degrees, so check it where it is tightest:
-// the gable's eave corner against the straight part of the side.
-assert(body_side >= hp_roof + 0.2,
-       "the body's vertical side stops below the holes' eaves");
-assert(ridge_y + ridge_r <= hp_c_out + hp_wall + body_pad + 0.01,
-       "the ridge overhangs the body's foot at its ends");
+assert(ridge_y > 0, "the ridge is longer than the body");
+// The socket, under the thorax's dome: `cn_roof` over the coned end's apex,
+// and over the thread's top corner (r = cn_hole_maj/2 at cn_bore), measured
+// straight up — the dome is a half-ellipsoid.
+thx_z     = function(r) thx_side + (thx_top - thx_side) * sqrt(max(0, 1 - pow(r/thx_r, 2)));
+assert(thx_top - cn_apex >= cn_roof,
+       str("only ", thx_top - cn_apex, " mm of thorax over the socket's apex"));
+assert(thx_z(cn_hole_maj/2) - cn_bore >= cn_roof + 0.5,
+       "the thorax's dome comes down too close to the thread's top");
+// The grooves: across the body (|x|) they run under the wings, whose root is
+// the thinnest place a groove's ridge passes under.
+assert(wing_root - cn_g_apex >= 0.5 && wing_top(cn_g_in) - cn_g_apex >= cn_g_roof,
+       str("only ", wing_top(cn_g_in) - cn_g_apex, " mm of wing over a groove"));
+assert(body_side - cn_g_apex >= cn_g_roof, "the body is too low over the grooves");
 
 echo(str("3D butterfly: ", span, " mm wingspan; body ", body_top,
-         " mm tall over two H-pin holes (gabled to ", hp_apex,
-         "), wings ", wing_root, " thick at the root rising at ", wing_lift,
+         " mm tall at its ends, thorax ", thx_top, " over the cone pin's socket",
+         " (", thx_top - cn_apex, " over its apex), wings ", wing_root,
+         " thick at the root rising at ", wing_lift,
          " deg, tips ", tip_thick, " thick; flat bottom within |x| <= ", x0));
 
 // ----------------------------------------------------------------- geometry
@@ -113,10 +130,29 @@ echo(str("3D butterfly: ", span, " mm wingspan; body ", body_top,
 // ends up — 21 sides on a 4.7 mm wing. Set it for the finished size instead.
 module wing(c, r, tilt) translate(c) rotate(tilt) scale(r) circle(1, $fn = 96);
 
-module wings_2d() for (m = [0, 1]) mirror([m, 0]) {
+// The notch between the fore- and hindwing has its apex at (4.5, -1.3),
+// just beside the groove that runs along the band (|y| <= `cn_g_r`), and the
+// forewing's lower edge then runs at a shallow angle across that groove's
+// wall: a knife sliver. So the notch is filled down to `notch_y`, a full
+// wall below the groove — the forewing gets a straight lower edge there —
+// and the corners this makes are rounded by `notch_round`. The notch below
+// that line, between the wings, is kept.
+notch_y     = -(cn_g_r + 1.0);       // -2.15
+notch_round = 0.6;
+
+module wing_side_2d() {
     wing(up_c, up_r, up_tilt);
     wing(lo_c, lo_r, lo_tilt);
+    intersection() {
+        hull() { wing(up_c, up_r, up_tilt); wing(lo_c, lo_r, lo_tilt); }
+        translate([0, notch_y]) square([20, 20]);
+    }
 }
+
+module wings_2d() for (m = [0, 1]) mirror([m, 0])
+    offset(r = notch_round) offset(r = -notch_round)        // convex corners
+        offset(r = -notch_round) offset(r = notch_round)    // concave corners
+            wing_side_2d();
 
 // The wings as solids: the outline, cut to the V. For each side, a prism
 // whose section (in x-z) is the V's top above and the 45-degree relief below.
@@ -131,9 +167,14 @@ module wings() intersection() {
 }
 
 module body() hull() {
-    linear_extrude(body_side) offset(r = body_pad) charm_h_boss_2d();
+    linear_extrude(body_side) offset(r = body_cr)
+        square([2*(body_x - body_cr), 2*(body_y - body_cr)], center = true);
     for (s = [-1, 1])
         translate([0, s*ridge_y, body_top - ridge_r]) sphere(r = ridge_r);
+    // the thorax: a round post up the thread, domed over the socket
+    cylinder(r = thx_r, h = thx_side, $fn = 96);
+    translate([0, 0, thx_side])
+        scale([thx_r, thx_r, thx_top - thx_side]) sphere(1, $fn = 96);
 }
 
 module head() hull() {
@@ -168,7 +209,7 @@ module butterfly_charm() {
             head();
             antennae();
         }
-        charm_h_holes();
+        cn_charm_mount();
         spots();
     }
 }

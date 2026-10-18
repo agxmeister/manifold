@@ -3,16 +3,103 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
-## The cone pin — 2026-10-04, reworked after its first print; PRINTED GOOD 2026-10-05. ALONGSIDE the dovetail
+## The BOLT is the only mount — 2026-10-18, rib + grooves UNPRINTED
+
+The user: "keep bolts a single way to attach charms". "Bolt" = the cone pin
+(`models/cone-pin`, `lib/charm-cone.scad`, `cn_*`). What they asked, and
+what was done:
+1. **"Print bolts vertically, no need to keep one side flat."** Already true
+   since c1a66fd (standing, round, hex socket); nothing changed. Told the user.
+2. **"Remove all other connectors."** `lib/charm-dovetail.scad`,
+   `lib/charm-pin.scad`, `models/pin` deleted; `mount` is gone from
+   `bracelet.scad` and the heart. See "Mounts removed" below.
+3. **"Change all charms to the bolt."** Every charm subtracts
+   `cn_charm_mount()` (socket + grooves) at its origin and stands ≥ `cn_need`
+   8.75 over the axis.
+4. **Angles: "a semicircular protrusion on the bracelet, grooves under the
+   charms".** The user chose (asked with previews) a HALF-ROUND RIB across
+   the band through the axis, and 45° steps (8 grooves). The heart's
+   `angle` parameter and its `-a*` exports are gone: the angle is chosen on
+   the wrist.
+
+**The mechanism has one consequence the user was told up front: the BOLT
+turns, not the charm.** A charm screwed down would have to spin through the
+rib for its last 1.0 mm (156° of thread). So the charm is set on the rib and
+the bolt is turned from below with the hex key; the round cone spins in its
+countersink. Right-hand thread: clockwise seen from below tightens.
+
+**Geometry** (`lib/charm-cone.scad`):
+- Rib `cn_bar_rib()`: two pills r `cn_rib_r` 1.0 (2.0 × 1.0 half-round, quarter-
+  sphere ends) along y, tips from `cn_rib_in` 4.3 to `cn_rib_out` 7.0 off the
+  axis, sunk 0.2 into the bar. Added AFTER the station `difference()`
+  (`charm_station_add`). It stays on the bar's flat top (asserted: x ≤ 2.5,
+  |y| ≤ 7.6 − 0.3). The helper that sweeps the thread was already called
+  `cn_rib` — the name clash gave "Too many unnamed arguments" warnings and a
+  silently smaller thread cut. Hence `cn_bar_rib`.
+- Grooves `cn_grooves()`: 360/`cn_step` radial slots, teardrop section
+  (r `cn_g_r` 1.15 = rib + `cn_g_fit` 0.15, 45° gable to apex `cn_g_apex`
+  1.63), square ends `cn_g_fit` past the rib tips (`cn_g_in` 4.15 ..
+  `cn_g_out` 7.15). Web between grooves at the inner end `cn_g_web` 1.18
+  (≥ 0.8), solid ring round the thread `cn_g_ring` 1.5 (≥ 1.2). Play about
+  ±1.7°. Charms must leave `cn_g_roof` 1.0 over a groove's ridge.
+- `cn_charm_mount()` = `cn_charm_cut()` + `cn_grooves()`. Thread, bore,
+  countersink, the +x fill and the pin are UNCHANGED: `cone-pin` and
+  `screwdriver` exports are byte-identical.
+
+**Checks (band `-D charms=3`, heart):**
+- Plain band byte-identical. c3: 11 shells, genus 34, 1697.9 mm² in 11
+  islands, 40 BRIDGE (= before), wall flags only the known ones. c3 − old
+  c3-cone = 19.06 mm³ (three ribs above the top), old − new empty.
+- Heart: old cone heart − new = 56.60 mm³ = exactly `cn_grooves()` ∩ z > 0;
+  new − old empty. 1 shell, 252 mm², 1 BRIDGE (the bore's apex), no thin
+  wall outside the thread. 5.79 over the grooves' far ends (asserted).
+
+**Harness** (scratch: `c3.stl`, the charm export imported at bar 5's axis,
+`translate([5*pitch + cn_off, band_cy, thick + dz]) rotate(a)`):
+
+| test | reads |
+|---|---|
+| heart at a = 0, 45 … 315, dz 0 | 0-vol contact sheet at z 4.2, every one |
+| a = 22.5 (CONTROL: between grooves) | 6.29 — stands on the rib |
+| a = 0, dz −0.2 (CONTROL) | 27.43 |
+| a = 45, dz +0.05 | empty (the rib clears its groove) |
+
+**All five charms converted** (2026-10-18). Each subtracts
+`cn_charm_mount()` at its origin and asserts its own roof over the socket and
+the grooves. Older numbers in each charm's own section below are the H-pin
+version's; these supersede them:
+
+| charm | what grew / moved | size, vol, bed | notes |
+|---|---|---|---|
+| heart | grooves only (was already 9.2 for the cone) | 23 × 19.4 × 9.2, 2440.02, 252 mm² | `angle` and `-a*` exports gone |
+| butterfly | round thorax r 3.85 (`thx_r`), domed to 9.3 hulled with the old body; head 4.6→5.4; spots out; wing notch filled to y −2.15 (a groove ran out through it in 0.0–0.3 slivers) | 16.1 × 19.8 × 9.3, 950.56, 104 mm² | hp_ sizes inlined (`body_x` 3.4, `body_y` 7.95…); wall flags left: wedges where diagonal groove ends meet the 43.6° relief (≥ 59°, one 0.07 sample at a corner), accepted |
+| ladybug | `sh_h` 8.0→8.8, `sh_a` 6.3→7.6 (at 6.3 a 0.08–0.33 curtain over the diagonal grooves); legs moved between grooves: `[[2.25,10,5.9],[-2.25,-10,5.9],[-5.5,-50,4.8]]` (a 1.6-tall leg would be cut off by a 1.63 groove), asserted ≥ 0.1 clear (0.49); spots spread | 20.6 × 21.6 × 8.8, 1488.13, 177 mm² | colours red 5 / black 14 shells, sum exact; one 0.28 wedge at (−5.72, −4.60, 0.75) accepted. The old "1077.6 mm³" below was stale: the old export measured 1213.65 |
+| rose | `core_top` 7.95→8.75 (socket roof exactly 1.00 on the axis — raise it for margin); petals untouched | 22.1 × 22.4 × 10.5, 2524.56, 201 mm² | gap scan (re-written in python from `dump=true`) 0 persistent; grooves end r 7.24 inside the 8.0 core |
+| dolphin | torso rows s −2…8.5 raised to 8.86 over the axis (8.50), height peak 9.08 at s 2.5–3; `fin_lift` 0.35; `joints` [11.2,18.4,25.7]→[11.3,18.5,25.7] (pocket front 8.2, `g_wall` 1.05 past `cn_g_out`) | 29.8 × 52.5 × 13.9, 2517.81, 420 mm² in 4 | ±x grooves exit the body's sides at r ~6.9 as small arches at bed level; joint harness rows unchanged; `-bend.png` preview is stale |
+
+Band harness for every charm, all pass: every 45° a 0-vol sheet; 22.5° →
+6.29 (rib, ladybug 67.5° 5.97); dz −0.2 → 13–29 mm³; dz +0.05 empty.
+
+**Swing with a charm seated, turned 0 / 45 / 90**, bars 3, 4, 6, 7 bent
+about their pins (scratch `swing.scad` + `swing.sh`, `wearing` = neighbours
+drop): all five EMPTY at 24° and 40°; at −1° (backwards, the CONTROL) all
+hit — heart 0.8–3.5, ladybug 0.9–1.8, rose 0.9, dolphin 3.6–23.1, and the
+butterfly now too (0.001–0.11: it used to bend back to 40°; turned, its
+flat bottom lies over the neighbours). A dolphin turned 90° puts 52.5 mm
+along the band, past the 35.1 mm station spacing — two charms next to it
+would collide (told in the README).
+
+Not printed. Not checked in a slicer.
+
+## The cone pin — 2026-10-04, reworked after its first print; PRINTED GOOD 2026-10-05
 
 The user's design: a pin with a CONE at its foot, inserted from under the
 band into a countersink in a station bar, and an M5 THREAD on top that the
-charm screws onto, clamping the bar. It stays **alongside** the dovetail
-H-pin "for a while". `mount = "cone"` in `bracelet.scad` and in
-`heart-charm.scad` (the only charm converted; 9.2 tall for it).
-`lib/charm-cone.scad` is `cn_*`, `models/cone-pin`. Exports:
+charm screws onto, clamping the bar. It ran **alongside** the dovetail H-pin
+from 2026-10-04 (`mount = "cone"`, heart only, 9.2 tall for it) until it
+became the only mount (section above). Exports then:
 `bracelet-bracelet-c3-cone`, `cone-pin-cone-pin`,
-`heart-charm-heart-charm-cone`.
+`heart-charm-heart-charm-cone` (now `-c3` and `heart-charm-heart-charm`).
 
 **The first print (M3, split cone, ball click, 15° ridges) and the user's
 verdict, all done:**
@@ -146,465 +233,36 @@ stripped; tool turned bit-up, `rotate([0,0,90])` to match the socket's
 CONTROLS dx 0.2 → 0.49, spin 30° → 0.32, d 2.85 → 0.05 (the cone end).
 In zsh, build `-D` lists in bash arrays — word-splitting trap again.
 
-## The dovetail H-pin — 2026-09-30, PRINTED WELL. The proven mount
+## Mounts removed — the bolt is the only one since 2026-10-18
 
-**2026-10-02 (last), SHALLOW DOVETAIL, RECESSED LEAF (unprinted).** The user:
-reduce the pin's base height, "dovetail should be shallow. Otherwise bracelet
-links become a bit bended when the pin is in place." The 3.4 deep groove left
-0.8 of floor joining the bar's halves. Now `dt_waist` −0.8 (block 0.5),
-`dt_floor` 1.75 (`dt_fl_top` −2.45), pin bottom −2.3, flank 1.0, waist 1.5,
-`dt_grip` 0.85. The floor no longer is the leaf: `dt_leaf_t` 1.0 at the
-bottom of a `dt_pocket` 0.75 pocket, and the lip rises on a post to the
-floor's level. `dt_leaf_l` 6.45 for 2.5 %. I first recommended a spring
-TONGUE in the pin's foot and had to retract it: a full-width tongue rising
-hits the groove's undercut, and a narrow one is cantilevered over air when
-the pin prints on its side. Pin 5.75 × 16 × 3.5, 1 shell; thin flags 0.37
-(the end chamfer's wedge), 0.51 (the 0.5 block over the narrower waist),
-0.6 (the foot by the pits). Band 40 regions, plain byte-identical. Harness
-all pass (UP 0-vol; CONTROL up 1.31, x 3.63; lip preload 0.10, rides to
-2.4; five charms seated EMPTY; lift → catch).
+In order, every mount before the bolt, all removed at the user's request (git
+history has each one; do not offer any of them again as they were):
+- **Ball pin** fused to the bar with clip-on socket charms, and a loose
+  double-ended **M4 screw** (the star): both printed and worked, removed
+  2026-09-24 in favour of the H-pin.
+- **H-pin** (2026-09-22 .. 09-28, 52b3f3b): a flat H, crossbar sunk in a
+  pocket in the bar, hooked legs into two gabled holes in the charm. Printed
+  many times; held in the charm, kept pulling out of the bar. Lesson that
+  still applies: a printer rounds a 0.4 mm catch off, so do not tune a snap
+  on spring force alone.
+- **U-pin** (4b8d994, never printed, four parts too many), **twist-key**
+  (PRINTED AND FAILED — "the key is small, it deformates easily and doesn't
+  sit in the holes"), **slider** (disliked, never printed): rolled back
+  2026-09-29.
+- **Dovetail H-pin** (0d41592 .. f547bb7): the H's top half on a dovetail
+  that slid across the band into a bar groove and clicked on a spring leaf.
+  Printed well; deleted 2026-10-18 with `lib/charm-dovetail.scad`,
+  `lib/charm-pin.scad` and `models/pin`.
 
-**2026-10-02 (later), SLOTS REMOVED (unprinted).** The print of the slotted
-pin: "These grooves make legs very fragile. Please, remove them." Removed:
-the legs grow straight out of the block, solid, and nothing on the pin flexes
-(`dt_leg_slots`, `dt_spine`, `dt_root_z`, `dt_leg_strain` and the swing
-assert are gone). Legs 1.0, hooks 0.75 (0.6 over the shoulder); the click,
-dovetail and holes are unchanged. I told the user once that a charm now has
-to give the whole 0.6 a side itself; if one will not snap on, shorten
-`dt_hook`. Pin 1 shell, 41 mm²; the thin flags are the end chamfer's wedge
-(0.44) and the foot beside the pits (0.6). Harness: all five charms seated
-EMPTY, CONTROL lift → catch, bar and click as before.
-
-**2026-10-02, BIGGER HOOKS, STRONGER LEGS, A FIRMER CLICK (superseded: slots removed).**
-The 0b49186 print: "hooks are very small", "H legs are very weak", and the
-pin slid out sideways (the user's answer to which way it came loose). I
-offered the bending crossbar back for big hooks with strong legs. The user
-chose to KEEP SPRING LEGS. So the lever got longer instead: the legs' slots
-now run down through the dovetail to `dt_spine` (0.4) over its straight
-foot, `dt_root_z` −2.35, lever 4.28. `dt_leg_t` 0.8 → 1.0, `dt_hook`
-0.62 → 0.75 (0.6 over the shoulder, asserted ≥ 0.6), 4.9 %.
-- **Spine:** slotting down to the foot (my first try) left the five segments
-  on a 0.5 strip that would snap and bend instead of the legs. Hence
-  `dt_spine` and `dt_spine_a` ≥ 2.8 (2.99).
-- **Click:** `dt_click_a` 30° from vertical for the lip and the pit
-  (~2× the release push), pit 0.35 → 0.45, lip 0.6 → 0.7, `dt_lead` 0.4 →
-  0.7 (it must out-reach `dt_ride` 0.55). Lip and pit moved to y ±6 to clear
-  the legs' slots. `dt_leaf_l` 5.85 keeps the leaf at 2.49 %. The pit and
-  lip are only `dt_lip_w` 1.1 wide: a full-width pit undercut the foot's
-  edges to 0.2.
-- **Holes:** `hp_h_out` 5.25 → 5.7 and `hp_h_in` 2.7 → 2.55, still inside
-  `hp_c_out` / `hp_c_in`, so the charm shapes are unchanged (old − new EMPTY
-  for all five; new − old 34.96 mm³ each).
-- **Thin-wall flags accepted:** 0.44 (the end chamfer's wedge), 0.54 (the
-  pit's top corner against the flank), 0.6 (the foot's edges beside the pit).
-- **Harness, all pass:** pin ∩ bar UP 0-vol, CONTROL up 1.44; lip seated
-  0.09, riding 0.5–1.0 from home, empty from 2.4; all five charms seated
-  empty; bent legs with a charm half on and seated empty, CONTROL 1.5× hits;
-  CONTROL lifted 0.2 → catch 0.21.
-
-**2026-10-01, SMALLER CHARM HOLES (unprinted).** The user: shrink the holes
-and keep the charm shapes. `hp_c_out` / `hp_c_in` are LEFT as they were
-(6.66 / 2.45), because the butterfly, heart, ladybug, rose and dolphin size
-themselves from them. New `hp_h_out` 5.25 / `hp_h_in` 2.7 in
-charm-pin.scad are used only by `hp_charm_hole_pts` and the gables. The
-dovetail lib asserts the pin fits them: leg room needed 5.19, hook tip 2.88
-− fit ≥ 2.7, lead-in under the roof ≥ `hp_gap`. Proof the shapes held: old
-export − new export is EMPTY for all five, except a 0-vol sliver at the
-chamber floor, and new − old is 52.03 mm³ each, all inside x ±1.9, y ±6.66,
-z 0..5.55. Harness: all five seated on the pin EMPTY; legs bent by their
-full swing (rotated about `dt_root_z`) with the heart half on, and seated,
-EMPTY; CONTROL bent 1.6× hits the outer wall (1.03); CONTROL lifted 0.2 →
-catch; CONTROL shifted 0.2 → a leg. Overhang counts and SUPPORT (0)
-unchanged on all five.
-
-**2026-10-01 (last), DEEP DOVETAIL (unprinted).** The user sketched deeper V
-notches in the pin's sides, for grip. `dt_foot_h` is now the parameter (0.5,
-the print strip) and `dt_w_lo` is derived. The waist went −1.75 → −1.6, the
-floor/leaf 1.0 → 0.8 (`dt_leaf_l` 6.5 → 5.7, so the click is ~0.8× as
-firm), and the pin's bottom is −3.25. Flank 1.15 at 45°, waist 1.2,
-`dt_grip` 0.6 → 1.0. The raised waist shortened the legs' lever to 3.36,
-so `dt_hook` 0.65 → 0.62 (0.47 overlap; the min assert went 0.5 → 0.45),
-at 5.0 %. The overhang check now flags the 45° flanks: the band 46 regions,
-6 of them SUPPORT on the groove's flank, and the pin one RAMP. At
-`--threshold 45.5` both are clean (the band back to 40). It is the 45°
-boundary only, the same ceiling as before, just taller. Harness as before,
-all pass (CONTROL x 0.25 → 5.0).
-
-**2026-10-01 (later), SPRING LEGS ON A BLOCK (unprinted).** The user, after
-the solid fill: "make H legs thinner, and hooks a bit shorter", plus the block
-the full pin length up to the crossbar's top (their sketch). I showed that
-legs rooted at the block's top (lever ~2.4) only stay under 5 % at 0.6 legs
-with a 0.3 overlap. The user chose a 0.5 SLOT either side of each leg down
-to `dt_root_z` (waist + 0.15, so every layer of the leg is in the
-full-thickness block). `dt_leg_t` 0.8, `dt_hook` 0.65 (0.5 over the
-shoulder; 0.7 gave 5.3 %), lever 3.51, `dt_leg_strain` 4.86 %, top swings
-0.83 (hole wall clear by 1.5). The leg's inner face and catch stay at
-`hp_ui_g` / `hp_v_uc` / `hp_catch_up`, so `charm_h_holes` still fits.
-`dt_block` + `dt_legs` replace `dt_fill` + `dt_pin_up` (`hp_pin_2d` is no
-longer used by the pin). Harness: heart seated empty; CONTROL lifted 0.2 →
-hooks catch (0.175); CONTROL shifted 0.4 → hits a leg; bar and sliding as
-before. Pin 1 shell, no overhang, 39.6 mm²; the thin-wall flags are the 0.8
-legs. Plain band byte-identical.
-
-**2026-10-01, SOLID FILL (superseded the same day).** The pin printed well. The user asked
-why a "small bridge" (the 0.8 mm neck) joined the crossbar to the dovetail.
-I explained the gap was the H's spring room. The user disagreed: "Charm sits
-on hooks, this gap is useless." So `dt_fill` now fills it solid, `hp_t` ×
-2·`hp_uo` under the H's whole bottom edge. The neck, the spring strain
-(`dt_strain_up`) and the in-bar lock (`dt_leg_foot`) are gone: the legs no
-longer turn, and a charm snaps on by the hooks' own give. The channel's
-floor dropped `dt_gv` below the waist (`dt_ch_fl` −1.90) so the fill keeps
-0.15 of room to sit low. That costs 0.15 of the flank: `dt_grip` 0.60 a
-side (was 0.75). Harness: pin UP ∩ bar a 0-vol sheet, low 0.14 a 0-vol
-sheet, CONTROL low 0.2 → 2.75, CONTROL up 0.05 → 0.92, heart seated empty,
-sliding seat sheets only. Pin 1 shell, no overhang, 40.8 mm². The plain band
-is byte-identical to 0d41592. What follows about the neck, the 5.5 % strain
-and the charm being locked in the bar describes the 0d41592 print.
-
-The pin's BOTTOM is a dovetail that slides across the band into a groove
-through a station bar and clicks (a lip on a spring leaf in the groove's
-floor, a pit under the pin). Its TOP is the H-pin's upper half, exactly
-(`hp_pin_2d` above `hp_cb_bot`), so **every charm's `charm_h_holes` fits
-unchanged: no charm file changed**. `lib/charm-dovetail.scad` (`dt_*`)
-includes `lib/charm-pin.scad` (`hp_*`). The H's lower legs, lower hooks and
-`charm_h_pocket` there are dead code the band no longer uses.
-
-**How it got here (the user's decisions, 2026-09-29/30):**
-1. The user sketched an hourglass pin: dovetail into the bar, dovetail into
-   the charm, lip + pit. With both dovetails parallel, no rigid stop keeps
-   the charm on the pin. Anything slid on can slide back off, and a blind end
-   and a shoulder stop the SAME direction. I first offered a "stepped head"
-   that I claimed locked it, and had to retract it.
-2. So it became CROSSED (top dovetail along the band) with a tooth on the bar
-   top in a slot under the charm. The user then said the top "doesn't
-   conform the charm geometry" and asked for the H-pin's top half on the
-   dovetail bottom, printed horizontally. That is this pin; the tooth, the
-   slot and the charm's dovetail groove are gone.
-
-**Geometry that is forced, not chosen:**
-- The H's crossbar sits at −0.3..−1.3 (as in the H-pin), so a CHANNEL
-  (`hp_slot_x` 3.8 wide) runs across the bar top, 1.75 deep. It removes the
-  top of any groove under it, so the dovetail is BELOW the channel: waist at
-  −1.75, 45° flank to the foot at ±1.75 (`hp_t`/2), foot sides 0.55, pin
-  bottom −3.05, floor/leaf 1.0.
-- The foot's half-width = `hp_t`/2, so on its side the H's face and the
-  dovetail's foot both touch the bed. The foot's straight side must be ≥ 0.5
-  or the dovetail stands on a sub-bead line (asserted).
-- The neck (2.0 × 0.8 along y) fuses the crossbar's middle. That shortens
-  the spring: strain ×7/(7 − 0.8) = 5.5 % per charm (H-pin 4.9), grip +13 %.
-  At 0.6 the neck flagged as a single-bead wall. The user was told 5.5 % in ABS.
-- CHARM FIRST, then pin into the bar. In the bar the channel's floor blocks
-  the legs: the release turn swings the legs' outer feet to −2.34
-  (`dt_leg_foot`). Harness: turned rigid legs hit the bar from ~45 % of
-  `hp_turn_up`, with the hooks still ~0.47 over their shoulders. So a charm
-  cannot come off while its pin is in the bar.
-
-**Checks:** pin 6.5 × 16 × 3.5 on its side, 1 shell, 36 mm² in 2 patches
-(the foot strip 0.7 wide joins at 0.9 mm), no overhang past 45. Thin-wall
-flags are the neck (0.8), the crossbar (1.0, the H's spring) and the walls
-beside the pits (0.95), all accepted. Band c3: 11 shells, overhangs
-identical to the plain band (40), plain band byte-identical. The heart,
-imported from its unchanged export, was used as the charm in the harness.
-
-**Harness** (scratch `h.scad` + `vol.py`, `intersection(){part(A);part(B)}`,
-volume off the ASCII STL; bar = a 6 × 16.2 × 4.2 block minus `dt_bar_cut`;
-"pindefl" turns each leg + half-crossbar outside the neck by `defl` ×
-`hp_turn_up` about (±`hp_ui_g`, `hp_pivot`) and drops it `defl` ×
-`dt_end_drop`):
-
-| test | reads |
-|---|---|
-| pin UP ∩ bar / low 0.15 / CONTROL up 0.05 / CONTROL x 0.2 | 0-vol flank sheet / empty / 0.94 / 1.82 |
-| pin ∩ lip seated / 1.5 from home | 0.22 (preload) / 0.97 (ride) |
-| pin ∩ heart seated / pin low 0.15 | empty / 0-vol sheet at the catch (`hp_vfit`) |
-| heart ∩ bar | seat sheet only |
-| pindefl ∩ bar at 0 / 30 / 40 / 50 / 100 % | empty / empty / empty / 0.04 / 1.07 |
-| pin + heart sliding in at 1, 6, 16 mm | seat sheet only |
-
-**Not printed. Not checked in a slicer.**
-
-## Mounts tried and removed — rolled back 2026-09-29
-
-Three mounts came after the H-pin and all were removed at the user's request:
-- **U-pin** (charm locked on a stem, a U-pin slid along the band, a lock
-  tooth): committed 4b8d994, never printed. The user found four moving parts
-  too many.
-- **Twist-key** (a loose key twist-locks into bar and charm): PRINTED AND
-  FAILED — "the key is small, it deformates easily and doesn't sit in the
-  holes".
-- **Slider** (the charm's saddle threads onto the plain band through a
-  tunnel, clicks on a bar): the user didn't like it; never printed.
-
-Don't offer these again as they were. The whole H-pin (below) printed and
-held, but kept pulling out of the bar; its upper half lives on in this pin.
-
-## Bar hooks like the charm's — 2026-09-28, PRINTED AND CONFIRMED ("Printed well")
-
-The stiff pin printed: "sits quite good in a charm, but still loosy in a
-bracelet". The user confirmed the pin *pulls out* (not a rattle), and noticed
-the upper hooks looked bigger. They were: 0.85 past the wall on a 0.6 tip,
-against 0.70 on a 0.3 tip. Offered: tip only (6.1 %), tip + longer hook
-(~8 %), or a U-shaped longer crossbar (a redesign). **The user chose tip +
-longer hook.**
-
-- `hp_hook_lo` 0.85 → 1.00, `hp_tip_lo` 0.3 → 0.6, `hp_lead` 44 → 50.
-  - At 44 this is 9.2 %. Going blunter to 50 lowers the hook on its short lever.
-  - The assert is now `hp_lead <= 50`, and `hp_strain_cb <= 0.082`.
-- Lever lo 1.51, insertion turn 32.2°, **strain 8.04 % going in** (per charm
-  4.90, unchanged). `hp_keep` 0.33. `hp_out` 6.25.
-- `bracelet.scad`: `band_w/2 - hp_out >= 1.8` (was 2.0). The end wall is 1.85,
-  still thicker than the 1.1 beside the pocket. `hp_fill_u` 7.05 ≤ 7.1.
-- Mouth `hp_mouth_v`/`hp_mouth_u` 0.6/0.3 → 0.8/0.5. At 0.6/0.3 the −33.2°
-  leg hit it: 0.278 / 0.125 / 0.018 at lift 0 / 0.1 / 0.2. 0.8/0.45 still
-  read 0.008 at lift 0.
-- Upper half, `hp_c_out` and every charm are unchanged. Charms printed for the
-  stiff pin fit.
-- Harness: bar seated 0.0000, dz +0.1 / dx, dy 0.12 empty, dy 0.2 0.289.
-  Release −19.67° lift 1.2 / 2.0 / 2.3: 0.594 / 0.391 / 0.069 (was 0.089 at
-  1.2). 1.3× release at 1.2: 0.151. Insert −33.2° lift 0 → 3.3: empty; 0.9×
-  (−29.0°) at 1.0: 0.024. Charm rows as below, unchanged.
-- Pin: 12.2 × 6.9 × 3.5, 1 shell, no overhangs. Lower tip wall 0.98 (was
-  0.68). Band c3: 11 shells, 46 regions, no SUPPORT. Accent 3MF regenerated.
-
-## Stiff crossbar, longer charm hooks — 2026-09-27 (last), printed: good in a charm, pulls out of the bar
-
-The step-free pin (next section) printed and was "still very loose", wobbly,
-with charms and pins both letting go. The user asked for a wider crossbar and
-longer hooks. A first question quoted ~5–6 % strain for "1.0 + both hooks".
-That was wrong: the thicker crossbar drops the pivot and shortens the bar's
-lever, so longer LOWER hooks reach **8.3 %** going in. The user was told and
-re-chose **`hp_cb_h` 0.65 → 1.0, `hp_hook_up` 0.90 → 1.00, lower hooks
-unchanged**. **Pins are printed in ABS** (user), and the strain asserts were
-raised to 5.0 % (per charm) and 6.3 % (insertion).
-
-- `hp_under` 1.5 → 1.35 keeps `hp_lead_up` at 40.4° (< 44).
-- Pivot −0.80. Levers 1.62 / 2.48. Turns 24.76° / 19.67°. Strain 4.90 / 6.17 %.
-  `hp_keep` 0.144. `hp_c_out` 6.66, `hp_c_in` 2.35. Paper hold force (∝
-  h³·turn/(L·arm²)) is ~3.9× the 0.65 pin's.
-- **New: `hp_mouth_v` 0.6 / `hp_mouth_u` 0.3.** They were a fixed
-  0.4 × 0.15 mouth chamfer. With the lower pivot, the leg above the pivot
-  swings out into the mouth going in. At 1.03× insertion that read 0.194 /
-  0.103 / 0.063 / 0.028 / 0.005 mm³ at lift 0 / 0.1 / 0.15 / 0.2 / 0.25, at
-  y 5.25–5.54, z −0.6…0. The hook is still fully deflected to lift ~0.15, so
-  this was real, not the old floor-edge artefact. 0.6 × 0.25 still hit at
-  lift 0 (0.037) and 0.8 × 0.2 at 0.15. 0.6 × 0.3 is empty at every lift.
-- Charms refitted:
-  - heart: `length` 19 → 19.4 (notch 8.20 ≥ 8.16, at any angle);
-  - ladybug: `sh_b` 8.8 → 9.1, `hd_y` 8.2 → 8.5 (6.999 over gable ends,
-    need 6.95);
-  - dolphin: `joints` [11.0, 18.2] → [11.2, 18.4]. Moving only the first
-    joint fails the segment-middle assert.
-  - Butterfly and rose pass with no change.
-- Checks: pin 1 shell, no overhangs, adhesion 0.6. The thinnest walls are the
-  crossbar (1.00) and the lower hook tip (0.68, as before). Charms 1 shell
-  (dolphin 4), only BRIDGE regions. Heart wall-check low point 1.04 at
-  (0, 7.59, 5.74), the known gable-top trade. Band c3: 11 shells, 46 regions,
-  no SUPPORT. Both accent 3MFs regenerated.
-- Not re-run: the Euclidean hole-wall minkowski pass and the band swing
-  harness.
-
-Harness (same lib-only blocks, turned leg rotated in 2D about (`hp_s`,
-`hp_pivot`)):
-
-| test | reads |
-|---|---|
-| bar ∩ pin seated / dz +0.10 / −0.05 | 0.0000 / empty / 0.789 |
-| bar dz 0.05 dx/dy 0.12; dy 0.20 | empty; 0.322 |
-| bar ∩ leg −19.67° (release), lift 1.2 / 2.0 / 2.5 | 0.089 / 0.088 / empty (the hook has left the bar) |
-| bar ∩ leg −25.50° (1.03×), lift 0 → 3.3 | empty everywhere; 0.9× at lift 1.0: 0.0088 |
-| charm ∩ pin seated, dz +0.10, dx/dy 0.12 | empty |
-| charm ∩ pin dz +0.25 / −0.25 / dy 0.2 (controls) | 0.595 / 0.093 / 0.367 |
-| charm ∩ leg −20.26° (1.03×), 0 → 3.3 | empty at every step |
-| charm ∩ leg 0.9× −17.7° at −0.6 | empty. The tip sits 2.1 inward of the pivot, so the cos term adds ~0.1 mm; the 0.8× control hits (0.047 at −0.9) |
-| charm ∩ leg unturned −1.0; 1.6× seated (controls) | 2.448; 1.351 |
-| charm ∩ leg unturned lift 0.10 / 0.14 / 0.20 | empty / empty / 0.149 |
-
-**Harness trap, hit here:** in zsh, `set -- $c` does not word-split. The
-override came through malformed, every run exported nothing, and the whole
-sweep read "empty". Always keep a known-hit control row in a sweep.
-
-## Step-free H-pin legs — 2026-09-27 (final), printed: "still very loose"
-
-The user rejected the notches below ("No, once again, as on the picture - wide
-leg, step-free"). Each leg is now `hp_ui_g`..`hp_uo` top to bottom, and
-`hp_notch` is gone. The crossbar joins the grown inner face, so `hp_cb_len` =
-2·`hp_ui_g` = 7.0 (was 8.2). **`hp_cb_h` 0.76 → 0.65** keeps
-`hp_strain_up` 2.86 % and `hp_strain_cb` 3.62 %. The spring is ~25 % softer
-(h³/L): the user was told, and 0.76 is the number to restore if they accept
-~3.3 / 4.4 % strain.
-
-- Pivot −0.625. Levers 1.79 / 2.43. `hp_keep` 0.147. `hp_c_out` 6.46,
-  `hp_c_in` 2.45.
-- The band's pocket changed: the crossbar slot's floor rose to −0.95, which
-  needs a band reprint. The plain band is byte-identical.
-- All charms are assert-clean with no source changes. Hole walls are as
-  before (dolphin head 0.7, a zero-volume graze; heart ≥ 0.9; the rest ≥ 1.1).
-- Harness at release −17.66° / insertion 1.03 × 22.35°:
-  - keep, lift 1.2 / 2.0 / 2.5: 0.108 / 0.108 / 0.036;
-  - bar sweep: empty from lift 0.05 (0.0027 at 0);
-  - charm sweep 0 → 3.3: empty;
-  - every control solid.
-  - The single-leg clip (u ≥ `hp_ui` − 0.05 ∪ v > 0.1 ∪ v < `hp_cb_bot` −
-    0.05) now drops a sliver of leg beside the crossbar. That is
-    conservative for the keep row.
-
-## Straight H-pin legs — 2026-09-27 (last), unprinted (notches since removed)
-
-The user redrew the upper leg on a render of the pin below. The upper leg now
-grows INWARD like the lower one, and its outside runs straight up at `hp_uo`
-with no taper. `hp_grow_lo`/`hp_grow_up`/`hp_step`/`hp_taper`/`hp_uo_up` are
-gone, replaced by one `hp_grow` = 0.6 and `hp_ui_g` = 3.50 (`hp_ui` is really
-4.10, `hp_s` 4.6; older comments here saying 4.00/3.40 were stale).
-
-- Each leg is one 1.6 bar with a 1.0 NECK at the crossbar. `hp_notch` (0.8)
-  of air sits above and below the crossbar's end, so `hp_cb_len` stays 8.2.
-  The user's line ran straight through there. That was explained and the
-  notches were kept: fused, the spring would be 7.0 long (+17 % strain).
-- `hp_room_up` is now measured at the leg's top corner:
-  `turn_up*(v_top − pivot) + 0.1` = 1.34, so `hp_c_out` = 6.44 (6.45
-  before). The chambers moved in 0.6: `hp_c_in` 2.45. The band's pocket is
-  byte-identical to the previous round.
-- Levers, strain (2.79 / 3.73 %), keep 0.176 and lead-ins are unchanged. The
-  harness gives the same rows as the table below, except the charm dy 0.2
-  control (0.311) and 1.6× seated (1.123). Pin: 1 shell, no overhangs.
-- Every charm is assert-clean with no changes from the previous round.
-  Overhangs are clean now (the gables no longer flag). Hole walls are the
-  same as below (dolphin head 0.7–0.9, heart ≥ 0.9, the rest ≥ 1.1).
-
-## Thicker H-pin, grown legs, taller upper tip — 2026-09-27 (later), unprinted (legs superseded above)
-
-The near-square catches (next section) PRINTED: "slightly better, but not
-enough. It seems the angle was smoothed while printing it, because the part is
-quite small." The user sketched the change and chose from options:
-
-- **`hp_t` 2.8 → 3.5.** They chose it over 3.0 (no band change) and 3.7 (the
-  `h - 1.0` knuckle limit). The wall beside the pocket is 1.1, so
-  `bracelet.scad` fills the top chamfer at a station: `charm_h_seat`, a block
-  the full `body` along the band, ±`hp_fill_u` (6.9) across it, from 0.1
-  below the chamfer's foot to the top face. It is flush with the slab faces:
-  no overhang, no layer step. The chamfer is cosmetic, and every charm covers
-  the fill. The assert is now `hp_wall_bar >= 1.0`.
-- **Legs grown on their hookless faces:** `hp_grow_lo` 0.6 inward (under the
-  crossbar) and `hp_grow_up` 0.5 outward (above the seat). `hp_grow_up` was
-  0.6 first, but that put `hp_c_out` at 6.55 and failed the heart, ladybug and
-  dolphin asserts.
-  - **`hp_notch` 0.8:** air between the crossbar's underside and the lower
-    growth. Fused there, the growth would shorten the spring (8.0 → 6.8,
-    +18 % strain).
-  - **`hp_step` 0.5 plus a 45° chamfer:** where the upper growth starts. A
-    square corner at 0.1 dropped 0.26 into the bar's rim under the 23°
-    insertion turn. The harness caught it: 0.32 mm³ at lift 0.15.
-- **`hp_tip_up` 0.3 → 0.6**, split from `hp_tip_lo` (0.3). The user wanted
-  ~0.8.
-  - **`hp_arm_up` now runs to `hp_v_ut`, the tip's bottom (catch) corner, not
-    its middle.** The harness found that with a tall tip the catch corner does
-    not clear at 1.03× the modelled turn (0.013 mm³ at −0.6…−1.8).
-  - Measured correctly, 0.8 needs `hp_under` ≥ 1.47 for strain, and then
-    `hp_lead_up` reaches 47° (> `hp_lead` 44, asserted). 0.6 with
-    `hp_under` 1.5 gives 41°.
-  - `hp_roof_lead` 35 → 42 keeps the chamber roof clear of the steeper ramp
-    (roof assert 0.206).
-  - The lower lever still runs to its tip's middle. That tip is on the
-    outside, so the cos term adds to its travel, and the harness sweep
-    agrees.
-- **Result:** `hp_strain_up` 2.79 %, `hp_strain_cb` 3.73 % (unchanged),
-  `hp_keep` 0.176, `hp_c_out` 6.45, `hp_apex` 5.55, `hp_boss_x` 6.2. Pin
-  11.9 × 6.9 × 3.5, 1 shell, no overhangs, adhesion 0.7.
-- **Charms refitted:**
-  - butterfly: spots out 0.4 (lower one 1.6 → 1.4 dia, to stay inside `x0`);
-  - ladybug: `sh_b` 8.0 → 8.8, `sh_h` 7.8 → 8.0, `hd_y` 7.4 → 8.2;
-  - rose: `core_side` 6.6 → 6.95, `core_top` 7.95, outer web 6.95;
-  - dolphin: `joints[0]` 10.7 → 11.0 (segment 1 is 7.2).
-  - The heart is unchanged (notch assert passes at 6.45).
-  - All assert-clean, 1 shell (dolphin 4). Each charm's only overhang regions
-    are its two 45° gables, which read BRIDGE at exactly 45 (the known
-    threshold flicker).
-- **Hole wall, Euclidean** (`minkowski(holes, sphere(t))` ∩ z > 0.05, minus
-  (charm ∪ holes)):
-  - butterfly, rose, ladybug, heart 90/270: clear at 1.1;
-  - heart 0/45/315: clear at 0.9, not at 1.1 (at the gable's far top);
-  - dolphin: clear at 0.7, not at 0.9, at the head over the −y hole end
-    (y −7.1…−7.5, z 5.8–6.4). That is the dolphin's known low-head trade.
-    Raising the head rows breaks the table's slowing-growth rule, so it was
-    left.
-- Band c3: 11 shells, 46 BRIDGE (shoulders 3.9 × 1.1, worst 85°), no SUPPORT.
-  The plain band is byte-identical.
-
-Harness: the lib-only blocks as below. The single-leg clip is now `u ≥ hp_ui −
-0.05` ∪ `v > 0.1` ∪ `v < hp_cb_bot − 0.05`, so the lower growth is kept.
-
-| test | reads |
-|---|---|
-| bar ∩ pin seated / dz +0.10 / −0.05 / +0.25 | 0.0000 / empty / 0.800 / 0.490 |
-| bar dz 0.05, dx/dy 0.12 / dx 0.20 / dy 0.20 | empty / 0.819 / 0.360 |
-| bar ∩ leg −17.27° (charm release), lift 1.2 / 2.0 / 2.5 | 0.149 / 0.149 / 0.071 — the pin stays |
-| bar ∩ leg unturned lift 1.2; −20° lift 1.2 (controls) | 1.696; 0.032 |
-| bar ∩ leg −23.74°, lift 0 / 0.05 / 0.10 / ≥ 0.15 | 0.047 / 0.015 / 0.000 / empty (the known floor edge) |
-| charm ∩ pin seated, dz +0.1, dx/dy 0.12 | empty |
-| charm ∩ pin dz +0.25 / −0.25 / dy 0.2 / dx 0.2 (controls) | 0.137 / 0.525 / 0.398 / 0.547 |
-| charm ∩ leg −17.79° (1.03×), 0 → 3.3 below seat | empty at every step |
-| charm ∩ leg unturned −1.0; 1.6× seated (controls) | 2.149; 2.433 |
-| charm ∩ leg unturned lift 0.10 / 0.14 / 0.20 | empty / empty / 0.131 |
-
-## Near-square H-pin catches — 2026-09-27, printed: "slightly better, but not enough"
-
-The user: charms come off the pin "due to contact with sleeves. Quite small
-effort is enough". They want charms removable, "but with significant effort",
-and chose the angles themselves: **`hp_catch_lo` 60 → 85, `hp_catch_up`
-60 → 80**, plus longer hooks. Pre-bent legs (bottom out, top in) were also
-proposed and set aside. That pre-bend is the same rotation the legs already
-make (a sustained preload in the locking direction). It adds straight onto the
-3.73 % insertion strain, it creeps away in PLA/PETG, and past about 68° the
-spring does not decide retention anyway. Re-raise it only if the catches fail.
-
-On paper, anything past ~68° (µ ≈ 0.4) is friction-locked against a straight
-pull. The user knows and accepted that: rounding of the printed catch edge is
-what makes it releasable. The asserts now read `hp_catch_up` 45 to <90, and
-`hp_catch_lo` either 45–60 (a stepped ceiling) or 80–90 (a flat bridge).
-
-- **`hp_hook_up` 0.75 → 0.90** (0.75 past the wall). **`hp_under` 1.0 →
-  1.5**: the steeper catch drops the hook by the smaller catch rise
-  (0.43 → 0.16), so the hook is lifted to keep the charm's lever at 2.64. At
-  `hp_under` 1.0 the taper leaves a 0.38 leg tip (assert ≥ 0.5 fails).
-  Limits: `hp_hook_up` 0.95 needs a leg tip under 0.5 or strain past 2.9.
-- **`hp_hook_lo` cannot grow.** `hp_out` 6.10 is the band-width limit, and
-  the lower turn sets `hp_strain_cb` 3.73 %.
-- Now: `hp_strain_up` 2.63 %, `hp_keep` **0.205** (was 0.267), `hp_lead_up`
-  34°, `hp_taper` 0.47, `hp_c_out` 5.76 → **5.91**, `hp_c_in` 3.05. The
-  charm holes changed, so **every charm, the band and the pin reprint
-  together**. The charm model sources are untouched, and all their asserts pass.
-- Band c3: 11 shells, 46 BRIDGE, no SUPPORT. The six shoulders now read
-  "near-flat, worst 85°, 3.2 × 1.1, 2.07 above the plate". The plain band is
-  byte-identical to `exports/bracelet-bracelet.stl`. Pin: 1 shell, no
-  overhangs. The wall check adds 0.68 on the lower hook's tooth (its catch is
-  now flat, so the tooth is thinner at the root: 1.25 vs 1.67).
-- Charm wall around the grown holes, as `minkowski(holes, cube(2t)) ∩ z>0.05`
-  minus (charm ∪ holes). Heart (0/45/90/270/315), rose and dolphin are empty
-  at t = 1.0. Butterfly is solid at 0.8 both before and after (the cube's
-  corners over-reach). Ladybug is empty → solid at 0.8. That is at the dome
-  over the gable ends, (0, ±6.7, 6.0), ≥ 1.1 Euclidean, and its own asserts
-  pass.
-
-Harness (lib only: a 6 × 16.2 × 4.2 block minus `charm_h_pocket()`, and an
-8 × 16 × 8 block minus `charm_h_holes()`; a single leg turns about
-(`hp_s`, `hp_pivot`)). **Clip the single leg at `hp_ui` − 0.05, but keep
-v > 0.1.** A clip at `hp_s` − 1.2 carries a crossbar stub that swings up
-through the seat plane (a false 0.005 mm³ hit). Clipping at `hp_ui` without the
-v > 0.1 band cuts off the inward upper hook, and every charm control reads
-empty. OpenSCAD writes NO file for an empty result, so detect a missing file
-and remove the old one first.
-
-| test | reads |
-|---|---|
-| bar ∩ leg −16.29° (charm release), lift 1.2 / 2.0 / 2.5 | 0.160 / 0.160 / 0.089 — the pin stays (0.314 at 1.2 before) |
-| bar ∩ leg unturned, lift 1.2 (control) | 1.357 |
-| bar ∩ leg −23.74° (1.03 × insertion), lift 0.15 → 3.3 | empty (0 / 0.05 / 0.10: 0.037 / 0.012 / 0.000, the known floor edge) |
-| bar ∩ pin, dz +0.10 / −0.05 / +0.25; dz 0.05 dy 0.12 / 0.20 | empty / solid / solid; empty / solid |
-| charm ∩ pin seated, dz +0.10, dx/dy 0.12 | empty |
-| charm ∩ pin dz +0.25 / −0.25, dy 0.2 (controls) | 0.076 / 0.420 / 0.410 |
-| charm ∩ leg −16.77° (1.03 × charm turn), 0 → 3.0 below seat | empty at every step |
-| charm ∩ leg unturned −1.0; 1.6× turn seated; 0.9× turn at −0.6 (controls) | 1.531; 2.165; 0.013 |
-| charm ∩ leg unturned, lift 0.10 / 0.14 / 0.20 | empty / empty / 0.105 (the 0.15 `hp_vfit`) |
+Harness traps from those rounds that still apply to any harness here:
+- **OpenSCAD writes NO file for an empty result**, and an assert that fails
+  exports nothing either. Delete the old output first and treat a missing
+  file as its own result; always keep a control row that must hit.
+- **In zsh, `set -- $c` does not word-split.** A sweep built that way passed
+  a malformed `-D` and read "empty" everywhere. Use bash arrays.
+- **Never `include` two charms in one harness**: they share names (`span`,
+  `x0`, `relief`…) and the second silently overwrites the first.
+- **`use <>` carries neither `$fa`/`$fs` nor top-level variables.**
 
 ## The band is 16.2 mm wide since 2026-09-26 — unprinted
 
@@ -751,22 +409,18 @@ twisting about a single pin.
 ## Seven models, one library, `cols` shells
 
 `models/bracelet/bracelet.scad` is the bracelet, and every dimension of the band
-is at the top of it. `lib/charm-pin.scad` holds the charm mount — the H-pin,
-the pocket it snaps into and the holes a charm has for it. `models/pin`
-is the loose pin, and `models/butterfly-charm`, `models/ladybug-charm`,
-`models/heart-charm`, `models/rose-charm` and `models/dolphin-charm` are the
-five charms. The lib draws
-nothing — variables, functions and modules only — so every model `include`s
-it.
+is at the top of it. `lib/charm-cone.scad` holds the charm mount — the bolt
+(cone pin), the bar's hole, countersink and rib, and a charm's socket and
+grooves. `models/cone-pin` is the bolt, `models/screwdriver` its hex key, and
+`models/butterfly-charm`, `models/ladybug-charm`, `models/heart-charm`,
+`models/rose-charm` and `models/dolphin-charm` are the five charms. The lib
+draws nothing — variables, functions and modules only — so every model
+`include`s it.
 
-**The H-pin is the ONLY mount.** Two came before it — a ball pin fused to the
-bar with clip-on socket charms (flower, heart, kitten, puppy, frog), and a loose
-double-ended M4 screw through the bar (the star). Both printed and worked. The
-user judged the H-pin the best and had the other two removed, charms and all,
-on 2026-09-24. Do not bring them back or propose them as options; git history
-before that date has them if the user asks.
+**The bolt is the ONLY mount** (2026-10-18). Every earlier one is listed
+under "Mounts removed"; do not bring any back or propose them as options.
 
-`charms` in `bracelet.scad` sets how many bars get a pocket. At `charms = 0`
+`charms` in `bracelet.scad` sets how many bars get a station. At `charms = 0`
 `module bracelet()` writes the band out in full rather than inside the
 `difference()` the pockets need — that is what keeps the plain export
 byte-for-byte identical.
@@ -779,7 +433,8 @@ touch them:
 openscad -o /tmp/b.stl models/bracelet/bracelet.scad && cmp /tmp/b.stl exports/bracelet-bracelet.stl
 openscad -o /tmp/b180.stl -D wrist=180 models/bracelet/bracelet.scad && cmp /tmp/b180.stl exports/bracelet-bracelet-w180.stl
 openscad -o /tmp/c3.stl -D charms=3 models/bracelet/bracelet.scad && cmp /tmp/c3.stl exports/bracelet-bracelet-c3.stl
-openscad -o /tmp/p.stl models/pin/pin.scad && cmp /tmp/p.stl exports/pin-pin.stl
+openscad -o /tmp/p.stl models/cone-pin/cone-pin.scad && cmp /tmp/p.stl exports/cone-pin-cone-pin.stl
+openscad -o /tmp/s.stl models/screwdriver/screwdriver.scad && cmp /tmp/s.stl exports/screwdriver-screwdriver.stl
 openscad -o /tmp/f.stl models/butterfly-charm/butterfly-charm.scad && cmp /tmp/f.stl exports/butterfly-charm-butterfly-charm.stl
 openscad -o /tmp/l.stl models/ladybug-charm/ladybug-charm.scad && cmp /tmp/l.stl exports/ladybug-charm-ladybug-charm.stl
 openscad -o /tmp/h.stl models/heart-charm/heart-charm.scad && cmp /tmp/h.stl exports/heart-charm-heart-charm.stl
@@ -794,7 +449,7 @@ triangle order changes run to run. Compare its VOLUME and bbox instead,
 there is a real change. That includes the heart, which is one polyhedron. Its
 first, hull-built version was not stable.
 
-**Everything the lib defines is named `hp_*`.** That is not tidiness: this
+**Everything the lib defines is named `cn_*`.** That is not tidiness: this
 file already has a `pin_d`, `pin_r`, `pin_z` and `pin_flat`, and they are the
 HINGE pin. A second thing called a pin in the same namespace is how a silent
 shadowing bug gets written.
@@ -885,9 +540,8 @@ for a multi-material printer.
 - **`charms = 0` must export byte-for-byte the plain band** in
   `exports/bracelet-bracelet.stl`. Cheapest regression test here.
 - **Shell count `cols` and the genus are unchanged at any `charms`.**
-- **The first layer is unchanged** — 1812.5 mm² in 11 islands (2471.5 in 16
-  at 180). The pocket keeps `hp_floor` = 0.6 mm of bar under it, so the first
-  layer never sees it.
+- **The first layer**: 1697.9 mm² in 11 islands at `charms = 3` (the
+  countersinks open on the bed and take their rings out of it; 1812.5 plain).
 - **The swing test with a butterfly seated**: clear to ±40°, binds at 60°, at
   both 130 and 180 (a wrist needs about 24°).
 
@@ -908,291 +562,6 @@ plane. Swept with a plain disc at `thick` against the real band: clear to
 r = 6.0 at 24° and 30°, r = 5.8 at 40°. The butterfly is long across the band,
 right over the knuckle clusters, so its bottom stays within |x| ≤ 5.0 and is
 relieved beyond (see below).
-
-## The H-pin mount — printed 2026-09-23; retuned, printed, still loose; bigger hooks printed and confirmed 2026-09-25
-
-Asked for on 2026-09-22 ("an H type pin... legs should have small hooks on
-their ends... Middle part of the H also should be recessed into the
-bracelet"), then revised the same day: **upper half as short as the lower**,
-**a less tall charm**, **charms printed bottom down so they can be 3D**. `hp_*`
-in the lib, `charms` in `bracelet.scad`, `models/pin`, `models/butterfly-charm`.
-**Printed and confirmed by the user on 2026-09-23** ("It printed well"), band,
-pin and butterfly together. The bar side "sits very well"; the charm side was
-"a bit loose". **Retuned the same day, NOT printed yet**: see "The retune"
-below. The layout is the user's and is fixed: **the crossbar entirely in the
-bar, only the legs' holes in the charm, the upper legs as long as the lower**.
-A symmetric H with the crossbar straddling the seat was built and REJECTED by
-the user for breaking that. Do not re-propose it. So the crossbar spring, the mixed hook directions,
-the 45°/55° catches, the gabled charm holes and the fits (0.15 lateral,
-0.15 vertical play) are proven on a plate now. Treat them the same way: do not move them without a reason.
-
-**The decisions that shape it, and none is free to undo:**
-
-1. **The H prints LYING FLAT** — `linear_extrude(hp_t) hp_pin_2d()`. Hooks are
-   outline corners; zero overhang.
-2. **Both halves are the same length (3.45), so NEITHER leg can be the
-   spring.** The legs TURN about the crossbar's middle and the CROSSBAR bends:
-   `hp_strain_cb` = turn·depth/length = 2.85 %, set by the bar side (shorter
-   lever, `hp_arm_lo` 1.79 vs `hp_arm_up` 2.41). Each hole has room on the side
-   a turning leg's END swings to: `hp_room_lo` INSIDE the lower legs (bar),
-   `hp_room_up` OUTSIDE the upper legs (charm).
-3. **The upper hooks point IN, the lower ones OUT — do not "tidy" them into
-   matching.** Turning moves a leg's ends opposite ways. With all hooks out,
-   fitting the charm (upper hooks forced one way) drives the lower hooks up
-   into their shoulders and JAMS. Mixed, fitting the charm eases the lower hooks
-   off their shoulders and they spring back. Insertion order is pin first,
-   charm second.
-4. **The catches, each shaped by its part's print orientation.** Bar
-   prints upright → its shoulder is a ceiling, descending away from the
-   slot: 45° until 2026-09-25, now `hp_catch_lo` = 60° (see "A firmer bar
-   catch" below). The self-locking reverse barb (shoulder rising outward) is
-   UNPRINTABLE there — it starts as a free edge over the chamber — and was
-   rejected; do not re-propose it. The charm prints BOTTOM DOWN → its shoulder
-   is a floor → `hp_catch_up` = 60° (55 until 2026-09-25), what makes the charm hold. Asserted 45–60:
-   past ~60 friction locks it on for good. **The charm does NOT stop the
-   legs turning** — this file used to say it did. The turn that frees the
-   charm's hooks is the same turn that frees the bar's; only `hp_keep` stands
-   between them.
-5. **The charm's hole ends are ceilings now, so they are GABLED** (45°, ridge
-   along u, `hp_apex` 5.20). The chamber's roof follows the hook's lead-in, the
-   material growing out from the chamber's inner wall. Its FLOOR is the
-   shoulder. Nothing in the hole is a flat ceiling.
-
-**Invariants at `charms = 3`:**
-
-- Default (130): 11 shells, **genus 31**, **1807 mm² in 11 islands** —
-  identical to the plain band; 40 BRIDGE regions, the same as the plain band.
-  (It read 46 until 2026-09-25. The six pocket shoulders flickered just past
-  the 45° threshold and now land on it. The `asin(|nz|)` area past 45.5° is
-  183.73 mm² both before and after, so nothing real changed.) At 180 the same holds as 15 / 43 / 2396.
-- Ray probes at a station (start OUTSIDE the part or the solid/air labels
-  invert — an along-band ray from inside a knuckle does exactly that): along
-  the band 1.450 wall | 3.100 pocket | 1.450 wall, 0.99 at z = 4.4 (the rim);
-  vertical through a leg slot `SOLID 0.800`; through a chamber (`y = cy + 5.5`)
-  `0.800 | air 1.485 | 2.165`; between the legs `SOLID 3.450`. (Measured before the 2026-09-25 bigger hooks. The chamber
-  profile has changed, so re-measure before comparing.)
-- Pin: 1 shell, 11.6 × 6.9 × 2.8, 22.6 mm² of bed, **zero** downward faces. The
-  wall check flags 0.76 (crossbar) and 1.00 (legs) — meant. The tapered leg
-  tips (0.54) are too small for it to sample.
-- Butterfly: 1 shell, genus 0, 16.1 × 18.6 × 7.0, 146 mm² in one island.
-  `check_overhangs.py` clean. Measured off the mesh (`asin(|nz|)`): the gables
-  at 44–45.5° (z 3.6–5.2), wing relief 43.6°, head/ridge/antennae < 40°,
-  **nothing past 45.5°**. Thinnest wall 1.19, the roof over each gable's far
-  end — why `body_top` carries +0.1.
-- `cmp`: the plain band and `-D wrist=180` (== `-w180`): IDENTICAL.
-
-**The retune (2026-09-23, unprinted).** The looseness was the LEVERS, not a
-fit. Hook force ∝ `hp_cb_h`³ / lever², and the charm's hooks sat at the leg
-tops on 3.21 against the bar's 1.81: 0.32 of the bar's force. Now:
-
-- **The upper hooks sit as LOW as `hp_under` = 1.0 allows** (catch at 1.15,
-  tip 1.54). The leg still runs to 3.45, and above the hook is one long lead-in,
-  `hp_lead_up` = 19° (gentler than the lower 35°, so the charm goes on more
-  easily). Lever 3.21 → 2.44.
-- **`hp_cb_h` 0.8 → 0.9.** Against the printed pin: charm ~2.5×, bar
-  insertion ~1.5×, strain 2.55 %. Setting 0.8 back restores the bar side
-  exactly and leaves the charm at ~1.7×.
-- **The charm's lever MUST stay the longer one.** Pulling the charm drives the
-  legs the same way that releases the bar's hooks. The longer lever turns
-  less for the same travel, so the charm clears first and `hp_keep` = 0.11 mm
-  of the bar's hook is still under its shoulder. This is asserted ≥ 0.1. That
-  is what bounds how low the upper hooks may go and how far the levers can be
-  evened. Equal levers would free both catches at once and let the pin leave
-  with the charm.
-- The charm's chamber roof still slopes at `hp_lead` 35°, NOT along the new
-  hook ramp. Following the 19° ramp pinches the chamber to 0.1 at its inner
-  wall. An assert checks that the roof clears the ramp by `hp_gap`.
-- Unchanged, and still byte-identical checks: bar pocket shape (only 0.1
-  deeper, for the thicker crossbar), 46 overhang regions / 1807 mm² / genus
-  31 at 130 and 60 / 2396 / 43 at 180, identical wall-check counts to the
-  printed version, the butterfly's single 1.19 roof point.
-
-Two harness rows are added for this: **bar ∩ a single leg turned by the
-charm's release angle (−9.41°), lifted 1.2 → solid** (the pin stays), and
-turned 1.03 × the bar's own angle (−12.99°), lifted 1.2 / 2.5 → empty. Lift
-it well clear. The shoulder is a ceiling (45° then, 60° now), and a hook swung under it sits
-under a higher part, so a lift of only `hp_vfit` reads empty whether or not
-it would hold.
-
-**Bigger hooks (2026-09-25) — PRINTED AND CONFIRMED the same day** with the heart: "it sits very well now". The retuned pin DID print, with the
-heart, and the user reported the heart "comes off with a light pull" (a
-straight pull, not prying and not wobble). On paper the retune held at ~2.5×
-and ~60 N. So the spring was never what gave way. The catch was: 0.40 mm of
-overlap is one bead, and the printer rounds it off. **Do not tune this mount
-on spring force alone. The rigid model cannot see rounding.** Now:
-
-- `hp_hook` split into **`hp_hook_up` 0.75** (0.60 past the wall) and
-  **`hp_hook_lo` 0.70** (0.55), asserted ≥ 0.5 of overlap each. `hp_catch_up`
-  55 → **60**, the top of its asserted band.
-- **The upper hooks cannot grow alone.** Their bigger release turn frees the
-  bar hooks too: 0.75 up with 0.55 down gives `hp_keep` −0.04, and the pin
-  leaves with the charm. At equal footprint, the rigid model even prefers
-  the OLD hook size. Bigger hooks only pay because of rounding.
-- Bigger bar hooks mean a bigger insertion turn, so `hp_lead` 35 → **40** (to
-  keep the lower catch under the crossbar), **`hp_cb_h` 0.9 → 0.76** and
-  **`hp_s` 4.5 → 4.6** (strain 2.85 %). The charm chamber's roof keeps its
-  35° as the new `hp_roof_lead`, so it did not move with `hp_lead`.
-- **`hp_taper`: the upper legs' outer face leans in above the hook by exactly
-  the turn** (0.46, tip 0.54 wide). `hp_room_up` is now measured at the hook
-  tip, not the leg top. `hp_c_out` 5.79 → **5.76**. The charms' holes did NOT
-  grow, so every charm model and its asserts stand unchanged.
-- Old bands, pins and charms do not mix with new ones (bar chamber `hp_out`
-  5.70 → 5.95, charm chamber `hp_c_in` 3.30 → 3.20). Reprint all three.
-- The user proposed legs that splay outward. It was explained and not built.
-  With rigid legs turning about the crossbar, splayed legs in matching holes
-  would drive the lower hooks into their shoulders on removal. The charm
-  would be permanent. The user chose "removable, just firmer".
-
-Harness rows for this, heart and butterfly identical:
-
-| test | reads |
-|---|---|
-| bar ∩ single leg turned −14.25° (charm release), lift 1.2 | 0.0869 — SOLID, the pin stays |
-| same, unturned (control) | 1.2577 |
-| leg turned −18.18° (1.03 × bar turn), lift 1.2 / 2.5 | empty / empty |
-| same turn, lift 0 → 3.0 (bar insertion sweep) | empty at every step |
-| charm ∩ leg turned −14.66° (1.03 × charm turn), pin 0 → 3.0 below seat | empty at every step |
-| charm ∩ leg turned 1.6 × charm turn, seated (control, the room is real) | 1.9498 |
-| charm ∩ leg unturned, 1.0 below seat (control, the hook must turn) | 1.2692 |
-| charm ∩ pin, dz +0.25 (control) | 0.0015 — the tapered tip meets the gable |
-| heart envelope, every 30° −150..180 | empty; controls dy +1.0 at 0° and −1.0 at 180° leak 0.418 (0.512 before) |
-
-**The heart envelope control's sign:** the notch is at +y (`notch at 8.03`),
-so the leaking shift at 0° is dy **+1.0**, not −1.0. A −1.0 shift reads empty
-and proves nothing.
-
-**The joint harness** (band include made absolute, `bracelet();` stripped;
-`charm_on(dz)` = `translate([X, band_cy, thick + dz]) butterfly_charm()` — no
-flip, it prints as it sits; `pin_on(dz)` = `charm_h_pin()` at `thick + dz`):
-
-| test | reads |
-|---|---|
-| bar ∩ pin, seated | 0.0000 mm³ — crossbar ON its slot floor, the stop |
-| bar ∩ pin, dz +0.10 / +0.25 (control) / −0.05 (control) | empty / solid / solid |
-| bar ∩ pin, dz +0.05, dx 0.12 / 0.20 | empty / solid |
-| charm ∩ pin, seated; dz +0.10; dx or dy ±0.12 | empty |
-| charm ∩ pin, dz +0.25, dz −0.25, dy 0.20, dx 0.20 (controls) | solid |
-| charm ∩ band, seated / dz −0.3 | 0.0000 (bottom on the bar top) / solid |
-| swing a neighbour, charm seated, wrist 130 and 180 | clear to ±40°, HIT at 60° |
-
-Test lateral play on the bar side with the pin LIFTED off its stop (dz 0.05),
-or the stop's coincident sliver reads as contact at every dx.
-
-**The butterfly's bottom stays within |x| ≤ `x0` = 5.0.** Not the r = 5.8
-disc: that disc only reached x = 5.08 at the knuckle clusters' edge, and this
-charm is long across the band, right over the clusters. Beyond it the
-wings' undersides rise at 43.6° (`relief` = 1.05) — NOT 45 exactly: faces on
-the threshold flicker, and `check_overhangs.py` split one clean ramp into a
-"ramp" and a phantom "bridge" 2 mm up.
-
-**Traps this round hit:**
-
-- **A closing pass over the WHOLE H fills every catch root** (a concave
-  corner) by ~0.03 mm and eats the hooks' clearance. The fillet is clipped to
-  the crossbar band; `hp_recess` ≥ `hp_fillet` keeps it under the charm's seat.
-- **`scale(r) circle(1)` takes its facet count from r = 1** — 21 sides on a
-  4.7 mm wing. The wings set `$fn`.
-- **`use <>` carries neither `$fa`/`$fs` nor the file's top-level
-  variables.** A harness drew the wings as pentagons, and `height` came
-  through `undef`. Put `$fa`/`$fs` in every harness; recompute dimensions from
-  lib variables.
-- **A spot cutter carried on above a tilted surface keeps widening** and bit
-  scoops out of the body beside it. Cone to the surface, then straight up.
-- **A gable started 0.01 below the eaves leaves a 0.01 mm ledge** along each
-  eave — 0.07 mm² of flat ceiling, found only by the direct angle scan. The
-  gable's walls are carried a millimetre down into the hole instead.
-
-**A firmer bar catch (2026-09-25, later the same day) — NOT printed yet.**
-The user: the pin "sits well in the charm, but in the bracelet it still sits
-a bit loosely — small effort to detach it". The cause was a false claim in
-this file: that a seated charm holds the legs still. Upper hooks point IN and
-release by the upper ends swinging OUT; lower hooks point OUT and release by
-the lower ends swinging IN. About the crossbar's middle **that is ONE
-rotation**. A pull on the charm cams both catches the same way, and with
-friction (µ ≈ 0.4) the bar's 45° catch was doing about two thirds of that
-camming (cot-with-friction 0.43 × lever 1.79, against the charm's 60°:
-0.14 × 2.41). The release order is purely geometric: the charm lets go
-first, with `hp_keep` 0.106 mm of bar hook still under its shoulder. On a
-real print, the ceiling's sag and rounding can eat that.
-
-- **`hp_catch_lo` = 60** (new; asserted 45–60), the charm's proven angle.
-  The shoulder `hp_b_sh(u)` is the hook's catch face lifted `hp_vfit`, so
-  `hp_catch_lo = 45` reproduces the old pin, c3 band and plain band byte for
-  byte (checked). As a ceiling it is 0.8 × 3.1 mm, anchored on the slot's two
-  walls along the band: `check_overhangs` gives 46 BRIDGE (40 + the six
-  shoulders, each "3.1 × 0.9, worst 60°"), no SUPPORT. At a 0.2 mm layer each
-  step is 0.35, under a bead, for about 2 layers.
-- Friction estimate only (the rigid model has already been wrong once here):
-  bare pin ~3× firmer, charm-on pull ~1.8× firmer. **The charm itself comes
-  off ~1.8× harder too**, because the bar's cam was helping turn the legs.
-  If the charm gets too firm, lower `hp_catch_up` to 55 before touching the
-  bar.
-- **`hp_keep` is unchanged at 0.106 and cannot grow cheaply.** It is capped at
-  `arm_lo·(turn_lo,max − turn_up)`, and `turn_lo,max` is set by the 2.9 %
-  crossbar strain. More keep means a longer crossbar (wider pin: every charm's
-  holes move) or higher upper hooks (a weaker charm). If the pin still
-  follows the charm out of the bar, this is the next step, and it costs charm
-  reprints.
-- Bare-pin removal: spread the upper legs apart (upper ends out → lower ends
-  in). No pull needed.
-- Untouched: the charms (heart, butterfly byte-identical), `hp_keep`, the
-  strain, the levers, the plain band and `-w180`.
-- **A new pin fits an old band** (lifted 0.05 off the stop: empty), with only
-  the old 45° grip. **An old pin does NOT fit a new band** (0.116 mm³). Reprint
-  the pin with the band.
-
-Harness (`bar(c)` minus `charm_h_station(c)` — `bar()` alone has NO pocket,
-and a harness without the station reads ~40 mm³ everywhere, controls
-included). At 45 it reproduces every earlier row exactly. At 60:
-
-| test | reads |
-|---|---|
-| bar ∩ pin seated / dz +0.10 / +0.25 / −0.05 | 0.0000 / empty / 0.3080 / 0.8811 |
-| dz 0.05, dx 0.12 / 0.20 | empty / 0.7212 |
-| leg turned −14.25° (charm release), lift 1.2 | 0.0778 — the pin stays |
-| same unturned (control) | 1.1719 |
-| leg −18.18°, lift 0 → 3.0 step 0.3 | empty at every step |
-| leg unturned, lift 0.10 / 0.14 / 0.20 | empty / empty / 0.0770 (the 0.15 `hp_vfit`) |
-
-**Longer bar hooks (2026-09-26) — PRINTED AND CONFIRMED the same day** ("It is much better now"). The 60° catch printed
-and changed nothing the user could feel: the pin still left the bar with a
-light pull, both bare and under a charm. A spring-finger redesign (a separate
-flexure for the charm, so the legs could be locked by the charm's holes) was
-proposed and declined: "Just make the hooks longer - it should be enough."
-Done:
-
-- **`hp_hook_lo` 0.70 → 0.85** (0.70 past the wall), **`hp_lead` 40 → 44**
-  (a shorter lead-in, so a longer lever and a smaller turn). `hp_keep`
-  **0.106 → 0.267**. Pin 11.9 wide, pocket 12.2 (`hp_out` 6.10, 2.7 mm of
-  bar beyond it).
-- **The strain assert is split.** `hp_strain_up` (2.30 %, every charm on and
-  off) stays ≤ 2.9. `hp_strain_cb` (the max, set by the one-off push into the
-  bar) is now **3.73 %**, asserted ≤ 3.8. This deliberately breaks the
-  project's 2.9 % rule for a single bend per pin. If a crossbar cracks going
-  in, 0.80 gives 3.36 % and keep 0.20.
-- Charms are byte-identical (heart, butterfly checked); the plain band too.
-  At 130: 11 shells, genus 31, 1812.5 mm², 46 BRIDGE, no SUPPORT; genus 25 /
-  37 / 46 / 58 at 110 / 150 / 180 / 230. Pin: 1 shell, wall flags the same
-  as before (0.76 crossbar, 1.00 legs), no overhangs.
-- New pin in an old band: SOLID (does not fit). Old pin in the new band: fits
-  (loose, as before). Reprint pin and band.
-
-| test (at 60° catch, 0.85 hook) | reads |
-|---|---|
-| bar ∩ pin seated / dz +0.10 / +0.25 / −0.05 | 0.0000 / empty / 0.3920 / 0.8079 |
-| dz 0.05, dx 0.12 / 0.20 | empty / 0.7407 |
-| leg −14.25° (charm release), lift 1.2 / 2.5 | 0.3144 / 0.1715 — the pin stays |
-| leg unturned, lift 1.2 (control) | 1.5697 |
-| leg −20°, lift 1.2 (under the insertion turn — control) | 0.0309 |
-| leg −23.73° (1.03 × insertion turn), lift 0.15 → 3.3 | empty at every step |
-| same, lift 0 / 0.05 / 0.10 | 0.0372 / 0.0116 / 0.0000 — see below |
-| leg unturned, lift 0.10 / 0.14 / 0.20 | empty / empty / 0.0980 |
-
-The fully turned leg's outer lower corner drops ~0.2 onto the pocket floor
-(0.15 below the leg) within 0.1 mm of seating. That state does not happen:
-there the hooks are already under their shoulders, and a 12° turn clears
-them at lift 0.15. The turn peaks near lift 0.9, where 23° clears. (The
-old pin's row was on the same edge: a 0.16 drop against 0.15.)
 
 ## The ladybug charm — added 2026-09-25, unprinted
 
@@ -1905,13 +1274,13 @@ exactly at dx 0.
 ## Verifying a change
 
 0. If the lib, `bracelet.scad` or a charm model was touched: the `cmp` block
-   at the top of this file, then the H-pin joint harness with its controls.
-   If the charm stations were touched, re-run steps 1–6 at `charms = 3` —
-   every number must be identical to `charms = 0`. If a charm (butterfly,
-   ladybug, heart, rose) or a new
-   charm changed: connectivity (1 piece), wall thickness (≥ 1.19 mm, the gable
-   roof), bed stability (1 island), the `asin(|nz|)` scan (nothing past 45.5°),
-   the swing test with it seated, and a render.
+   in "Seven models", then the rib harness in the bolt section at the top
+   (every 45° a contact sheet; 22.5° and dz −0.2 must hit). If the charm
+   stations were touched, re-run steps 1–6 at `charms = 3`. If a charm
+   changed: connectivity (1 piece; the dolphin 4), wall thickness outside the
+   thread, bed stability (1 island), the `asin(|nz|)` scan (nothing past
+   45.5° but the socket's apex and the groove gables), the swing test with
+   it seated, and a render of its underside.
 1. Export; read **genus (31; 43 at 180)** and the **shell count (11; 15 at 180)** — and confirm the
    formula still holds at `rows = 3` and across a `wrist` sweep. The sweep also
    checks the pitch solver: every size must echo `loop` = `wrist + ease`

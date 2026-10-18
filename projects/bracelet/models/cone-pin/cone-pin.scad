@@ -1,16 +1,21 @@
-// cone-pin — the cone pin a `mount = "cone"` charm screws onto.
+// cone-pin — the bolt every charm is held by.
 //
 // It goes into a station bar FROM UNDERNEATH: the cone at its foot seats in
 // the bar's countersink, flush with the band's underside, and the M5 thread
-// stands up out of the bar's top. Hold it there with a finger and screw the
-// charm down onto it until it is tight: the charm clamps the bar between
-// itself and the cone. To turn a charm, loosen it, turn it, tighten it again.
+// stands up out of the bar's top.
 //
-// The foot has a HEX SOCKET for a `cn_key` (2.5 mm) hex key: hold the pin
-// with it from under the band while the charm screws on.
+// TO PUT A CHARM ON: set the charm on the bar with the bar's RIB in two of
+// its grooves, at the angle you want (every 45 degrees). Push the bolt up
+// into the bar from below and turn it with the hex key (models/screwdriver)
+// in the socket in its foot — clockwise, seen from below — until it pulls
+// the charm down tight. The charm cannot turn: the rib holds it, so the
+// BOLT turns, spinning in its round countersink. To take the charm off or
+// turn it, unscrew the bolt the same way.
+//
+// The socket takes a `cn_key` (3 mm) hex key.
 //
 // PRINT IT STANDING UP, on its foot, exactly as this file lays it out, in
-// ABS as the H-pins were. No support.
+// ABS. Round all the way up: no flat side, no support.
 //
 // All the geometry and every number live in lib/charm-cone.scad, beside the
 // bar's hole and the charm's socket they have to match.

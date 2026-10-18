@@ -1,12 +1,12 @@
-// rose-charm — a rose with thin, ruffled petals, and a charm for the H-PIN
-// mount.
+// rose-charm — a rose with thin, ruffled petals, a charm for the CONE PIN.
 //
-// It snaps onto the upper half of an H-shaped pin (models/pin) whose lower
-// half is already snapped into a pocket in a bracelet bar — like the
-// butterfly, the ladybug and the heart, with the same two holes
-// (`charm_h_holes` in the lib).
+// It sits on a station bar with the bar's rib in two of its grooves, and the
+// cone pin, turned from under the band, screws up into its threaded socket
+// and clamps it down (lib/charm-cone.scad). Eight grooves, so it can sit at
+// any multiple of 45 degrees to the band.
 //
-// THE ROSE. A solid CORE — a low dome — carries the holes. Out of its top
+// THE ROSE. A solid CORE — a low dome — carries the socket and the grooves,
+// all of them inside its radius. Out of its top
 // rises the BUD, three petals wrapped round an open middle, and round it
 // stand three rings of open PETALS, each shingled: every petal starts inside
 // its neighbour and ends outside the next. The petals are thin shells
@@ -36,7 +36,8 @@
 // that faces up, while the core's dome falls away from it: the groove
 // between them opens at once instead of peeling apart as a slit.
 //
-// IT PRINTS SEAT DOWN, exactly as modelled. The bottom is flat to the edge,
+// IT PRINTS SEAT DOWN, exactly as modelled: the socket and the grooves open
+// on the bed, their roofs a 45-degree cone and gables. The bottom is flat to the edge,
 // like the heart and the ladybug: it rests on the neighbouring bars, so the
 // wearing direction is free and the two joints beside it do not bend
 // backwards past flat — the trade the heart and the ladybug already make.
@@ -46,7 +47,7 @@
 $fa = 2;
 $fs = 0.3;
 
-include <../../lib/charm-pin.scad>
+include <../../lib/charm-cone.scad>
 
 // ------------------------------------------------------------------ the rose
 petal_t   = 0.9;            // a petal's thickness — two lines on a 0.4 nozzle
@@ -54,11 +55,12 @@ flare_max = 42;             // the most any petal's outer face leans out from
                             //   vertical — self-supporting under 45
 web_slope = 60;             // the web's inner face, from vertical — faces up
 
-// The core: a flat-sided dome, solid, that the holes are sunk into.
+// The core: a flat-sided dome, solid, that the socket is sunk into.
 core_r    = 8.0;            // its radius
-core_side = 6.95;           // the height of its side — 6.6 until the
-                            //   2026-09-27 pin raised the holes' gables 0.35
-core_top  = 7.95;           // and of its crown
+core_side = 6.95;           // the height of its side
+core_top  = 8.75;           // and of its crown: `cn_need`, the socket's coned
+                            //   end and a roof over it. 7.95 on the H-pin; the
+                            //   bud's open middle is that much shallower
 
 // The rings, from the middle out. Each row is one ring of `n` petals:
 //   [n, span, r_start, r_end, z_base, top, side, lean0, lean1, turn, wave,
@@ -185,13 +187,24 @@ for (k = [0 : len(rings) - 2]) let(g = rings[k], h = rings[k + 1])
 for (k = [0 : len(rings) - 2]) let(g = rings[k])
     assert(g[4] > 0 && g[4] < core_side && g[3] + petal_t < core_r - 0.3,
            str("ring ", k, "'s foot is not buried in the core"));
-// The holes' roof and wall must fit under the core.
-assert(core_side >= hp_apex + hp_wall + 0.2 - 1e-9, "the core is too low to roof the holes");
+// The socket's roof must fit under the core's dome, everywhere over the
+// bore: the dome at radius r against the bore's coned end there.
+function dome_z(r) = let(a = acos(min(1, r / core_r)))
+    core_side + (core_top - core_side) * sin(a);
+socket_roof = min([for (r = [0 : 0.05 : cn_hole_maj/2])
+                   dome_z(r) - (cn_bore + max(0, cn_hole_min/2 - r))]);
+assert(socket_roof >= cn_roof - 1e-9,
+       str("only ", socket_roof, " mm of core over the socket"));
+// The grooves stay inside the core, under its side with a roof over them.
+assert(norm([cn_g_r, cn_g_out]) <= core_r - 0.7,
+       "the grooves run out of the core's side");
+assert(core_side - cn_g_apex >= cn_g_roof,
+       str("only ", core_side - cn_g_apex, " mm of core over the grooves"));
 
 reach = max([for (g = recs) g[3] + flare(g[5] - g[4], g[5] - g[4], g[7], g[8])
                             + petal_t / cos(g[8])]);
 echo(str("rose: ", 2 * reach, " mm across, ", max([for (g = recs) g[5] + g[9]]), " tall, ",
-         len(recs), " petals"));
+         len(recs), " petals; ", socket_roof, " of core over the socket"));
 
 // ----------------------------------------------------------------- geometry
 module rose() {
@@ -201,7 +214,7 @@ module rose() {
 
 module rose_charm() difference() {
     rose();
-    charm_h_holes();
+    cn_charm_mount();
 }
 
 rose_charm();

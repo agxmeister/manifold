@@ -1,11 +1,9 @@
-// heart-charm — a puffy 3D heart, and a charm for the H-PIN mount. With
-// `mount = "cone"` it is cut for the cone pin instead (lib/charm-cone.scad),
-// and stands 9.2 tall to cover that socket.
+// heart-charm — a puffy 3D heart, a charm for the CONE PIN.
 //
-// It snaps onto the upper half of an H-shaped pin (models/pin) whose lower
-// half is already snapped into a pocket in a bracelet bar — exactly like the
-// butterfly and the ladybug, with the same two holes (`charm_h_holes` in the
-// lib).
+// It sits on a station bar with the bar's rib in two of its grooves, and the
+// cone pin, turned from under the band, screws up into its threaded socket
+// and clamps it down (lib/charm-cone.scad). Eight grooves, so it can sit at
+// any multiple of 45 degrees to the band.
 //
 // A PILLOW HEART: one smooth surface, no seams. The outline is a smooth
 // heart curve — two wide lobes, a soft notch, full rounded sides and a point
@@ -20,27 +18,20 @@
 // it leaves a visible edge: the sides had corners. This surface is one
 // function of the outline, so it is as smooth as the outline is.
 //
-// IT TURNS. `angle` spins the heart in plan about the pin, anticlockwise seen
-// from above; the holes stay put, because the pin runs across the band. At
-// 0 the heart stands upright across the band, lobes at +y, point at -y. The
-// heart is symmetric, so -a is the mirror image of a (all but the shine), and
-// a + 180 is the heart upside down.
-//
-// THE HEART IS SIZED FOR EVERY ANGLE AT ONCE. The two holes and their walls
-// are a 5.5 x 14 mm lozenge, and it must stay buried under a full wall at
-// whatever angle the heart is turned to. An inflated surface falls away from
-// the middle, so that takes a wide heart with a full profile (`prof_p`) and a
-// shallow notch. The proof is the envelope test in CLAUDE.md, at every angle.
+// THE ANGLE IS CHOSEN ON THE WRIST, not in the model: the grooves let it sit
+// at any multiple of 45 degrees. (It used to be an `angle` parameter, one
+// export per angle, when the H-pin's holes fixed it.) Lobes at +y, point at
+// -y, the socket at the origin.
 //
 // IT PRINTS SEAT DOWN, exactly as modelled. Nothing needs support: every ring
 // of the surface lies inside the ring below it (the outline is star-shaped
 // about the middle, asserted), so the surface is a height field and faces
-// only up. The shine is a groove cut down into the top — all floor. The holes
-// open on the bed and are gabled at 45 degrees (the lib).
+// only up. The shine is a groove cut down into the top — all floor. The
+// socket and the grooves open on the bed; their roofs are 45-degree cones and
+// gables (the lib).
 //
-// THE BOTTOM IS FLAT TO THE EDGE, like the ladybug's legs, not relieved beyond
-// |x| = 5 like the butterfly. The heart reaches ~12 mm along the band at
-// some angles, and a 43.6-degree relief would cut its point away from below.
+// THE BOTTOM IS FLAT TO THE EDGE. The heart reaches ~12 mm along the band at
+// some angles, and a relief would cut its point away from below.
 // So it rests on the neighbouring bars: the wearing direction is free, and the
 // two joints beside it do not bend backwards past flat — the trade the
 // ladybug already makes.
@@ -48,35 +39,24 @@
 $fa = 2;
 $fs = 0.3;
 
-include <../../lib/charm-pin.scad>
 include <../../lib/charm-cone.scad>
-
-angle    = 0;               // the heart's turn in plan, degrees anticlockwise
-mount    = "h";             // "h": the two holes of the dovetail H-pin;
-                            //   "cone": the cone pin's socket (lib/charm-cone),
-                            //   on trial — an M5 thread with a coned end
-assert(mount == "h" || mount == "cone",
-       str("unknown mount \"", mount, "\" — \"h\" or \"cone\""));
 
 // ------------------------------------------------------------------ the heart
 // The outline, in the heart's own frame: the classic heart curve
 //   x = sin(t)^3,  y = 13 cos t - 5 cos 2t - 2 cos 3t - cos 4t,
 // with three changes, each one number:
 width    = 23;              // across the lobes
-length   = 19.4;            // lobes' top to point — wider than long. 19 until
-                            //   the 2026-09-27 stiff pin grew the holes to 6.66
+length   = 19.4;            // lobes' top to point — wider than long
 side_q   = 1.6;             // x = sin^q, not sin^3: fuller, rounder sides
 round_e  = 0.15;            // rounds the point and the notch's bottom: x runs
                             //   out linearly there instead of as a cube
 notch_up = 5;               // lifts the top of the heart, the notch most: 1.5 mm
-                            //   deep, against 4.6 unlifted, which the holes
-                            //   cannot live under. A narrow lift raised a bump
+                            //   deep, against 4.6 unlifted. A narrow lift raised a bump
                             //   in the notch instead; this one is cos(t)^6, as
                             //   broad as the lobes, so the top stays two curves
-height   = mount == "cone" ? 9.2 : 8.0;
-                            // the pillow's crown. The cone socket stands
-                            //   `cn_need` = 8.75 tall over the axis (thread,
-                            //   its coned end, roof), so that heart is puffier
+height   = 9.2;             // the pillow's crown. The socket stands `cn_need`
+                            //   = 8.75 tall over the axis (thread, its coned
+                            //   end, roof); 8.0 on the H-pin
 prof_p   = 4.0;             // its profile: 2 = elliptical, more = fuller
                             //   shoulders before it rounds down to the bed
 n_t      = 240;             // stations round the outline
@@ -124,8 +104,6 @@ assert(max(turns) < 0 || min(turns) > 0,
        "the outline is not star-shaped about the middle — the surface would fold");
 notch_y  = edge(0)[1];
 tip_y    = edge(180)[1];
-assert(notch_y >= hp_c_out + hp_wall + 0.3,
-       str("the heart's notch at ", notch_y, " comes down onto the holes' walls"));
 
 // The surface's slope, radially, at (s, t).
 function slope(s, t) = let(d = 0.005, r = norm(edge(t)))
@@ -137,7 +115,7 @@ assert(max(concat([for (t = [shine_t[0] : 2 : shine_t[1]]) slope(shine_edge_s(sh
 // the land between the dot and the arc, measured to the arc's nearer end
 shine_gap = min([for (t = shine_t) norm(surf(shine_dot[0], shine_dot[1]) - surf(shine_s, t))])
           - (shine_w + shine_dot[2])/2;
-assert(shine_gap >= hp_wall, str("only ", shine_gap, " mm between the shine's arc and its dot"));
+assert(shine_gap >= 1.2, str("only ", shine_gap, " mm between the shine's arc and its dot"));
 assert(shine_flare + (90 - shine_slope) >= 75,
        "the shine's downhill lip comes out sharper than 75 degrees");
 
@@ -146,13 +124,24 @@ assert(shine_flare + (90 - shine_slope) >= 75,
 // the surface has fallen furthest.
 roof_min = min([for (t = ts) let(r = norm(edge(t)))
                        surf_z(cn_hole_maj/2 / r) - cn_bore]);
-assert(mount != "cone" || height - cn_apex >= cn_roof,
+assert(height - cn_apex >= cn_roof,
        str("only ", height - cn_apex, " mm of heart over the socket's roof"));
-assert(mount != "cone" || roof_min >= cn_roof,
+assert(roof_min >= cn_roof,
        str("only ", roof_min, " mm of heart over the chamber's rim"));
+// ... and over every groove's ridge, out to its far end, whichever way it
+// runs (the outline is star-shaped, so its radius along a groove is the
+// outline's at that bearing).
+function edge_r(b) = let(i = [for (j = [0 : n_t - 1]) let(d = abs(bearing(ts[j]) - b))
+                                  min(d, 360 - d)])
+                     norm(edge(ts[search(min(i), i)[0]]));
+g_roof_min = min([for (a = [0 : cn_step : 359]) let(b = 90 + a)
+                  surf_z(cn_g_out / edge_r(b > 180 ? b - 360 : b)) - cn_g_apex]);
+assert(g_roof_min >= cn_g_roof,
+       str("only ", g_roof_min, " mm of heart over a groove's far end"));
 
-echo(str("heart: ", width, " x ", length, " x ", height, " mm, turned ", angle,
-         " deg; notch at ", notch_y, ", point at ", tip_y));
+echo(str("heart: ", width, " x ", length, " x ", height, " mm; notch at ",
+         notch_y, ", point at ", tip_y, "; ", g_roof_min,
+         " over the grooves' far ends"));
 
 // ----------------------------------------------------------------- geometry
 // The inflated heart: rings of the outline scaled by `prof_s`, raised by
@@ -199,8 +188,9 @@ module shine() intersection() {
 }
 
 module heart_charm() difference() {
-    rotate(angle) difference() { heart(); shine(); }
-    if (mount == "cone") cn_charm_cut(); else charm_h_holes();
+    heart();
+    shine();
+    cn_charm_mount();
 }
 
 heart_charm();

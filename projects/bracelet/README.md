@@ -11,10 +11,11 @@ The clasp is the same short buckle at every size; length is band, not plate.
 
 ![the bracelet as it comes off the bed](previews/bracelet-bracelet.png)
 
-It can also carry **charms**: turn on a few charm stations and the band gets
-small pockets that a separately-printed H-shaped pin snaps into, and a charm
-snaps onto the pin — firmly enough that it does not fall off, by hand when you
-want it to. See [Charms](#charms).
+It can also carry **charms**: turn on a few charm stations and each gets a
+hole for a separately printed **bolt**, pushed in from under the band, and a
+small rib on top. A charm sits on the rib at any multiple of 45°, and the
+bolt, turned from below with a hex key, clamps it down. See
+[Charms](#charms).
 
 ## It hinges in one axis only
 
@@ -232,136 +233,47 @@ full-width bar foot, so there is far more of it than the old tile grid had.
 ## Charms
 
 `charms` bars along the band — the middle one and every third bar either side
-of it — carry a charm, hung on a **dovetail H-pin** that clicks into the bar.
+of it — carry a charm, held by a **bolt** (the cone pin) through the bar.
 Five charms are built for it: a 3D **butterfly**, a two-colour **ladybug**, a
-puffy **heart** that can be turned to any angle, a **rose** with thin, ruffled
-petals, and an articulated **dolphin** whose tail bends every way.
+puffy **heart**, a **rose** with thin, ruffled petals, and an articulated
+**dolphin** whose tail bends every way. Any of them sits on the bracelet at
+any multiple of **45°**.
 
-The pin's top is the H-pin's upper half, so **every charm keeps its two
-holes and fits unchanged**. Only the band and the pin are new
-(2026-09-30, **not printed yet**).
+The bolt is the only mount since 2026-10-18. The H-pin and the dovetail
+H-pin before it are gone, and so are their two-hole charms: every charm now
+has the bolt's threaded socket and eight grooves underneath. **The grooves
+and the rib are not printed yet.** The bolt itself printed well (lying down,
+2026-10-05); the standing bolt with the hex socket is not printed yet.
 
-![a pin in a station, cut open](previews/bracelet-bracelet-c3.png)
+![the band with three stations](previews/bracelet-bracelet-c3.png)
 
-### The dovetail H-pin
-
-The pin is two halves on one solid block:
-
-- its **top** is two legs with hooks pointing in, standing where the H-pin's
-  upper legs stood, so the charm snaps down over them into its two holes, as
-  it always did. The legs are solid;
-- its **bottom** is a **dovetail**, 16 mm long, running **across** the band.
-  It replaces the H's lower legs. It slides into a dovetail **groove** through
-  a station bar, from the band's edge, and clicks.
+### The bolt
 
 ```
-  across the band (x, z)            along the band (y, z)
-
-      charm  |   |  <- a leg         charm  |< >|     |< >|   upper legs
-  -----------|   |------ bar top     -------|   |-----|   |-- bar top
-      bar    |###|  <- block,              ###|   |#####|   |###  block, solid
-             |###|     in the channel      #########################  under the legs
-             /___\  <- dovetail     _______/_________________  dovetail
-             |___|
-          ==/\=====  lip on the leaf
+              charm, sitting on the rib
+          ___/  ___  \___
+         |     |   |     |   <- threaded socket, M5
+   rib  (_)    |   |    (_)  rib          bar top
+  ======|======|   |=====|=======
+        |   bar \   /   |              <- countersink, 13 deg
+  ======|========\_/=====|=======  bar underside
+                  ^ the bolt's foot, a hex socket in it
 ```
 
-The crossbar is sunk 0.3 mm under the bar top, as in the H-pin, in a shallow
-**channel** (3.8 × 0.95 mm) that runs across the bar top with the groove
-under it. The charm sits flat on the bar.
-
-**The block and the solid legs** (2026-10-02, unprinted). Under the legs the
-pin is one solid block, its full 16 mm length, from the dovetail up to
-0.3 mm under the bar top, and the legs grow straight out of it:
-- each leg is **1.0 mm** thick (the H-pin's were 1.6), with no slots
-  beside it: slotted, the legs printed "very fragile";
-- the hooks stand in **0.75 mm** (the H-pin's 1.0) and lap the charm's
-  shoulder by **0.6 mm**;
-- nothing on the pin flexes, so a charm snaps on by its own give and the
-  hooks'. If one will not go on, shorter hooks (`dt_hook`) are the fix;
-- the legs' inner faces and the hooks' catch angle are the H-pin's, so the
-  charm's shoulders meet them where they always did.
-
-The first version (0d41592, printed well) joined the dovetail to an H-pin
-crossbar by a 0.8 mm neck and let the crossbar bend. The block stands 0.15 mm
-clear of the channel's floor, so the pin can still sit a little lower if it
-prints fat.
-
-**A shallow dovetail** (2026-10-02, unprinted). The pin's base, block and
-dovetail together, is **2.0 mm** tall (2.95 before). The deep groove left
-only 0.8 mm of floor holding the station bar's two halves, and the bars bent
-with a pin in. Now:
-- the block under the legs is 0.5 mm; the dovetail's flanks run 1.0 mm at 45°
-  from a 0.5 mm straight foot to a **1.5 mm waist**, so the groove holds it
-  **0.85 mm a side**;
-- the groove is 2.45 mm deep, and the floor under it **1.75 mm** thick:
-  about 10× as stiff against the bar folding along the groove.
-
-**The click.** Under the pin a **spring leaf**, 6.45 × 2.9 × 1.0 mm, lies at
-the bottom of a 0.75 mm pocket in the groove's floor, cut free on three
-sides. A **lip** on a post rises from it and stands 0.7 mm over the floor. It
-drops into a
-0.45 mm **pit** under the pin, 6 mm in from the band's edge. Both have
-**steep flanks, 60° from the bed**, so the pin needs about twice the push to
-leave as at 45°. Going in, the lip climbs a 45° chamfer under the pin's end
-instead, and rides its underside for the last 2 mm, bending the leaf
-0.55 mm (2.5 % strain). **The leaf's tip dips about 0.6 mm
-below the band's underside as it bends.** Push the pin in with the band in
-your hand, not flat on a table. At rest the leaf is still bent 0.1 mm, which
-presses the pin **up** against the groove's flanks, so the pin does not
-rattle in the bar. On the wrist the skin holds the leaf up, so the pin cannot
-be pushed out while the bracelet is worn.
-
-The pin is **the same both ways round**: a pit and a lead chamfer under each
-end, so it clicks whichever end goes in first. It sits 0.1 mm inside both
-edges of the band when it clicks.
-
-`charms` in `bracelet.scad` cuts the stations; `models/pin` is the pin. The
-dovetail's, channel's and leaf's numbers live in `lib/charm-dovetail.scad`
-(`dt_*`); the H's upper half and the charms' holes stay in
-`lib/charm-pin.scad` (`hp_*`), which it includes.
-
-### Putting a charm on, and taking it off
-
-1. **Snap the charm onto the pin**, in your hand or with the pin already in
-   the bar: press it straight down over the two legs until it sits flat, as
-   with the H-pin.
-2. **Hold the band in your hand, and push the pin, with the charm on it,
-   into a station's groove** from either edge of the band, until it clicks
-   and sits flush with both edges.
-3. **To take it off**, take the bracelet off. From the edge nearer the click
-   (the lip is 5 mm in from one edge), push the pin's end with a toothpick
-   until it lets go, and slide pin and charm out together. Then pull the
-   charm off the pin.
-
-### What it costs the band
-
-- **The channel and groove split a station bar in two along its length.** The
-  halves are joined only by the groove's floor beyond the leaf: 9.25 mm of it,
-  1.75 × 3.9 mm in section, about 6.8 mm² of PLA printed along its layers.
-- The walls are **1.1 mm** beside the channel and **1.05 mm** beside the
-  groove's foot.
-- The groove's flanks lean over the pin at 45°. The overhang check reports
-  exactly the plain band's 40 hinge bridges and nothing else. Same first
-  layer, same no-brim rule.
-- The plain band (`charms = 0`) is **byte for byte** unchanged.
-
-### The cone pin — a second mount, on trial
-
-A second mount, **on trial** beside the dovetail H-pin: `mount = "cone"` in
-`bracelet.scad` and in a charm picks it. So far only the **heart** has a cone
-socket. Reworked after the first print (2026-10-04), and the reworked
-version **printed well** (2026-10-05). The same day the pin was changed to
-print **standing up**, with a **hex socket** in its foot. That version is
-not printed yet.
-
-- **The pin goes in from underneath.** Its foot is a round **cone** that seats
-  in a countersink in the bar's underside, 0.4 mm inside the skin side. Its
-  shaft runs up through a plain hole and carries an **M5 thread** above the
-  bar.
-- **The charm screws down onto it** until it clamps the bar between itself
-  and the cone. Because the cone is round, the charm can face any way. To turn
-  it, loosen it, turn it and tighten it again.
+- **It goes in from underneath.** Its foot is a round **cone** that seats in
+  a countersink in the bar's underside, 0.4 mm inside the skin side. Its
+  shaft runs up through a plain hole and carries an **M5 thread**, 5 mm of
+  it (about 2 turns), above the bar.
+- **The rib** is a half-round ridge, 2.0 mm wide and 1.0 mm tall, on the bar's
+  top. It runs across the band through the bolt's axis, in two short halves
+  either side of the hole, 4.3–7.0 mm out.
+- **Every charm has eight grooves** underneath, every 45°, radiating from its
+  socket. Two opposite ones take the rib. They leave the charm 0.15 mm of
+  clearance round it, which is about ±1.7° of play. A charm set down between
+  two grooves stands on the rib and cannot be clamped.
+- **So the bolt turns, not the charm.** The rib stops the charm from
+  turning, and the round cone lets the bolt spin in its countersink. A charm
+  screwed down instead would have to spin through the rib.
 - **The bar has no thread.** It has a hole and a countersink, 1.1 mm off the
   bar's centre, towards the side whose gap is **filled**. A bar is only 6 mm
   along the band. On one side, the knuckles beside the gap between the
@@ -369,35 +281,16 @@ not printed yet.
   completely: one wide lug with the lugs' own shape, out to their ends. It
   swings exactly as they do, so the band bends exactly as before. The gap on
   the other side is flanked by the neighbour's knuckles and stays open.
-
-What the first print changed:
-- **The ball and click fingers are gone.** They added no hold. The thread is
-  longer instead: 5 mm in the charm, about 2 turns (was 1.3).
-- **The 15° position ridges are gone**, from the band and from the charm.
-  They were too small to print.
-- **The cone is solid.** The slot that split it into a spring is gone. It
-  keeps only the flat it prints on (gone too, now that it prints standing).
-- **The pin is thicker:** M5 instead of M3, and the cone is 6.7 mm across
-  instead of 4.5.
 - **The cone is long.** It tapers all the way from the foot to where the
-  thread starts, about 13° from the axis, so it bears on the bar over 3 mm
-  instead of 1. A steep wedge pushes the bar's walls apart hard, so screw a
-  charm down firmly, not with force.
+  thread starts, about 13° from the axis, so it bears on the bar over 3 mm. A
+  steep wedge pushes the bar's walls apart hard, so tighten a charm firmly,
+  not with force.
+- **The bolt prints standing up**, round all the way, with a **hex socket**
+  in its foot for a **3 mm hex key** (3.1 mm across flats, 2.5 mm deep). It
+  is cut tight, 0.05 mm a side; if a key won't go in, raise `cn_key_fit` in
+  `lib/charm-cone.scad`.
 
-What changed after the second print:
-- **The pin prints standing up**, on its foot, with the thread on top, so the
-  cone and the thread come out round. There is no flat any more.
-- **A hex socket in the foot** takes a **3 mm hex key** (3.1 mm across
-  flats, 2.5 mm deep, a pointed end). Hold the pin with the key from under
-  the band while the charm screws on. It is cut tight, 0.05 mm a side; if a
-  key won't go in, raise `cn_key_fit` in `lib/charm-cone.scad`. (It was
-  2.5 mm with 0.15 mm a side at first; that didn't fit the user's
-  screwdrivers.)
-- **It is 0.3 mm shorter at the foot:** the foot sits 0.4 mm inside the
-  bar's underside instead of 0.1, so it never sticks out. The foot's rim is
-  chamfered, so a squashed first layer can't lift the cone off its seat.
-
-**The screwdriver.** `models/screwdriver` is a hex key for the pin's foot,
+**The screwdriver.** `models/screwdriver` is a hex key for the bolt's foot,
 sized for a child's hand: a 2.9 mm hex bit (0.1 mm a side in the socket),
 4 mm long, on a round shaft and a flat 32 mm paddle that is pinched and
 twisted like a door key. The paddle has a hole for a string, so the key can
@@ -405,31 +298,36 @@ stay with the bracelet. The bit reaches the end of the socket with the shaft
 still 1.5 mm clear of the band. It is not printed yet. If it is loose in the
 socket, lower `key_fit`; if it won't go in, raise it.
 
-**Putting a charm on:**
+### Putting a charm on, and taking it off
 
-1. Push the pin up into the bar from underneath. Hold it there with a finger,
-   or with the screwdriver (or a 3 mm hex key) in its foot.
-2. Screw the charm down onto it until it is tight on the bar. The key stops
-   the pin from turning with it.
-3. To take it off, unscrew it. The pin drops out of the bottom.
+1. **Set the charm on the station**, facing the way you want, with the rib in
+   two of its grooves. It drops flat onto the bar when it is in.
+2. **Push the bolt up into the bar from underneath** and turn it with the
+   screwdriver (or any 3 mm hex key), **clockwise as you look at the
+   underside**, until the charm is pulled down tight.
+3. **To turn or take off the charm**, unscrew the bolt the same way, from
+   underneath. Lift the charm, turn it, set it down and tighten again.
 
-**What it costs:**
+### What it costs the band
 
-- The heart for this mount is **9.2 mm tall instead of 8.0**. The socket is
-  5.5 mm deep with a coned end, plus a millimetre of heart over it.
-- Same 11 shells, same 40 hinge bridges as the plain band. The
-  countersink is a 13° ceiling, so it adds no overhang.
+- Same 11 shells and the same 40 hinge bridges as the plain band, and the
+  same first layer. The countersink is a 13° ceiling, so it adds no overhang.
+  The rib sits on the bar's top: nothing overhangs.
+- The band stands 5.2 mm tall at a station, at the rib, instead of 4.7 at
+  the stud.
+- The plain band (`charms = 0`) is **byte for byte** unchanged.
 
 ### What came before
 
 A ball pin fused to the bar and a loose double-ended screw both printed and
 worked. They were removed on 2026-09-24 in favour of the **H-pin**, a flat H
-whose hooked lower legs snapped down into a pocket in the bar. It held well
-in the charm but kept pulling out of the bar despite a long run of retunes
-(2026-09-23 to 09-28). A U-pin, a twist-key (printed, failed) and a slider
-were tried after it and rolled back on 2026-09-29. A crossed dovetail pin
-followed; its top did not suit the charms. It became this pin on 2026-09-30:
-its dovetail bottom under the H's top. All of them are in git history.
+whose hooked lower legs snapped into a pocket in the bar. It held well in the
+charm but kept pulling out of the bar. A U-pin, a twist-key (printed,
+failed) and a slider were tried after it and rolled back on 2026-09-29. A
+**dovetail H-pin** (the H's top on a dovetail that clicked into the bar)
+followed and printed well. The **cone pin** ran beside it from 2026-10-04,
+printed well, and became the only mount on 2026-10-18, taking with it the heart's `angle` parameter: the angle is now
+chosen on the wrist. All of them are in git history.
 
 ### The butterfly — a 3D charm
 
@@ -439,24 +337,33 @@ plate. A raised, rounded **body** runs across the band with a head and two
 antennae at the front, and the **wings lift away from it in a shallow V**, with
 a spot sunk into each one.
 
-- The body is where the pin goes: its two holes open on the bed, and their far
-  ends have **pointed 45° roofs**, since a flat one would be a ceiling. 6.5 mm
-  tall, it stands 7.0 off the band's top at the antennae.
+- The body is where the bolt goes. Since 2026-10-18 its middle is a round
+  **thorax**, 7.7 mm across, domed up to 9.3 mm over the socket (the body was
+  6.85 tall on the H-pin). The head is raised to match and the wing spots
+  moved out. The notch between fore- and hindwing is shallower: a groove ran
+  out through it and left knife edges.
 - The wings' **undersides rise at 43.6°** beyond |x| = 5 mm, so every layer
   lands on the one below. That also keeps them
   clear of the neighbouring hinges, whose arms tilt up above the band as a
   joint turns: with a butterfly seated, the neighbours swing clear to **±40°**
   at both 130 and 180 and bind at 60 (a wrist needs about 24°).
-- 15.8 mm wingspan along the band; 18.6 mm across it with the head and
-  antennae. It cannot swivel — two legs hold it square.
+- 16.1 mm wingspan, 19.8 mm head to tail with the antennae. Turned 90° on the
+  rib, the wings lie across the band instead and the flat bottom rests on the
+  neighbouring bars: still clear to 40° as the band curls, every 45°.
 
 ### The ladybug — a two-colour charm
 
 ![the ladybug charm](previews/ladybug-charm-ladybug-charm-accent.png)
 
 A round red **shell** with six heart-shaped spots and a seam down the middle,
-a black **head** with two antennae, and three stubby **legs** a side. It
-takes the same two holes as the butterfly and goes on the same H-pin.
+a black **head** with two antennae, and three stubby **legs** a side.
+
+**Reshaped for the bolt on 2026-10-18, not printed yet.** The shell is 8.8 mm
+tall (was 8.0) and rounder, 15.2 mm wide (was 12.6), so it roofs the socket
+and every groove. A leg lying on the bed is only 1.6 mm tall, lower than a
+groove, so a groove would cut it off. The legs now sit between the grooves:
+they leave the shell at about +23°, −23° and −56° each side instead of an
+even fan, and still show about 2.8 mm each.
 
 - **Two colours, one object.** The shell is filament 1. The hearts, seam,
   head, legs and antennae are filament 2. The eyes and the antennae's tips go
@@ -466,62 +373,47 @@ takes the same two holes as the butterfly and goes on the same H-pin.
   face closes inward as it rises. Beyond |x| = 5 mm its underside is relieved
   at 43.6°. The **legs lie flat on the bed**, each a strip with a rounded
   top, so nothing overhangs.
-- The shell is 7.8 mm tall, not 7.0 like the butterfly. It must roof both
-  holes' 45° gables with a 1.2 mm wall right to their ends, and a rounded
-  shell comes down faster there than the butterfly's ridge does.
-- 20.6 mm along the band, 18.3 mm across it, head included. The middle legs
-  are longer than the others, because the shell is widest there and hides
-  more of them. All six show 4 mm of leg. **The legs lie
+- 20.6 × 21.6 mm with the legs and head. **The legs lie
   on the neighbouring bars.** As the band curls round a wrist, those bars
   swing away from them: clear to 60° at both 130 and 180. **Bent backwards,
   the two joints beside it do not move at all.** The legs rest flat on the
   neighbours and stop them from the first half-degree. Forcing it levers
-  on the charm. The butterfly keeps its underside off the hinges, so it
-  bends back to 40°.
+  on the charm. This holds at every 45° step.
 - `-D accent=false` (the default) writes it in one colour. The two-colour
   file is `exports/ladybug-charm-ladybug-charm-accent.3mf`; see
   [Printing](#the-ladybug-in-two-colours).
 
-### The heart — a puffy charm you can turn
+### The heart — a puffy charm
 
 ![the heart charm](previews/heart-charm-heart-charm.png)
 
-**Printed and confirmed on 2026-09-25.**
+**The shape printed and was confirmed on 2026-09-25**, 8 mm tall on the
+H-pin. It is 9.2 mm tall for the bolt's socket, and printed well that way
+too (2026-10-05). The grooves are new and not printed yet.
 
-A **pillow heart**, 23 mm wide and 19 tall: one smooth surface with no seams
-or corners. Its outline is a smooth heart curve, with two wide lobes, a soft
-1.5 mm notch, full round sides and a point rounded off just enough not to be
-sharp. The heart is that outline **inflated**. It rises from the bed on one
-pillow profile to an 8 mm crown, and the notch carries up the surface as a
-gentle valley between the lobes. A cartoon **shine**, an arc and a dot, is
+A **pillow heart**, 23 mm wide and 19.4 tall: one smooth surface with no
+seams or corners. Its outline is a smooth heart curve, with two wide lobes, a
+soft 1.5 mm notch, full round sides and a point rounded off just enough not
+to be sharp. The heart is that outline **inflated**. It rises from the bed on
+one pillow profile to a 9.2 mm crown, and the notch carries up the surface as
+a gentle valley between the lobes. A cartoon **shine**, an arc and a dot, is
 sunk 0.6 mm into the upper-left lobe.
 
-- **`-D angle=` turns it** in plan about the pin, in degrees, anticlockwise
-  seen from above. The holes stay where they are, because the pin always runs
-  across the band. At 0 the heart stands upright across the band, lobes to
-  one edge and point to the other. At 90 or 270 it lies along the band,
-  pointing one way or the other. The heart is symmetric, so -a (or 360 − a) is
-  the mirror image of a, apart from the shine.
-- **It is sized to work at every angle at once.** Wherever it is turned, the
-  pin's two holes and their 1.2 mm walls must stay buried inside it. A test
-  grows the holes by the wall and subtracts the heart at every 10° from −150°
-  to 180°, and it comes back empty at every angle. It keeps 0.6–1.0 mm to
-  spare: moved 1.0 mm off centre, the heart leaks.
+- **It turns on the wrist, every 45°**, on the rib (it used to take an
+  `angle` parameter and one export per angle). The socket is at the middle of
+  the heart, with at least 1 mm of heart over its coned end and 5.8 mm over
+  the far end of every groove.
 - It prints **bottom down** like the others. Every ring of the surface lies
   inside the one below it, so it only ever faces up. The shine is a groove
-  whose walls flare outward, so it is all floor. No supports, no brim, 307 mm²
+  whose walls flare outward, so it is all floor. No supports, no brim, 252 mm²
   on the bed.
 - **Its bottom is flat to the edge, like the ladybug's legs.** The heart reaches
-  up to 13 mm along the band from the pin. The butterfly's 43.6° relief would
-  cut its edges away from underneath, so the heart rests on the neighbouring
-  bars instead. As the band curls round a wrist they swing away from it: clear
-  to 60° at both 130 and 180, at 0°, 45° and 90°. **Bent backwards, the two
-  joints beside it do not move**, the same trade as the ladybug.
-- Two hearts side by side at `charms = 3` clear each other by about 12 mm at
-  0°, when their 23 mm width lies along the band.
-- Exports, in `exports/`: `heart-charm-heart-charm.stl` (0°) and `-a45`,
-  `-a90`, `-a270`, `-a315`. Any other angle is one
-  `openscad -D angle=... ` away.
+  up to 13 mm along the band from the bolt, so it rests on the neighbouring
+  bars. As the band curls round a wrist they swing away from it: clear at 24°
+  and 40° at 130, turned 0°, 45° or 90° — every charm reads the same. **Bent backwards, the two joints beside it do
+  not move**, the same trade as the ladybug.
+- Two hearts side by side at `charms = 3` clear each other by about 12 mm
+  when their 23 mm width lies along the band.
 
 ### The rose — thin, ruffled petals
 
@@ -536,7 +428,10 @@ shell**: a rounded top that dips between petals, a wavy lip, pleats that
 deepen toward the lip, and a flare that opens outward as it rises. The flare
 grows ring by ring, so the rose opens out from the middle.
 
-- The **core** under the petals is solid and holds the pin's two holes. The
+- The **core** under the petals is solid and holds the bolt's socket and the
+  grooves. Its dome rose from 7.95 to 8.75 mm for the socket on 2026-10-18,
+  so the open middle of the bud is 0.8 mm shallower; the petals did not
+  change. The
   outer petals are fused to it up to 6.6 mm, so from the side you see petals
   all the way down. Above that they stand free.
 - **No two petals graze.** Two thin walls crossing at a shallow angle leave
@@ -545,7 +440,8 @@ grows ring by ring, so the rose opens out from the middle.
   at least 0.4 mm of air. Both are asserted in the source.
 - It prints **bottom down**, like the others. Every petal leans out at most
   about 30° from vertical, so every layer lands on the one below. No
-  supports, no brim, 263 mm² on the bed.
+  supports, no brim, 201 mm² on the bed (the socket and grooves take the
+  rest).
 - **The petals are two lines thick.** On a 0.4 mm nozzle they print as two
   perimeters. Keep the slicer's thin-wall handling on (Arachne, the default
   in Creality Print). `petal_t` sets the thickness if you want sturdier
@@ -571,14 +467,17 @@ segment's skin runs on over the next one's rounded nose, so every joint looks
 like a groove between two rings.
 
 A chubby cartoon dolphin **52.5 mm long, 29.8 mm across the flippers and
-13.5 mm tall**. It is fullest under the fin. The head is smaller, and its forehead slopes down to a slim beak,
+13.9 mm tall**. For the bolt (2026-10-18) the torso grew about 0.35 mm, to
+8.86 mm over the socket, the fin rose with it, and the first two tail joints
+moved back 0.1 mm to clear the grooves. Two grooves come out through the
+body's sides as small arches at bed level, just behind the flippers. It is fullest under the fin. The head is smaller, and its forehead slopes down to a slim beak,
 dimpled eyes and a blowhole, and a dorsal fin with a long sloping front
 edge, a tip that curls back and a curved-in back edge. The flippers and the fluke
 are each one smooth inflated surface over a rounded outline, with no creases
 anywhere. **The fluke is tilted up 50°** at the end of the tail, and its two lobes
 are swept back so that from above they are about 120° apart. It lies **across the band**,
 the same way the heart does. The head, body, fin and flippers are one solid,
-and that solid holds the pin's two holes. Behind it, the **tail is three
+and that solid holds the bolt's socket. Behind it, the **tail is three
 loose segments**, the last one the fluke. Each joint bends **about 23°
 sideways** and **about 12° up or down**, and anything in between. It also
 twists about 15°, and there is 0.5 mm of play on top of that. Over three
@@ -657,42 +556,36 @@ picks the actual filaments.
 
 ```
 projects/bracelet/
-├── lib/charm-dovetail.scad               # the pin's dovetail, the channel, groove and
-│                                         #   leaf in the bar (includes charm-pin)
-├── lib/charm-pin.scad                    # the H's upper half and every charm's two
-│                                         #   holes
-├── lib/charm-cone.scad                   # the cone pin: its thread, the bar's hole,
-│                                         #   countersink and boss, a charm's socket
+├── lib/charm-cone.scad                   # the bolt: its thread, the bar's hole,
+│                                         #   countersink and rib, a charm's socket
+│                                         #   and grooves
 └── models/
     ├── bracelet/bracelet.scad            # the whole bracelet — one printed object
-    ├── pin/pin.scad                      # the dovetail H-pin
-    ├── cone-pin/cone-pin.scad            # the cone pin (on trial)
-    ├── screwdriver/screwdriver.scad      # a kid's hex key for the cone pin
-    ├── butterfly-charm/butterfly-charm.scad  # a charm that snaps onto it
-    ├── ladybug-charm/ladybug-charm.scad      # another, in two colours
-    ├── heart-charm/heart-charm.scad          # a heart, turnable with `angle`
+    ├── cone-pin/cone-pin.scad            # the bolt every charm is held by
+    ├── screwdriver/screwdriver.scad      # a kid's hex key for the bolt
+    ├── butterfly-charm/butterfly-charm.scad  # a 3D butterfly
+    ├── ladybug-charm/ladybug-charm.scad      # a ladybug, in two colours
+    ├── heart-charm/heart-charm.scad          # a puffy heart
     ├── rose-charm/rose-charm.scad            # a rose with thin petals
     └── dolphin-charm/dolphin-charm.scad      # a dolphin with a bendy tail
 ```
 
 The bracelet exports as **one separate shell per bar** — 11 at the default
 size, 15 at `wrist=180` — with the clasp plates fused onto the two end bars.
-They are not supposed to touch. The pin and each charm export as one
+They are not supposed to touch. The bolt and each charm export as one
 piece, except the dolphin, which is four: the body and three tail segments,
 printed in place.
 
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
 | `bracelet` | `bracelet` | 151.3 × 16.2 × 4.7 mm | all 11 bars' own flat feet |
-| `pin` | `pin` | 6.5 × 16.0 × 3.5 mm, on its side | its H's face and the dovetail's foot, 36 mm² |
 | `cone-pin` | `cone-pin` | 6.3 × 6.3 × 8.8 mm, standing | its foot, a ring round the hex socket, 20 mm² |
 | `screwdriver` | `screwdriver` | 65.0 × 32.0 × 8.0 mm, lying flat | its paddle and shaft, 1033 mm² in one piece |
-| `butterfly-charm` | `butterfly-charm` | 16.1 × 18.6 × 7.0 mm | its own bottom, 146 mm² in one piece |
-| `ladybug-charm` | `ladybug-charm` | 20.6 × 18.3 × 7.8 mm | its own bottom and legs, 197 mm² in one piece |
-| `heart-charm` | `heart-charm` | 23.0 × 19.0 × 8.0 mm at 0° | its own flat bottom, 307 mm² in one piece |
-| `heart-charm` | `heart-charm-cone` | 23.0 × 19.4 × 9.2 mm | its own flat bottom, 306 mm² in one piece |
-| `rose-charm` | `rose-charm` | 22.1 × 22.4 × 10.5 mm | its own flat bottom, 263 mm² in one piece |
-| `dolphin-charm` | `dolphin-charm` | 29.8 × 52.5 × 13.5 mm | its own flat bottom, 481 mm² in 4 pieces |
+| `butterfly-charm` | `butterfly-charm` | 16.1 × 19.8 × 9.3 mm | its own bottom, 104 mm² in one piece |
+| `ladybug-charm` | `ladybug-charm` | 20.6 × 21.6 × 8.8 mm | its own bottom and legs, 177 mm² in one piece |
+| `heart-charm` | `heart-charm` | 23.0 × 19.4 × 9.2 mm | its own flat bottom, 252 mm² in one piece |
+| `rose-charm` | `rose-charm` | 22.1 × 22.4 × 10.5 mm | its own flat bottom, 201 mm² in one piece |
+| `dolphin-charm` | `dolphin-charm` | 29.8 × 52.5 × 13.9 mm | its own flat bottom, 420 mm² in 4 pieces |
 
 The stations sit on the **middle bar**, then on **every third bar** either
 side of it (`charm_step` in `bracelet.scad`), so `charms` is odd. On the
@@ -702,8 +595,10 @@ default 11 bars, `charms = 3` puts them on bars 2, 5 and 8 (counting from 0),
 every second bar, only 23.4 mm apart. `charm_reach` is the narrowest spacing
 the model accepts: **16 mm**, the butterfly. The bigger charms (ladybug
 20.6 mm along the band, heart up to 23, dolphin 29.8) all clear each other at
-three bars apart. A charm on its pin cannot swivel, so only its length along
-the band counts.
+three bars apart. Turned on the rib, a charm puts a different side along
+the band. Only the dolphin is too long for that: turned 90°, its tail
+reaches 35.7 mm along the band, onto the next station's charm. Keep it
+across the band, or leave its neighbouring stations empty.
 
 ## Sizing
 
@@ -730,9 +625,8 @@ nothing but filament. It spaces those clusters on its own fixed `row_pitch`, so
 the band's width does not wander when the length solver breathes the joints.
 
 The band is 16.2 mm wide (`row_pitch` 10.2; it was 17.6 until 2026-09-26).
-That was as narrow as the old H-pin's pocket allowed. The dovetail pin runs
-the band's full width, 0.1 mm short at each end, so a different width only
-needs `dt_len` to match it (asserted).
+That was as narrow as the old H-pin's pocket allowed. The bolt's rib must
+stay on a bar's flat top (asserted), which a narrower band would cut short.
 
 | `wrist` | bars | loop, clasped | joint pitch | printed footprint |
 |---|---|---|---|---|
@@ -775,18 +669,12 @@ openscad -D charms=3 \
          -o projects/bracelet/exports/bracelet-bracelet-c3.stl \
          projects/bracelet/models/bracelet/bracelet.scad
 openscad -D copies=6 \
-         -o projects/bracelet/exports/pin-pin.stl \
-         projects/bracelet/models/pin/pin.scad
-# the cone pin mount, on trial: a band cut for it, the pin, a heart for it
-openscad -D charms=3 -D 'mount="cone"' \
-         -o projects/bracelet/exports/bracelet-bracelet-c3-cone.stl \
-         projects/bracelet/models/bracelet/bracelet.scad
-openscad -D copies=6 \
          -o projects/bracelet/exports/cone-pin-cone-pin.stl \
          projects/bracelet/models/cone-pin/cone-pin.scad
-openscad -D 'mount="cone"' \
-         -o projects/bracelet/exports/heart-charm-heart-charm-cone.stl \
+openscad -o projects/bracelet/exports/heart-charm-heart-charm.stl \
          projects/bracelet/models/heart-charm/heart-charm.scad
+openscad -o projects/bracelet/exports/rose-charm-rose-charm.stl \
+         projects/bracelet/models/rose-charm/rose-charm.scad
 openscad -o projects/bracelet/exports/screwdriver-screwdriver.stl \
          projects/bracelet/models/screwdriver/screwdriver.scad
 openscad -o projects/bracelet/exports/butterfly-charm-butterfly-charm.stl \
@@ -847,58 +735,30 @@ python3 tools/multicolor-3mf.py /tmp/ladybug.3mf \
   tip comes down right beside that bar. To release, push
   it back past the detent and lift the head out.
 
-### The pin and the charms
+### The bolt and the charms
 
-- The stations change nothing about how the band prints — same first layer,
-  same bridges, same no-brim rule. The leaf's slots are 0.5 mm, wide enough to
-  stay open on the first layer.
-- **Print the pin on its side, exactly as modelled**: the legs and block lie
-  flat on the bed as the H-pin did, so the hooks are corners of an outline
-  and the legs flex in the bed plane. The dovetail's foot lies on the bed
-  beside the block, its flank leaning out at 45°. No supports, no brim. `-D copies=6` lays out a batch, which
-  exports as that many separate shells.
-- **Print the pins in ABS**, as the H-pins were.
-- The band stays **PLA**: its leaf bends 2.5 %, and only while a pin goes in.
-- **Print the butterfly bottom down, exactly as modelled** — no rotation, no
-  supports, no brim. It stands on the face that sits on the bracelet, 146 mm²
-  of it.
-- **Print the ladybug the same way**, bottom down, no supports, no brim, 197
-  mm² on the bed. Its holes are the butterfly's exactly, so it fits the pin
-  the same way.
-- **Print the heart the same way**, bottom down, no supports, no brim, 307
-  mm² on the bed. Pick the angle before you slice: it is in the file, not a
-  rotation in the slicer (turning it in the slicer would turn its holes too).
-- **Print the rose the same way**, bottom down, no supports, no brim, 263
-  mm² on the bed. Its petals are 0.9 mm, two perimeters. Leave thin-wall
-  handling on and do not print it with a single fat perimeter.
-- The charm's fit on the pin: 0.15 mm round the legs' inner faces and of
-  play over each hook, as with the H-pin. Outside each leg the hole leaves
-  1.2 mm. The dovetail's fit is **not
-  proven yet**: the leaf holds the pin up against the groove's flanks, with
-  0.2 mm beside its foot, 0.15 mm round the crossbar in the channel and
-  under the block.
-- To assemble and remove, see *Putting a charm on, and taking it off*, above.
-
-### The cone pin
-
-- **Print the cone pin standing up, exactly as modelled, in ABS.** It stands
-  on its foot with the thread on top. No supports, no brim. The hex socket
-  opens on the bed and its end is a pointed hex cone. The thread's underside
-  flanks are the only overhang, 0.4 mm deep, like any printed bolt.
-- The **cone band** prints like the plain band, with the same no-brim rule.
-  The countersinks open on the bed side and close in at 13° from vertical.
-- **The cone heart prints bottom down**, like every charm. Its thread opens on
-  the bed, and the end of the bore is a 45° cone.
-- **Printed and confirmed** on 2026-10-05, with the pin lying down. The
-  standing pin with the hex socket is **not printed yet**. The thread is the
-  M4 screw's printed tooth and fit (0.15 mm), at M5.
+- The stations change nothing about how the band prints: same first layer,
+  same bridges, same no-brim rule. The countersinks open on the bed side and
+  close in at 13° from vertical; the ribs sit on the bars' tops.
+- **Print the bolt standing up, exactly as modelled, in ABS.** It stands on
+  its foot with the thread on top. No supports, no brim. The hex socket opens
+  on the bed and its end is a pointed hex cone. The thread's underside flanks
+  are the only overhang, 0.4 mm deep, like any printed bolt. `-D copies=6`
+  lays out a batch, which exports as that many separate shells.
+- **Print every charm bottom down, exactly as modelled** — no rotation, no
+  supports, no brim. The socket and the eight grooves open on the bed; the
+  socket's end is a 45° cone and each groove's roof a 45° gable.
+- The rose's petals are 0.9 mm, two perimeters. Leave thin-wall handling on
+  and do not print it with a single fat perimeter.
+- The thread is the M4 screw's printed tooth and fit (0.15 mm), at M5:
+  printed and confirmed with the heart on 2026-10-05.
 
 ### The screwdriver
 
 - **Print it lying flat**, on the paddle's underside, as modelled. The bit
   lies on one of its flats, so its layers run along it and twisting it does
   not split them apart. No supports, no brim. PLA or ABS.
-- **Not printed yet.** The fit was checked against the pin's socket in
+- **Not printed yet.** The fit was checked against the bolt's socket in
   OpenSCAD only.
 
 ### The ladybug in two colours

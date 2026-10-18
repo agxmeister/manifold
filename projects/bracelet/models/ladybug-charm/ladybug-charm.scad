@@ -1,8 +1,10 @@
-// ladybug-charm — a two-colour ladybug, and a charm for the H-PIN mount.
+// ladybug-charm — a two-colour ladybug, a charm for the CONE PIN.
 //
-// It snaps onto the upper half of an H-shaped pin (models/pin) whose lower
-// half is already snapped into a pocket in a bracelet bar — exactly like the
-// butterfly, with the same two holes (`charm_h_holes` in the lib).
+// It sits on a station bar with the bar's half-round rib in two of its
+// eight grooves, and the cone pin, turned from under the band with the hex
+// key, screws up into its threaded socket and clamps it down
+// (lib/charm-cone.scad). The grooves are 45 degrees apart, so it can face
+// any multiple of 45 degrees to the band.
 //
 // A round red SHELL with heart-shaped spots and a seam down its middle, a
 // black HEAD at the front with two antennae, and three stubby LEGS each side.
@@ -19,10 +21,25 @@
 //   * the legs lie FLAT ON THE BED, each a stadium in plan with a rounded
 //     top — a dome drawn out, so every face closes inward as it rises;
 //   * the antennae lean at `ant_lean`, inside the self-supporting cone;
-//   * the two holes open on the bed and are gabled at 45 degrees (the lib).
+//   * the socket and the grooves open on the bed; the socket's end is a
+//     45-degree cone and the grooves' roofs 45-degree gables (the lib).
 //
-// THE LADYBUG LIES ACROSS THE BAND, head at +y. The H is 11 mm across, so the
-// shell has to be ~16 mm long that way just to hold its two holes.
+// THE SOCKET IS AT THE ORIGIN, under the shell's crown, head at +y. The
+// shell stands `sh_h` = 8.8 there to roof the socket (`cn_need` = 8.75).
+//
+// THE SHELL IS ROUNDER THAN IT WAS ON THE H-PIN (15.2 wide, was 12.6), for
+// the grooves. They reach 7.15 from the socket; at 12.6 the shell ended
+// 0.2 past the diagonal grooves' ends, leaving a 0.2 curtain of shell
+// between each end and the outside. At 15.2 that wall is ~0.8 even at the
+// grooves' corners, and along the band, where the shell is narrowest, the
+// grooves' far ends lie under the 43.6-degree relief, in the air.
+//
+// THE LEGS DODGE THE GROOVES. Where a leg is not fused to the shell above
+// it, it lies flat on the bed only 1.6 tall — lower than a groove (1.63), so
+// a groove crossing it there would cut it clean off. The along-the-band
+// grooves run out under the relief, so no leg may leave the shell there:
+// the legs leave at about +23, -23 and -56 degrees (the middle pair used to
+// leave straight out along the band, right on those grooves). Asserted below.
 //
 // THE LEGS BREAK THE BUTTERFLY'S FLAT-BOTTOM RULE, on purpose. The user wants
 // them lying flat, and there is no size limit on a charm. The shell keeps
@@ -41,7 +58,7 @@
 $fa = 2;
 $fs = 0.3;
 
-include <../../lib/charm-pin.scad>
+include <../../lib/charm-cone.scad>
 
 accent       = false;
 base_color   = "red";       // preview tint only — the slicer picks filaments
@@ -51,10 +68,9 @@ accent_color = "black";
 // A superellipsoid dome: an ellipse in plan, and in section a profile that
 // stays full for longer than a sphere does before it rounds over — it has to
 // stand a wall over the holes' gables near both ends.
-sh_a     = 6.3;             // half-width, along the band
-sh_b     = 9.1;             // half-length, across the band — 8.0, then 8.8
-                            //   until the 2026-09-27 pins grew the holes
-sh_h     = 8.0;             // height — 7.8 until the same day
+sh_a     = 7.6;             // half-width — 6.3 on the H-pin; see the top
+sh_b     = 9.1;             // half-length, head to tail
+sh_h     = 8.8;             // height — 8.0 on the H-pin; the socket needs 8.75
 sh_p     = 3.3;             // profile exponent: 2 = ellipsoid, more = fuller
 
 x0       = 5.0;             // the flat bottom stops here each side
@@ -86,19 +102,21 @@ eye_z     = 2.6;
 leg_w    = 2.0;
 leg_h    = 1.6;
 leg_x0   = 3.5;
-legs     = [[-3.5, -30, 5.0], [0, 0, 5.8], [3.5, 30, 5.0]];   // [y, angle, length]
-                            //   the middle pair longer: the shell is widest
-                            //   there and hides more of them. 5.8 shows 4.0 mm
-                            //   of leg, the same as the front and back pairs
+legs     = [[2.25, 10, 5.9], [-2.25, -10, 5.9], [-5.5, -50, 4.8]];   // [y, angle, length]
+                            //   each leaves the shell clear of the grooves
+                            //   (see the top) and shows ~2.8 mm of leg up to
+                            //   its round end, as all three did before
+leg_g    = 0.1;             // the least a leg keeps clear of a groove, where
+                            //   it lies outside the shell
 
 // ----------------------------------------------------------------- the spots
 // Hearts, pointing to the tail, and the seam between the wing cases. They are
 // the accent colour to `skin` deep, measured into the shell.
 skin     = 0.8;             // four layers
-hearts   = [                // [x, y, size, tilt]
-    [2.3,  4.0, 1.7,  15],
-    [3.4,  0.2, 2.3,  20],
-    [2.4, -4.4, 1.8, -10],
+hearts   = [                // [x, y, size, tilt] — x spread with the shell
+    [2.8,  4.0, 1.7,  15],
+    [4.1,  0.2, 2.3,  20],
+    [2.9, -4.4, 1.8, -10],
 ];
 seam_w   = 0.7;
 
@@ -113,17 +131,37 @@ span     = 2*(max([for (l = legs) leg_b(l)[0]]) + leg_w/2);   // along the band
 
 assert(leg_w >= 1.2 && leg_h >= 1.2, "a leg is thinner than a printable wall");
 assert(ant_lean <= 40, "the antennae lean past what prints without support");
-// The shell has to roof the holes by a wall at their ends, where the gables'
-// ridges (`hp_apex`) meet the holes' outer walls (`hp_c_out`).
-assert(shell_z(0, hp_c_out) >= hp_apex + hp_wall + 0.2,
-       str("the shell stands only ", shell_z(0, hp_c_out), " over the gables' ends"));
-assert(shell_z(0, hp_c_out + hp_wall) >= hp_roof,
-       "the shell does not cover the holes' outer walls");
-assert(sh_b >= hp_c_out + hp_wall + 0.5, "the holes run out of the shell's ends");
+// The socket: `cn_roof` of shell over its coned end and over its rim, along
+// the shell's narrow (x) axis, where the shell falls fastest.
+sock_roof = min([for (i = [0 : 20]) let(r = i/20 * cn_hole_maj/2)
+                 shell_z(r, 0) - (cn_bore + max(0, cn_hole_min/2 - r))]);
+assert(sock_roof >= cn_roof, str("only ", sock_roof, " mm of shell over the socket"));
+// The grooves: `cn_g_roof` of shell over each one's ridge, until the groove
+// runs out through the shell's side. Along the band the shell ends at 6.3,
+// before the grooves do (7.15); there the roof thins to nothing over the last
+// few hundredths as the side drops to the bed, which is a clean exit, not a
+// thin roof. Assert that run stays short.
+function g_r(a, r) = [-sin(a), cos(a)] * r;              // along groove `a`
+g_thin = max([for (a = [0 : cn_step : 359])
+              len([for (i = [0 : 150]) let(p = g_r(a, cn_g_in + i/150*(cn_g_out - cn_g_in)),
+                                          t = shell_z(p[0], p[1]) - cn_g_apex)
+                   if (t > 0 && t < cn_g_roof) 1]) * (cn_g_out - cn_g_in)/150]);
+assert(g_thin <= 0.1, str("a groove's roof is under ", cn_g_roof, " for ", g_thin, " mm"));
+// Where a leg is not fused to the shell (too little shell over a groove, or
+// the relief lifting the shell off the leg's top), no part of it may come
+// within `leg_g` of a groove: it is lower than one.
+function g_dist(p) = min([for (a = [0 : cn_step : 359])
+    let(u = [-sin(a), cos(a)], v = [cos(a), sin(a)], s = p*u)
+    s < cn_g_in || s > cn_g_out ? 99 : abs(p*v) - cn_g_r]);
+leg_clear = min([for (l = legs, i = [0 : 60], k = [-1 : 0.5 : 1])
+    let(d = leg_b(l) - leg_a(l), n = [-d[1], d[0]] / norm(d),
+        p = leg_a(l) + i/60 * d + k * leg_w/2 * n)
+    if (shell_z(p[0], p[1]) < cn_g_apex + cn_g_roof || rel_z(p[0]) > leg_h - 0.6) g_dist(p)]);
+assert(leg_clear >= leg_g, str("a leg comes within ", leg_clear, " of a groove"));
 
 echo(str("ladybug: ", span, " mm along the band, shell ", 2*sh_a, " x ", 2*sh_b,
-         " x ", sh_h, "; ", shell_z(0, hp_c_out), " mm over the gables' ends",
-         " (need ", hp_apex + hp_wall, ")"));
+         " x ", sh_h, "; ", sock_roof, " mm over the socket; groove roofs thin for ",
+         g_thin, " mm; legs ", leg_clear, " clear of the grooves"));
 
 // ----------------------------------------------------------------- geometry
 // A superellipsoid dome on z = 0. The profile is swept by angle, not radius,
@@ -185,7 +223,7 @@ module solid() union() {
     head(); legs(); antennae();
 }
 
-module ladybug_charm() difference() { solid(); charm_h_holes(); }
+module ladybug_charm() difference() { solid(); cn_charm_mount(); }
 
 // The accent colour, as a region: the head, legs and antennae where they are
 // outside the shell; the spots, `skin` deep into it; less the eyes and tips.

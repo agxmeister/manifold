@@ -1,15 +1,17 @@
-// dolphin-charm — a chubby articulated dolphin whose tail bends every way, and a charm
-// for the H-PIN mount.
+// dolphin-charm — a chubby articulated dolphin whose tail bends every way, a
+// charm for the CONE PIN.
 //
-// It snaps onto the upper half of an H-shaped pin (models/pin) whose lower
-// half is already snapped into a pocket in a bracelet bar — like the other
-// charms, with the same two holes (`charm_h_holes` in the lib).
+// It sits on a station bar with the bar's rib in two of its grooves, and the
+// cone pin, turned from under the band, screws up into its threaded socket
+// and clamps it down (lib/charm-cone.scad). Eight grooves, so it can sit at
+// any multiple of 45 degrees to the band.
 //
-// THE DOLPHIN LIES ACROSS THE BAND, spine along y, head at -y. The holes need
-// a rigid block 14 mm long and 6.4 mm tall, so the CARRIER — the big round
-// head with its pointed beak, the body, the dorsal fin and both flippers —
-// is one solid over the band. Behind it the TAIL is `len(joints)` loose segments, the last one the
-// fluke, and it hangs past the band's edge where it is free to move.
+// THE SOCKET IS UNDER THE TORSO, spine along y, head at -y. The socket needs
+// `cn_need` = 8.75 of body over it and the grooves a rigid floor out to
+// `cn_g_out` = 7.15 every way round, so the CARRIER — the big round head
+// with its pointed beak, the body, the dorsal fin and both flippers — is one
+// solid there. Behind it the TAIL is `len(joints)` loose segments, the last
+// one the fluke, free to move.
 //
 // THE JOINTS PRINT IN PLACE, and each is a pair of interlocked RINGS, like
 // two links of a chain, so the tail bends sideways, nods up and down and
@@ -69,7 +71,7 @@
 $fa = 2;
 $fs = 0.3;
 
-include <../../lib/charm-pin.scad>
+include <../../lib/charm-cone.scad>
 
 // ------------------------------------------------------------------- body
 // The body's rings along the spine: [s, half-width, height]. Each ring is a
@@ -88,11 +90,11 @@ body = [
     [ -8.8, 4.50, 5.55],    //   the head)
     [ -7.2, 5.30, 6.50],    // the head: smaller than the torso behind it
     [ -5.0, 6.10, 7.50],
-    [ -2.0, 6.75, 8.20],
-    [  1.0, 7.05, 8.60],
-    [  3.5, 7.1, 8.7],      // the torso at its fullest, under the fin
-    [  6.0, 6.8, 8.4],
-    [  8.5, 6.2, 7.7],
+    [ -2.0, 6.75, 8.45],    // 8.2 / 8.6 / 8.7 / 8.4 / 7.7 on the H-pin: raised
+    [  1.0, 7.05, 9.00],    //   for the socket's `cn_need` over the axis
+    [  3.5, 7.1, 9.05],     // the torso at its fullest, under the fin
+    [  6.0, 6.8, 8.7],
+    [  8.5, 6.2, 7.85],
     [ 10.5, 5.7, 7.0],
     [ 13.0, 5.35, 6.4],     // the tail: stout enough for a hood over
     [ 16.0, 5.15, 6.05],    //   each joint (roof over the tunnels,
@@ -114,8 +116,10 @@ n_sect  = 48;               // points round each ring
 // fillet. One row per height, [z, leading edge, trailing edge, half-
 // thickness], smoothed by a Catmull-Rom spline; the first rows are sunk into
 // the body. The trailing edge moving BACK as it rises is the only overhang
-// (the curl), asserted under 40.
-fin = [
+// (the curl), asserted under 40. Every row stands `fin_lift` higher than it
+// did on the H-pin, with the torso raised under it.
+fin_lift = 0.35;
+fin = [for (r = [
     [ 6.8, -6.0, 6.6, 1.7],     // root, inside the body
     [ 8.4, -4.6, 6.4, 1.55],    // still under the body's back at the rear
     [ 9.0, -3.4, 5.0, 1.45],    //   so the trailing fillet grows out of it
@@ -125,7 +129,7 @@ fin = [
     [12.3,  2.6, 4.7, 0.75],    // the tip curls back
     [12.9,  3.6, 5.0, 0.62],
     [13.2,  4.1, 5.05, 0.52],   // the top, domed over
-];
+]) [r[0] + fin_lift, r[1], r[2], r[3]]];
 fin_cap = 0.35;             // the dome's height over the top row
 fin_n   = 6;                // spline samples per row
 
@@ -166,12 +170,13 @@ infl_d    = 4;              // the profile's step, degrees
 
 // dimples: eyes [s, z, radius, depth] and the blowhole [s, radius, depth]
 eye      = [-7.6, 5.0, 0.95, 0.6];
-blowhole = [-7.6, 0.5, 0.5];   // shallow: the head is low over the pin hole here
+blowhole = [-7.6, 0.5, 0.5];   // where the H-pin's hole once kept it shallow
 
 // ------------------------------------------------------------------ joints
-joints  = [11.2, 18.4, 25.7];   // where the tail bends, along the spine. The
-                                //   first was 10.7, then 11.0 until the
-                                //   2026-09-27 pins grew the holes out to 6.66
+joints  = [11.3, 18.5, 25.7];   // where the tail bends, along the spine. The
+                                //   first sits so its pocket clears the
+                                //   grooves' ends by `g_wall` (asserted);
+                                //   [11.2, 18.4] on the H-pin
 bend    = 25;           // how far each joint bends sideways, degrees
 nod     = 15;           // and up and down: A's roof over the nose's flat top
                         //   stops it at about 12 anyway
@@ -266,9 +271,22 @@ assert(z_c + sqrt(loop_r*loop_r - y_ur*y_ur) >= z_n,
 // the crossbar turns freely inside the loop's hole, any direction
 assert(norm([wall_t/2, bar_t/2]) < min(wall_t/2 + bed_gap, bar_t/2 + v_gap),
        "the crossbar cannot turn inside the loop");
-// the carrier's pocket must stay clear of the holes' walls
-assert(joints[0] + y_pf >= hp_c_out + hp_wall + 0.2,
-       "the first joint's pocket cuts into the pin holes' walls");
+// the carrier's pocket must stay clear of the grooves' ends (the groove
+// along +y is the nearest), by a wall
+g_wall = 1.0;
+assert(joints[0] + y_pf >= cn_g_out + g_wall,
+       str("only ", joints[0] + y_pf - cn_g_out, " mm between a groove's end and the first joint's pocket"));
+// the socket: `cn_roof` of body over its coned end, at the axis and over the
+// bore's rim every way round, and `cn_g_roof` over every groove's ridge
+// wherever the body still stands over it (where the body has fallen under
+// the ridge, at the carrier's sides, the groove simply opens out)
+sock_roof = min([for (a = [0 : 15 : 359], r = [0 : 0.25 : cn_hole_maj/2])
+                 env(r*cos(a), r*sin(a)) - (cn_apex - min(r, cn_hole_min/2))]);
+assert(sock_roof >= cn_roof, str("only ", sock_roof, " mm of body over the socket"));
+g_roof = min([for (a = [0 : cn_step : 359], r = [cn_g_in : 0.1 : cn_g_out])
+              let(e = env(-r*sin(a), r*cos(a))) if (e >= cn_g_apex + 0.2) e - cn_g_apex]);
+echo(str("dolphin socket: ", sock_roof, " over the socket, ", g_roof,
+         " over the grooves (least, where the body covers them)"));
 assert(max([for (r = fin) r[2]]) <= joints[0] + y_pf - 0.5, "the dorsal fin runs into the first joint");
 
 echo(str("dolphin: joints at ", joints, ", pocket ", 2*pocket_hw, " wide from ", y_pf,
@@ -546,7 +564,7 @@ module segment(k) {
             if (k > 0) b_keep(k - 1); else translate([-big/2, -big/2, -1]) cube(big);
             if (k < n) a_keep(k);     else translate([-big/2, -big/2, -1]) cube(big);
         }
-        if (k == 0) charm_h_holes();
+        if (k == 0) cn_charm_mount();
     }
 }
 

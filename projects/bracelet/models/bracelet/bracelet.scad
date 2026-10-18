@@ -56,14 +56,10 @@
 $fa = 2;
 $fs = 0.3;
 
-// The dovetail H-pin every charm hangs on, and the channel, groove and leaf
-// it needs in a bar. It includes lib/charm-pin.scad for the H's upper half.
-// Variables and modules only — including it draws nothing. Everything in
-// them is named `dt_*` / `hp_*`, so nothing shadows the HINGE pin's `pin_d` /
-// `pin_z`.
-include <../../lib/charm-dovetail.scad>
-// The CONE PIN, the second mount, on trial beside the dovetail (`mount`).
-// Everything in it is named `cn_*`.
+// The CONE PIN every charm hangs on, the hole, countersink and rib it needs
+// in a bar. Variables and modules only — including it draws nothing.
+// Everything in it is named `cn_*`, so nothing shadows the HINGE pin's
+// `pin_d` / `pin_z`.
 include <../../lib/charm-cone.scad>
 
 // ------------------------------------------------------------------- sizing
@@ -91,9 +87,7 @@ row_pitch = 10.2;         // spacing of the knuckle clusters ACROSS the band.
                           //   not change when the length solver breathes the
                           //   joints, so this one is fixed. It was 11.6 (a
                           //   17.6 band); 10.2 (2026-09-26) was the narrowest
-                          //   the old H-pin pocket allowed. The dovetail pin
-                          //   runs the band's full width, so it only has to
-                          //   match it (`dt_len`, asserted below).
+                          //   the old H-pin pocket allowed.
 corner_r  =  1.0;         // plan-view corner radius of a bar
 
 ch_run    = 0.5;          // TOP chamfer only. The bottom stays flat and full
@@ -415,28 +409,16 @@ x_lock  = x_l - kh_lock;
 x_det   = x_lock + det_off;
 
 // --------------------------------------------------------------- the charms
-// OPTIONAL. `charms` bars along the band become STATIONS: a shallow channel
-// and a dovetail groove under it run right across the bar, and the groove's
-// floor is cut into a spring LEAF with a LIP on it. A charm snaps onto the
-// H-shaped top of the pin (models/pin), and the pin's dovetail slides into
-// the groove from the band's +y edge until it clicks. See the lib. Leave it
-// at 0 and the bracelet is exactly the plain band. `mount = "cone"` cuts the
-// stations for the cone pin instead (lib/charm-cone.scad), on trial.
+// OPTIONAL. `charms` bars along the band become STATIONS for the cone pin
+// (models/cone-pin, lib/charm-cone.scad): a plain hole through the bar with a
+// countersink under it, the +x gap beside the bar filled, and a half-round
+// RIB across the bar's top that keys a charm's grooves. Leave it at 0 and the
+// bracelet is exactly the plain band.
 charms      = 0;     // how many charm stations, odd. 0 = none.
 charm_reach = 16;    // the widest charm this spacing has to keep apart —
                      //   models/butterfly-charm spans 15.8 mm along the band.
 
 charm_step  = 3;     // bars from one station to the next.
-
-mount       = "dovetail";   // what a station is cut for:
-                            //   "dovetail" — the dovetail H-pin (models/pin),
-                            //     printed and proven;
-                            //   "cone" — the cone pin (models/cone-pin): a
-                            //     plain hole with a countersink underneath,
-                            //     off-centre, the +x gap beside the bar
-                            //     filled. On trial.
-assert(mount == "dovetail" || mount == "cone",
-       str("unknown mount \"", mount, "\" — \"dovetail\" or \"cone\""));
 
 // One station on the MIDDLE bar, the rest paired off either side of it,
 // `charm_step` bars apart — so `charms` is odd. Stations used to be spread
@@ -482,38 +464,7 @@ assert(charms == 0 || (charm_ix[0] >= 1 && charm_ix[charms-1] <= cols - 2),
            charms, " charms every ", charm_step, " bars need more than ",
            cols, " bars; lower `charms`"));
 
-// A station's channel and groove run ACROSS the bar, right through it: the
-// channel `dt_ch_w` wide, leaving `(body - dt_ch_w)/2` of wall either side;
-// the groove `2*dt_g_w` at its foot, leaving `h - dt_g_w`. Both stay inside
-// |x| < h - 1.0, where the knuckle arms begin. The pin runs the band's width,
-// 0.1 short at each end.
-//
-// THE GROOVE SPLITS THE BAR IN TWO along its length, joined only by the
-// floor under the groove beyond the leaf (`dt_floor` thick, `2*dt_g_w`
-// wide). The band's pull crosses a station there. Since 2026-10-02 the
-// floor is 1.75 thick (`dt_floor`), not 0.8: ~6.8 mm^2 in section, and
-// 1.75^3 / 0.8^3 ~ 10x as stiff against the bar folding along the groove,
-// which is what bent the bars with a pin in.
-dt_wall_bar = h - dt_g_w;                               // 1.00
-dt_floor_run = (band_w/2 - dt_root) + (dt_tip - dt_slot + band_w/2);
-// At a station the bar's top chamfer is FILLED IN, so the walls beside the
-// channel keep their full width up to the rim. The chamfer is only cosmetic — the
-// hinge does the articulating — and the fill is flush with the slab's faces
-// below it, so it adds no overhang and no layer step. The charm covers it.
-dt_fill_u   = band_w/2 - corner_r;                      // 7.10
-assert(dt_bar == thick,
-       str("the dovetail groove is drawn for a ", dt_bar, " mm bar but a bar is ",
-           thick, " thick"));
-assert(dt_wall_bar >= 1.0,
-       str("only ", dt_wall_bar, " mm of bar beside the groove's foot"));
-assert((body - dt_ch_w)/2 >= 1.0,
-       str("only ", (body - dt_ch_w)/2, " mm of bar beside the channel"));
-assert(dt_g_w <= h - 1.0, "the dovetail groove reaches the knuckle arms");
-assert(abs(dt_len - (band_w - 0.2)) < 1e-9,
-       str("the pin is ", dt_len, " long for a ", band_w, " mm band — it should be 0.1 short each end"));
-assert(dt_floor_run >= 8, str("only ", dt_floor_run, " mm of floor joins the two halves of a station bar"));
-
-// A CONE station (`mount = "cone"`) is a plain hole through the bar with a
+// A station is a plain hole through the bar with a
 // countersink under it, `cn_off` towards +x of the bar's centre, and the
 // +x gap between the bar's two fork lugs FILLED: a block across the gap with
 // exactly the lugs' own knuckle profile (`charm_seat`), so it fuses into them
@@ -540,6 +491,11 @@ assert(cn_off + cn_cs_r + cn_wall <= pitch_min/2,
        "the countersink reaches past the knuckle's axis");
 assert(-h + ch_run - (cn_off - cn_hole/2) <= -0.8,
        "the hole comes within 0.8 of the -x bevel's foot");
+// The rib stands on the bar's flat top: inside the bevels' feet both ways.
+assert(cn_off + cn_rib_r <= h - ch_run,
+       "the rib runs onto the bar's +x bevel");
+assert(cn_rib_out <= band_w/2 - ch_run - 0.3,
+       "the rib's ends run onto the bar's bevels at the band's edges");
 
 // A charm has a FLAT BOTTOM and it is wider than its bar, so it
 // rests on whatever the band's top surface is out to its own radius. That is
@@ -563,8 +519,8 @@ assert(charms == 0 || charm_reach/2 <= (pitch_min - body) + body/2,
        str("a ", charm_reach, " mm charm overhangs past the neighbouring bar's",
            " face at pitch_min — it would jam the joint"));
 
-// A station adds no height at all — it is a cut — so the stud sets it.
-top_z       = post_top + head_h;
+// The tallest thing: the stud's head, or a station's rib.
+top_z       = max(post_top + head_h, charms > 0 ? thick + cn_rib_r : 0);
 
 echo(str("cols=", cols, " rows=", rows,
          "  loop=", band_run + stud_ext + kh_lock,
@@ -579,20 +535,13 @@ echo(str("cols=", cols, " rows=", rows,
          "  knuckle cap at bed=", knuck_foot,
          "  knuckle underside=", knuck_slope, "deg",
          "  pin first layer=", pin_flat_w));
-if (charms > 0 && mount == "cone")
+if (charms > 0)
     echo(str(charms, " cone station(s) in bar(s) ", charm_ix, " of ", cols,
              " — hole ", cn_hole, ", countersink ", 2*cn_cs_r, " at ", cn_cs_a,
              " deg, ", cn_off, " towards +x (wall ", cn_wall_bar, " at -x, ",
              2*cn_chord, " across at the +x face); +x gap filled, ",
-             2*cn_boss_y, " wide, to the knuckles' ends"));
-if (charms > 0 && mount == "dovetail")
-    echo(str(charms, " dovetail station(s) in bar(s) ", charm_ix, " of ", cols,
-             " — channel ", dt_ch_w, " x ", dt_ch_d, ", groove ", 2*dt_g_w,
-             " wide at its foot, ", dt_bar - dt_floor,
-             " deep, wall ", dt_wall_bar, "; leaf ", dt_leaf_l, " x ", 2*dt_leaf_w,
-             " x ", dt_leaf_t, " under a ", dt_floor, " floor, lip ", dt_lip_h, ", bent ", dt_preload, " at rest, ",
-             dt_ride, " going in (", 100*dt_strain, "%); floor joining the halves ",
-             dt_floor_run, " mm",
+             2*cn_boss_y, " wide, to the knuckles' ends; rib ", 2*cn_rib_r,
+             " x ", cn_rib_r, " from ", cn_rib_in, " to ", cn_rib_out,
              charms < 2 ? ""
                  : str(", closest pair ", charm_sep * pitch, " mm apart")));
 // ------------------------------------------------------------------ modules
@@ -778,31 +727,22 @@ module clasp_keyhole() {
     }
 }
 
-// A station: the groove and the leaf's slots, cut from bar `col`, z = 0 at
-// its top face.
-// A cone station is the hole and countersink instead, on the pin's axis.
+// A station: the hole and the countersink, cut from bar `col` on the pin's
+// axis, `cn_off` towards +x of the bar's centre.
 module charm_station_cut(col) {
-    translate([col*pitch, band_cy, thick])
-        if (mount == "cone") translate([cn_off, 0, 0]) cn_bar_cut();
-        else dt_bar_cut();
+    translate([col*pitch + cn_off, band_cy, thick]) cn_bar_cut();
 }
 
-// ... and what goes back once it is cut: the lip on the leaf. A cone station
-// adds nothing back.
+// ... and what stands on it once it is cut: the rib, across the band.
 module charm_station_add(col) {
-    if (mount != "cone") translate([col*pitch, band_cy, thick]) dt_bar_add();
+    translate([col*pitch + cn_off, band_cy, thick]) cn_bar_rib();
 }
 
-// The chamfer fill at a DOVETAIL station (see `dt_fill_u`): a block the
-// bar's full `body` along the band, from below the chamfer's foot to the top
-// face, for the walls beside the channel. A cone station keeps its bevels,
-// like every other bar: its hole stays ~1 mm clear of the chamfer's foot.
-// The cone station's +x fill goes in here instead, before the cut.
+// What goes in before the cut: the +x gap's fill, one wide lug with the
+// lugs' own knuckle profile. A station keeps its bevels, like every other
+// bar: its hole stays ~1 mm clear of the chamfer's foot.
 module charm_seat(col) {
-    if (mount != "cone") translate([col*pitch, band_cy, thick - ch_rise - 0.1])
-        translate([-body/2, -dt_fill_u, 0]) cube([body, 2*dt_fill_u, ch_rise + 0.1]);
-    // the +x gap's fill: one wide lug, the lugs' own knuckle profile
-    if (mount == "cone") translate([col*pitch, 0, 0])
+    translate([col*pitch, 0, 0])
         xz_extrude(band_cy - cn_boss_y, 2*cn_boss_y) knuckle_2d(pitch/2, +1, h - 1.0);
 }
 
