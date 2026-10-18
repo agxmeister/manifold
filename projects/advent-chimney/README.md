@@ -32,7 +32,7 @@ advent-chimney/
 
 | Component   | Print size (as exported)  | Prints on                    | Count |
 | ----------- | ------------------------- | ---------------------------- | ----- |
-| `fireplace` | 216 x 118 x 149.5 mm      | its bottom, as it stands     | 1     |
+| `fireplace` | 240 x 140 x 149.5 mm      | its bottom, as it stands     | 1     |
 | `section`   | 100 x 70 x 44.3 mm        | its bottom, as it stands     | 24    |
 | `gate`      | 100 x 73.6 x 16 mm        | the plate, band standing up  | 24 (days 1 to 24) |
 | `cloud`     | 161 x 88 x 77 mm          | its flat underside           | 1     |
@@ -79,6 +79,19 @@ shaft (its back face leans out only slightly, to the shaft's back wall). Everyth
 that drops lands on the firebox floor, where a hand can reach it through the
 arch.
 
+**Hearth.** In front lies a flagstone hearth, reaching 40 mm forward and
+running on down both sides of the body to the back plane, 20 mm wide there:
+240 mm wide in all. Its top edge is chamfered 1 mm at the front and ends; the
+back stays flush. It is paved with big irregular stones, and the paving carries on through the arch
+across the firebox floor. The stones come from splitting the front, each side run and the
+firebox floor in two by a slightly leaning cut, then each half again, until
+they are about `flag_max`. So they come out uneven, and their joints meet in
+T's and never run straight across. Each stone's top sits 0, 0.2 or 0.4 mm
+down, so neighbours don't quite line up. The joints are 45° V grooves 0.8 mm
+deep, cut into the top. Where one reaches the front or an end of the slab, it
+runs down the face as a vertical V. Change `flag_seed` for a different
+layout.
+
 **Mantel.** The shelf is a live-edge wooden slab. Its front edge wanders in
 by up to 1.5 mm (never out, so the footprint is unchanged), and the 45°
 corbel under it follows. Grain lines are cut 0.4 mm deep: across the top,
@@ -118,6 +131,10 @@ the top of its file.
 | `band_h` / `band_t` / `lip` | gate | 16 / 3 / 3 | band height, thickness, pull lip reach     |
 | `fp_w` / `fp_d` / `fp_h` | fireplace | 200 / 100 / 140 | fireplace body size, to the mantel's top |
 | `hearth_h`    | fireplace | 6       | hearth and plinth height; the firebox floor is flush with it |
+| `hearth_w` / `hearth_o` | fireplace | 240 / 40 | hearth slab width (side runs are `(hearth_w - fp_w) / 2`), and how far it reaches in front of the body |
+| `flags`       | fireplace | true    | flagstone paving on the hearth and firebox floor; false for a plain slab |
+| `flag_seed` / `flag_max` / `flag_skew` | fireplace | 3 / 34 / 6 | stone layout, about how big a stone is, how far a joint leans (mm) |
+| `flag_gd` / `flag_drop` | fireplace | 0.8 / [0, 0.2, 0.4] | joint depth, the heights a stone's top drops by |
 | `box_w`, `arch_w`, `arch_sp` | fireplace | 130, 88, 34 | firebox width, arch width, arch springing height |
 | `arch_band`, `arch_stones`, `jamb_stones` | fireplace | 10, 13, 3 | ring of arch stones round the opening: width, stones over the semicircle, stones up each jamb |
 | `puffs`       | cloud     | 12 puffs | the cloud's balls, as `[x, y, z, r]`                  |

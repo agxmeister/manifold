@@ -71,9 +71,20 @@ layer        = 0.2;           // colour boundaries land on multiples of this
 stub_courses = 1;   // brick courses of chimney standing on the shelf, under the day 1 pocket
 
 /* [Hearth] */
-hearth_o = 18;      // hearth slab reaching forward of the body
+hearth_o = 40;      // hearth slab reaching forward of the body (it also runs
+                    //   down both sides of the body to its back)
 hearth_h = 6;       // hearth height; the plinth round the body too
-hearth_e = 14;      // how far it reaches past the arch on each side
+hearth_w = 240;     // hearth slab width (centred; the body is fp_w, so the
+                    //   side runs are (hearth_w - fp_w) / 2 wide)
+hearth_c = 1;       // 45° chamfer round the slab's top front and ends
+
+/* [Flagstones] */
+flags     = true;   // flagstone paving on the hearth and the firebox floor
+flag_seed = 3;      // shuffles the stones
+flag_max  = 34;     // stones are split until they are about this size (mm)
+flag_skew = 6;      // how far a joint leans from square, end to end (mm)
+flag_gd   = 0.8;    // joint depth; a 45° V, so 2 x this wide at the top
+flag_drop = [0, 0.2, 0.4];   // stone tops sit this far below hearth_h, at random
 
 floor_h = hearth_h;   // the firebox floor is flush with the hearth
 
@@ -102,6 +113,9 @@ assert(abs(hearth_h / layer - round(hearth_h / layer)) < 1e-6
        && abs(brick_h / layer - round(brick_h / layer)) < 1e-6,
        "colour boundaries must sit on layer boundaries");
 assert(box_w > arch_w + 2 * 4, "arch reaches the firebox side walls");
+assert(hearth_w >= fp_w + 2 * 12, "hearth's side runs too narrow for flagstones");
+assert(abs(max(flag_drop) / layer - round(max(flag_drop) / layer)) < 1e-6,
+       "flagstone drops must be whole layers");
 
 // The arch opening's outline in its own plane: x across, y up from the
 // firebox floor. Straight jambs up to the springing, then a semicircle.
@@ -152,6 +166,92 @@ module arch_joints()
             rotate([-90, 0, 0]) cylinder(h = mortar_d, r1 = mortar_d, r2 = 0, $fn = 8);
         }
     }
+
+// ---- Flagstones ----------------------------------------------------------
+// The hearth is paved with big irregular flagstones, as in a real stone
+// hearth. The slab, and the firebox floor behind the arch, are each split in
+// two by a slightly skewed cut across their longer way, and each half again,
+// until the stones are about flag_max: quads of uneven size whose joints
+// meet in T's and never run straight across. Each stone's top sits a little
+// lower or higher than its neighbours'. The joints are 45° V grooves cut
+// into the top, so like every other mark on the paving they are open upward;
+// where a joint reaches the slab's front or an end it runs down the face as
+// a vertical V.
+
+hw  = hearth_w / 2;
+fy0 = -hearth_o;   // the slab's front
+
+function lerp(p, q, t) = p + (q - p) * t;
+function rnd(seed, i) = rands(0, 1, 1, seed * 7 + i)[0];
+
+// Split the quad [a, b, c, d] (a -> b and d -> c the sides a cut crosses)
+// until it is about flag_max. A long piece is cut across its length; a
+// near-square one either way. The cut leans by up to flag_skew. Returns a
+// list of ["q", quad] stones and ["s", p, q] cuts.
+function flag_split(qd, seed, depth = 0) =
+    let(a = qd[0], b = qd[1], c = qd[2], d = qd[3],
+        lab = (norm(b - a) + norm(c - d)) / 2, lbc = (norm(c - b) + norm(d - a)) / 2,
+        turn = lbc > lab * (rnd(seed, 3) < 0.5 ? 1.5 : 1 / 1.5))
+    turn && depth >= 0 ? flag_split([b, c, d, a], seed, -depth - 1)   // turn once
+    : let(dp = depth < 0 ? -depth - 1 : depth)
+      (max(lab, lbc) < flag_max * (0.8 + 0.5 * rnd(seed, 0)) || dp > 8) ? [["q", qd]]
+    : let(t = 0.35 + 0.3 * rnd(seed, 1),
+          p = lerp(a, b, t),
+          q = lerp(d, c, t + (2 * rnd(seed, 2) - 1) * flag_skew / norm(c - d)))
+      concat([["s", p, q]],
+             flag_split([a, p, q, d], seed * 2 + 1, dp + 1),
+             flag_split([p, b, c, q], seed * 2 + 2, dp + 1));
+
+flag_back = fp_d - fp_wall;
+bx = fp_w / 2;   // the body's sides
+flag_items = concat(
+    // the front, between the body's sides, and a run down each side to the back
+    flag_split([[-bx, fy0], [bx, fy0], [bx, 0], [-bx, 0]], flag_seed),
+    flag_split([[bx, fy0], [hw, fy0], [hw, fp_d], [bx, fp_d]], flag_seed + 2000),
+    flag_split([[-hw, fy0], [-bx, fy0], [-bx, fp_d], [-hw, fp_d]], flag_seed + 3000),
+    [for (sx = [-1, 1]) ["s", [sx * bx, fy0], [sx * bx, 0]]],   // front to side runs
+    flag_split([[-box_w / 2, 0], [box_w / 2, 0], [box_w / 2, flag_back], [-box_w / 2, flag_back]],
+               flag_seed + 1000),
+    [["s", [-arch_r - 1, 0], [arch_r + 1, 0]]]);   // slab to firebox, under the arch
+
+// The paved floor, in plan: the slab in front, the arch opening, the firebox.
+module paved_2d() union() {
+    translate([-hw, fy0]) square([hearth_w, -fy0 + 0.01]);
+    for (sx = [-1, 1]) translate([sx > 0 ? bx - 0.01 : -hw, 0]) square([hw - bx + 0.01, fp_d]);
+    translate([-arch_r, -1]) square([arch_w, fp_wall + 2]);
+    translate([-box_w / 2, fp_wall]) square([box_w, box_d]);
+}
+
+// A V joint from p to q on the paving's top (z = hearth_h). Its ends lie on
+// the centreline of the joint it meets, so a T leaves no tick past it.
+module flag_joint(p, q) hull()
+    for (e = [p, q]) translate([e[0], e[1], hearth_h - flag_gd])
+        cylinder(h = flag_gd + 1, r1 = 0, r2 = flag_gd + 1, $fn = 4);
+
+// A V joint down a vertical face, at (x, y), the diamond's point into it.
+module face_joint(x, y)
+    translate([x, y, -1]) rotate(45) cylinder(h = hearth_h + 2, r = flag_gd * sqrt(2), $fn = 4);
+
+module flagstones() {
+    // stones' tops dropped below hearth_h, kept to the paved floor
+    intersection() {
+        translate([0, 0, hearth_h - max(flag_drop)]) linear_extrude(1 + max(flag_drop))
+            paved_2d();
+        union() for (i = [0 : len(flag_items) - 1]) let(it = flag_items[i])
+            if (it[0] == "q") let(dz = flag_drop[floor(rnd(flag_seed + 500, i) * len(flag_drop) * 0.999)])
+                if (dz > 0) translate([0, 0, hearth_h - dz]) linear_extrude(2) polygon(it[1]);
+    }
+    // the joints
+    intersection() {
+        translate([0, 0, -1]) linear_extrude(hearth_h + 2) paved_2d();
+        union() for (it = flag_items) if (it[0] == "s") flag_joint(it[1], it[2]);
+    }
+    // joints running down the slab's front and ends
+    for (it = flag_items) if (it[0] == "s") for (e = [it[1], it[2]]) {
+        if (abs(e[1] - fy0) < 1e-6) face_joint(e[0], fy0);
+        if (abs(abs(e[0]) - hw) < 1e-6 && e[1] < fp_d - 1) face_joint(e[0], e[1]);
+    }
+}
 
 // ---- Wood ----------------------------------------------------------------
 // The mantel is a live-edge slab: its front edge wanders in from the
@@ -266,9 +366,13 @@ module fireplace_body() {
             }
             // the chimney's stub standing on the shelf
             translate([0, ch_y, 0]) slab(fp_h - 0.01, stub_h + 0.01) ch_rect();
-            // hearth slab in front
-            translate([-arch_w / 2 - hearth_e, -hearth_o, 0])
-                cube([arch_w + 2 * hearth_e, hearth_o + 1, hearth_h]);
+            // hearth slab in front and down both sides to the back plane,
+            // its top front and end edges chamfered at 45° (the back stays flush)
+            hull() {
+                translate([-hw, -hearth_o, 0]) cube([hearth_w, fp_d + hearth_o, hearth_h - hearth_c]);
+                translate([-hw + hearth_c, -hearth_o + hearth_c, 0])
+                    cube([hearth_w - 2 * hearth_c, fp_d + hearth_o - hearth_c, hearth_h]);
+            }
         }
         // firebox: a box, the 45° funnel, then the shaft through the mantel
         hull() {
@@ -301,6 +405,7 @@ module fireplace_body() {
         }
         translate([0, 0, floor_h]) arch_joints();
         if (wood) wood_grain();
+        if (flags) flagstones();
     }
 }
 
