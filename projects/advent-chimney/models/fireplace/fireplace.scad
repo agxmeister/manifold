@@ -5,7 +5,7 @@
 // behind the arch narrows into a 45° smoke funnel straight up into the
 // chimney's shaft, so whatever drops lands on the hearth floor, in reach
 // through the arch. A mantel shelf runs round the top, solid all over but
-// for the shaft. The chimney stands at the back, its back face flush with
+// for the shaft: a live-edge wooden slab with grain cut into it (see Wood). The chimney stands at the back, its back face flush with
 // the fireplace's (and the mantel's) back, so the whole calendar has one flat
 // back plane to tape to a wall. The chimney starts on the shelf: a stub of brick courses whose top
 // is the pocket the first section stands in, holding the day 1 gate. The
@@ -45,6 +45,20 @@ jamb_stones = 3;    // stones up each side, below the springing
 /* [Mantel] */
 mantel_t  = 6;      // shelf thickness
 mantel_o  = 8;      // how far it overhangs the front and sides
+
+/* [Wood] */
+wood    = true;     // a live-edge wooden mantel; false: a plain one
+live_a  = 1.5;      // how far the live front edge wanders in from the straight
+grain_w = 0.8;      // width of a grain line on the shelf's top
+grain_d = 0.4;      // depth of every grain groove
+// grain lines across the top, at these y (front to back) before they wave
+grain_y = [-4.5, -1.5, 2, 5.5, 9.5, 13, 17, 20.5, 24, 28, 32.5, 36.5, 40.5,
+           45, 49, 53.5, 57, 61.5, 66, 70, 74, 78.5, 82.5, 87, 91, 95];
+// grain lines along the shelf's front and side edges, above its underside
+grain_z = [1.9, 4.1];
+// knots on the top, [x, y, r]: the grain bends round each, a dimple at its heart
+// (placed so no two grain lines come closer than ~1.6 mm, centre to centre)
+knots = [[-70, 11, 3], [20, 3, 2.8], [78, 66, 3.5], [-88, 47, 2.6]];
 
 /* [Colour] */
 accent       = false;
@@ -139,17 +153,116 @@ module arch_joints()
         }
     }
 
+// ---- Wood ----------------------------------------------------------------
+// The mantel is a live-edge slab: its front edge wanders in from the
+// straight by up to live_a (never out, so the footprint stays the same), the
+// corbel under it following at 45°. Grain lines run along the slab: grooves
+// in its top, bending round a few knots, and V grooves (45° roofs) along the
+// front and side edges. Everything is cut in, so nothing needs support.
+
+shelf_z = fp_h - mantel_t;          // the shelf's underside
+mx      = fp_w / 2 + mantel_o;      // the shelf's ends, at ±mx
+
+// how far the live edge sits in from the straight front, at x
+function live(x) = live_a * (0.5 + 0.3 * sin(x * 360 / 53 + 20)
+                                 + 0.2 * sin(x * 360 / 23 + 70));
+function front_y(x) = -mantel_o + live(x);
+
+// How far the knots push a grain line of nominal y0 aside, at x: most at
+// the knot, less further along and for lines that pass further off. The
+// push never overtakes a line's distance, so lines don't cross.
+function knot_push(y0, x) =
+    let(p = [for (k = knots)
+        let(dy = y0 - k[1], s = dy >= 0 ? 1 : -1)
+        s * 1.4 * k[2] * exp(-pow((x - k[0]) / (3 * k[2]), 2))
+                       * exp(-pow(dy / (2 * k[2]), 2))])
+    p * [for (k = knots) 1];
+function grain_line(y0, x) =
+    y0 + 0.8 * sin(x * 360 / 97 + y0 * 2) + 0.5 * sin(x * 360 / 41 + y0 * 1.5)
+       + knot_push(y0, x);
+
+xs = [for (x = [-mx - 1 : 1 : mx + 1]) x];
+
+// Behind the live front: a solid whose front is the shelf's live edge and,
+// below the shelf, the corbel's 45° face. The mantel is cut by it.
+module live_cutter() union() {
+    zb = brick_h - 1;
+    for (i = [0 : len(xs) - 2]) hull()
+        for (x = [xs[i], xs[i + 1]]) let(yf = front_y(x))
+            translate([x, 0, 0]) rotate([90, 0, 90]) linear_extrude(0.01)
+                polygon([[yf, fp_h + 1], [yf, shelf_z], [yf + shelf_z - zb, zb],
+                         [fp_d + 1, zb], [fp_d + 1, fp_h + 1]]);
+}
+
+// A groove swept along a path: `sec` is a list of triangles, one per station,
+// each wound clockwise seen from the path's start.
+module sweep(sec) {
+    n = len(sec);
+    polyhedron(
+        points = [for (s = sec) each s],
+        faces = concat(
+            [[0, 1, 2]],
+            [for (i = [0 : n - 2], j = [0 : 2])
+                [i * 3 + j, (i + 1) * 3 + j, (i + 1) * 3 + (j + 1) % 3, i * 3 + (j + 1) % 3]],
+            [[(n - 1) * 3 + 2, (n - 1) * 3 + 1, (n - 1) * 3]]));
+}
+
+// The grain line at height zg on the front edge, as a V groove: its apex
+// grain_d in from the live face, both sides at 45°.
+function front_groove_z(zg, x) = shelf_z + zg + 0.5 * sin(x * 360 / 61 + zg * 50);
+module front_groove(zg)
+    sweep([for (x = xs) let(yf = front_y(x), z = front_groove_z(zg, x))
+        [[x, yf - 1, z + grain_d + 1], [x, yf - 1, z - grain_d - 1], [x, yf + grain_d, z]]]);
+
+// The same on an end of the shelf, `sx` = -1 or 1, running front to back.
+module side_groove(zg, sx) {
+    ys = [for (y = [-mantel_o - 1 : 1 : fp_d + 1]) y];
+    sweep([for (y = ys) let(z = shelf_z + zg + 0.5 * sin(y * 360 / 47 + zg * 80 + sx * 90))
+        [[sx * (mx + 1), y, z + sx * (grain_d + 1)], [sx * (mx + 1), y, z - sx * (grain_d + 1)],
+         [sx * (mx - grain_d), y, z]]]);
+}
+
+// The grain on the top, in plan: the lines and the knots' hearts,
+// kept off the live edge and away from the chimney stub.
+module top_grain_2d() difference() {
+    intersection() {
+        union() {
+            for (y0 = grain_y)
+                polygon(concat(
+                    [for (x = xs) [x, grain_line(y0, x) + grain_w / 2]],
+                    [for (x = [len(xs) - 1 : -1 : 0]) [xs[x], grain_line(y0, xs[x]) - grain_w / 2]]));
+            // each knot's heart, an oval dimple the bent lines wrap round
+            for (k = knots) translate([k[0], k[1]]) scale([1.6, 1]) circle(k[2] * 0.45);
+        }
+        // inside the shelf, clear of the live edge and the ends
+        polygon(concat([[mx - 1, fp_d - 1], [-mx + 1, fp_d - 1]],
+                       [for (x = [-mx + 1 : 1 : mx - 1]) [x, front_y(x) + 1]]));
+    }
+    translate([0, ch_y]) ch_rect(0.5);
+}
+
+module wood_grain() {
+    translate([0, 0, fp_h - grain_d]) linear_extrude(grain_d + 1) top_grain_2d();
+    for (zg = grain_z) {
+        front_groove(zg);
+        for (sx = [-1, 1]) side_groove(zg, sx);
+    }
+}
+
 module fireplace_body() {
     difference() {
         union() {
             // brick body, up to the underside of the mantel's corbel
             translate([-fp_w / 2, 0, 0]) cube([fp_w, fp_d, fp_h - mantel_t]);
-            // mantel: 45° corbel then the flat shelf
-            hull() {
-                translate([-fp_w / 2, 0, brick_h])
-                    cube([fp_w, fp_d, 0.01]);
-                translate([-fp_w / 2 - mantel_o, -mantel_o, fp_h - mantel_t])
-                    cube([fp_w + 2 * mantel_o, fp_d + mantel_o, mantel_t]);
+            // mantel: 45° corbel then the flat shelf, its front a live edge
+            intersection() {
+                hull() {
+                    translate([-fp_w / 2, 0, brick_h])
+                        cube([fp_w, fp_d, 0.01]);
+                    translate([-fp_w / 2 - mantel_o, -mantel_o, fp_h - mantel_t])
+                        cube([fp_w + 2 * mantel_o, fp_d + mantel_o, mantel_t]);
+                }
+                if (wood) live_cutter(); else translate([-500, -500, 0]) cube(1000);
             }
             // the chimney's stub standing on the shelf
             translate([0, ch_y, 0]) slab(fp_h - 0.01, stub_h + 0.01) ch_rect();
@@ -187,6 +300,7 @@ module fireplace_body() {
                 linear_extrude(fp_wall + 2) offset(delta = arch_band) arch_2d();
         }
         translate([0, 0, floor_h]) arch_joints();
+        if (wood) wood_grain();
     }
 }
 

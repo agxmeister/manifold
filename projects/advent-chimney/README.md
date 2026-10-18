@@ -79,6 +79,15 @@ shaft (its back face leans out only slightly, to the shaft's back wall). Everyth
 that drops lands on the firebox floor, where a hand can reach it through the
 arch.
 
+**Mantel.** The shelf is a live-edge wooden slab. Its front edge wanders in
+by up to 1.5 mm (never out, so the footprint is unchanged), and the 45°
+corbel under it follows. Grain lines are cut 0.4 mm deep: across the top,
+bending round four knots (each with an oval dimple at its heart), and as
+two wavy V grooves along the front and both ends. The V grooves have 45°
+roofs like the mortar, and the top grooves are open upward, so the wood needs
+no support. The grain is spaced so no ridge between grooves is thinner than
+0.8 mm.
+
 **Bricks.** The mortar is a groove 0.6 mm deep. Each section is 4 courses
 tall, an even number, so the running bond carries on unbroken from one
 section to the next. The joint between two sections falls on a mortar line.
@@ -99,6 +108,11 @@ the top of its file.
 | `joint_gap`   | lib       | 0.05    | ring to pocket wall clearance, per side (the section fit) |
 | `gate_t`      | lib       | 2.0     | gate plate thickness                                   |
 | `gate_side` / `gate_vgap` | lib | 0.6 / 0.5 | gate clearance to the pocket wall / to the ring above |
+| `wood`        | fireplace | true    | live-edge wooden mantel with grain; false for a plain shelf |
+| `live_a`      | fireplace | 1.5     | how far the live front edge wanders in                 |
+| `grain_w` / `grain_d` | fireplace | 0.8 / 0.4 | top grain line width, depth of every grain groove |
+| `grain_y` / `grain_z` | fireplace | 26 lines / 2 lines | top grain lines' y; edge grain lines' heights above the shelf's underside |
+| `knots`       | fireplace | 4 knots | knots in the top grain, as `[x, y, r]`                 |
 | `stub_courses` | fireplace | 1      | brick courses of chimney on the mantel shelf, under the day 1 pocket |
 | `day`         | gate      | 1       | the number on the band                                 |
 | `band_h` / `band_t` / `lip` | gate | 16 / 3 / 3 | band height, thickness, pull lip reach     |
