@@ -1,6 +1,6 @@
 // section — one of the 24 chimney sections, all identical.
 //
-// A brick tube 70 x 50 x 30. The pocket in its top holds the gate that is
+// A brick tube 100 x 70 x 40. The pocket in its top holds the gate that is
 // the NEXT section's floor: the plate lies on the pocket's floor, slides out
 // through a notch in the front wall, and the ring under the section above
 // closes the pocket over it. Pull the gate and whatever sat on it drops down

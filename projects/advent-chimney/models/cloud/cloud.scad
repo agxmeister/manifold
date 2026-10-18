@@ -3,7 +3,8 @@
 // A heap of round puffs wider than the chimney. Underneath, a solid plug
 // fills the top section's pocket (which has no gate), including the front
 // notch, and sits on its rim's 45° bevel like a section would; a skirt hangs
-// round the outside of the section's top. The shaft is closed.
+// round the front and sides of the section's top. The shaft is closed. The
+// back is cut flat on the chimney's back plane, to sit against the wall.
 //
 // Prints on its flat underside, plug and skirt on the bed. Every puff hangs on a 45° cone under its
 // equator (an upside-down teardrop) that ends inside the puffs below it or
@@ -24,24 +25,25 @@ include <../../lib/chimney.scad>
 // z of the puff's centre above the underside
 puffs = [
     // front row
-    [-42, -15,  9, 15], [-20, -17, 12, 19], [  4, -18, 13, 20],
-    [ 27, -16, 11, 18], [ 46, -9,   8, 12],
+    [-59, -21,  13,  21], [-28, -24,  17,  27], [  6, -25,  18,  28],
+    [ 38, -22,  15,  25], [ 64, -13,  11,  17],
     // back row
-    [-40,  14, 10, 16], [-13,  16, 15, 20], [ 15,  16, 14, 20],
-    [ 41,  12,  9, 14],
+    [-56,  20,  14,  22], [-18,  22,  21,  28], [ 21,  22,  20,  28], [ 57,  17,  13,  20],
     // crown
-    [-18,  -1, 27, 17], [  9,   0, 31, 19], [ 30,   2, 23, 13],
+    [-25,  -1,  38,  24], [ 13,   0,  43,  27], [ 42,   3,  32,  18],
 ];
-core_o = 2;          // the core under the puffs reaches this far past the chimney
-                     //   (the skirt round the section's top is this, less joint_gap)
-core_h = 14;         // core height
+core_o = 3;          // the core under the puffs reaches this far past the chimney
+                     //   (the skirt round the section's top is this, less skirt_gap)
+core_h = 20;         // core height
+skirt_gap = 0.2;     // skirt to the section's outside, per side (it only hides
+                     //   the joint; the plug is what grips)
 
 /* [Snowflakes] */
 // [x, z, size, turn]: centre across from the chimney's middle and above the
 // underside, tip-to-tip size, rotation in degrees. Each sits on the front of
 // a puff, near the puff's centre height where it faces forward.
 flakes = [
-    [-42, 10, 11, 20], [-20, 13, 16, 0], [  4, 14, 17, 15], [ 27, 12, 15, 30],
+    [-59,  14,  15,  20], [-28,  18,  22,   0], [  6,  20,  24,  15], [ 38,  17,  21,  30],
 ];
 flake_w = 1.4;      // arm width (two lines on a 0.4 nozzle)
 flake_d = 1.2;      // inlay depth, front to back
@@ -85,18 +87,19 @@ module cloud() {
                 translate([0, 0, -plug_h]) linear_extrude(core_h + plug_h) offset(r = core_o)
                     square([ch_w, ch_d], center = true);
             }
-            translate([-500, -500, -plug_h]) cube(1000);
+            // nothing below the underside or behind the chimney's back
+            translate([-500, ch_d - 1000, -plug_h]) cube(1000);
         }
         // room for the top section, less the plug that goes into it
         difference() {
-            slab(-plug_h - 1, plug_h + 1) ch_rect(joint_gap);
+            slab(-plug_h - 1, plug_h + 1) ch_rect(skirt_gap);
             plug();
         }
         // ... with a 45° roof over the gap round the section's top edge
         difference() {
             hull() {
-                slab(-0.001, 0.001) ch_rect(joint_gap);
-                slab(joint_gap, 0.001) ch_rect(0);
+                slab(-0.001, 0.001) ch_rect(skirt_gap);
+                slab(skirt_gap, 0.001) ch_rect(0);
             }
             slab(-1, 2) ch_rect(0);
         }

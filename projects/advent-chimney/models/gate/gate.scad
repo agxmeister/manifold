@@ -14,11 +14,11 @@ include <../../lib/chimney.scad>
 day = 1;            // the number on the band, 1 (bottom) ... 24 (top)
 
 /* [Band] */
-band_h = 13;        // band height, from the plate's underside
+band_h = 16;        // band height, from the plate's underside
 band_t = 3;         // band thickness, standing proud of the bricks
 lip    = 3;         // how far the pull lip reaches forward of the band
 lip_t  = 1.5;       // lip thickness at its tip
-digit_h  = 6;       // number height
+digit_h  = 8;       // number height
 digit_d  = 0.8;     // number engraving depth
 font = "Liberation Sans:style=Bold";
 

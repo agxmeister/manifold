@@ -5,7 +5,9 @@
 // behind the arch narrows into a 45° smoke funnel straight up into the
 // chimney's shaft, so whatever drops lands on the hearth floor, in reach
 // through the arch. A mantel shelf runs round the top, solid all over but
-// for the shaft. The chimney starts on it: a stub of brick courses whose top
+// for the shaft. The chimney stands at the back, its back face flush with
+// the fireplace's (and the mantel's) back, so the whole calendar has one flat
+// back plane to tape to a wall. The chimney starts on the shelf: a stub of brick courses whose top
 // is the pocket the first section stands in, holding the day 1 gate. The
 // stub is tall enough that the gate's band clears the shelf, so the gate
 // pulls straight out over it.
@@ -25,20 +27,20 @@
 include <../../lib/chimney.scad>
 
 /* [Body] */
-fp_w = 150;         // body width
-fp_d = 90;          // body depth
-fp_h = 107;         // height to the mantel's top: hearth + 12 brick courses + corbel + shelf
+fp_w = 200;         // body width
+fp_d = 100;         // body depth
+fp_h = 140;         // height to the mantel's top: hearth + 12 brick courses + corbel + shelf
 fp_wall = 8;        // wall thickness round the firebox
 
 /* [Firebox and arch] */
-box_w   = 96;       // firebox inside width
-arch_w  = 64;       // arch opening width
-arch_sp = 26;       // arch springing height, above the firebox floor
-arch_band = 4;      // plain band round the arch, no mortar
+box_w   = 130;      // firebox inside width
+arch_w  = 88;       // arch opening width
+arch_sp = 34;       // arch springing height, above the firebox floor
+arch_band = 5;      // plain band round the arch, no mortar
 
 /* [Mantel] */
-mantel_t  = 5;      // shelf thickness
-mantel_o  = 6;      // how far it overhangs the front and sides
+mantel_t  = 6;      // shelf thickness
+mantel_o  = 8;      // how far it overhangs the front and sides
 
 /* [Colour] */
 accent       = false;
@@ -51,18 +53,20 @@ layer        = 0.2;           // colour boundaries land on multiples of this
 stub_courses = 1;   // brick courses of chimney standing on the shelf, under the day 1 pocket
 
 /* [Hearth] */
-hearth_o = 14;      // hearth slab reaching forward of the body
+hearth_o = 18;      // hearth slab reaching forward of the body
 hearth_h = 6;       // hearth height; the plinth round the body too
-hearth_e = 10;      // how far it reaches past the arch on each side
+hearth_e = 14;      // how far it reaches past the arch on each side
 
 floor_h = hearth_h;   // the firebox floor is flush with the hearth
 
-// chimney placement: centred in x, and in y over the firebox
+// chimney placement: centred in x, back face flush with the body's back
 box_d  = fp_d - 2 * fp_wall;
-ch_y   = fp_wall + (box_d - ch_d) / 2;     // chimney's front face
-// the funnel narrows the firebox to the shaft at 45°: its height is the
-// larger of the two steps
-fun_h  = max((box_w - in_w) / 2, (box_d - in_d) / 2);
+ch_y   = fp_d - ch_d;                      // chimney's front face
+// the funnel narrows (or, at the back, widens) the firebox to the shaft at
+// 45° or steeper: its height is the largest of the steps
+fun_h  = max((box_w - in_w) / 2,
+             abs(ch_y + wall - fp_wall),             // front
+             abs((fp_d - fp_wall) - (ch_y + ch_d - wall)));  // back
 arch_r = arch_w / 2;
 arch_top = floor_h + arch_sp + arch_r * sqrt(2);   // crown point
 box_top  = fp_h - mantel_t - fun_h - 2;   // firebox ceiling where the funnel starts

@@ -18,17 +18,17 @@
 $fn = 64;
 
 // ---- Chimney section -----------------------------------------------------
-ch_w  = 70;      // outside width, across the front
-ch_d  = 50;      // outside depth, front to back
-ch_h  = 30;      // height of one section (the stack's pitch)
+ch_w  = 100;     // outside width, across the front
+ch_d  = 70;      // outside depth, front to back
+ch_h  = 40;      // height of one section (the stack's pitch)
 wall  = 3.6;     // wall thickness at the brick faces
 
-in_w = ch_w - 2 * wall;     // shaft inside, 62.8
-in_d = ch_d - 2 * wall;     // 42.8
+in_w = ch_w - 2 * wall;     // shaft inside, 92.8
+in_d = ch_d - 2 * wall;     // 62.8
 
 // ---- Bricks (mortar is a recessed groove) --------------------------------
-course   = 7.5;  // brick course height, mortar included; ch_h is 4 courses
-pitch    = 22.5; // brick length, mortar included
+course   = 10;   // brick course height, mortar included; ch_h is 4 courses
+pitch    = 30;   // brick length, mortar included
 mortar   = 1.0;  // mortar line width
 mortar_d = 0.6;  // how deep the mortar is set back from the brick face
 min_brick = 5;   // shortest brick end left at a corner
@@ -40,12 +40,15 @@ assert(abs(ch_h / course - round(ch_h / course)) < 1e-6
 // ---- Stacking joint and gate --------------------------------------------
 groove_d  = 1.8;  // how far the pocket reaches into the walls
 rim       = wall - groove_d;  // the pocket's outer rim (1.2 behind the mortar)
-ring_v    = 1.5;  // straight part of the ring under a piece, below its bevel
-joint_gap = 0.15; // ring to pocket wall, per side (tight wall fit)
+ring_v    = 3.0;  // straight part of the ring under a piece, below its bevel;
+                  //   the length that grips the pocket wall
+joint_gap = 0.05; // ring to pocket wall, per side (tight: pushing a section
+                  //   in takes effort; 0.15 printed loose)
 
 gate_t    = 2.0;  // plate thickness
-gate_side = 0.3;  // plate edge to pocket wall, per side (loose, it slides)
-gate_vgap = 0.2;  // plate to the ring above it
+gate_side = 0.6;  // plate edge to pocket wall, per side (loose, it slides;
+                  //   0.3 printed tight)
+gate_vgap = 0.5;  // plate to the ring above it (0.2 printed tight)
 
 // pocket depth below the joint: bevel, the ring's straight part, the plate
 pocket_d = rim + ring_v + gate_vgap + gate_t;

@@ -32,43 +32,50 @@ advent-chimney/
 
 | Component   | Print size (as exported)  | Prints on                    | Count |
 | ----------- | ------------------------- | ---------------------------- | ----- |
-| `fireplace` | 162 x 104 x 114.5 mm      | its bottom, as it stands     | 1     |
-| `section`   | 70 x 50 x 32.8 mm         | its bottom, as it stands     | 24    |
-| `gate`      | 70 x 53.9 x 13 mm         | the plate, band standing up  | 24 (days 1 to 24) |
-| `cloud`     | 115 x 74 x 55 mm          | its flat underside           | 1     |
+| `fireplace` | 216 x 118 x 149.5 mm      | its bottom, as it stands     | 1     |
+| `section`   | 100 x 70 x 44.3 mm        | its bottom, as it stands     | 24    |
+| `gate`      | 100 x 73.6 x 16 mm        | the plate, band standing up  | 24 (days 1 to 24) |
+| `cloud`     | 161 x 88 x 77 mm          | its flat underside           | 1     |
 
-Assembled, it is about 0.89 m tall: fireplace 114.5 mm, 24 sections of 30 mm,
-then the cloud.
+Assembled, it is about 1.18 m tall: fireplace 150 mm to the stub's top, 24
+sections of 40 mm, then the cloud.
+
+The back is **one flat plane**: the fireplace's back, the mantel's back edge,
+every section's back and the cloud's back (cut flat) all line up, so the
+calendar can stand against a wall and be held to it with double-sided tape.
 
 ## How it works
 
 **Stacking.** Every joint in the stack is the same. The piece below has a
 **pocket** in its top: the wall is cut back to a 1.8 mm outer rim for the top
-5.5 mm, and the rim's top is bevelled 45° inward. The piece above has a
-**ring** under it: the inner part of its wall hangs 3.3 mm down into that
-pocket, and its outside is bevelled to sit on the rim's bevel. The ring lines
-the pieces up. The fireplace's top is a pocket. Each section has a ring under
+7.3 mm, and the rim's top is bevelled 45° inward. The piece above has a
+**ring** under it: the inner part of its wall hangs 4.8 mm down into that
+pocket, and its outside is bevelled to sit on the rim's bevel. The ring's
+straight 3 mm grips the pocket wall with 0.05 mm per side, so pushing a
+section home takes some effort (0.15 mm over 1.5 mm printed loose). The fireplace's top is a pocket. Each section has a ring under
 it and a pocket on top. The cloud has a solid plug that fills the top
 section's pocket. The pieces just sit on each other and need no glue, so the
 chimney comes apart for storage.
 
 **Gates.** The gate is a 2 mm plate lying on the pocket's floor, under the
-ring of the section above. It slides out through a notch in the front wall
+ring of the section above, with 0.6 mm to the pocket walls and 0.5 mm to the
+ring, so it pulls out easily (0.3 / 0.2 printed tight). It slides out through a notch in the front wall
 of the piece below. At its front is a stone band across the chimney, over the
 joint, with the day number on it. The band stops the plate when it is all
 the way in, and its top edge is a lip to hook a finger under. Pull the gate
 out and the shaft is open all the way down. On the fireplace, the chimney
 starts with a one-course brick stub standing on the mantel shelf, and the
-day 1 pocket is in the stub's top. The stub lifts the gate's band 2 mm over
+day 1 pocket is in the stub's top. The stub lifts the gate's band 2.7 mm over
 the shelf, so the gate pulls straight out over it and the shelf stays solid.
 
 The pocket and the notch are open upward, so no part of the gate's path is
 ever printed over air. The first version put the gate in a slot through the
 section's own wall, whose 66 mm roof needed support.
 
-**Fireplace.** The fireplace is much wider than the chimney (150 x 90, plus
-the mantel and hearth), so the tall stack stands on its own. Behind the arch,
-the firebox narrows in a 45° funnel up into the chimney's shaft. Everything
+**Fireplace.** The fireplace is much wider than the chimney (200 x 100, plus
+the mantel and hearth). The chimney stands at its back edge, flush with it.
+Behind the arch, the firebox narrows in a 45° funnel up into the chimney's
+shaft (its back face leans out only slightly, to the shaft's back wall). Everything
 that drops lands on the firebox floor, where a hand can reach it through the
 arch.
 
@@ -83,21 +90,21 @@ the top of its file.
 
 | Variable      | Where     | Default | What it sets                                           |
 | ------------- | --------- | ------- | ------------------------------------------------------ |
-| `ch_w` / `ch_d` / `ch_h` | lib | 70 / 50 / 30 | section outside width, depth, height (mm)  |
+| `ch_w` / `ch_d` / `ch_h` | lib | 100 / 70 / 40 | section outside width, depth, height (mm)  |
 | `wall`        | lib       | 3.6     | chimney wall thickness at the brick faces              |
-| `course` / `pitch` | lib  | 7.5 / 22.5 | brick course height and brick length, mortar included |
+| `course` / `pitch` | lib  | 10 / 30 | brick course height and brick length, mortar included |
 | `mortar` / `mortar_d` | lib | 1.0 / 0.6 | mortar line width and depth                       |
 | `groove_d`    | lib       | 1.8     | how far the pocket cuts into the walls; the rim is `wall` minus this |
-| `ring_v`      | lib       | 1.5     | straight part of the ring, below its bevel             |
-| `joint_gap`   | lib       | 0.15    | ring to pocket wall clearance, per side                |
+| `ring_v`      | lib       | 3.0     | straight part of the ring, below its bevel             |
+| `joint_gap`   | lib       | 0.05    | ring to pocket wall clearance, per side (the section fit) |
 | `gate_t`      | lib       | 2.0     | gate plate thickness                                   |
-| `gate_side` / `gate_vgap` | lib | 0.3 / 0.2 | gate clearance to the pocket wall / to the ring above |
+| `gate_side` / `gate_vgap` | lib | 0.6 / 0.5 | gate clearance to the pocket wall / to the ring above |
 | `stub_courses` | fireplace | 1      | brick courses of chimney on the mantel shelf, under the day 1 pocket |
 | `day`         | gate      | 1       | the number on the band                                 |
-| `band_h` / `band_t` / `lip` | gate | 13 / 3 / 3 | band height, thickness, pull lip reach     |
-| `fp_w` / `fp_d` / `fp_h` | fireplace | 150 / 90 / 107 | fireplace body size, to the mantel's top |
+| `band_h` / `band_t` / `lip` | gate | 16 / 3 / 3 | band height, thickness, pull lip reach     |
+| `fp_w` / `fp_d` / `fp_h` | fireplace | 200 / 100 / 140 | fireplace body size, to the mantel's top |
 | `hearth_h`    | fireplace | 6       | hearth and plinth height; the firebox floor is flush with it |
-| `box_w`, `arch_w`, `arch_sp` | fireplace | 96, 64, 26 | firebox width, arch width, arch springing height |
+| `box_w`, `arch_w`, `arch_sp` | fireplace | 130, 88, 34 | firebox width, arch width, arch springing height |
 | `puffs`       | cloud     | 12 puffs | the cloud's balls, as `[x, y, z, r]`                  |
 | `flakes`      | cloud     | 4 flakes | snowflakes, as `[x, z, size, turn]`                   |
 | `flake_w` / `flake_d` | cloud | 1.4 / 1.2 | snowflake arm width and inlay depth          |
@@ -114,7 +121,7 @@ All parts print without support. PLA, 0.2 mm layers, 15 % infill.
   `openscad -D day=7 -o projects/advent-chimney/exports/gate-gate-07.stl projects/advent-chimney/models/gate/gate.scad`.
 - **fireplace**: upright. The arch's crown is pointed at 45°, and the funnel
   and the mantel's underside are 45°, so nothing needs support. It's the
-  base of an 0.89 m tower, so give it 3 walls and 20 % infill or more for
+  base of a 1.18 m tower, so give it 3 walls and 20 % infill or more for
   weight.
 - **cloud**: on its flat underside, the plug and the skirt round it on the
   bed. Each puff stands on a 45° cone.
@@ -126,12 +133,12 @@ one colour.
 
 | Part        | Filament 1 | Filament 2                   | Filament 3                     | Swaps per print |
 | ----------- | ---------- | ---------------------------- | ------------------------------ | --------------- |
-| `fireplace` | bricks (and the chimney stub on the shelf) | mantel (corbel + shelf, 11 mm band) | hearth (slab, firebox floor, plinth, bottom 6 mm) | 3 |
-| `cloud`     | cloud      | 4 snowflakes inlaid in the front, 1.2 mm deep | none            | about 90 (one per layer the flakes span, 18 mm) |
+| `fireplace` | bricks (and the chimney stub on the shelf) | mantel (corbel + shelf, 14 mm band) | hearth (slab, firebox floor, plinth, bottom 6 mm) | 3 |
+| `cloud`     | cloud      | 4 snowflakes inlaid in the front, 1.2 mm deep | none            | about 125 (one per layer the flakes span, 25 mm) |
 
 The fireplace's colours are horizontal bands, so it needs only three filament
 changes. The snowflakes share layers with the cloud, so every layer they span
-costs a swap. They sit in one low row to keep that span to 18 mm.
+costs a swap. They sit in one low row to keep that span to 25 mm.
 
 Build the 3MF in two steps. First export the colour parts with lazy-union,
 then convert them into one multicolour object:
