@@ -29,7 +29,7 @@
 include <../../lib/chimney.scad>
 
 /* [Body] */
-fp_w = 200;         // body width
+fp_w = 160;         // body width
 fp_d = 100;         // body depth
 fp_h = 140;         // height to the mantel's top: hearth + 12 brick courses + corbel + shelf
 fp_wall = 8;        // wall thickness round the firebox
@@ -58,7 +58,7 @@ grain_y = [-4.5, -1.5, 2, 5.5, 9.5, 13, 17, 20.5, 24, 28, 32.5, 36.5, 40.5,
 grain_z = [1.9, 4.1];
 // knots on the top, [x, y, r]: the grain bends round each, a dimple at its heart
 // (placed so no two grain lines come closer than ~1.6 mm, centre to centre)
-knots = [[-70, 11, 3], [20, 3, 2.8], [78, 66, 3.5], [-88, 47, 2.6]];
+knots = [[-56, 11, 3], [16, 3, 2.8], [64, 66, 3.5], [-70, 47, 2.6]];
 
 /* [Colour] */
 accent       = false;
@@ -74,7 +74,7 @@ stub_courses = 1;   // brick courses of chimney standing on the shelf, under the
 hearth_o = 40;      // hearth slab reaching forward of the body (it also runs
                     //   down both sides of the body to its back)
 hearth_h = 6;       // hearth height; the plinth round the body too
-hearth_w = 240;     // hearth slab width (centred; the body is fp_w, so the
+hearth_w = 200;     // hearth slab width (centred; the body is fp_w, so the
                     //   side runs are (hearth_w - fp_w) / 2 wide)
 hearth_c = 1;       // 45° chamfer round the slab's top front and ends
 

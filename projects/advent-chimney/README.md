@@ -32,7 +32,7 @@ advent-chimney/
 
 | Component   | Print size (as exported)  | Prints on                    | Count |
 | ----------- | ------------------------- | ---------------------------- | ----- |
-| `fireplace` | 240 x 140 x 149.5 mm      | its bottom, as it stands     | 1     |
+| `fireplace` | 200 x 140 x 149.5 mm      | its bottom, as it stands     | 1     |
 | `section`   | 100 x 70 x 44.3 mm        | its bottom, as it stands     | 24    |
 | `gate`      | 100 x 73.6 x 16 mm        | the plate, band standing up  | 24 (days 1 to 24) |
 | `cloud`     | 161 x 88 x 77 mm          | its flat underside           | 1     |
@@ -72,7 +72,7 @@ The pocket and the notch are open upward, so no part of the gate's path is
 ever printed over air. The first version put the gate in a slot through the
 section's own wall, whose 66 mm roof needed support.
 
-**Fireplace.** The fireplace is much wider than the chimney (200 x 100, plus
+**Fireplace.** The fireplace is wider than the chimney (160 x 100, plus
 the mantel and hearth). The chimney stands at its back edge, flush with it.
 Behind the arch, the firebox narrows in a 45° funnel up into the chimney's
 shaft (its back face leans out only slightly, to the shaft's back wall). Everything
@@ -81,7 +81,7 @@ arch.
 
 **Hearth.** In front lies a flagstone hearth, reaching 40 mm forward and
 running on down both sides of the body to the back plane, 20 mm wide there:
-240 mm wide in all. Its top edge is chamfered 1 mm at the front and ends; the
+200 mm wide in all. Its top edge is chamfered 1 mm at the front and ends; the
 back stays flush. It is paved with big irregular stones, and the paving carries on through the arch
 across the firebox floor. The stones come from splitting the front, each side run and the
 firebox floor in two by a slightly leaning cut, then each half again, until
@@ -129,9 +129,9 @@ the top of its file.
 | `stub_courses` | fireplace | 1      | brick courses of chimney on the mantel shelf, under the day 1 pocket |
 | `day`         | gate      | 1       | the number on the band                                 |
 | `band_h` / `band_t` / `lip` | gate | 16 / 3 / 3 | band height, thickness, pull lip reach     |
-| `fp_w` / `fp_d` / `fp_h` | fireplace | 200 / 100 / 140 | fireplace body size, to the mantel's top |
+| `fp_w` / `fp_d` / `fp_h` | fireplace | 160 / 100 / 140 | fireplace body size, to the mantel's top |
 | `hearth_h`    | fireplace | 6       | hearth and plinth height; the firebox floor is flush with it |
-| `hearth_w` / `hearth_o` | fireplace | 240 / 40 | hearth slab width (side runs are `(hearth_w - fp_w) / 2`), and how far it reaches in front of the body |
+| `hearth_w` / `hearth_o` | fireplace | 200 / 40 | hearth slab width (side runs are `(hearth_w - fp_w) / 2`), and how far it reaches in front of the body |
 | `flags`       | fireplace | true    | flagstone paving on the hearth and firebox floor; false for a plain slab |
 | `flag_seed` / `flag_max` / `flag_skew` | fireplace | 3 / 34 / 6 | stone layout, about how big a stone is, how far a joint leans (mm) |
 | `flag_gd` / `flag_drop` | fireplace | 0.8 / [0, 0.2, 0.4] | joint depth, the heights a stone's top drops by |
