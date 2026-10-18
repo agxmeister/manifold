@@ -60,8 +60,8 @@ chimney comes apart for storage.
 **Gates.** The gate is a 2 mm plate lying on the pocket's floor, under the
 ring of the section above, with 0.6 mm to the pocket walls and 0.5 mm to the
 ring, so it pulls out easily (0.3 / 0.2 printed tight). It slides out through a notch in the front wall
-of the piece below. At its front is a stone band across the chimney, over the
-joint, with the day number on it. The band stops the plate when it is all
+of the piece below. At its front is a wooden band across the chimney, over
+the joint, with the day number on it. The band stops the plate when it is all
 the way in, and its top edge is a lip to hook a finger under. Pull the gate
 out and the shaft is open all the way down. On the fireplace, the chimney
 starts with a one-course brick stub standing on the mantel shelf, and the
@@ -91,6 +91,14 @@ down, so neighbours don't quite line up. The joints are 45° V grooves 0.8 mm
 deep, cut into the top. Where one reaches the front or an end of the slab, it
 runs down the face as a vertical V. Change `flag_seed` for a different
 layout.
+
+The band is wood like the mantel. The lip's front is a live edge wandering in
+by up to 0.6 mm, with its 45° underside following. Four wavy V grain grooves
+(0.4 deep, 45° roofs) run along the front and round both ends, bending round
+a knot with an oval dimple at its heart. Two grain lines are cut in the
+lip's top. The grain stops 1.2 mm short of the number. Each day's gate gets
+its own grain and knot position, seeded by the day. `wood = false` gives a
+plain band.
 
 **Mantel.** The shelf is a live-edge wooden slab. Its front edge wanders in
 by up to 1.5 mm (never out, so the footprint is unchanged), and the 45°
@@ -129,6 +137,9 @@ the top of its file.
 | `stub_courses` | fireplace | 1      | brick courses of chimney on the mantel shelf, under the day 1 pocket |
 | `day`         | gate      | 1       | the number on the band                                 |
 | `band_h` / `band_t` / `lip` | gate | 16 / 3 / 3 | band height, thickness, pull lip reach     |
+| `wood` (gate) | gate      | true    | wooden band with grain, a knot and a live-edge lip; false for a plain band |
+| `live_a` / `grain_d` (gate) | gate | 0.6 / 0.4 | how far the lip's live edge wanders in, grain groove depth |
+| `grain_z` / `grain_y` (gate) | gate | 4 lines / 2 lines | front grain lines' heights above the band's bottom; lip-top grain lines' y |
 | `fp_w` / `fp_d` / `fp_h` | fireplace | 160 / 100 / 140 | fireplace body size, to the mantel's top |
 | `hearth_h`    | fireplace | 6       | hearth and plinth height; the firebox floor is flush with it |
 | `hearth_w` / `hearth_o` | fireplace | 200 / 40 | hearth slab width (side runs are `(hearth_w - fp_w) / 2`), and how far it reaches in front of the body |

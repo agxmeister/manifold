@@ -294,19 +294,6 @@ module live_cutter() union() {
                          [fp_d + 1, zb], [fp_d + 1, fp_h + 1]]);
 }
 
-// A groove swept along a path: `sec` is a list of triangles, one per station,
-// each wound clockwise seen from the path's start.
-module sweep(sec) {
-    n = len(sec);
-    polyhedron(
-        points = [for (s = sec) each s],
-        faces = concat(
-            [[0, 1, 2]],
-            [for (i = [0 : n - 2], j = [0 : 2])
-                [i * 3 + j, (i + 1) * 3 + j, (i + 1) * 3 + (j + 1) % 3, i * 3 + (j + 1) % 3]],
-            [[(n - 1) * 3 + 2, (n - 1) * 3 + 1, (n - 1) * 3]]));
-}
-
 // The grain line at height zg on the front edge, as a V groove: its apex
 // grain_d in from the live face, both sides at 45°.
 function front_groove_z(zg, x) = shelf_z + zg + 0.5 * sin(x * 360 / 61 + zg * 50);

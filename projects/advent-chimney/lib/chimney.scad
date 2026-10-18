@@ -132,6 +132,22 @@ module head_cut()
             cube([mortar, 1 + mortar_d, course + mortar - mortar_d]);
     }
 
+// ---- Wood grain --------------------------------------------------------
+// (the fireplace's mantel and the gates' bands)
+
+// A groove swept along a path: `sec` is a list of triangles, one per station,
+// each wound clockwise seen from the path's start.
+module sweep(sec) {
+    n = len(sec);
+    polyhedron(
+        points = [for (s = sec) each s],
+        faces = concat(
+            [[0, 1, 2]],
+            [for (i = [0 : n - 2], j = [0 : 2])
+                [i * 3 + j, (i + 1) * 3 + j, (i + 1) * 3 + (j + 1) % 3, i * 3 + (j + 1) % 3]],
+            [[(n - 1) * 3 + 2, (n - 1) * 3 + 1, (n - 1) * 3]]));
+}
+
 // ---- Joint ---------------------------------------------------------------
 // Both modules work in the JOINT frame: z = 0 is the joint line, the top of
 // the piece below and the bottom edge of the piece above.
