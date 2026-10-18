@@ -12,8 +12,10 @@
 // stub is tall enough that the gate's band clears the shelf, so the gate
 // pulls straight out over it.
 //
-// Prints upright, as it stands. The arch is round with a 45° point at its
-// crown, the funnel and the mantel's underside are 45°: no support.
+// Prints upright, as it stands. The funnel and the mantel's underside are
+// 45°. The arch is a plain semicircle on straight jambs, so the top of its
+// curve is a near-flat ceiling over the opening. It's only fp_wall deep, so
+// it may bridge; if not, it takes support (the user's choice, for the look).
 //
 // COLOUR. `accent = false` (the default) writes the fireplace as one solid,
 // for the checks and a one-colour print. `accent = true` writes it as three
@@ -36,7 +38,9 @@ fp_wall = 8;        // wall thickness round the firebox
 box_w   = 130;      // firebox inside width
 arch_w  = 88;       // arch opening width
 arch_sp = 34;       // arch springing height, above the firebox floor
-arch_band = 5;      // plain band round the arch, no mortar
+arch_band = 10;     // width of the ring of arch stones round the opening
+arch_stones = 13;   // stones over the semicircle (odd: a keystone at the crown)
+jamb_stones = 3;    // stones up each side, below the springing
 
 /* [Mantel] */
 mantel_t  = 6;      // shelf thickness
@@ -68,7 +72,7 @@ fun_h  = max((box_w - in_w) / 2,
              abs(ch_y + wall - fp_wall),             // front
              abs((fp_d - fp_wall) - (ch_y + ch_d - wall)));  // back
 arch_r = arch_w / 2;
-arch_top = floor_h + arch_sp + arch_r * sqrt(2);   // crown point
+arch_top = floor_h + arch_sp + arch_r;   // crown
 box_top  = fp_h - mantel_t - fun_h - 2;   // firebox ceiling where the funnel starts
 brick_h  = fp_h - mantel_t - mantel_o;    // bricks end where the corbel starts
                                           //   (and the mantel colour begins)
@@ -86,17 +90,54 @@ assert(abs(hearth_h / layer - round(hearth_h / layer)) < 1e-6
 assert(box_w > arch_w + 2 * 4, "arch reaches the firebox side walls");
 
 // The arch opening's outline in its own plane: x across, y up from the
-// firebox floor. Round, with the crown pointed at 45° so it prints.
+// firebox floor. Straight jambs up to the springing, then a semicircle.
 module arch_2d() intersection() {
     union() {
         translate([-arch_r, 0]) square([arch_w, arch_sp]);
-        translate([0, arch_sp]) hull() {
-            circle(arch_r);
-            rotate(45) square(arch_r);      // the 45° point
-        }
+        translate([0, arch_sp]) circle(arch_r, $fn = 96);
     }
     translate([-arch_w, 0]) square(2 * arch_w);   // nothing below the floor
 }
+
+// The ring of arch stones' joints, as thin centrelines in arch_2d's plane:
+// the line between the ring and the wall bricks, radial joints round the
+// semicircle, flat joints up the jambs. arch_joints() grows them into
+// V grooves.
+module arch_joint_lines() {
+    t = 0.1;
+    intersection() {
+        union() {
+            // the ring's outer edge
+            difference() {
+                offset(delta = arch_band + t / 2) arch_2d();
+                offset(delta = arch_band - t / 2) arch_2d();
+            }
+            // radial joints between the voussoirs
+            for (i = [1:arch_stones - 1])
+                translate([0, arch_sp]) rotate(i * 180 / arch_stones)
+                    translate([arch_r - 1, -t / 2]) square([arch_band + 1, t]);
+            // flat joints on the jambs, the springing included
+            for (i = [1:jamb_stones], sx = [-1, 1])
+                translate([sx > 0 ? arch_r - 1 : -arch_r - arch_band,
+                           i * arch_sp / jamb_stones - t / 2])
+                    square([arch_band + 1, t]);
+        }
+        // not into the hearth below the firebox floor
+        translate([-fp_w, 1]) square(2 * fp_w);
+    }
+}
+
+// The joints cut into the front face (y = 0, outside -y): each line swept
+// by a 45° cone, so every groove is a V whose sides print at 45° whichever
+// way it runs round the arch.
+module arch_joints()
+    minkowski() {
+        rotate([90, 0, 0]) linear_extrude(0.01) arch_joint_lines();
+        hull() {
+            rotate([90, 0, 0]) cylinder(h = 1, r = mortar_d, $fn = 8);   // out past the face
+            rotate([-90, 0, 0]) cylinder(h = mortar_d, r1 = mortar_d, r2 = 0, $fn = 8);
+        }
+    }
 
 module fireplace_body() {
     difference() {
@@ -135,8 +176,8 @@ module fireplace_body() {
         // the arch, through the front wall into the firebox
         translate([0, fp_wall + 1, floor_h]) rotate([90, 0, 0])
             linear_extrude(fp_wall + 2) arch_2d();
-        // bricks on the body below the mantel's corbel
-        // and none on a plain band round the arch
+        // bricks on the body below the mantel's corbel, stopping at the
+        // ring of arch stones, which has joints of its own
         difference() {
             intersection() {
                 mortar_cut(fp_w, fp_d, hearth_h, brick_h, top_open = false);
@@ -145,6 +186,7 @@ module fireplace_body() {
             translate([0, fp_wall, floor_h]) rotate([90, 0, 0])
                 linear_extrude(fp_wall + 2) offset(delta = arch_band) arch_2d();
         }
+        translate([0, 0, floor_h]) arch_joints();
     }
 }
 

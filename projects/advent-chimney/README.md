@@ -105,6 +105,7 @@ the top of its file.
 | `fp_w` / `fp_d` / `fp_h` | fireplace | 200 / 100 / 140 | fireplace body size, to the mantel's top |
 | `hearth_h`    | fireplace | 6       | hearth and plinth height; the firebox floor is flush with it |
 | `box_w`, `arch_w`, `arch_sp` | fireplace | 130, 88, 34 | firebox width, arch width, arch springing height |
+| `arch_band`, `arch_stones`, `jamb_stones` | fireplace | 10, 13, 3 | ring of arch stones round the opening: width, stones over the semicircle, stones up each jamb |
 | `puffs`       | cloud     | 12 puffs | the cloud's balls, as `[x, y, z, r]`                  |
 | `flakes`      | cloud     | 4 flakes | snowflakes, as `[x, z, size, turn]`                   |
 | `flake_w` / `flake_d` | cloud | 1.4 / 1.2 | snowflake arm width and inlay depth          |
@@ -119,8 +120,11 @@ All parts print without support. PLA, 0.2 mm layers, 15 % infill.
 - **gate**: plate flat on the bed, band standing at the front edge. Export
   one per day:
   `openscad -D day=7 -o projects/advent-chimney/exports/gate-gate-07.stl projects/advent-chimney/models/gate/gate.scad`.
-- **fireplace**: upright. The arch's crown is pointed at 45°, and the funnel
-  and the mantel's underside are 45°, so nothing needs support. It's the
+- **fireplace**: upright. The funnel and the mantel's underside are 45°.
+  The arch is a plain semicircle, so the top of its curve is a near-flat
+  ceiling. It's only the 8 mm front wall deep, so the slicer may simply
+  bridge it; if it sags, paint support on the arch only ("support on build
+  plate only" also works, the arch is the only overhang reaching the plate). It's the
   base of a 1.18 m tower, so give it 3 walls and 20 % infill or more for
   weight.
 - **cloud**: on its flat underside, the plug and the skirt round it on the
