@@ -3,6 +3,80 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
+## The T ON RAILS buckle (user's design) — 2026-10-19, UNPRINTED
+
+**History, in order — do not re-offer the dead ends.**
+1. Stud + keyhole: "asymmetric" (plates stacked, one end 1.6 higher), "too
+   long" (~31 mm rigid). Replaced.
+2. Jigsaw (knob clicked up into a roofed pocket by a 0.7 ridge on two leaves):
+   **PRINTED AND FAILED — "opens very easily".** A click alone does not hold.
+3. User's T-slot (insert from below pushed forward, lips on the shoulders
+   only, one-sided spring leaf): built, never printed; superseded the same day.
+4. User asked: deeper groove, grooves on the SIDES too ("held by 3 sides"),
+   symmetric spring. A symmetric spring that fits behind the crossbar was
+   worked out and CANNOT bend far enough: two half-length leaves ~5 %, a
+   closed stadium ring 4.7 % (energy method, it acts clamped) vs the proven
+   2.9 %. The user then sketched rails along both side walls ("as on rails")
+   and "make the B part longer", and said "Let's make it!" without picking
+   between the readings I offered. **I built reading 2**: the crossbar drops
+   into an empty ROOM behind its home and slides forward along the rails.
+   The far wall has NO rail (it is where the crossbar comes in); the spring
+   became two mirrored DETENT leaves (symmetric). Told the user both.
+
+**Geometry** (clasp section, `tb_*` / `dt_*` / `lf_*`; `u` along the band
+from the block's front face, fastened, home):
+- T: neck `tb_neck` 4.5 (into the crossbar past the lip inset), crossbar
+  `tb_cw` 11 × `tb_ct` 2.6, front AND both ends shaped by `tb_edge_2d()`:
+  vertical `tb_land` 0.4 at bed and top, 60° (`tb_lip_a`) faces in by
+  `tb_lip` 1.1. **The two ends are separate children of the intersection
+  (`tb_end_shape(±1)`): a `for` inside intersection() is ONE child, the
+  union, and shaped neither end — the harness found a 2 mm³ collision at
+  home before that fix.**
+- Block: bar 0 lengthened to `x_f` (`slab()`), `blk_ext` 4.93. Cut: neck
+  slot; home + room as one through-cut (`tb_ws` = cw/2 + fit) whose front is
+  the shoulders' lips; rails = `tb_lips_2d()` kept on each side wall from the
+  shoulder to `tb_rail_u` (rails grip 1.98 of the 2.6 ends).
+- Detents (`tb_side_keep` / `tb_side_cut`, mirrored by `tb_both_ends`): leaf
+  `lf_t` 0.8, `lf_len` 4.4, slot 0.6 behind it and a cross slot in front of
+  its free end, `lf_slot` wider than the bump (else the bump sits 0.1 from the
+  wall). Bump r `dt_r` 0.5 centred on the wall plane at the leaf's free end,
+  `dt_pinch` 0.5 → 0.35 into the crossbar's path; it CRADLES the crossbar at
+  home (`dt_u`). `lf_strain` 2.17 %. Leaf root runs into `tb_far` 2.4 of bar 0
+  and stops at x ≤ 1.6, short of bar 0's lug arms (x ≥ 2).
+- Room: from `tb_urm` (bump + 0.3) to `tb_ufar` (+ ct + 0.3). `tb_slide`
+  3.88, `face_gap` 3.98 = the seam. Rigid buckle 20.9. 130: 12 bars, pitch
+  11.55, 146.35 × 16.2 × 4.2. 180: 16 bars.
+
+**Checks** (scratch `band.scad`, `tfit.scad`: `sock()` moved by
+`x_r + face_gap − x_f`, tab side by `dx`/`dz`; `r3.scad` renders):
+
+| test | reads |
+|---|---|
+| home | EMPTY |
+| dz ±0.05 / ±0.25 | EMPTY / 0.53 at the lips (front + rails, x 135.8–137.8) |
+| dx −0.10 / −0.20 | EMPTY / 0.67 at the shoulders |
+| dx +0.10 / +0.30 | bumps only, 0.03 / 0.25 |
+| dx 0.6 … 3.0 | bumps only (x 138.4–139.4, z 0.84–3.36), ≤ 1.05 |
+| dx 3.6, 3.877 (room) | EMPTY |
+| room, dz −0.5 … −4.3 | EMPTY |
+| dx 3.377, dz −1 (CONTROL) | 0.10 at the bumps |
+| dx 4.03 | the faces |
+
+- Wrist sweep 110–230 + 144, 155: all OK (shells == cols, genus, loop).
+- 130: genus 33, 12 shells, 1629.8 mm² / 12 islands; 46 BRIDGE = 44 hinge +
+  2 upper lip L's (front + rail, z 3.25); no SUPPORT. 180: 2200.4 / 16.
+  `charms = 3`: genus 36, 1578.1.
+- Walls `--nozzle 0.4`: T ≥ 1.50. Block: 0.37–0.38 only at the detent bumps'
+  free front tips (a half-disc on the wall plane, its front quarter standing
+  over the cross slot) — accepted; other flags were clip-plane artefacts
+  (clip short of x 2.0, the lug arms).
+- Not run: slicer; §1 probes / §3 raster (hinges untouched).
+
+The sections below on the stud + keyhole ("The clasp — reworked
+2026-09-22", "Bigger detent bumps", the keyhole traps, `leaf_free`,
+`tip_wall`) are HISTORY. Numbers in other sections measured on 11 bars at
+130 are from before 2026-10-18.
+
 ## The BOLT is the only mount — 2026-10-18, rib + grooves UNPRINTED
 
 The user: "keep bolts a single way to attach charms". "Bolt" = the cone pin
@@ -290,7 +364,7 @@ Verified:
   The flat-bottomed charms hit backwards at −2° on both widths. Butterfly
   control: clear at −40°, hit at −50° on both.
 
-## Bigger detent bumps on a tapered leaf — 2026-09-26, unprinted
+## Bigger detent bumps on a tapered leaf — 2026-09-26 — HISTORY, the stud + keyhole is gone since 2026-10-18
 
 The user asked for the buckle's "hooks" to be bigger, so opening it takes some
 effort. The hooks are the two detent bumps. **`det_pinch` 0.15 → 0.30.** On
@@ -454,31 +528,30 @@ file already has a `pin_d`, `pin_r`, `pin_z` and `pin_flat`, and they are the
 HINGE pin. A second thing called a pin in the same namespace is how a silent
 shadowing bug gets written.
 
-The bracelet export must be **`cols` shells** — 11 at the default size, 15 at
-180 — one per bar,
-with the two clasp plates fused onto the end bars. Anything else means a piece
-came free; see the detent trap below.
+The bracelet export must be **`cols` shells** — 12 at the default size, 16 at
+180 — one per bar, with the socket block and the T part of the two end
+bars. Anything else means a piece came free.
 
 **Genus is the second invariant**, and it is worth computing rather than
 memorising. OpenSCAD reports `1 - p + sum(genus)`:
 
 | contribution | count | at the default |
 |---|---|---|
-| pieces `p` | `cols` | 15 |
-| blade bores | `rows * (cols-1)` | 28 |
-| fork loops — body → lug → pin → lug → body encloses a hole | `rows * (cols-1)` | 28 |
-| keyhole plate (entry + slot + seat + both relief slots, all merged) | 1 | 1 |
+| pieces `p` | `cols` | 12 |
+| blade bores | `rows * (cols-1)` | 22 |
+| fork loops — body → lug → pin → lug → body encloses a hole | `rows * (cols-1)` | 22 |
 
-`1 - cols + (2*rows*(cols-1) + 1)` = **31** at the default (43 at 180), and it holds at
-every `wrist` from 120 to 230 and at `rows = 3` (71). Note the last row: **the
-relief slots run into the entry hole**, so the keyhole is one hole, not three.
-One extra hole means a relief has stopped reaching the entry hole and the
-detent leaves have silently become rigid ribs.
+`1 - cols + 2*rows*(cols-1)` = **33** at the default (45 at 180, 16 bars),
+at every `wrist` from 110 to 230. The T on rails adds no hole: the cut is open
+at the block's front through the neck slot, and each detent leaf's slot runs
+into the pocket through its cross slot. (The old keyhole added 1.) An extra
+hole means a cross slot stopped reaching the pocket — that leaf would be
+rigid.
 
-**A pocket adds no hole and no shell**: `charms = 3` reads genus 31 and 11
-shells at the default, 43 and 15 at 180.
+**A charm station adds one hole (its bore) and no shell**: `charms = 3` reads
+genus 36 and 12 shells at the default.
 
-A connectivity checker reporting "15 disconnected pieces ... will NOT print as
+A connectivity checker reporting "12 disconnected pieces ... will NOT print as
 one solid object" is the **expected, correct** result. This is a print-in-place
 band; the pieces are the bars.
 
@@ -540,8 +613,9 @@ for a multi-material printer.
 - **`charms = 0` must export byte-for-byte the plain band** in
   `exports/bracelet-bracelet.stl`. Cheapest regression test here.
 - **Shell count `cols` and the genus are unchanged at any `charms`.**
-- **The first layer**: 1697.9 mm² in 11 islands at `charms = 3` (the
-  countersinks open on the bed and take their rings out of it; 1812.5 plain).
+- **The first layer**: 1578.1 mm² in 12 islands at `charms = 3` (the
+  countersinks open on the bed and take their rings out of it; 1629.8 plain).
+  Before 2026-10-18 (stud + keyhole, 11 bars): 1697.9 / 1812.5.
 - **The swing test with a butterfly seated**: clear to ±40°, binds at 60°, at
   both 130 and 180 (a wrist needs about 24°).
 
@@ -1180,14 +1254,14 @@ test can detect anything at all. A wrist needs 24°.
   jumps 0.63 mm in the first layer — the failure that killed the chain. Cut
   flat, the first layer is 1.13 mm wide (1.20 with the 2.0 pin). The bore stays round, so the flat only
   adds clearance.
-- **`leaf_free` + the relief reaching the entry hole.** The detent leaves must
+- *(Stud + keyhole, history.)* **`leaf_free` + the relief reaching the entry hole.** The detent leaves must
   be **cantilevers**. Built in at both ends at this length they need ~50 N,
   which is a jam, not a clasp; as cantilevers, ~6 N. There is an assert, and
   the genus (one keyhole hole, not three) is the second witness.
-- **`tip_wall` = 1.8**, the plate left beyond the keyhole seat. It carries the
+- *(Stud + keyhole, history.)* **`tip_wall` = 1.8**, the plate left beyond the keyhole seat. It carries the
   entire clasp load. An earlier version left 0.8 mm there.
 
-## The clasp — reworked 2026-09-22, printed and confirmed 2026-09-23
+## The clasp — reworked 2026-09-22, printed and confirmed 2026-09-23 — HISTORY, replaced 2026-10-18 (now the T on rails)
 
 The user asked for "the buckle as short as possible", "the fastener more
 tight" and "the pin of the fastener thicker — to make it less fragile". The
@@ -1251,11 +1325,11 @@ exactly at dx 0.
 
 - **A brim welds every hinge shut.** The feet are 0.6 mm apart. Never recommend
   one, and never a raft either.
-- **The buckle no longer absorbs the sizing remainder — the joints do.** It is
+- *(Stud + keyhole, history.)* **The buckle no longer absorbs the sizing remainder — the joints do.** It is
   pinned at `kh_travel_min`, which puts it right on the edge of the trap below,
   so any change to `entry_d`, `det_off` or `det_r` moves that edge and must be
   swept. Do not restore the long plate to "simplify" the solver.
-- **The entry hole eats the detent bumps on a short keyhole plate.** Bring the
+- *(Stud + keyhole, history.)* **The entry hole eats the detent bumps on a short keyhole plate.** Bring the
   entry hole too close to the bumps and it swallows them and they export as two
   loose 1 mm crumbs — a clasp with no detent. The *only* symptom is two extra
   shells, which reads exactly like "a bar came free". This was latent in the

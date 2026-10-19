@@ -5,7 +5,7 @@
 // IT HINGES IN ONE AXIS ONLY, and that is deliberate. The band used to be a
 // GRID of tiles, hinged along its length AND across its width. The cross-band
 // hinges never worked: with `rows` = 2 the only one of them runs straight down
-// the middle of the band, end to end — and both clasp yokes are solid plates
+// the middle of the band, end to end — and both clasp yokes were solid plates
 // spanning the full width, so that line is built in at both ends. A hinge
 // clamped at both ends is not a hinge, it is a stiff seam. It cost 30-odd
 // joints' worth of knuckles, bores and welding risk and bought no movement at
@@ -67,8 +67,8 @@ wrist   = 130;   // wrist circumference in mm. 130 is the 4-year-old this was
                  //   printed for and fits (2026-09-14); 180 adult, 140 child.
 ease    =  12;   // slack on top of the wrist, so the band hangs rather than
                  //   grips. EXACT, not approximate: the fabric quantises to
-                 //   whole columns of `pitch`, and the remainder is spent on
-                 //   the keyhole plate's length (see `kh_lock`, below).
+                 //   whole columns of `pitch`, and the remainder is spread
+                 //   over the joints (see `pitch`, below).
 
 rows    =   2;   // how many tile-widths wide the band is. It no longer means
                  //   a row of separate tiles — a column is a single bar — but
@@ -99,7 +99,7 @@ ch_rise   = 0.6;          //   size — articulation here comes from the hinge,
 // -------------------------------------------------------------------- hinge
 fit        = 0.3;               // general clearance: the knuckle against the
                                 //   neighbour's body as it swings, and the
-                                //   clasp's stack-up. Well clear of the bed.
+                                //   clasp's face gap. Well clear of the bed.
 bore_fit   = 0.45;              // RADIAL clearance of the pin in its bore, and
                                 //   the single number that decides how freely
                                 //   the band moves. It was 0.3, printed, and
@@ -180,207 +180,126 @@ assert(knuck_slope <= 40,
        str("knuckle underside hangs at ", knuck_slope, " deg from vertical"));
 
 // -------------------------------------------------------------------- clasp
-// A stud and a keyhole, NOT a toggle. A toggle made of two flat plates in the
-// SAME plane does not lock: the bar has to lie across the ring's face,
-// perpendicular to the pull, and getting it there needs a 90-degree twist
-// that a flat PLA stand will not give. Coplanar, the bar simply slides back
-// out through the bore. This clasp locks out of plane instead — the stud's
-// head sits above the keyhole plate and cannot pass back through the slot.
-cl_t      = 1.6;    // clasp plate thickness. The keyhole plate lies ON TOP of
-                    //   the stud plate when fastened, so the post has to
-                    //   clear 2 * cl_t.
-post_d    = 4.0;    // the post — the clasp's whole load path, and the one part
-                    //   of it that can snap off. It was 3.0 and was fragile:
-                    //   it prints standing up, so it breaks along a layer
-                    //   line, and bending strength goes as d^3 — 4.0 is 2.4x.
-slot_fit  = 0.15;                  // radial play of the post in the slot, the
-                                   //   printed value: the post has to SLIDE here
-slot_w    = post_d + 2*slot_fit;   // 4.3
-head_lip  = 1.05;                  // how far the head overhangs the slot each
-                                   //   side — what holds it. The printed value.
-head_d    = slot_w + 2*head_lip;   // 6.4
-head_h    = 1.5;                   // cone up to head_d. The underside of the
-                                   //   head is therefore at atan(1.2/1.5) =
-                                   //   38.7 deg from vertical: self-supporting,
-                                   //   no support under the head.
-head_slope = (head_d - post_d)/2 / head_h;   // radial growth per mm of rise
-// HOW TIGHT THE CLASP SITS, UP AND DOWN. The head's underside is a cone, so
-// what the keyhole plate lifts into is not the post's top but the height where
-// that cone grows out to the SLOT EDGE. The printed clasp put the cylinder
-// top a full `fit` over the plates, and the cone then reached the slot edge
-// 0.49 mm above them — that much rattle. Now the gap is set AT THE SLOT EDGE,
-// with the post centred: 0.15, a hair under the 0.2 a sagging ceiling would
-// want, which is fine because this ceiling is a 38.7-degree cone, not a flat
-// bridge. Pull the post against the slot's side — which the band's tension
-// does, against the seat's far wall — and the cone meets the edge right at the
-// plate's top face: under load the head clamps the two plates together.
-head_gap  = 0.15;
-post_top  = 2*cl_t + head_gap - slot_fit/head_slope;   // 3.16 — top of the
-                                   //   parallel post. It ends just BELOW the
-                                   //   top of the stacked plates, on purpose.
-entry_d   = head_d + 0.6;          // 7.0 — the hole the head drops through
-det_pinch = 0.30;                  // how far each bump stands into the post's
-det_gap   = post_d - 2*det_pinch;  //   path: 3.4. It was 0.15 (printed): the
-                                   //   buckle opened too easily. A printer
-                                   //   rounds a 0.15 mm catch off to almost
-                                   //   nothing, so the hook itself is what grew.
-det_r     = 0.5;
-leaf_root = 1.6;                   // Each detent bump sits on a SPRING LEAF —
-leaf_tip  = 0.8;                   //   a strip of plate freed by a relief slot
-rel_w     = 0.8;                   //   beside the main slot. Without it the
-leaf_free = 3.9;                   //   bump is rigid: a 1.6 mm plate will not
-                                   //   yield 0.3 mm, so the post either
-                                   //   refuses to pass or splits the plate.
-                                   //
-                                   //   The relief runs OUT INTO THE ENTRY
-                                   //   HOLE on purpose, so each leaf is a
-                                   //   CANTILEVER rooted `leaf_free` before
-                                   //   the bump, not a beam built in at both
-                                   //   ends. That matters: fixed-fixed at this
-                                   //   length it would take ~50 N to push the
-                                   //   post past, which is not a clasp, it is
-                                   //   a jam.
-                                   //
-                                   //   THE LEAF TAPERS, leaf_root at its root
-                                   //   down to leaf_tip at the bump. A straight
-                                   //   leaf strains only at its root, and
-                                   //   doubling the pinch on it would have
-                                   //   taken it far past the 2.88% the printed
-                                   //   leaf was proven at (or, lengthened to
-                                   //   stay there, made it SOFTER). Tapered,
-                                   //   the bending is spread along it: twice
-                                   //   the pinch at the same root strain, and
-                                   //   ~1.85x the side force of the printed
-                                   //   1.0 x 2.8 leaf; the steeper bump turns
-                                   //   more of it against the post — ~2.2x to
-                                   //   open. The cost: the plate is 1.2 mm
-                                   //   wider and the buckle 1.1 mm longer.
-                                   //   leaf_tip is a FLEXURE, and is meant to
-                                   //   be under the 1.2 mm wall threshold.
-// Leaf depth at distance x from its root, and the beam sums for a tip load at
-// the bump (per unit E*cl_t, midpoint rule): compliance = int 12(L-x)^2/w^3,
-// and root-most strain per unit force = max 6(L-x)/w^2 — at the root for this
-// taper. For a straight leaf they give the old 3*(w/2)*pinch/L^2 exactly.
-function leaf_depth(x) = leaf_root + (leaf_tip - leaf_root)*x/leaf_free;
-leaf_n      = 200;
-leaf_comp   = let (dx = leaf_free/leaf_n)
-    [for (i = [0:leaf_n-1]) let (x = (i + 0.5)*dx)
-        12*pow(leaf_free - x, 2)/pow(leaf_depth(x), 3)*dx] * [for (i = [0:leaf_n-1]) 1];
-leaf_strain = max([for (i = [0:leaf_n]) let (x = i*leaf_free/leaf_n)
-    6*(leaf_free - x)/pow(leaf_depth(x), 2)]) * det_pinch / leaf_comp;
-// side force of the bump at full pinch, against the printed straight
-// 1.0 x 2.8 leaf at 0.15 (straight: compliance 4L^3/w^3)
-leaf_force  = (det_pinch/leaf_comp) / (0.15/(4*pow(2.8, 3)/pow(1.0, 3)));
-det_y     = det_gap/2 + det_r;     // a bump's centre, off the slot's axis
-// seat -> detent, along the slot. NOT a free choice any more: the bumps CRADLE
-// the seated post. With the post pulled against the seat's far wall, they
-// just touch its back — so the post cannot rattle along the slot at all. The
-// printed clasp set them 1.8 mm out and the seated post had ~0.6 mm to wander.
-det_off   = sqrt(pow(post_d/2 + det_r, 2) - det_y*det_y) - slot_fit;   // 0.70
-rail_w    = 1.25;                  // plate outboard of each relief — the two
-                                   //   rails carry the whole clasp load to the
-                                   //   yoke. The printed value.
-kh_w      = 2*(slot_w/2 + leaf_root + rel_w + rail_w);   // 11.6
-tip_strip = 2.0;                   // full-width plate left beyond the reliefs'
-                                   //   ends. The seat's far wall hangs off this
-                                   //   strip and the post pulls against it, so
-                                   //   it carries the entire clasp load.
-kh_tip    = leaf_free - det_off + rel_w/2 + tip_strip;   // seat -> plate tip
-kh_wall   = 1.0;                   // plate between the entry hole and the bar
-stud_pw   = 8.0;
-stud_tip  = post_d/2 + 2.0;
-yoke_len  = 3.0;                   // how far a yoke stands off the end column
-yoke_bite = 1.4;                   // how far it reaches INTO it, so it unions
+// A T ON RAILS (the user's design, 2026-10-19).
+//
+//   top, fastened
+//     last bar          socket block (+ bar 0)
+//   ────────┐       ┌────────────────────────────┐
+//           │       │  ┌──┐╞═rail═╡)  )          │   ) a detent bump, on a
+//           │       └──┘  │      │ ┆ ┆  room      │     leaf in the side wall
+//      ═════╪═════════════│ T    │    (empty)    │
+//           │       ┌──┐  │      │ ┆ ┆            │
+//           │       │  └──┘╞═rail═╡)  )          │
+//   ────────┘       └────────────────────────────┘
+//
+//   * The last bar ends in a T: a neck and a CROSSBAR across the band, the
+//     band's full thickness, flush on top and underneath.
+//   * Bar 0 is lengthened into a SOCKET BLOCK with a T-shaped cut, open top
+//     and bottom. At its front the crossbar's HOME, against the block's two
+//     SHOULDERS (either side of the neck slot); behind it an empty ROOM.
+//   * LIPS overhang the crossbar's edge at the top and at the bottom on three
+//     sides: along its front (on the shoulders) and along both its ends (RAILS
+//     on the side walls). At home it cannot move up or down. The band's pull
+//     holds it against the shoulders.
+//   * To close: push the ends together, push the T up into the room from
+//     below, then pull the ends apart: the crossbar slides forward along the
+//     rails, clicks past two DETENT bumps and sits home. To open: push the
+//     ends together (the crossbar clicks back into the room), push it out
+//     downwards. Two separate moves, and neither alone opens it.
+//   * The detents are mirrored, one in each side wall: a bump on a cantilever
+//     leaf cut out of the wall (the old keyhole's proven leaf, standing up).
+//     They only keep the crossbar from wandering back into the room when the
+//     band is slack. Nothing holds it up or down but the lips.
+//
+// Why a room and not a spring: the crossbar has to slide its whole length to
+// leave the rails, ~4 mm, and no spring that fits here bends that far within
+// the strain a printed leaf is proven at.
+//
+// Nothing is cantilevered into air: the T, the leaves and the lips all stand
+// on the bed; the upper lips are an overhang `tb_lip` deep, stepping under a
+// bead a layer.
+tb_neck    = 4.5;     // neck width
+tb_cw      = 11.0;    // crossbar, across the band
+tb_ct      = 2.6;     // crossbar, along the band
+tb_sh      = 1.6;     // the block's shoulders, front face to the crossbar
+tb_lip     = 1.1;     // how far a lip overhangs the crossbar's edge
+tb_lip_a   = 60;      // lip faces, from vertical. Steeper than 45 on purpose:
+                      //   pushed up or down, a face cams the crossbar sideways
+                      //   by tan(90 - a) of the push — 1.0 at 45, 0.58 at 60.
+                      //   A layer steps 0.35, under a bead (asserted).
+tb_lip_h   = tb_lip / tan(tb_lip_a);         // 0.64 — the lip face's height
+tb_land    = 0.4;     // a vertical land at the lip's tip, two layers: without
+                      //   it the tip is a 30-degree knife edge
+tb_fit     = 0.15;    // vertical walls: shoulders, rails' walls, neck
+tb_vfit    = 0.3;     // across the lip faces — they are a printed overhang
+                      //   and an elephant's foot, so more than `tb_fit`
+tb_room_fit = 0.3;    // the room around the crossbar, as it drops in
+tb_far     = 2.4;     // bar 0 behind the room, to its +x face: the detent
+                      //   leaves' roots run into it
 
-assert(head_d > slot_w + 1.5, "head can pull back through the slot");
-assert(det_gap < post_d, "detent does not actually pinch the post");
-assert(entry_d > head_d, "head will not pass through the entry hole");
-// The post itself has to pass through the slot with the plates stacked: at the
-// keyhole plate's top face the cone must still be inside the slot.
-assert(post_d/2 + (2*cl_t - post_top)*head_slope < slot_w/2,
-       "the head's cone starts inside the slot and jams the post");
-assert(post_top + (slot_fit/head_slope) > 2*cl_t,
-       "the head bears on the plate below its top face — the clasp cannot close");
-assert(slot_w > post_d, "post cannot slide along the slot at all");
-assert(kh_w/2 - (slot_w/2 + leaf_root + rel_w) >= 1.0,
-       str("relief slot leaves too little plate outboard: ",
-           kh_w/2 - (slot_w/2 + leaf_root + rel_w)));
-assert(det_r > (post_d - det_gap)/2, "detent bump too small to pinch");
-assert(leaf_tip >= 0.8, "the leaf is thinner than two beads at the bump");
-assert(leaf_strain <= 0.029,
-       str("detent leaf strained to ", 100*leaf_strain,
-           "% — past the 2.88% the printed leaf was proven at"));
-// The seat's far wall, directly behind the post, must stay at least as thick
-// as the printed clasp's (1.8).
-assert(kh_tip - slot_w/2 >= 1.8,
-       str("only ", kh_tip - slot_w/2, " mm of wall behind the seat"));
-// The leaf must stay a cantilever: its free end has to reach the entry hole.
-assert(x_entry + 1.0 - (x_det - leaf_free) > leaf_free,
-       "relief slot does not reach the entry hole - the leaf is built in at
-        both ends and the detent becomes a jam");
-// ...but the DETENT itself must stay well OUT of the entry hole. The entry is
-// 6 mm across and the seat is only `det_off` + travel from its centre, so on a
-// short plate the hole swallows the bumps: they come off the plate as two
-// loose 1 mm crumbs and the clasp has no detent at all. The only symptom is
-// two extra shells in the export, which is easy to read as "a tile came free".
-// This bit the design at travel = 3 and went unnoticed because the default
-// size never landed there.
-assert(norm([x_entry - x_det, det_y]) >= entry_d/2 + det_r + 0.1,
-       str("the entry hole is eating the detent bumps: centres ",
-           norm([x_entry - x_det, det_y]), " apart, need ",
-           entry_d/2 + det_r + 0.1));
-// Fastening, the head drops through the entry hole while the band's ends are
-// `kh_travel` closer together than they are once clasped, and the keyhole
-// plate's tip is then that much nearer the stud's end bar. It has to come
-// down BESIDE that bar, not onto it. The printed clasp overran it by 0.95 mm
-// and had to be tilted in; `stud_ext` is now derived so it never does.
-assert(stud_ext - (kh_lock - kh_entry) - kh_tip >= -1e-9,
-       str("the keyhole plate's tip lands on the stud's end bar while fastening, by ",
-           (kh_lock - kh_entry) + kh_tip - stud_ext, " mm"));
+// The detents: a bump `dt_r` on each leaf, standing `dt_pinch` out of the
+// side wall into the crossbar's path, right behind the crossbar at home.
+dt_r       = 0.5;
+dt_pinch   = 0.5;
+lf_t       = 0.8;     // leaf, across the band
+lf_slot    = 0.6;     // behind the leaf. Both sides stand on the bed:
+                      //   `axial_fit`, or the first layer welds
+lf_len     = 4.4;     // free end (at the bump) -> root
+lf_flex    = dt_pinch - tb_fit;              // what the crossbar pushes it
+lf_strain  = 1.5 * lf_t * lf_flex / (lf_len*lf_len);
+
+// Positions along the band, from the block's front face, fastened, home.
+tb_ws      = tb_cw/2 + tb_fit;               // the pocket's side walls, off
+                                             //   the band's middle
+tb_uc      = tb_sh + tb_fit;                 // crossbar front
+tb_ur      = tb_uc + tb_ct;                  // crossbar back: the rails end
+dt_y       = tb_ws + dt_r - dt_pinch;        // bump centre, off the middle
+// the bumps CRADLE the crossbar at home: its back corners just touch them
+dt_u       = tb_ur + sqrt(dt_r*dt_r - pow(dt_y - tb_cw/2, 2));
+tb_urm     = dt_u + dt_r + tb_room_fit;      // the room: the crossbar's front
+tb_ufar    = tb_urm + tb_ct + tb_room_fit;   // the far wall
+tb_slide   = tb_urm - tb_uc;                 // home -> room
+face_gap   = tb_slide + 0.1;                 // the seam when fastened, ~4
+lf_u0      = dt_u;                           // the leaf's free end
+tb_tipd    = tb_fit + tb_lip - tb_vfit;      // a lip's reach past its wall
+tb_tipu    = tb_sh + tb_tipd;                // the front lips' tip
+tb_zlip    = tb_land + tb_tipd * tan(90 - tb_lip_a);   // where a lip face
+                                             //   meets its wall
+tb_rail_u  = dt_u - dt_r - lf_slot;          // the rails end: a slot's width
+                                             //   short of the bump
+tb_rail    = tb_rail_u - tb_uc;              // rail along a crossbar end
+
+assert(band_w/2 - (tb_ws + lf_t + lf_slot) >= 1.0,
+       str("only ", band_w/2 - (tb_ws + lf_t + lf_slot), " mm of side wall outside the leaf"));
+assert(tb_cw/2 - tb_neck/2 >= 2.5, "the crossbar hardly reaches past its neck");
+assert(0.2 * tan(tb_lip_a) <= 0.4, "the lips step more than a bead a layer");
+assert(tb_zlip > tb_land && tb_zlip < tb_land + tb_lip_h,
+       "the lip's face misses its wall");
+assert(2*tb_zlip < thick - 1.5, "the lips leave too little wall face");
+assert(tb_ct - tb_lip >= 1.2, "the crossbar is too thin under the lips");
+assert(tb_rail >= 0.7*tb_ct, str("the rails hold only ", tb_rail, " of the crossbar's ends"));
+assert(dt_pinch > tb_fit + 0.25, "the detent hardly stands in the crossbar's way");
+assert(lf_strain <= 0.029, str("detent leaf strained to ", 100*lf_strain, "%"));
+assert(lf_slot >= 0.45, "the leaf slot will weld on the first layer");
 
 // ------------------------------------------------------------ length budget
-// Clasped, the loop runs: post axis -> keyhole plate -> yoke -> band -> yoke
-// -> stud plate -> post axis.
+// Clasped, the loop runs: bar 0's +x face -> band -> last bar's +x face ->
+// `face_gap` -> socket block -> bar 0. The block is fixed at every size; the
+// BAND makes up the difference, as it did for the old buckle.
 //
-// THE BUCKLE IS AS SHORT AS IT WORKS, AND FIXED. It used to be the part that
-// absorbed the sizing remainder — the band came in whole bars, so whatever was
-// left over lengthened the keyhole plate, and on a small wrist that left a
-// 27 mm slab of flat plate hanging off the end of a 149 mm bracelet. Now the
-// plate is cut to the shortest slot the clasp can actually use and the BAND
-// makes up the difference instead.
-//
-// Which moves the remainder problem, so: the number of bars is chosen to land
+// The block is as short as the pocket allows: its far wall stops `tb_far`
+// short of bar 0's +x face, so the pocket runs on into bar 0 itself, and the
+// block reaches `blk_ext` past bar 0's -x face.
+x_f       = (h - tb_far) - tb_ufar;              // the block's front face
+blk_ext   = -h - x_f;
+
+// Which leaves a remainder problem, so: the number of bars is chosen to land
 // closest to `pitch_nom`, and then the joints are all stretched or squeezed
 // equally — by a fraction of a millimetre each — so the loop still comes out
 // exactly on wrist+ease. Nothing about a bar changes; only the gaps do, and
 // they have about a millimetre of room between the knuckles binding and the
 // band looking gappy.
-//
-// AND THE BUCKLE ITSELF IS NOW CUT TO THE BONE. Clasped, it is a rigid flat
-// run from one end bar to the other, `stud_ext + kh_lock` long, and every term
-// in it is now a constraint rather than a round number:
-//
-//   kh_entry  the entry hole, `kh_wall` off the bar. It used to stand a whole
-//             `yoke_len` + 1 mm off it — 3 mm of plate doing nothing.
-//   travel    entry -> seat: the least that keeps the entry hole off the
-//             detent bumps. Short, because the bumps now cradle the seated
-//             post instead of standing 1.8 mm out from it.
-//   stud_ext  post -> stud's end bar: the least that lets the keyhole plate's
-//             tip come down beside that bar while the head drops through the
-//             entry hole (see the assert above). It used to be a flat 8.0 —
-//             more than needed, and still 0.95 mm short of that.
-//
-// Travel appears twice — once in each plate — which is why shortening it is
-// what shortens the buckle.
-kh_entry = kh_wall + entry_d/2;        // first bar's face -> entry hole, 4.5
-// Shortest usable slot: the seated post has to sit far enough from the entry
-// hole that the hole does not reach the detent bumps (see the assert above).
-kh_travel_min = det_off + sqrt(pow(entry_d/2 + det_r + 0.15, 2) - det_y*det_y);
-kh_lock  = kh_entry + kh_travel_min;   // 8.6, at every size
-stud_ext = kh_travel_min + kh_tip;     // last bar's face -> post axis, 8.6
-
-// What the band has to span, tip face to tip face.
-band_run  = wrist + ease - stud_ext - kh_lock;
+band_run  = wrist + ease - face_gap - blk_ext;
 // The knuckles bind below `pitch_min` — that is the swing clearance, the same
 // limit that used to be asserted against a constant. Above `pitch_max` the
 // gaps just look wrong; the range is what makes an exact fit reachable.
@@ -403,10 +322,6 @@ band_w  = (rows - 1) * row_pitch + body;
 band_cy = (rows - 1) * row_pitch / 2;
 x_l     = -h;                      // band's -x face
 x_r     = (cols-1)*pitch + h;      // band's +x face
-x_stud  = x_r + stud_ext;
-x_entry = x_l - kh_entry;
-x_lock  = x_l - kh_lock;
-x_det   = x_lock + det_off;
 
 // --------------------------------------------------------------- the charms
 // OPTIONAL. `charms` bars along the band become STATIONS for the cone pin
@@ -454,13 +369,10 @@ accent_hi    = 2.8;       //   feature plane of the band (see CLAUDE.md §3):
 base_color   = "white";   // only a hint for the slicer's preview — the
 accent_color = "hotpink"; //   filament is chosen per object when slicing
 
-// The stripe starts INSIDE the clasp plates (0 .. cl_t), so `accent_region`
-// leaves the plates out of it — otherwise their top layer would be a skin of
-// accent. They stay wholly the first colour.
 assert(accent_lo > 0 && accent_hi > accent_lo && accent_hi < thick,
-       "the stripe must start above the clasp plates and end inside the band");
+       "the stripe must lie inside the band");
 assert(charms == 0 || (charm_ix[0] >= 1 && charm_ix[charms-1] <= cols - 2),
-       str("a charm landed on or past an end bar, where the clasp yoke is — ",
+       str("a charm landed on or past an end bar, where the clasp is — ",
            charms, " charms every ", charm_step, " bars need more than ",
            cols, " bars; lower `charms`"));
 
@@ -519,17 +431,19 @@ assert(charms == 0 || charm_reach/2 <= (pitch_min - body) + body/2,
        str("a ", charm_reach, " mm charm overhangs past the neighbouring bar's",
            " face at pitch_min — it would jam the joint"));
 
-// The tallest thing: the stud's head, or a station's rib.
-top_z       = max(post_top + head_h, charms > 0 ? thick + cn_rib_r : 0);
+// The tallest thing: the band, or a station's rib.
+top_z       = max(thick, charms > 0 ? thick + cn_rib_r : 0);
 
 echo(str("cols=", cols, " rows=", rows,
-         "  loop=", band_run + stud_ext + kh_lock,
+         "  loop=", band_run + face_gap + blk_ext,
          "  pitch=", pitch, " (gap ", pitch - body, ")",
-         "  keyhole travel=", kh_lock - kh_entry,
-         "  buckle clasped=", stud_ext + kh_lock,
-         "  post d", post_d, " head d", head_d,
-         "  leaf strain=", 100*leaf_strain, "%  leaf force x", leaf_force,
-         "  footprint=", (x_stud + stud_tip) - (x_lock - kh_tip),
+         "  buckle clasped=", body + face_gap + blk_ext + body,
+         " (block ", blk_ext, " past bar 0)",
+         "  T ", tb_cw, " x ", tb_ct, " neck ", tb_neck, " lips ", tb_lip,
+         " at ", tb_lip_a, "deg  seam ", face_gap,
+         "  slide ", tb_slide, "  rails ", tb_rail, " of ", tb_ct,
+         "  detent leaf strain=", 100*lf_strain, "%",
+         "  footprint=", (tb_x0 + tb_uc + tb_ct) - x_f,
                     " x ", band_w, " x ", top_z,
          "  band thick=", thick,
          "  knuckle cap at bed=", knuck_foot,
@@ -552,11 +466,14 @@ module rrect(s) offset(r = corner_r)
 // bed, chamfered only at the top. This slab is what replaced a row of separate
 // tiles once the cross-band hinges came out — there is nothing to articulate
 // across the width, so the width is solid.
-module bar_body() {
+module bar_body() slab(body);
+
+// A bar's slab at any length along the band — the socket block is one too.
+module slab(len) {
     hull() {
-        linear_extrude(thick - ch_rise) rrect([body, band_w]);
+        linear_extrude(thick - ch_rise) rrect([len, band_w]);
         translate([0, 0, thick - 0.01])
-            linear_extrude(0.01) rrect([body - 2*ch_run, band_w - 2*ch_run]);
+            linear_extrude(0.01) rrect([len - 2*ch_run, band_w - 2*ch_run]);
     }
 }
 
@@ -648,83 +565,103 @@ module bar(col) {
         }
 }
 
-// Fillet the inside corners of a flat clasp plate — a yoke/plate junction is
-// where a 1.6 mm plate tears.
-module filleted(r = 1.2) offset(r = -r) offset(r = r) children();
+// The T, in the print frame: `tb_x0` is where the block's front face lands
+// when it is fastened (u = 0).
+tb_x0 = x_r + face_gap;
 
-module clasp_stud_2d()
-    filleted() union() {
-        translate([x_r - yoke_bite, -h]) square([yoke_len + yoke_bite, band_w]);
-        translate([x_r, band_cy - stud_pw/2])
-            square([x_stud + stud_tip - x_r, stud_pw]);
-    }
+// A lip-shaped edge in section, (a, z) with a measured INTO the part from
+// `a0`: inset by the lip at the bottom and the top, full in between. The
+// crossbar's front (along x) and its ends (along y).
+module tb_edge_2d(a0, len)
+    polygon([[a0 + tb_lip, 0], [a0 + tb_lip, tb_land],
+             [a0, tb_land + tb_lip_h], [a0, thick - tb_land - tb_lip_h],
+             [a0 + tb_lip, thick - tb_land], [a0 + tb_lip, thick],
+             [a0 + len, thick], [a0 + len, 0]]);
 
-module clasp_stud() {
-    linear_extrude(cl_t) clasp_stud_2d();
-    translate([x_stud, band_cy, 0]) {
-        cylinder(h = post_top, d = post_d);
-        translate([0, 0, post_top]) cylinder(h = head_h, d1 = post_d, d2 = head_d);
+// The lips a wall carries, in section, (a, z) with a measured from the wall
+// (at a = 0) into the cut: what is left standing of the wall's material.
+module tb_lips_2d()
+    polygon([[-1, -2], [-1, thick + 2], [tb_tipd, thick + 2],
+             [tb_tipd, thick - tb_land], [0, thick - tb_zlip], [0, tb_zlip],
+             [tb_tipd, tb_land], [tb_tipd, -2]]);
+
+// The two ends of a solid, mirrored about the band's middle: `children()` is
+// drawn for the +y end, in a frame where y is measured from the middle.
+module tb_both_ends() for (s = [-1, 1])
+    translate([0, band_cy, 0]) mirror([0, s < 0 ? 1 : 0, 0]) children();
+
+module clasp_tab() {
+    // neck, from inside the last bar into the crossbar — past the lip's
+    // inset, so it meets the crossbar's chamfered top and bottom too
+    translate([x_r - 1.0, band_cy - tb_neck/2, 0])
+        cube([tb_x0 + tb_uc + tb_lip + 0.5 - (x_r - 1.0), tb_neck, thick]);
+    // the crossbar, its front and both ends shaped to the lips. The two ends
+    // are two separate children: a `for` inside intersection() is ONE child,
+    // the union of both, and would shape neither.
+    intersection() {
+        translate([tb_x0 + tb_uc, band_cy - tb_cw/2, 0]) cube([tb_ct, tb_cw, thick]);
+        xz_extrude(band_cy - tb_cw, 2*tb_cw) tb_edge_2d(tb_x0 + tb_uc, 20);
+        tb_end_shape(+1);
+        tb_end_shape(-1);
     }
 }
 
-// The keyhole: drop the head through the round entry, then slide the band so
-// the post travels to the seat. Two detent bumps pinch the slot to `det_gap`
-// on the way, so the post has to snap past them and will not wander back.
-module keyhole_cut() {
-    // the keyhole proper: entry hole, slot, seat, minus the two detent bumps
+// The crossbar's +y (s = 1) or -y end, shaped to the rail: everything of the
+// band's width short of that end, inset by the lip at the top and the bottom.
+module tb_end_shape(s)
+    translate([0, band_cy, 0]) mirror([0, s < 0 ? 1 : 0, 0])
+        translate([tb_x0, 0, 0]) rotate([90, 0, 90]) linear_extrude(tb_ufar)
+            translate([tb_cw/2, 0]) mirror([1, 0]) tb_edge_2d(0, tb_cw);
+
+// Bar 0 lengthened to the block's front face: the same slab as a bar, so the
+// two read as one.
+module clasp_block()
+    translate([(x_f + h)/2, band_cy, 0]) slab(h - x_f);
+
+// What the cut leaves standing in the block's +y side wall, in a frame with
+// y measured from the band's middle: the rail, and the detent's bump.
+module tb_side_keep() {
+    // the rail: the lips along the crossbar's end, from the shoulder to the
+    // slot that frees the leaf
+    translate([x_f + tb_sh - 0.01, tb_ws, 0]) rotate([90, 0, 90])
+        linear_extrude(tb_rail_u - tb_sh + 0.01)
+            mirror([1, 0]) tb_lips_2d();
+    // the bump, on the leaf's free end
+    translate([x_f + dt_u, dt_y, -1]) cylinder(r = dt_r, h = thick + 2);
+}
+
+// ... and what it cuts from that wall: the slot behind the leaf, and across
+// in front of its free end, so the leaf is a cantilever rooted at the back.
+// The bump's front half stands over that cross slot, which is therefore a
+// slot's width wider than the bump: nothing comes within `lf_slot` of it.
+// It cuts only the wall (y >= `tb_ws`), never the bump in front of it.
+module tb_side_cut() {
+    translate([x_f + tb_rail_u, tb_ws, -1])
+        cube([lf_u0 - tb_rail_u, lf_t + lf_slot, thick + 2]);
+    hull() {
+        translate([x_f + lf_u0 - lf_slot/2, tb_ws + lf_t + lf_slot/2, -1])
+            cylinder(d = lf_slot, h = thick + 2);
+        translate([x_f + lf_u0 + lf_len, tb_ws + lf_t + lf_slot/2, -1])
+            cylinder(d = lf_slot, h = thick + 2);
+    }
+}
+
+// The cut: the neck slot, the crossbar's home and room, open top and bottom,
+// with the front lips on the shoulders, the rails and the bumps left standing.
+module clasp_pocket() {
+    // the neck slot
+    translate([x_f - 1, band_cy - tb_neck/2 - tb_fit, -1])
+        cube([tb_sh + 2, tb_neck + 2*tb_fit, thick + 2]);
     difference() {
-        union() {
-            translate([x_entry, band_cy]) circle(d = entry_d);
-            translate([x_lock,  band_cy]) circle(d = slot_w);
-            translate([x_lock,  band_cy - slot_w/2])
-                square([x_entry - x_lock, slot_w]);
-        }
-        for (s = [-1, 1])
-            translate([x_det, band_cy + s*(det_gap/2 + det_r)]) circle(r = det_r);
+        // home and room, the front lips left standing on the shoulders
+        xz_extrude(band_cy - tb_ws, 2*tb_ws)
+            polygon([[x_f + tb_tipu, -1], [x_f + tb_tipu, tb_land],
+                     [x_f + tb_sh, tb_zlip], [x_f + tb_sh, thick - tb_zlip],
+                     [x_f + tb_tipu, thick - tb_land], [x_f + tb_tipu, thick + 1],
+                     [x_f + tb_ufar, thick + 1], [x_f + tb_ufar, -1]]);
+        tb_both_ends() tb_side_keep();
     }
-    // the relief slots that turn each bump into a cantilever spring leaf.
-    // They deliberately run into the entry hole — that free end is what makes
-    // the leaf a spring instead of a rigid rib.
-    //
-    // The relief's inner edge follows the leaf's TAPER: `leaf_root` off the
-    // slot at the root, down to `leaf_tip` at the bump, then straight on at
-    // `leaf_tip` to the entry hole.
-    //
-    // Each relief then TURNS IN, radially, to the entry hole's centre. A
-    // relief running along the hole's edge only grazes it and leaves a cusp
-    // of rail between the two (at the 1.0 leaf it was 0.02 mm, flagged by
-    // `check_wall_thickness.py`). Turned radially, it crosses the edge square.
-    for (s = [-1, 1]) {
-        y_root = band_cy + s*(slot_w/2 + leaf_root + rel_w/2);
-        y_tip  = band_cy + s*(slot_w/2 + leaf_tip  + rel_w/2);
-        p_end  = [x_entry + 1.0, y_tip];
-        hull() {
-            translate([x_det - leaf_free, y_root]) circle(d = rel_w);
-            translate([x_det, y_tip]) circle(d = rel_w);
-        }
-        hull() {
-            translate([x_det, y_tip]) circle(d = rel_w);
-            translate(p_end) circle(d = rel_w);
-        }
-        hull() {
-            translate(p_end) circle(d = rel_w);
-            translate([x_entry, band_cy]) circle(d = rel_w);
-        }
-    }
-}
-
-module clasp_keyhole_2d()
-    filleted() union() {
-        translate([x_l - yoke_len, -h]) square([yoke_len + yoke_bite, band_w]);
-        translate([x_lock - kh_tip, band_cy - kh_w/2])
-            square([x_l - (x_lock - kh_tip), kh_w]);
-    }
-
-module clasp_keyhole() {
-    linear_extrude(cl_t) difference() {
-        clasp_keyhole_2d();
-        keyhole_cut();
-    }
+    tb_both_ends() tb_side_cut();
 }
 
 // A station: the hole and the countersink, cut from bar `col` on the pin's
@@ -746,47 +683,27 @@ module charm_seat(col) {
         xz_extrude(band_cy - cn_boss_y, 2*cn_boss_y) knuckle_2d(pitch/2, +1, h - 1.0);
 }
 
-// With no charms the band is written out in full, NOT wrapped in the
-// difference() the pockets need: at `charms = 0` its export has to stay
-// byte-for-byte the file the printed bracelet was cut from.
+// The pocket is cut from bar 0 and its block together: it runs on into the
+// bar.
 module bracelet() {
-    if (charms > 0) {
-        difference() {
-            union() {
-                for (c = [0:cols-1]) bar(c);
-                for (c = charm_ix) charm_seat(c);
-                clasp_stud();
-                clasp_keyhole();
-            }
-            for (c = charm_ix) charm_station_cut(c);
-        }
-        for (c = charm_ix) charm_station_add(c);
-    }
-    else {
-        for (c = [0:cols-1]) bar(c);
-        clasp_stud();
-        clasp_keyhole();
-    }
-}
-
-// Where the accent colour goes: a slab far wider than any bracelet, minus the
-// two clasp plates where they stand out past the end bars. (Where a yoke bites
-// into its bar, the bar keeps the stripe.) The plates are cut out GROWN, 0.05
-// sideways and 0.01 up, so no face of the cut lies on a face of a plate —
-// cut exactly to their outline, every plate wall left a zero-volume sheet in
-// the stripe. The 0.01 is far under a layer; a slicer samples mid-layer.
-module accent_region() difference() {
-    translate([-1000, -1000, accent_lo]) cube([2000, 2000, accent_hi - accent_lo]);
     difference() {
-        linear_extrude(cl_t + 0.01) offset(delta = 0.05)
-            union() { clasp_stud_2d(); clasp_keyhole_2d(); }
-        bar(0);
-        bar(cols - 1);
+        union() {
+            for (c = [0:cols-1]) bar(c);
+            for (c = charm_ix) charm_seat(c);
+            clasp_block();
+            clasp_tab();
+        }
+        clasp_pocket();
+        for (c = charm_ix) charm_station_cut(c);
     }
+    for (c = charm_ix) charm_station_add(c);
 }
 
-// `accent` off writes `bracelet()` alone, so the plain export stays
-// byte-for-byte what it was.
+// Where the accent colour goes: a slab far wider than any bracelet. The clasp
+// is the band's own thickness now, so it takes the stripe like any bar.
+module accent_region()
+    translate([-1000, -1000, accent_lo]) cube([2000, 2000, accent_hi - accent_lo]);
+
 if (accent) {
     color(base_color)   difference()   { bracelet(); accent_region(); }
     color(accent_color) intersection() { bracelet(); accent_region(); }

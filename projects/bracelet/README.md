@@ -5,9 +5,10 @@ print-in-place **hinges**. It comes off the bed as a band that rolls up around
 a wrist, and nothing is assembled, glued, or picked out of supports.
 
 **Sized to the wrist it is printed for — by default a 142 mm loop on a
-130 mm wrist (the 4-year-old it was printed for, and fits), 11 bars, printed
-flat in a 151.3 × 16.2 × 4.7 mm strip.** `-D wrist=180` is the adult size.
-The clasp is the same short buckle at every size; length is band, not plate.
+130 mm wrist (the 4-year-old it was printed for, and fits), 12 bars, printed
+flat in a 146.4 × 16.2 × 4.2 mm strip.** `-D wrist=180` is the adult size.
+The buckle is a T that slides on rails and locks flush, the same at every size;
+length is band, not buckle.
 
 ![the bracelet as it comes off the bed](previews/bracelet-bracelet.png)
 
@@ -109,7 +110,7 @@ underside is cut flat so its first layer is **1.13 mm** wide instead of a knife
 edge, and the knuckle caps are **not plain discs** — see below.
 
 The hinge swings freely through **±100°** and only binds at 110°. Wrapping a
-180 mm wrist over 15 bars needs 24°; a 130 mm wrist over 11 bars needs a
+180 mm wrist over 16 bars needs about 24°; a 130 mm wrist over 12 bars needs a
 little more, still far inside the swing.
 
 ### The knuckle cap is a chord, not a disc
@@ -142,63 +143,82 @@ Per-layer step falls from 0.348 mm to a uniform 0.128 mm.
 
 ## The clasp
 
-A **stud and a keyhole** — *not* a toggle. A toggle made of two flat plates in
-the same plane does not lock: the bar has to lie across the ring's face,
-perpendicular to the pull, and getting it there needs a 90° twist that a flat
-PLA stand will never give. Coplanar, the bar just slides back out through the
-bore.
+A **T on rails** — the user's design, 2026-10-19, unprinted.
 
-This one locks out of plane. A **4.0 mm post** carries a 6.4 mm head; the
-keyhole plate has a 7.0 mm entry hole the head drops through, and a 4.3 mm slot
-the post then slides along. Once the post is in the slot the head is **above**
-the plate and cannot come back through it. (The post was 3.0 mm and fragile — it
-prints standing up, so it snaps along a layer line. Bending strength goes as the
-cube of the diameter, so 4.0 mm is 2.4× as strong.)
+```
+ top, fastened
+   last bar          socket block (+ bar 0)
+ ────────┐       ┌────────────────────────────┐
+         │       │  ┌──┐╞═rail═╡)  )          │   ) a detent bump on a
+         │       └──┘  │      │ ┆ ┆  room      │     leaf in the side wall
+    ═════╪═════════════│ T    │    (empty)    │
+         │       ┌──┐  │      │ ┆ ┆            │
+         │       │  └──┘╞═rail═╡)  )          │
+ ────────┘       └────────────────────────────┘
+```
 
-Two **detent bumps** pinch the slot to 3.4 mm, so the post snaps 0.30 mm past
-them a side and will not wander back to the entry hole. Each bump sits on a
-**cantilever spring leaf** — a strip freed by a relief slot that deliberately
-runs out into the entry hole. That free end is what makes it a spring: built
-in at both ends the post would need something like 50 N to pass, which is not
-a clasp but a jam.
+The last bar ends in a **T**, the band's full 4.2 mm thick: a 4.5 mm neck and
+an 11 × 2.6 mm crossbar across the band. Bar 0 is lengthened 4.9 mm into a
+**socket block** with a T-shaped cut through it, open top and bottom: at its
+front the crossbar's **home**, against the block's two **shoulders**, and
+behind that an empty **room**.
 
-**The bumps were doubled on 2026-09-26** (0.15 → 0.30 mm) because the buckle
-opened too easily. A printer rounds a 0.15 mm catch off to very little. Doubling
-the pinch on the old straight 1.0 × 2.8 mm leaf would have strained it far past
-the 2.9 % it is proven at. So the leaf now **tapers**, 1.6 mm at its root down
-to 0.8 mm at the bump, over 3.9 mm. That spreads the bending along the leaf:
-twice the pinch at the same 2.9 % peak strain, 1.85× the side force, and about
-**2.2× the push needed to open** (the deeper bump is also steeper). Closing it
-takes more push too. The cost: the keyhole plate is 1.2 mm wider (11.6 mm) and
-the buckle 1.6 mm longer.
+- **Held on three sides.** At home, **lips** overhang the crossbar's edge by
+  1.1 mm at the top and at the bottom: along its front (on the shoulders) and
+  along both of its ends (**rails** on the side walls). It cannot move up or
+  down. The band's pull holds it against the shoulders.
+- **To close:** push the ends together, push the T up into the room from
+  below, then pull the ends apart. The crossbar slides forward along the
+  rails, clicks past two detent bumps and sits home.
+- **To open:** push the ends together. The crossbar clicks back into the
+  room, then push the T out downwards. Neither move alone opens it.
+- **The detents** are mirrored, one in each side wall: a bump on a 4.4 mm
+  leaf cut out of the wall, standing 0.35 mm into the crossbar's path just
+  behind it at home. They only keep the crossbar from wandering back into the
+  room when the band is slack. Nothing holds it up or down but the lips.
+- **Flush.** Both ends are the full band thickness: level on top and
+  underneath. Fastened, it is 20.9 mm of rigid band including both end bars
+  (the stud and keyhole was about 31), with a 4.0 mm seam between the last bar
+  and the block — the slide.
 
-**It sits tight, not just latched.** The bumps now sit right at the seat and
-**cradle** the post: pulled against the seat's far wall it touches them too, so
-it cannot rattle along the slot (it used to have ~0.6 mm). And the head's cone
-is set so it meets the slot edge 0.15 mm above the plates with the post
-centred — under the band's pull it meets the rim right at the plate's top face
-and clamps the two plates together. The first clasp let them lift ~0.5 mm.
+**The far end has no rail.** The crossbar comes in there, through the room:
+a lip all round would leave it no way in. The rails grip the front 2.0 mm of
+each 2.6 mm crossbar end; the last 0.6 is where the detent's leaf is cut free.
 
-The head's underside is a cone at 38.7° from vertical, so the stud prints
-standing up with no support under the head.
+**Why no spring.** It was asked for. The crossbar has to slide its whole
+length, ~4 mm, to leave the rails, and nothing that fits here bends that far
+within the 2.9 % strain a printed leaf is proven at. A ring spring or two
+half-length leaves behind the crossbar were worked out and both came out
+near 5 %. The detents need only 0.35 mm.
 
-**The buckle is as short as the clasp allows: 18.9 mm between the two end bars
-when fastened** (20.5 originally, 17.2 before the bumps were doubled). Every length in it is now a constraint rather
-than a round number:
+The lip faces are 60° from vertical, not 45°: pushed up or down, a sloped lip
+cams the crossbar sideways, out from under itself, and at 60° that cam is
+about half as strong. If it still lets go, make the lips deeper (`tb_lip`) or
+steeper (`tb_lip_a`); for a firmer click, raise `dt_pinch` (`lf_strain`, 2.2 %
+now, is asserted at 2.9 %).
 
-- the entry hole sits 1.0 mm off its bar (it stood 4 mm off);
-- post travel, entry to seat, is the least that keeps the entry hole off the
-  detent bumps — 4.6 mm, because the bumps now sit at the seat;
-- the stud reaches just far enough that, while the head drops through the entry
-  hole, the keyhole plate's tip comes down **beside** the stud's end bar rather
-  than on it. The first clasp overran that bar by about a millimetre and had to
-  be tilted in.
+Everything prints without support: the T, the leaves and the block all stand
+on the bed. The upper lips are a 60° overhang 1.1 deep, stepping 0.35 mm a
+layer, under a bead; each lip's tip has a 0.4 mm vertical land, so it is not a
+knife edge. The leaf slots are 0.6 mm (`axial_fit`, so the first layers don't
+weld).
 
-The slot still has a **minimum length**, and it is not cosmetic: on too short a
-plate the entry hole reaches the detent bumps and cuts them off the plate
-entirely. They then come out of the printer as two loose crumbs and the clasp
-has no detent at all — the only symptom is two extra shells. There is an assert
-measuring the gap between the entry hole and the bumps.
+Fits: 0.15 mm on the vertical walls, 0.3 across the lip faces (a printed
+overhang and an elephant's foot), 0.3 round the crossbar in the room.
+Checked by intersecting the fastened halves:
+
+| test | reads |
+|---|---|
+| home | empty |
+| up / down 0.05 | empty |
+| up / down 0.25 | the lips — front and both rails |
+| pulled apart 0.10 / 0.20 | empty / the shoulders |
+| pushed 0.10 | the detent bumps (they cradle it at home) |
+| sliding back, 0.3 … 3.0 | only the bumps, 0.35 deep |
+| sliding back 3.6, and in the room 3.88 | empty |
+| in the room, moved down by any amount | empty: the T drops right out |
+| 0.5 short of the room, down 1 (control) | the bumps |
+| pushed 4.03 | the faces |
 
 ## What is printed over air
 
@@ -207,7 +227,8 @@ measuring the gap between the entry hole and the bumps.
 | z ≈ 1.3 | 87.4 mm² | each pin's first layer — a 3.2 mm bridge between two lugs |
 | z ≈ 3.3 | 28.0 mm² | each bore's roof — anchored on both sides of the blade |
 
-(Measured on the 4.45 mm band at `wrist=180`. The 4.2 mm band has the same
+(Measured on the 4.45 mm band at `wrist=180`. The buckle adds two short
+ones: the socket's upper lips and rails, 1.1 deep at 60°. The 4.2 mm band has the same
 two layers and nothing else, a little lower: the pin's flat is narrower, and
 the bore roof now closes as one ~1.4 mm bridge instead of stepping in.)
 
@@ -225,9 +246,9 @@ visibly drooped, and neither automated check ever saw that cap (see
 `CLAUDE.md` — it took looking at the model in a slicer). The ray probes above
 are what prove the anchors are real.
 
-Bed stability: **one separate contact patch per bar** — 11 and 1812 mm² of
-first layer at the default size, 16 and 2471 mm² at `wrist=180` — with the two
-clasp plates fused onto the end bars. Each patch is a
+Bed stability: **one separate contact patch per bar** — 12 and 1630 mm² of
+first layer at the default size, 16 and 2200 mm² at `wrist=180` —
+with the socket block and the T part of the two end bars. Each patch is a
 full-width bar foot, so there is far more of it than the old tile grid had.
 
 ## Charms
@@ -310,12 +331,10 @@ socket, lower `key_fit`; if it won't go in, raise it.
 
 ### What it costs the band
 
-- Same 11 shells and the same 40 hinge bridges as the plain band, and the
-  same first layer. The countersink is a 13° ceiling, so it adds no overhang.
+- Same 12 shells and the same hinge bridges as the plain band (genus +1 per
+  station, the hole), and less first layer: 1578 mm² against 1630. The countersink is a 13° ceiling, so it adds no overhang.
   The rib sits on the bar's top: nothing overhangs.
-- The band stands 5.2 mm tall at a station, at the rib, instead of 4.7 at
-  the stud.
-- The plain band (`charms = 0`) is **byte for byte** unchanged.
+- The band stands 5.2 mm tall at a station, at the rib, instead of 4.2.
 
 ### What came before
 
@@ -535,8 +554,8 @@ the H-pin pocket's floor from 0.8 to 0.6 mm, so the pins and charms did not
 change. **The 4.2 mm band was printed and confirmed on 2026-09-25** in one colour, with
 a heart charm on the H-pin ("Printed well, the pin sits fine"). The
 two-colour 3MF has not been printed yet.
-It shows as a band of colour round every bar's sides and ends, and the clasp
-plates (1.6 mm thick) stay entirely in the first colour.
+It shows as a band of colour round every bar's sides and ends, the socket
+block's included.
 
 ![the bracelet with an accent stripe](previews/bracelet-bracelet-accent.png)
 
@@ -548,8 +567,7 @@ multi-material printer (AMS, MMU). Because the stripe is horizontal, it costs
 only **two filament swaps per print**, one at 1.4 mm and one back at 2.8.
 
 `accent_lo` / `accent_hi` move the stripe; keep them on 0.2 mm layer
-boundaries. The clasp plates (1.6 mm) stay wholly in the first colour: the
-stripe is cut away around them. `base_color` / `accent_color` only tint the preview; the slicer
+boundaries. `base_color` / `accent_color` only tint the preview; the slicer
 picks the actual filaments.
 
 ## Models and parts
@@ -570,15 +588,16 @@ projects/bracelet/
     └── dolphin-charm/dolphin-charm.scad      # a dolphin with a bendy tail
 ```
 
-The bracelet exports as **one separate shell per bar** — 11 at the default
-size, 15 at `wrist=180` — with the clasp plates fused onto the two end bars.
+The bracelet exports as **one separate shell per bar** — 12 at the default
+size, 16 at `wrist=180` — with the socket block and the T part of the two
+end bars.
 They are not supposed to touch. The bolt and each charm export as one
 piece, except the dolphin, which is four: the body and three tail segments,
 printed in place.
 
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
-| `bracelet` | `bracelet` | 151.3 × 16.2 × 4.7 mm | all 11 bars' own flat feet |
+| `bracelet` | `bracelet` | 146.4 × 16.2 × 4.2 mm | all 12 bars' own flat feet |
 | `cone-pin` | `cone-pin` | 6.3 × 6.3 × 8.8 mm, standing | its foot, a ring round the hex socket, 20 mm² |
 | `screwdriver` | `screwdriver` | 65.0 × 32.0 × 8.0 mm, lying flat | its paddle and shaft, 1033 mm² in one piece |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 19.8 × 9.3 mm | its own bottom, 104 mm² in one piece |
@@ -589,7 +608,7 @@ printed in place.
 
 The stations sit on the **middle bar**, then on **every third bar** either
 side of it (`charm_step` in `bracelet.scad`), so `charms` is odd. On the
-default 11 bars, `charms = 3` puts them on bars 2, 5 and 8 (counting from 0),
+default 12 bars, `charms = 3` puts them on bars 2, 5 and 8 (counting from 0),
 35 mm apart; 5 charms need at least 15 bars (a 170–180 wrist). Until
 2026-09-27 they were spread evenly over the band, which put three charms on
 every second bar, only 23.4 mm apart. `charm_reach` is the narrowest spacing
@@ -605,13 +624,12 @@ across the band, or leave its neighbouring stations empty.
 `wrist` is the only number you normally touch, and `ease` (12 mm) is exact,
 not approximate — the loop lands on `wrist + 12` at every size.
 
-**How it lands there is worth knowing, because it changed.** The keyhole plate
-used to soak up whatever the band could not cover, since the band only came in
-whole bars. On a small wrist that left a 27 mm slab of flat plate hanging off
-the end of a 149 mm bracelet. Now the buckle is cut to the shortest slot the
-clasp can actually use — **18.9 mm fastened, 4.6 mm of post travel, the same
-at every size** —
-and the band makes up the difference: the solver picks the bar count that lands
+**How it lands there is worth knowing, because it changed.** The old keyhole
+plate used to soak up whatever the band could not cover, since the band only
+came in whole bars. On a small wrist that left a 27 mm slab of flat plate
+hanging off the end of a 149 mm bracelet. Now the buckle is fixed — **the
+socket block reaches 4.9 mm past bar 0, the same at every size** — and the
+band makes up the difference: the solver picks the bar count that lands
 nearest the nominal 11.6 mm spacing, then stretches or squeezes **every joint
 equally**, by a fraction of a millimetre, to hit the length exactly. Bars never
 change; only the gaps do, and they have about a millimetre of room between the
@@ -630,19 +648,19 @@ stay on a bar's flat top (asserted), which a narrower band would cut short.
 
 | `wrist` | bars | loop, clasped | joint pitch | printed footprint |
 |---|---|---|---|---|
-| **130 (default, 4-year-old)** | **11** | **142.0 mm** | **11.71 mm** | **151.3 × 16.2 mm** |
-| 140 (child) | 12 | 152.0 mm | 11.56 mm | 161.3 × 16.2 mm |
-| 160 | 14 | 172.0 mm | 11.32 mm | 181.3 × 16.2 mm |
-| 180 (adult) | 15 | 192.0 mm | 11.94 mm | 201.3 × 16.2 mm |
-| 200 | 17 | 212.0 mm | 11.70 mm | 221.3 × 16.2 mm |
-| 180, `rows=3` | 15 | 192.0 mm | 11.94 mm | 201.3 × 26.4 mm |
+| **130 (default, 4-year-old)** | **12** | **142.0 mm** | **11.55 mm** | **146.4 × 16.2 mm** |
+| 140 (child) | 13 | 152.0 mm | 11.42 mm | 156.4 × 16.2 mm |
+| 160 | 15 | 172.0 mm | 11.22 mm | 176.4 × 16.2 mm |
+| 180 (adult) | 16 | 192.0 mm | 11.81 mm | 196.4 × 16.2 mm |
+| 200 | 18 | 212.0 mm | 11.59 mm | 216.4 × 16.2 mm |
+| 180, `rows=3` | 16 | 192.0 mm | 11.81 mm | 196.4 × 26.4 mm |
 
-The buckle is 18.9 mm fastened in every row of that table — that is the point
-of the short buckle. (The flat print got 1.5 mm *longer* even so: the plates
-overlap when fastened, and the 3.3 mm the buckle gave up went to the band.)
+The buckle is 20.9 mm of rigid band in every row, the end bars and the 4 mm
+seam included — about 10 mm less than the stud and keyhole, which the band
+takes back as one more bar.
 
-The band itself is 4.2 mm thick at every size; the 4.66 mm overall height is
-the stud.
+The band is 4.2 mm thick at every size, and so is the whole print: nothing
+stands above it any more (a charm station's rib reaches 5.2).
 
 Other parameters worth knowing: `pitch_nom` / `body` (what bar spacing wants to
 be, and the bar itself — the knuckles need room to swing, so `pitch_min` is
@@ -650,12 +668,12 @@ derived from `body` and the knuckle radius),
 `pin_d` (1.8 mm — the entire load path of the band; it was 2.0 until the band
 was thinned to 4.2 mm for three equal colour bands), **`bore_fit`** (0.45 mm,
 the play in the hinge) and **`axial_fit`** (0.6 mm, along the pin — both above),
-`fit` (0.3 mm, the swing and clasp clearances), `knuck_wall` (0.9 mm,
+`fit` (0.3 mm, the swing clearance and the buckle's face gap), `knuck_wall` (0.9 mm,
 the deliberate thinnest wall), `knuck_slope` (30.0°, derived — the knuckle
-underside, asserted at ≤ 40°), and the clasp's `det_pinch` / `leaf_root` /
-`leaf_tip` / `leaf_free` if the detent wants to be lighter or firmer (`leaf_strain` is
-asserted at the printed leaf's 2.9 %), `head_gap` for how tight it sits, and
-`post_d` for the post.
+underside, asserted at ≤ 40°), and the buckle's `tb_lip` / `tb_lip_a` (how
+far and how steeply the lips hold the T), `dt_pinch` / `lf_len` (the detent —
+`lf_strain` is asserted at 2.9 %), and `tb_fit` / `tb_vfit` for how tight it
+sits.
 
 ## Printing
 
@@ -729,11 +747,9 @@ python3 tools/multicolor-3mf.py /tmp/ladybug.3mf \
   knuckles are exactly what you don't want here.
 - Off the plate, **work each hinge back and forth before wearing it.** Even
   with the looser bore they come out a little stiff; a few flexes free them.
-- To fasten: drop the stud's head through the round entry hole, then slide the
-  ends apart until the post snaps past the detent and seats. Hold the keyhole
-  plate pushed slightly away from the stud's end bar as you drop it on — its
-  tip comes down right beside that bar. To release, push
-  it back past the detent and lift the head out.
+- To fasten: push the two ends together, push the T up into the block's
+  room from below, then pull the ends apart until it clicks home. To open:
+  push the ends together (it clicks back) and push the T out downwards.
 
 ### The bolt and the charms
 
