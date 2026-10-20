@@ -3,7 +3,73 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
-## The T ON RAILS buckle (user's design) — 2026-10-19, UNPRINTED
+## The DOVETAIL KNOB buckle (user's sketch) — 2026-10-20, UNPRINTED
+
+Replaced the T on rails (section below, now HISTORY). The user printed the
+rails version and asked, with a photo and then a sketch (dovetail knob, two red
+curved springs on its back corners pressing the far wall): knob longer, knob
+"triangle" so the move to lock is much smaller, side springs removed (sides
+solid), spring on the knob's end pressing it into the groove. I asked which
+triangle with three previews; the user answered with the sketch. **The
+widening dovetail (narrow at the neck) is the only orientation that works**:
+the band's pull wedges it into the lips. An arrow pointing into the block
+would be pulled out by the band.
+
+**Geometry** (`tb_*` / `sp_*`; local frame u from the block's front face,
+y off the band's middle; modules build in it via `tb_along()`, a multmatrix
+that extrudes an (a, z) section along a plan line with a to its right):
+- Knob `tb_knob_2d()`: front face half-width `tb_front` 3.1 at `tb_ua`,
+  slanted sides at `tb_a` 45° to half-width `tb_hw` = band_w/2 − `tb_side`
+  1.4 − fit = 6.55 at `tb_ub`, `tb_tail` 1.0 straight. 13.1 × 4.45. The width
+  FOLLOWS THE BAND (rows=3: 23.3 wide, springs 10.15, 2.1 %).
+- Lips (`tb_lips()`): front wall + both slanted walls, the old `tb_lips_2d`
+  section, kept out of the neck slot (|y| ≥ neck/2 + fit) and stopped at
+  `tb_ub` − fit. Knob shaped by the matching `tb_edge_2d` slabs.
+  **Trap hit: the slant slabs must be long enough to cover the OTHER side's
+  far corner** (−20, length 40). At −3, length 20 the +y slab's start cut the
+  knob off on a diagonal; the harness read up/down 0.25 EMPTY (no lip grip)
+  while home looked perfect.
+- `tb_slide` = (lip − vfit + `tb_clear` 0.2)/sin a = 1.414: the push to
+  open. `face_gap` = slide + 0.1. The pocket = knob ⊕ fit minus lips, ∪ knob
+  moved `tb_slide` ⊕ `tb_room_fit` 0.15 (where it drops out), ∪ the spring
+  room to the far wall `tb_uw`, whose bottom edge is chamfered 45° by `tb_ch`
+  2.01 (springs' lead-in when closing). `tb_far` 3.45 so the chamfer stops at
+  x 1.56 of bar 0, short of its lug arms (asserted ≤ 1.6).
+- Springs `tb_spring()`: post `sp_post` 0.8 on each back corner, leaf
+  `sp_t` 0.8 spanning `sp_len` 5.05 to tips `sp_gap` 0.6 apart, preload
+  `sp_pre` 0.3. **The leaf is the tip-load deflection curve f(x) = x²(3−x)/2**
+  (square off the post, rising `sp_rise` to the tip), so pushed fully open it
+  lies flat on the wall; a straight diagonal leaf's middle would dig into the
+  wall. **Strain 1.4 % at rest, 8.5 % pushed fully open** vs the proven
+  2.9 %. Told the user once; asserts are 2.9 % at rest, 9 % open.
+- Rigid buckle 20.08 (block 6.56 past bar 0), seam 1.51. 130: 12 bars,
+  pitch 11.63, 151.4 × 16.2 × 4.2. 180: 16 bars, 201.4.
+
+**Checks** (scratch `tfit.scad`: socket moved by `tb_x0 − x_f`, tab moved
+dx/dz, split into "knob" (x < tb_ut), "spring", "post"):
+
+| test | reads |
+|---|---|
+| knob home / dz ±0.05 / dx −0.1 | EMPTY |
+| dz ±0.25 | 0.57 at the lips (front + slanted, x 134.2–137.5) |
+| dx −0.3 | 2.38, the slanted walls |
+| dx 0.5, 1.0 | EMPTY |
+| dx 1.0 dz −1 (CONTROL) | 0.25, the lips |
+| dx 1.414, dz 0 … −4.3 | EMPTY — drops out |
+| dx 1.6 | 3.0 at the seam faces |
+| springs home / 1.414 | far wall only (x ≥ 141.55), 0.3 / 1.7 deep |
+| springs 1.514 dz −4.1 / −3 | EMPTY / on the chamfer only |
+| posts 1.514 / 1.7 (CONTROL) | EMPTY / 0.15 |
+
+- Wrist sweep 110–230: shells == cols, genus = formula (33 at 130), loop
+  exact. rows=3 at 180: genus 75.
+- 130: 1695.7 mm² in 12 islands; 46 BRIDGE + 3 RAMP (the far wall's chamfer,
+  45°, from the bed; the knob's two lower slant insets). No SUPPORT.
+- Walls: tab end nothing under 0.75. Block: 0.58–0.67 at the lip tips beside
+  the neck slot (the front lip there is a 0.37 face at its tip), accepted.
+- Not run: slicer, a bending simulation of the springs.
+
+## The T ON RAILS buckle (user's design) — 2026-10-19, PRINTED, then replaced 2026-10-20 — HISTORY
 
 **History, in order — do not re-offer the dead ends.**
 1. Stud + keyhole: "asymmetric" (plates stacked, one end 1.6 higher), "too
@@ -23,7 +89,26 @@ applies; the rules here are bracelet-only and win where they add detail.
    The far wall has NO rail (it is where the crossbar comes in); the spring
    became two mirrored DETENT leaves (symmetric). Told the user both.
 
-**Geometry** (clasp section, `tb_*` / `dt_*` / `lf_*`; `u` along the band
+**2026-10-19 (latest): crossbar 11 → 10, bigger detents — UNPRINTED.** The
+user circled the detent bump (a 0.5 half-disc on a 0.8 leaf, its front
+quarter over the cross slot: it rendered as a tiny hook) as "too small to
+print" and asked to narrow the crossbar to make room. Now `tb_cw` 10 (the
+neck assert allows 9.5), `lf_t` 1.2, `dt_r` 0.8, `lf_len` 5.4, and the leaf's
+free end is FLUSH with the bump's front (`lf_u0 = dt_u − dt_r`), so the
+cross slot runs only in front of the bump and the whole disc stands on the
+leaf (asserted: `dt_y + dt_r ≤ tb_ws + lf_t`). Pinch 0.5 / 0.35 kept,
+strain 2.16 %, leaf ~1.4× stiffer. Costs: rails 1.86 of 2.6 (assert 1.82),
+slide 4.36, seam 4.46, rigid buckle 21.9, block 5.41 past bar 0; shoulders'
+lips 0.5 shorter each side. Outer wall 1.15. Leaf root ends at x 1.5. Harness
+(numbers below are the 11-wide version's): home / dz ±0.05 / dx −0.1 EMPTY;
+dz ±0.25 0.45 at the lips; dx −0.2 0.56 shoulders; dx 0.1 … 3.9 bumps only
+(peak 1.43, was 1.05); dx 4.36 and dz −1 … −4.3 there EMPTY; CONTROL dx 3.6
+dz −1 → 0.21; dx 4.5 the faces. Wrist sweep 110–230 OK. 46 BRIDGE + 2 RAMP
+(the T's lower end lips), same as before. The 0.38 bump-tip wall flags are
+gone; nothing under 0.5 in the block. 130 still 12 bars, 146.35 flat.
+
+**Geometry** (as of the 11-wide crossbar; see the paragraph above for what
+changed) (clasp section, `tb_*` / `dt_*` / `lf_*`; `u` along the band
 from the block's front face, fastened, home):
 - T: neck `tb_neck` 4.5 (into the crossbar past the lip inset), crossbar
   `tb_cw` 11 × `tb_ct` 2.6, front AND both ends shaped by `tb_edge_2d()`:
@@ -529,7 +614,7 @@ HINGE pin. A second thing called a pin in the same namespace is how a silent
 shadowing bug gets written.
 
 The bracelet export must be **`cols` shells** — 12 at the default size, 16 at
-180 — one per bar, with the socket block and the T part of the two end
+180 — one per bar, with the socket block and the knob part of the two end
 bars. Anything else means a piece came free.
 
 **Genus is the second invariant**, and it is worth computing rather than

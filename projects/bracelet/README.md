@@ -6,8 +6,8 @@ a wrist, and nothing is assembled, glued, or picked out of supports.
 
 **Sized to the wrist it is printed for — by default a 142 mm loop on a
 130 mm wrist (the 4-year-old it was printed for, and fits), 12 bars, printed
-flat in a 146.4 × 16.2 × 4.2 mm strip.** `-D wrist=180` is the adult size.
-The buckle is a T that slides on rails and locks flush, the same at every size;
+flat in a 151.4 × 16.2 × 4.2 mm strip.** `-D wrist=180` is the adult size.
+The buckle is a dovetail knob held by lips and two springs, flush, the same at every size;
 length is band, not buckle.
 
 ![the bracelet as it comes off the bed](previews/bracelet-bracelet.png)
@@ -143,82 +143,87 @@ Per-layer step falls from 0.348 mm to a uniform 0.128 mm.
 
 ## The clasp
 
-A **T on rails** — the user's design, 2026-10-19, unprinted.
+A **dovetail knob with two springs on its end** — the user's design and
+sketch, 2026-10-20, unprinted. It replaced the T on rails the same day the
+rails were printed: the knob had to slide ~4.4 mm to come off them, and the
+side-wall detents were too small to print well.
 
 ```
  top, fastened
    last bar          socket block (+ bar 0)
- ────────┐       ┌────────────────────────────┐
-         │       │  ┌──┐╞═rail═╡)  )          │   ) a detent bump on a
-         │       └──┘  │      │ ┆ ┆  room      │     leaf in the side wall
-    ═════╪═════════════│ T    │    (empty)    │
-         │       ┌──┐  │      │ ┆ ┆            │
-         │       │  └──┘╞═rail═╡)  )          │
- ────────┘       └────────────────────────────┘
+ ────────┐       ┌───────────────────────────┐
+         │       │  ┌┐╲▒▒▒▒▒▒▒▒▒╗    ╲         │   ▒ lips over the knob's
+         │       └──┘  ╲  knob   ║ ╲   ╲ spring │     front and slanted sides
+    ═════╪══════════════>        ║  ) )  far   │
+         │       ┌──┐  ╱         ║ ╱   ╱ wall   │
+         │       │  └┘╱▒▒▒▒▒▒▒▒▒╝    ╱         │
+ ────────┘       └───────────────────────────┘
 ```
 
-The last bar ends in a **T**, the band's full 4.2 mm thick: a 4.5 mm neck and
-an 11 × 2.6 mm crossbar across the band. Bar 0 is lengthened 4.9 mm into a
-**socket block** with a T-shaped cut through it, open top and bottom: at its
-front the crossbar's **home**, against the block's two **shoulders**, and
-behind that an empty **room**.
+The last bar ends in a 4.5 mm **neck** and a **knob**, the band's full 4.2 mm
+thick. In plan the knob is a dovetail: 6.2 mm across at its front, widening at
+45° to 13.1 mm, then a 1 mm straight tail, 4.45 mm long in all. Bar 0 is
+lengthened 6.6 mm into a **socket block** with the knob's shape cut through it,
+open top and bottom. Its side walls are solid.
 
-- **Held on three sides.** At home, **lips** overhang the crossbar's edge by
-  1.1 mm at the top and at the bottom: along its front (on the shoulders) and
-  along both of its ends (**rails** on the side walls). It cannot move up or
-  down. The band's pull holds it against the shoulders.
-- **To close:** push the ends together, push the T up into the room from
-  below, then pull the ends apart. The crossbar slides forward along the
-  rails, clicks past two detent bumps and sits home.
-- **To open:** push the ends together. The crossbar clicks back into the
-  room, then push the T out downwards. Neither move alone opens it.
-- **The detents** are mirrored, one in each side wall: a bump on a 4.4 mm
-  leaf cut out of the wall, standing 0.35 mm into the crossbar's path just
-  behind it at home. They only keep the crossbar from wandering back into the
-  room when the band is slack. Nothing holds it up or down but the lips.
-- **Flush.** Both ends are the full band thickness: level on top and
-  underneath. Fastened, it is 20.9 mm of rigid band including both end bars
-  (the stud and keyhole was about 31), with a 4.0 mm seam between the last bar
-  and the block — the slide.
+- **Held by lips.** 1.1 mm **lips** overhang the knob's edge at the top and the
+  bottom along its front (beside the neck) and both slanted sides, so it cannot
+  move up or down. The band's pull draws it into the narrowing pocket, which
+  only wedges it deeper under them.
+- **Two springs.** A curved leaf (0.8 × 5 mm) on each back corner of the knob
+  bends in toward the middle and presses on the block's far wall, 0.3 mm
+  preloaded. They push the knob forward when the band is slack.
+- **To open:** push the ends together 1.4 mm (the springs give, the slanted
+  sides come out from under the lips), then push the knob out downwards.
+- **To close:** push the ends together, push the knob up into the block from
+  below — a 45° chamfer on the far wall's bottom edge bends the springs in —
+  and let go.
+- **Flush.** Both ends are the full band thickness. Fastened, it is 20.1 mm of
+  rigid band including both end bars, with a 1.5 mm seam.
 
-**The far end has no rail.** The crossbar comes in there, through the room:
-a lip all round would leave it no way in. The rails grip the front 2.0 mm of
-each 2.6 mm crossbar end; the last 0.6 is where the detent's leaf is cut free.
+**Why the sides slant.** A sideways lip lets go once the knob's edge has moved
+in by the lip's grip plus a little clearance (1.0 mm). Slanted at 45°, the edge
+moves in by sin 45° of the push, so 1.4 mm does it. Straight rails needed the
+knob's whole length. A shallower slant (`tb_a`) gives a longer knob and a
+longer push.
 
-**Why no spring.** It was asked for. The crossbar has to slide its whole
-length, ~4 mm, to leave the rails, and nothing that fits here bends that far
-within the 2.9 % strain a printed leaf is proven at. A ring spring or two
-half-length leaves behind the crossbar were worked out and both came out
-near 5 %. The detents need only 0.35 mm.
+**The springs are short, and that is their risk.** They are as long as half the
+knob is wide, so pushed fully open they bend about 8.5 % at the root. The
+proven leaves here (the old keyhole) bent 2.9 %. In wear they sit at 1.4 %. If
+they take a set, the clasp still holds under the band's pull; only the slack
+knob can wander back. Lowering `sp_pre` or `sp_t` softens them.
+
+Each leaf is curved, square off its post and bending back toward the wall: the
+shape a leaf loaded at its tip bends into. Pushed fully open it lies flat
+against the wall. A straight diagonal leaf would dig its middle into it.
 
 The lip faces are 60° from vertical, not 45°: pushed up or down, a sloped lip
-cams the crossbar sideways, out from under itself, and at 60° that cam is
-about half as strong. If it still lets go, make the lips deeper (`tb_lip`) or
-steeper (`tb_lip_a`); for a firmer click, raise `dt_pinch` (`lf_strain`, 2.2 %
-now, is asserted at 2.9 %).
+cams the knob sideways, out from under itself, and at 60° that cam is about half
+as strong. If it lets go, make the lips deeper (`tb_lip`) or steeper
+(`tb_lip_a`).
 
-Everything prints without support: the T, the leaves and the block all stand
-on the bed. The upper lips are a 60° overhang 1.1 deep, stepping 0.35 mm a
-layer, under a bead; each lip's tip has a 0.4 mm vertical land, so it is not a
-knife edge. The leaf slots are 0.6 mm (`axial_fit`, so the first layers don't
-weld).
+Everything prints without support: the knob, the springs and the block all
+stand on the bed. The upper lips are a 60° overhang 1.1 deep, stepping 0.35 mm
+a layer, under a bead; each lip's tip has a 0.4 mm vertical land. The far wall's
+chamfer is a 45° ramp off the bed. Slots between the springs and the knob, and
+between the two tips, are at least 0.5 mm, so the first layers don't weld.
 
 Fits: 0.15 mm on the vertical walls, 0.3 across the lip faces (a printed
-overhang and an elephant's foot), 0.3 round the crossbar in the room.
-Checked by intersecting the fastened halves:
+overhang and an elephant's foot). Checked by intersecting the fastened halves
+(knob and springs separately: the springs are meant to touch the far wall):
 
 | test | reads |
 |---|---|
 | home | empty |
 | up / down 0.05 | empty |
-| up / down 0.25 | the lips — front and both rails |
-| pulled apart 0.10 / 0.20 | empty / the shoulders |
-| pushed 0.10 | the detent bumps (they cradle it at home) |
-| sliding back, 0.3 … 3.0 | only the bumps, 0.35 deep |
-| sliding back 3.6, and in the room 3.88 | empty |
-| in the room, moved down by any amount | empty: the T drops right out |
-| 0.5 short of the room, down 1 (control) | the bumps |
-| pushed 4.03 | the faces |
+| up / down 0.25 | the lips — front and both slanted sides |
+| pulled apart 0.10 / 0.30 | empty / the slanted walls |
+| pushed 0.5, 1.0 | empty |
+| pushed 1.0, down 1 (control) | the lips |
+| pushed 1.41, moved down by any amount | empty: the knob drops right out |
+| pushed 1.6 | the faces of the seam |
+| springs at home / pushed | the far wall only, 0.3 deep / 1.7 |
+| springs' posts pushed 1.51 / 1.7 (control) | empty / the far wall |
 
 ## What is printed over air
 
@@ -597,7 +602,7 @@ printed in place.
 
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
-| `bracelet` | `bracelet` | 146.4 × 16.2 × 4.2 mm | all 12 bars' own flat feet |
+| `bracelet` | `bracelet` | 151.4 × 16.2 × 4.2 mm | all 12 bars' own flat feet |
 | `cone-pin` | `cone-pin` | 6.3 × 6.3 × 8.8 mm, standing | its foot, a ring round the hex socket, 20 mm² |
 | `screwdriver` | `screwdriver` | 65.0 × 32.0 × 8.0 mm, lying flat | its paddle and shaft, 1033 mm² in one piece |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 19.8 × 9.3 mm | its own bottom, 104 mm² in one piece |
@@ -648,14 +653,14 @@ stay on a bar's flat top (asserted), which a narrower band would cut short.
 
 | `wrist` | bars | loop, clasped | joint pitch | printed footprint |
 |---|---|---|---|---|
-| **130 (default, 4-year-old)** | **12** | **142.0 mm** | **11.55 mm** | **146.4 × 16.2 mm** |
-| 140 (child) | 13 | 152.0 mm | 11.42 mm | 156.4 × 16.2 mm |
-| 160 | 15 | 172.0 mm | 11.22 mm | 176.4 × 16.2 mm |
-| 180 (adult) | 16 | 192.0 mm | 11.81 mm | 196.4 × 16.2 mm |
-| 200 | 18 | 212.0 mm | 11.59 mm | 216.4 × 16.2 mm |
-| 180, `rows=3` | 16 | 192.0 mm | 11.81 mm | 196.4 × 26.4 mm |
+| **130 (default, 4-year-old)** | **12** | **142.0 mm** | **11.63 mm** | **151.4 × 16.2 mm** |
+| 140 (child) | 13 | 152.0 mm | 11.49 mm | 161.4 × 16.2 mm |
+| 160 | 15 | 172.0 mm | 11.28 mm | 181.4 × 16.2 mm |
+| 180 (adult) | 16 | 192.0 mm | 11.86 mm | 201.4 × 16.2 mm |
+| 200 | 18 | 212.0 mm | 11.64 mm | 221.4 × 16.2 mm |
+| 180, `rows=3` | 16 | 192.0 mm | 11.52 mm | 206.5 × 26.4 mm |
 
-The buckle is 20.9 mm of rigid band in every row, the end bars and the 4 mm
+The buckle is 20.1 mm of rigid band (25.2 at `rows=3`: the knob grows with the band's width), the end bars and the 1.5 mm
 seam included — about 10 mm less than the stud and keyhole, which the band
 takes back as one more bar.
 
