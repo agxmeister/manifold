@@ -3,7 +3,187 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
-## The DOVETAIL KNOB buckle (user's sketch) — 2026-10-20, UNPRINTED
+## The ROUND KNOB IN A NICHE buckle (user's sketch) — 2026-10-20 (last), UNPRINTED
+
+From the user's sketch (red knob dropped into a blue hole). Reading confirmed
+by the user before building: a big round WAY-IN behind (r + `tb_entry_gap`
+1.4, centred where the knob drops in, `tb_ue`), a NICHE in front (the knob's
+circle at home) whose lips end on a STRAIGHT STEP across the band
+(`tb_ustep`, at `tb_lip_end` 75° on the knob's edge), pull ~2 mm. **No
+spring.** 8 mm knob. Neck 4.5 → 3.5 (sketch is thin; at 4.5 the lips beside
+the neck failed the ≥ 0.7 assert) — told the user.
+
+
+**2026-10-20 (later): side CLICKS added** at the user's request ("springs on
+the knob to improve the grip"). I explained once that a PUSH spring would bend
+~2.3 on ~4 mm leaves (15–20 %) and offered clicks vs a bigger knob with push
+springs; the user chose clicks. `cl_*`: the rim behind the step is two leaves
+`cl_t` 0.7 from `cl_root` 168 (the 24° between the roots stays solid — the
+clamp; trap hit: the slot's rounded end disc centred AT the root ran 8° past
+it and left a sliver joining the leaves to the core → now ends at
+`cl_root − cl_end`) to `cl_tip` 94, rigid rim ends `cl_gap0` 86, slot
+`cl_slot` 0.8. Bump r 0.5 at 101°, centre r + 0.2. Tooth r 0.5 on the way-in
+wall (hull out into the wall), `cl_c` 0.05 behind the bump at home, overlap
+`cl_h` 0.3 at the peak (d 0.78), clear from d ≈ 1.45; asserted clear at
+`tb_slide` with 0.15. Frame model (scratch click.py; control = meander.py's):
+1.89 %, ~8 N radial per leaf at the peak. Harness: bumps-on-teeth only for d
+0.2…1.2 (1.07 at 0.78), EMPTY at 0 / 1.5 / 1.875 (all depths). Walls: knob
+0.56 only at the rim stub between the lip shaping (step + 0.2) and the tip
+gap, inside the inset bands — accepted.
+
+- `tb_slide` = sqrt((r+clear)² − tip_y²) − step = 1.875 (the last lip tip on
+  the step is the worst point); seam 1.975. Lips = `tb_lips_2d` swept ±100
+  minus the neck slot and everything behind the step. Knob edge cut swept
+  ±100, kept to u ≤ step + clear. Pocket = (home circle − lips) ∪ (way-in ∩
+  behind the step). Asserted: the knob at home, behind the step, lies inside
+  the way-in.
+- Rigid buckle 22.44, block 8.47 past bar 0; 130: 12 bars, pitch 11.41,
+  151.8 × 16.2 × 4.2.
+- Checks: home, dz ±0.05, dx −0.1, dx 1.0, 1.5 EMPTY; dz ±0.25 0.319 lips;
+  dx −0.3 0.87; CONTROLS dx 0 / 1.0 / 1.5 at dz −1 → 2.69 / 0.29 / 0.003;
+  dx 1.875 at dz 0, −0.6, −2, −3.5, −4.3 EMPTY; dx 2.1 seam faces. Note
+  dz −4.3 is no control (knob wholly under the block). Sweep 110–230 OK;
+  rows=3 genus 75; charms=3 36. 46 BRIDGE + 2 RAMP, no SUPPORT. Walls: tab
+  ≥ 1.53; block 0.52–0.67 at the lips' tips/ends.
+
+## The ROUND KNOB IN A SLOT buckle (hull slot, lips to 90°) — superseded the same evening — HISTORY
+
+The user's own design, stated twice: "make the knob round and remove this
+ugly spring. The hole in the B part of the buckle should be a widened circle
+shape - knob should be inserted and pulled a bit - inserted into a niche by
+its half." **NO SPRING — do not add one back unprompted** (rim leaves and the
+zigzag were both rejected; I misread the first statement and kept a spring).
+
+**Geometry**: knob r `tb_r` 4 (8 mm, user's choice), full plain cylinder,
+edge cut by `tb_edge_cut_2d` swept ±93° (`tb_sector`). Pocket = neck slot +
+`hull()` of the knob circle (r + fit) at home and moved back `tb_slide`,
+minus `tb_lips()` (the `tb_lips_2d` section swept ±`tb_lip_end` 90, clear of
+the neck slot). `tb_slide` 2.72 = sqrt((r+clear)² − (r−overlap)²) at 90°,
+seam 2.82, slot end `tb_uend`, `tb_far` 1.44 → x 1.56 in bar 0. Rigid buckle
+22.88, block 8.06 past bar 0. 130: 12 bars, pitch 11.37, 151.8 × 16.2 × 4.2.
+
+**Checks** (scratch tfit.scad / fit.py: socket moved by `tb_x0 − x_f`, tab
+moved dx/dz): home, dz ±0.05, dx −0.1, dx 1.0, 2.0 EMPTY; dz ±0.25 0.371 at
+the lips; dx −0.3 0.58 front arc; CONTROL dx 2.0 dz −1 0.052; dx 2.72 dz 0 /
+−2 / −4.3 EMPTY (drops out); dx 2.95 seam faces. Sweep 110–230 shells == cols,
+genus 3(cols−1); rows=3 genus 75; charms=3 genus 36. 46 BRIDGE + 2 RAMP, no
+SUPPORT. Walls: tab ≥ 1.53; block 0.48–0.58 only at the lips' tips/ends.
+
+## The ROUND KNOB + ZIGZAG buckle (rejected the same day, "ugly spring") — HISTORY
+
+Replaced the first round knob (next section, HISTORY, never printed). The
+user: "The knob is too big and the rails are too short. The knob should be
+inside the groove on its half of the length". I asked (lip reach / knob size)
+after showing that lips to the widest point need a ~2.9 push; user chose
+FULL FRONT HALF and an 8 mm knob. I had estimated the buckle at ~26 — it is
+31.0 (spring 11.2 + pad 2.3 + 2.8 seam). Told the user; the lever is
+`tb_lip_end` (75° → push ~2.0, shorter spring).
+
+**Geometry**: knob r `tb_r` 4 (a parameter now, not band-derived), lips
+`tb_lip_end` 90; heel = flat back from the centre to `sp_u0 + sp_t/2`, as wide
+as the knob. `tb_slide` 2.72 (formula, worst point at 90°), seam 2.82, travel
+`sp_travel` = pre 0.6 + seam = 3.42. Zigzag `tb_spring_2d`: `sp_legs` 3 legs
+`sp_t` 0.9 at `sp_pitch` 2.8, spanning ±`sp_y` (= r), semicircle bends
+(first off the heel's −y corner), then `sp_pad` 2.3. Room behind the lips:
+±`tb_room_hw` 6.0 (side walls 2.1), from `tb_uc + tb_heel_gap − fit`.
+Lead-in split: pad's top-back edge AND far wall's bottom edge chamfered
+`tb_ch` = (travel + clear)/2 = 1.81 each → home contact at mid-height.
+Trap hit: the pad's chamfer cut spanning only ±sp_y left a 0.06 sliver on the
+last bend → spans ±room.
+
+**Why a zigzag**: travel 3.4 is twice the dovetail's 1.8; rim leaves on an
+8 mm knob would be ~10 %. Linear frame model (scratch `meander.py`; control:
+straight 5.05 × 0.8 at 1.81 → 8.43 % vs 8.52 % analytic): 1.50 % open,
+5.5 N open / 1.0 N rest, 0.20 min gap between legs. Variants: 2 flexible legs
+collide mid-leg; t 0.8 p 2.6 → 0.7 N rest. The source asserts only travel
+≤ 3.45 and slots; re-run the model if spring/knob/travel change.
+
+**Checks** (tfit: "spring" = tb_spring_2d from leg 1 on):
+
+| test | reads |
+|---|---|
+| knob home / dz ±0.05 / dx −0.1 / dx 1.0, 2.0 | EMPTY |
+| dz ±0.25 | 0.371 at the lips |
+| dx −0.3 | 0.79 front arc |
+| dx 2.0 dz −1 (CONTROL) | 0.052 lips |
+| dx 2.72, dz 0 / −2 / −4.3 | EMPTY — drops out |
+| dx 2.95 | 4.6 seam faces |
+| spring home | far wall only, 0.6 deep, z 1.21–2.99 |
+| spring 2.82 dz −3.9 / −4.3 | chamfers only / EMPTY |
+
+- Sweep 110–230 OK (130 = 11 bars, genus 30). rows=3 180 genus 70; charms=3
+  genus 33.
+- 130: 161.6 flat, 1628.9 mm² / 11 islands; 42 BRIDGE + 2 RAMP, no SUPPORT.
+- Walls: tab ≥ 0.62 (legs 0.9). Block 0.48–0.58 at lip tips/ends, accepted.
+
+## The first ROUND KNOB (13.1, lips to 50°, rim leaves) — 2026-10-20, never printed, rejected (too big, lips too short) — HISTORY
+
+Replaced the dovetail knob (section below, now HISTORY). The user: the
+dovetail "works good" but "the spring became broken almost instantly"; asked
+for a round knob instead of the triangle, and a more reliable spring. Same
+lips/pocket/drop-out idea, same user-chosen spring position (on the knob's
+back, pressing the far wall).
+
+**Geometry** (`tb_*` / `sp_*`, local frame u from the block's front face,
+y off the band's middle; `tb_pol(a, r)` = angle a from the knob's FRONT):
+- Knob: circle `tb_r` = band_w/2 − side − fit = 6.55, centre `tb_uc`.
+  Lips are `tb_lips_2d` swept by `tb_sector()` (rotate_extrude round the
+  front, ±`tb_lip_end` 50°) minus the neck slot; the knob's edge is cut by
+  `tb_edge_cut_2d` over ±53° (3° past the lips so a lip's END face clears).
+- `tb_slide` solved: the lip tip at 50° (radius r − overlap) must sit
+  `tb_clear` outside the circle pushed back: 1.419. 60° would give 1.68.
+- Springs: leaf `sp_t` 0.7 ON THE RIM from `sp_root` 70° to the tip at
+  `sp_ytip` = 0.366·r (2.4) off the middle, round end + bump (`sp_nub` 0.3
+  proud, r 0.4) on the tip's back. Hollow behind: slot `sp_slot` 0.5 at the
+  root (rounded end disc, `sp_s`), the core falling away by `sp_hollow`·x²
+  (2.6) toward the tip; between the tips open. Nose on the far wall,
+  half-width ytip + 0.6, face `tb_un` = bump's back − `sp_pre` 0.4, bottom
+  chamfer `tb_ch` 45°. Pocket = home circle − lips ∪ circle pushed `tb_slide`
+  (room fit) − nose; far end `tb_uend`, `tb_far` 1.44 → pocket ends x 1.56.
+- **Why the leaves are like that** (large-deflection beam model, scratch
+  `final.py`/`el3.py`, not in repo — curved cantilever, tip contact found as
+  the rear-most point, bisection on force): straight 5 mm leaves were 8.5 %.
+  Following the rim from the equator: ~3 %; moving the root 20° forward of
+  the equator: 2.70 % pushed fully open (δ = pre + face_gap = 1.92), 0.65 %
+  at rest, 1.9 N/leaf at rest. Under tip load the arc CURLS: tips move in by
+  ~1.8 and rotate ~30°; without the bump the contact migrates toward the root
+  (stiffer). Tips at 2.4 leave 0.23 each from the middle fully pushed; at
+  2.2 with a full-disc bump they crossed. Core clearance 0.35 fully pushed.
+  The scad assert uses the small-deflection integral `sp_eps()` (2.76 %,
+  within 0.1 % of the model): ≤ 2.9 % open, ≤ 1 % rest.
+- A fixed `sp_ytip` broke rows=3 (bigger, flatter rim → the nose caught the
+  leaf's side; asserted) → scaled with r.
+- Rigid buckle 25.38 (was 20.08: a circle is as long as it is wide), block
+  11.86 past bar 0. 130: 12 bars, pitch 11.15 (pitch_min 11.10!), 156.6 ×
+  16.2 × 4.2. rows=3: r 11.65, buckle 35.7, strain 0.84 %.
+- Known: at home the tips press only the nose above its chamfer (z ≥ 1.72);
+  the dovetail had the same.
+
+**Checks** (scratch `tfit.scad` + `fit.py`: socket moved by `tb_x0 − x_f`,
+tab by dx/dz; parts "knob" = tab minus the leaves past the centre,
+"spring" = those leaves):
+
+| test | reads |
+|---|---|
+| knob home / dz ±0.05 / dx −0.1 / dx 0.5, 1.0 | EMPTY (zero-volume mask seams only) |
+| dz ±0.25 | 0.356 at the lips beside the neck |
+| dx −0.3 | 1.5, the front arc |
+| dx 1.0 dz −1 (CONTROL) | 0.045, the lips |
+| dx 1.419, dz −2 / −4.3 | EMPTY — drops out |
+| dx 1.6 | 2.85 at the seam faces |
+| springs home / 1.519 | nose only, 0.4 / 1.9 deep (|y| ≤ 2.9) |
+| springs 1.519 dz −4.1 / −4.3 | chamfer only / EMPTY |
+
+- Wrist sweep 110–230: shells == cols, genus = formula (33 at 130). rows=3
+  at 180: 15 bars, genus 70. charms=3: genus 36.
+- 130: 1685.7 mm² in 12 islands; 46 BRIDGE + 3 RAMP (nose chamfer from the
+  bed; the knob's two lower lip insets). No SUPPORT.
+- Walls: tab end ≥ 0.70 (the leaves). Block: 0.53–0.58 at the lips' ends
+  (beside the neck slot, and at the 50° end), accepted as before.
+- Not run: slicer; FEA beyond the beam model.
+
+## The DOVETAIL KNOB buckle (user's sketch) — 2026-10-20, PRINTED: held well, springs broke — HISTORY
+
 
 Replaced the T on rails (section below, now HISTORY). The user printed the
 rails version and asked, with a photo and then a sketch (dovetail knob, two red

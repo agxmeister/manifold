@@ -180,49 +180,54 @@ assert(knuck_slope <= 40,
        str("knuckle underside hangs at ", knuck_slope, " deg from vertical"));
 
 // -------------------------------------------------------------------- clasp
-// A DOVETAIL KNOB with two springs on its end (the user's design, 2026-10-20,
-// from their sketch; it replaces the T on rails).
+// A ROUND KNOB in a NICHE (the user's design and sketch, 2026-10-20): the
+// knob drops into a roomy round WAY-IN at the back of the socket's hole and
+// is pulled forward ~2 mm into the NICHE in front, whose lips hold its front.
+// Two CLICKS on the knob's sides stop it sliding back.
 //
 //   top, fastened
 //     last bar          socket block (+ bar 0)
-//   ────────┐       ┌───────────────────────────┐
-//           │       │  ┌┐╲▒▒▒▒▒▒▒▒▒╗    ╲         │   ▒ lips over the knob's
-//           │       └──┘  ╲  knob   ║ ╲   ╲ spring │     front and slanted sides
-//      ═════╪══════════════>        ║  ) )  far   │
-//           │       ┌──┐  ╱         ║ ╱   ╱ wall   │
-//           │       │  └┘╱▒▒▒▒▒▒▒▒▒╝    ╱         │
-//   ────────┘       └───────────────────────────┘
+//   ────────┐       ┌────────────────────────┐
+//           │       │  ▒▒▒  ┌─---------.      │   ▒ lips over the knob's front,
+//           │       └─┐▒  / │            \     │     both sides of the neck, out
+//      ═════╪═════════> ( knob   way in   )    │     to a straight STEP across
+//           │       ┌─┘▒  \ │            /     │     the band at `tb_lip_end`
+//           │       │  ▒▒▒  └─---------'      │
+//   ────────┘       └────────────────────────┘
+//                   niche step
 //
-//   * The last bar ends in a NECK and a KNOB, the band's full thickness,
-//     flush on top and underneath. The knob is a dovetail in plan: narrow at
-//     the neck, widening at `tb_a` to its back, then a short straight tail.
-//   * Bar 0 is lengthened into a SOCKET BLOCK with the knob's shape cut
-//     through it, open top and bottom. LIPS overhang the knob's edge at the top
-//     and the bottom along its front (beside the neck) and both slanted sides.
-//     The block's side walls are solid.
-//   * The band's pull draws the knob into the narrowing pocket, so it wedges
-//     deeper under the lips. Two SPRING LEAVES on the knob's back corners bend
-//     in toward the middle and press on the far wall: they push it the same
-//     way when the band is slack.
-//   * Because the sides slant, the knob only has to move back `tb_slide`
-//     (~1.4) for its sides to come out from under the lips — the rails needed
-//     ~4.4. To open: push the ends together (the springs give), push the knob
-//     out downwards. To close: push the ends together, push the knob up from
-//     below (a chamfer on the far wall's bottom edge bends the springs in),
-//     let go.
+//   * The last bar ends in a NECK and a round KNOB `tb_r`, the band's full
+//     thickness, flush on top and underneath.
+//   * Bar 0 is lengthened into a SOCKET BLOCK with the hole cut through it,
+//     open top and bottom. In front, the NICHE: the knob's circle, its LIPS
+//     overhanging the knob's edge at the top and the bottom from the neck back
+//     to the STEP. Behind the step, the WAY-IN: a circle `tb_entry_gap` wider
+//     than the knob all round, centred where the knob drops in. The block's
+//     side walls are solid.
+//   * CLICKS (the user's request, 2026-10-20): the knob's rim behind the step
+//     is two LEAVES, rooted near its back middle, each with a BUMP near its
+//     free end. A TOOTH on each side of the way-in sits just behind its bump
+//     at home: to slide back, the bump rides over it, the leaf giving
+//     `cl_h`. Not a push spring: the knob is free once past the teeth.
+//   * To close: push the ends together, drop the knob into the way-in, pull it
+//     forward into the niche — it clicks. The band's pull keeps it there.
+//   * To open: push the ends together firmly (past the click; `tb_slide`, ~1.9,
+//     the seam's width), push the knob out downwards.
 //
-// Nothing is cantilevered into air: the knob, the springs and the lips all
-// stand on the bed; the upper lips are an overhang `tb_lip` deep, stepping
-// under a bead a layer.
-tb_neck    = 4.5;     // neck width
-tb_side    = 1.4;     // the block's solid side walls at the knob's back
-tb_front   = 3.1;     // the knob's front face, half-width: the front lips run
-                      //   from the neck slot out to here
-tb_a       = 45;      // the knob's slanted sides, from the band's axis. Less
-                      //   makes the knob longer and the opening push longer:
-                      //   the push is 1.0 / sin(a)
-tb_tail    = 1.0;     // straight knob behind the slanted sides
+// A push spring was ruled out: it would bend `tb_slide` + preload, ~2.3, and
+// on an 8 mm knob its leaves are ~4 mm long (15–20 %; the dovetail's broke
+// at 8.5 %). A click only bends `cl_h`.
+//
+// Nothing is cantilevered into air: the knob and the lips stand on the bed;
+// the upper lips are an overhang `tb_lip` deep, stepping under a bead a layer.
+tb_neck    = 3.5;     // neck width (thin, as in the user's sketch: a 4.5 neck on an
+                      //   8 mm knob left the lips beside it too short)
+tb_side    = 1.4;     // the block's side walls, at their thinnest
 tb_sh      = 1.6;     // the block's front wall, beside the neck
+tb_r       = 4.0;     // the knob's radius (8 across, the user's choice)
+tb_lip_end = 75;      // the STEP: where the lips end, as an angle on the
+                      //   knob's edge from the band's axis. The step itself is
+                      //   a straight line across the band
 tb_lip     = 1.1;     // how far a lip overhangs the knob's edge
 tb_lip_a   = 60;      // lip faces, from vertical. Steeper than 45 on purpose:
                       //   pushed up or down, a face cams the knob sideways
@@ -234,49 +239,50 @@ tb_land    = 0.4;     // a vertical land at the lip's tip, two layers: without
 tb_fit     = 0.15;    // vertical walls round the knob and the neck
 tb_vfit    = 0.3;     // across the lip faces — they are a printed overhang
                       //   and an elephant's foot, so more than `tb_fit`
-tb_room_fit = 0.15;   // round the knob pushed back, as it drops out
-tb_clear   = 0.2;     // knob pushed back -> the lips' tips, and the springs'
-                      //   posts -> the far wall
-tb_far     = 3.45;    // bar 0 behind the far wall, to its +x face: the far
-                      //   wall's chamfer must stop short of bar 0's lug arms
+tb_clear   = 0.2;     // knob pulled back -> the lips' tips; the knob's
+                      //   shaped edge past the step
+tb_entry_gap = 1.4;   // the way-in, round the knob as it drops in
 
-// The springs: a leaf `sp_t` thick from a post on each back corner of the
-// knob, running in to a tip `sp_gap` from its twin. Pressed against the far
-// wall by `sp_pre` when home; by `sp_pre` + `face_gap` pushed fully open.
-// Each leaf is CURVED, square off its post and bending back toward the wall:
-// the shape a tip-loaded leaf bends into, so pushed fully open it lies flat
-// against the far wall instead of its middle digging into it (a straight
-// diagonal leaf did, the tip only bends to f(x) = x^2 (3 - x) / 2).
-sp_t       = 0.8;
-sp_post    = 0.8;     // the post, across the band
-sp_slot    = 0.5;     // leaf <-> knob's back at the root. On the bed: >= 0.45
-sp_gap     = 0.6;     // between the two tips. On the bed too
-sp_pre     = 0.3;
+// The clicks (`cl_*`), angles from the knob's front, the +y one; mirrored.
+cl_t       = 0.7;     // leaf thickness, on the rim
+cl_root    = 168;     // leaf root, near the knob's back middle: a long leaf.
+                      //   The 24° between the two roots stays solid: the clamp
+cl_tip     = 94;      // leaf's free end
+cl_gap0    = 86;      // the rigid rim ends here: the gap in front of the tip
+cl_slot    = 0.8;     // leaf <-> core: room to give `cl_h`, and >= 0.45
+cl_ang     = 101;     // the bump
+cl_rbc     = tb_r + 0.2;   // ... its centre's radius
+cl_rb      = 0.5;     // ... its radius
+cl_h       = 0.3;     // how far the leaf gives to pass the tooth
+cl_rt      = 0.5;     // the tooth's tip radius
+cl_c       = 0.05;    // bump <-> tooth, home
+tb_far     = 1.44;    // bar 0 behind the slot's far end, to its +x face:
+                      //   the slot must stop short of bar 0's lug arms
 
 tb_band_w  = (rows - 1) * row_pitch + body;  // = band_w, which comes later
-tb_hw      = tb_band_w/2 - tb_side - tb_fit; // the knob's back, half-width
 tb_overlap = tb_lip - tb_vfit;               // a lip's tip over the knob's edge
-tb_slide   = (tb_overlap + tb_clear) / sin(tb_a);   // the opening push
+// The step, ahead of the knob's centre, and the lips' last tip on it.
+tb_step    = tb_r * cos(tb_lip_end);
+tb_tip_y   = sqrt(pow(tb_r - tb_overlap, 2) - tb_step*tb_step);
+// The pull: that tip, the worst point, ends up `tb_clear` outside the knob
+// moved back by it.
+tb_slide   = sqrt(pow(tb_r + tb_clear, 2) - tb_tip_y*tb_tip_y) - tb_step;
 face_gap   = tb_slide + 0.1;                 // the seam when fastened
 
 // Positions along the band, from the block's front face, fastened, home.
 tb_ua      = tb_sh + tb_fit;                 // knob front
-tb_ub      = tb_ua + (tb_hw - tb_front) / tan(tb_a);   // slanted sides end
-tb_ut      = tb_ub + tb_tail;                // knob back: the posts start
-sp_ur      = tb_ut + sp_slot + sp_t/2;       // leaf root centre
-sp_yr      = tb_hw - sp_post;                //   ... off the band's middle
-tb_uw      = tb_ut + sp_slot + sp_t + tb_slide + tb_clear;   // the far wall
-sp_ut      = tb_uw + sp_pre - sp_t/2;        // leaf tip centre (as printed)
-sp_yt      = sp_gap/2 + sp_t/2;
-sp_len     = sp_yr - sp_yt;                  // leaf span, across the band
-sp_rise    = sp_ut - sp_ur;                  // root -> tip, along the band
-sp_n       = 12;                             // segments along the curve
-function sp_f(x) = x*x*(3 - x)/2;
-function sp_pt(i) = [sp_ur + sp_rise*sp_f(i/sp_n), sp_yr - sp_len*i/sp_n];
-sp_strain  = 1.5 * sp_t * (sp_pre + face_gap) / (sp_len*sp_len);
-sp_rest    = 1.5 * sp_t * sp_pre / (sp_len*sp_len);
-tb_ch      = sp_pre + face_gap + tb_clear;   // the far wall's bottom chamfer:
-                                             //   the tips' lead-in, closing
+tb_uc      = tb_ua + tb_r;                   // knob centre: the lips end here
+tb_ustep   = tb_uc - tb_step;                // the step
+tb_ue      = tb_uc + tb_slide;               // the way-in's centre
+tb_entry_r = tb_r + tb_entry_gap;
+tb_uend    = tb_ue + tb_entry_r;             // the hole's far end
+function tb_pol(a, r) = [tb_uc - r*cos(a), r*sin(a)];
+cl_bc      = tb_pol(cl_ang, cl_rbc);          // bump centre, home
+cl_dy      = cl_rb + cl_rt - cl_h;            // bump -> tooth centres, across
+cl_du      = sqrt(pow(cl_rb + cl_rt + cl_c, 2) - cl_dy*cl_dy);   // ... along, home
+cl_tc      = cl_bc + [cl_du, cl_dy];          // tooth centre
+cl_end     = (cl_slot/2) / (tb_r - cl_t - cl_slot/2) * 180/PI;  // the slot's
+                                              //   rounded end, as an angle
 tb_tipd    = tb_fit + tb_lip - tb_vfit;      // a lip's reach past its wall
 tb_zlip    = tb_land + tb_tipd * tan(90 - tb_lip_a);   // where a lip face
                                              //   meets its wall
@@ -285,29 +291,35 @@ assert(0.2 * tan(tb_lip_a) <= 0.4, "the lips step more than a bead a layer");
 assert(tb_zlip > tb_land && tb_zlip < tb_land + tb_lip_h,
        "the lip's face misses its wall");
 assert(2*tb_zlip < thick - 1.5, "the lips leave too little wall face");
-assert(tb_side >= 1.2, "the block's side walls are too thin");
-assert(tb_front - (tb_neck/2 + tb_fit) >= 0.5, "no front face beside the neck");
-assert(tb_hw - tb_front >= 2.5, "the knob hardly widens");
-assert(sp_slot >= 0.45 && sp_gap >= 0.45, "a spring slot will weld on the first layer");
-assert(sp_ut - sp_t/2 - tb_ut >= sp_pre + face_gap,
-       "the springs bottom out on the knob before it can come out");
-assert(h - tb_far + tb_ch <= 1.6,
-       str("the far wall's chamfer reaches x ", h - tb_far + tb_ch, " of bar 0, into its lug arms"));
-// The proven leaves bent 2.9 % (the old keyhole). These are the user's
-// springs, short because the knob is only so wide: they sit at `sp_rest`
-// in wear and reach `sp_strain` only while the clasp is pushed open.
-assert(sp_rest <= 0.029, str("spring strained to ", 100*sp_rest, "% at rest"));
-assert(sp_strain <= 0.09, str("spring strained to ", 100*sp_strain, "% pushed open"));
+assert(tb_band_w/2 - tb_entry_r >= tb_side, "the block's side walls are too thin");
+assert(tb_tip_y - (tb_neck/2 + tb_fit) >= 0.7,
+       "the lips beside the neck are too short to hold");
+assert(tb_step > 0, "the step must be ahead of the knob's centre");
+assert(cl_gap0 > tb_lip_end + 5 && cl_tip - cl_gap0 >= 0.45 / tb_r * 180/PI,
+       "the leaf's tip gap is too narrow, or runs into the lips");
+assert(cl_slot >= cl_h + 0.45, "the leaf bottoms out on the core");
+assert(180 - cl_root >= 8, "the two leaves' roots leave no solid clamp between them");
+assert(cl_tc[1] - cl_rt >= tb_r + 0.2, "the rigid rim rubs the tooth as the knob slides");
+// Pushed fully open the bump is past its tooth: the knob drops out freely.
+assert(norm([tb_slide - cl_du, cl_dy]) >= cl_rb + cl_rt + 0.15,
+       "the bump still meets its tooth where the knob drops out");
+assert(norm(cl_bc + [0, cl_rb] - [tb_ue, 0]) <= tb_entry_r - 0.2,
+       "the bump runs into the way-in's wall");
+// The knob at home, behind the step, must lie inside the way-in.
+assert(sqrt(pow(tb_slide + tb_step, 2) + pow(tb_r + tb_fit, 2)) <= tb_entry_r,
+       "the knob's home overhangs the way-in behind the step");
+assert(h - tb_far <= 1.6,
+       str("the slot reaches x ", h - tb_far, " of bar 0, into its lug arms"));
 
 // ------------------------------------------------------------ length budget
 // Clasped, the loop runs: bar 0's +x face -> band -> last bar's +x face ->
 // `face_gap` -> socket block -> bar 0. The block is fixed at every size; the
 // BAND makes up the difference, as it did for the old buckle.
 //
-// The block is as short as the pocket allows: its far wall stops `tb_far`
-// short of bar 0's +x face, so the pocket runs on into bar 0 itself, and the
+// The block is as short as the pocket allows: the pocket's far end stops
+// `tb_far` short of bar 0's +x face, so it runs on into bar 0 itself, and the
 // block reaches `blk_ext` past bar 0's -x face.
-x_f       = (h - tb_far) - tb_uw;                // the block's front face
+x_f       = (h - tb_far) - tb_uend;              // the block's front face
 blk_ext   = -h - x_f;
 
 // Which leaves a remainder problem, so: the number of bars is chosen to land
@@ -456,12 +468,11 @@ echo(str("cols=", cols, " rows=", rows,
          "  pitch=", pitch, " (gap ", pitch - body, ")",
          "  buckle clasped=", body + face_gap + blk_ext + body,
          " (block ", blk_ext, " past bar 0)",
-         "  knob ", 2*tb_hw, " wide, ", tb_ut - tb_ua, " long, sides ", tb_a,
-         "deg, neck ", tb_neck, " lips ", tb_lip, " at ", tb_lip_a, "deg",
+         "  knob r ", tb_r, ", step at ", tb_lip_end, "deg, way-in r ", tb_entry_r, ", neck ", tb_neck,
+         "  clicks ", cl_h, " on ", cl_t, " leaves",
+         " lips ", tb_lip, " at ", tb_lip_a, "deg",
          "  seam ", face_gap, "  push to open ", tb_slide,
-         "  springs ", sp_len, " long, strain ", 100*sp_rest, "% / ",
-         100*sp_strain, "% pushed open",
-         "  footprint=", (tb_x0 + sp_ut + sp_t/2) - x_f,
+         "  footprint=", (tb_x0 + tb_uc + tb_r) - x_f,
                     " x ", band_w, " x ", top_z,
          "  band thick=", thick,
          "  knuckle cap at bed=", knuck_foot,
@@ -588,14 +599,6 @@ module bar(col) {
 // along the band from the block's front face, y off the band's middle.
 tb_x0 = x_r + face_gap;
 
-// A lip-shaped edge in section, (a, z) with a measured INTO the part from
-// `a0`: inset by the lip at the bottom and the top, full in between.
-module tb_edge_2d(a0, len)
-    polygon([[a0 + tb_lip, 0], [a0 + tb_lip, tb_land],
-             [a0, tb_land + tb_lip_h], [a0, thick - tb_land - tb_lip_h],
-             [a0 + tb_lip, thick - tb_land], [a0 + tb_lip, thick],
-             [a0 + len, thick], [a0 + len, 0]]);
-
 // The lips a wall carries, in section, (a, z) with a measured from the wall
 // (at a = 0) into the cut: what is left standing of the wall's material.
 module tb_lips_2d()
@@ -603,56 +606,56 @@ module tb_lips_2d()
              [tb_tipd, thick - tb_land], [0, thick - tb_zlip], [0, tb_zlip],
              [tb_tipd, tb_land], [tb_tipd, -2]]);
 
-// Extrude an (a, z) section along a line in the local plan: from `p` for
-// `len` in direction `ang`, with a measured to the line's right (the inside
-// of the knob or the pocket for every edge used here).
-module tb_along(p, ang, len)
-    let (t = [cos(ang), sin(ang)], n = [sin(ang), -cos(ang)], q = p + len*t)
-        multmatrix([[n[0], 0, -t[0], q[0]], [n[1], 0, -t[1], q[1]],
-                    [0, 1, 0, 0], [0, 0, 0, 1]])
-            linear_extrude(len) children();
-
-// The knob's plan, home: the front face, the slanted sides, the tail.
-module tb_knob_2d()
-    polygon([[tb_ua, -tb_front], [tb_ub, -tb_hw], [tb_ut, -tb_hw],
-             [tb_ut, tb_hw], [tb_ub, tb_hw], [tb_ua, tb_front]]);
-
-// The same, without the tail: the part shaped to the lips.
-module tb_wedge_2d()
-    polygon([[tb_ua, -tb_front], [tb_ub, -tb_hw], [tb_ub, tb_hw], [tb_ua, tb_front]]);
-
-// The +y slanted side's line, offset `o` outward of the knob's.
-function tb_slant_p(o) = [tb_ua - o*sin(tb_a), tb_front + o*cos(tb_a)];
-
-// A spring, the +y one: a post on the knob's back corner and a leaf from it
-// in to the tip.
-module tb_spring() {
-    translate([tb_ut - 0.01, sp_yr, 0]) cube([sp_slot + sp_t + 0.01, sp_post, thick]);
-    for (i = [0 : sp_n - 1]) hull() {
-        translate(concat(sp_pt(i), 0)) cylinder(d = sp_t, h = thick);
-        translate(concat(sp_pt(i + 1), 0)) cylinder(d = sp_t, h = thick);
-    }
+// What a lip-shaped edge loses, in section, (a, z) with a measured INTO the
+// part from its edge: the insets at the bottom and the top.
+module tb_edge_cut_2d() {
+    polygon([[-1, -1], [tb_lip, -1], [tb_lip, tb_land],
+             [0, tb_land + tb_lip_h], [-1, tb_land + tb_lip_h]]);
+    polygon([[-1, thick + 1], [tb_lip, thick + 1], [tb_lip, thick - tb_land],
+             [0, thick - tb_land - tb_lip_h], [-1, thick - tb_land - tb_lip_h]]);
 }
+
+// Sweep a radial section — x is the radius from the knob's centre — round the
+// knob's front arc, `ang` either side of the band's axis.
+module tb_sector(ang)
+    translate([tb_uc, 0, 0]) rotate([0, 0, 180 - ang])
+        rotate_extrude(angle = 2*ang) children();
 
 module clasp_tab() {
     // neck, from inside the last bar into the knob — past the lip's inset,
     // so it meets the knob's chamfered top and bottom too
     translate([x_r - 1.0, band_cy - tb_neck/2, 0])
         cube([tb_x0 + tb_ua + tb_lip + 0.5 - (x_r - 1.0), tb_neck, thick]);
-    translate([tb_x0, band_cy, 0]) {
-        // the knob, its front and both slanted sides shaped to the lips.
-        // Each edge is its own child: a `for` inside intersection() is ONE
-        // child, the union, and would shape nothing.
+    // the knob, its front shaped to the lips — `tb_clear` past the step, so
+    // the lips' end faces clear the knob's full edge
+    translate([tb_x0, band_cy, 0]) difference() {
+        linear_extrude(thick) tb_knob_2d();
         intersection() {
-            linear_extrude(thick) tb_wedge_2d();
-            tb_along([tb_ua, -20], 90, 40) tb_edge_2d(0, 20);
-            tb_along(tb_slant_p(0) - 20*[cos(tb_a), sin(tb_a)], tb_a, 40) tb_edge_2d(0, 20);
-            mirror([0, 1, 0])
-                tb_along(tb_slant_p(0) - 20*[cos(tb_a), sin(tb_a)], tb_a, 40) tb_edge_2d(0, 20);
+            tb_sector(100) translate([tb_r, 0]) mirror([1, 0]) tb_edge_cut_2d();
+            translate([-50, -50, -5]) cube([50 + tb_ustep + tb_clear, 100, thick + 10]);
         }
-        translate([tb_ub - 0.01, -tb_hw, 0]) cube([tb_tail + 0.01, 2*tb_hw, thick]);
-        for (s = [0, 1]) mirror([0, s, 0]) tb_spring();
     }
+}
+
+// An annular sector, angles from the knob's front.
+module tb_ring_2d(a0, a1, r0, r1, n = 24)
+    polygon(concat([for (i = [0 : n]) tb_pol(a0 + (a1 - a0)*i/n, r1)],
+                   [for (i = [n : -1 : 0]) tb_pol(a0 + (a1 - a0)*i/n, r0)]));
+
+// The knob's plan: the circle, its rim behind the step cut free as two
+// leaves (slot behind, gap in front of the tip, the slot's root end rounded),
+// a bump on each.
+module tb_knob_2d() {
+    difference() {
+        translate([tb_uc, 0]) circle(r = tb_r);
+        for (m = [0, 1]) mirror([0, m]) {
+            tb_ring_2d(cl_gap0, cl_root - cl_end, tb_r - cl_t - cl_slot, tb_r - cl_t);
+            tb_ring_2d(cl_gap0, cl_tip, tb_r - cl_t - cl_slot, tb_r + 1);
+            // the slot's rounded end stops AT the root, not past it
+            translate(tb_pol(cl_root - cl_end, tb_r - cl_t - cl_slot/2)) circle(d = cl_slot);
+        }
+    }
+    for (m = [0, 1]) mirror([0, m]) translate(cl_bc) circle(r = cl_rb);
 }
 
 // Bar 0 lengthened to the block's front face: the same slab as a bar, so the
@@ -660,38 +663,34 @@ module clasp_tab() {
 module clasp_block()
     translate([(x_f + h)/2, band_cy, 0]) slab(h - x_f);
 
-// The lips the block keeps, in the local frame: along the front wall beside
-// the neck slot and along both slanted walls, to the slanted sides' end.
-module tb_lips() {
-    intersection() {
-        union() {
-            tb_along([tb_ua - tb_fit, -20], 90, 40) tb_lips_2d();
-            tb_along(tb_slant_p(tb_fit) - 20*[cos(tb_a), sin(tb_a)], tb_a, 40) tb_lips_2d();
-            mirror([0, 1, 0])
-                tb_along(tb_slant_p(tb_fit) - 20*[cos(tb_a), sin(tb_a)], tb_a, 40) tb_lips_2d();
-        }
-        // clear of the neck, and short of the tail
-        difference() {
-            translate([-5, -20, -5]) cube([tb_ub - tb_fit + 5, 40, thick + 10]);
-            translate([-6, -(tb_neck/2 + tb_fit), -6]) cube([tb_ub + 6, tb_neck + 2*tb_fit, thick + 12]);
-        }
-    }
-}
-
-// The cut: the neck slot, the knob's home with its lips left standing, the
-// knob pushed back (where it drops out), and the room for the springs up to
-// the far wall, chamfered underneath as their lead-in. Open top and bottom.
-module clasp_pocket() translate([x_f, band_cy, 0]) {
-    translate([-1, -(tb_neck/2 + tb_fit), -1]) cube([tb_sh + 1.01, tb_neck + 2*tb_fit, thick + 2]);
+// The lips the block keeps, in the local frame: round the niche's front arc
+// from the neck slot to the step.
+module tb_lips()
     difference() {
-        translate([0, 0, -1]) linear_extrude(thick + 2) offset(delta = tb_fit) tb_knob_2d();
+        tb_sector(100) translate([tb_r + tb_fit, 0]) mirror([1, 0]) tb_lips_2d();
+        translate([-50, -(tb_neck/2 + tb_fit), -6]) cube([100, tb_neck + 2*tb_fit, thick + 12]);
+        translate([tb_ustep, -50, -6]) cube([100, 100, thick + 12]);
+    }
+
+// The cut: the neck slot, the niche (the knob's circle at home, its lips left
+// standing) and, behind the step, the way-in less its two teeth. Open top and
+// bottom.
+module clasp_pocket() translate([x_f, band_cy, 0]) {
+    translate([-1, -(tb_neck/2 + tb_fit), -1]) cube([tb_ua + 2, tb_neck + 2*tb_fit, thick + 2]);
+    difference() {
+        translate([0, 0, -1]) linear_extrude(thick + 2)
+            translate([tb_uc, 0]) circle(r = tb_r + tb_fit);
         tb_lips();
     }
-    translate([tb_slide, 0, -1]) linear_extrude(thick + 2)
-        offset(delta = tb_room_fit) tb_knob_2d();
-    xz_extrude(-(tb_hw + tb_fit), 2*(tb_hw + tb_fit))
-        polygon([[tb_ub, -1], [tb_uw + tb_ch + 1, -1], [tb_uw, tb_ch],
-                 [tb_uw, thick + 1], [tb_ub, thick + 1]]);
+    translate([0, 0, -1]) linear_extrude(thick + 2) difference() {
+        intersection() {
+            translate([tb_ue, 0]) circle(r = tb_entry_r);
+            translate([tb_ustep, -50]) square([100, 100]);
+        }
+        // the teeth the bumps click past, grown out of the way-in's wall
+        for (m = [0, 1]) mirror([0, m])
+            hull() for (dy = [0, 3]) translate(cl_tc + [0, dy]) circle(r = cl_rt);
+    }
 }
 
 // A station: the hole and the countersink, cut from bar `col` on the pin's

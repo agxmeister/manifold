@@ -6,8 +6,8 @@ a wrist, and nothing is assembled, glued, or picked out of supports.
 
 **Sized to the wrist it is printed for — by default a 142 mm loop on a
 130 mm wrist (the 4-year-old it was printed for, and fits), 12 bars, printed
-flat in a 151.4 × 16.2 × 4.2 mm strip.** `-D wrist=180` is the adult size.
-The buckle is a dovetail knob held by lips and two springs, flush, the same at every size;
+flat in a 151.8 × 16.2 × 4.2 mm strip.** `-D wrist=180` is the adult size.
+The buckle is a round knob pulled into a lipped niche, where it clicks; flush, the same at every size;
 length is band, not buckle.
 
 ![the bracelet as it comes off the bed](previews/bracelet-bracelet.png)
@@ -143,87 +143,88 @@ Per-layer step falls from 0.348 mm to a uniform 0.128 mm.
 
 ## The clasp
 
-A **dovetail knob with two springs on its end** — the user's design and
-sketch, 2026-10-20, unprinted. It replaced the T on rails the same day the
-rails were printed: the knob had to slide ~4.4 mm to come off them, and the
-side-wall detents were too small to print well.
+A **round knob in a niche** — the user's design and sketch, 2026-10-20,
+unprinted. The knob drops into a roomy round way-in at the back of the
+socket's hole, then is pulled forward ~1.9 mm into the niche in front, whose
+lips hold its front, and it clicks in place. It replaced a dovetail knob whose
+springs broke almost at once. Three round versions came before it the same
+day: rim springs, a zigzag spring, and a plain slot.
 
 ```
  top, fastened
    last bar          socket block (+ bar 0)
- ────────┐       ┌───────────────────────────┐
-         │       │  ┌┐╲▒▒▒▒▒▒▒▒▒╗    ╲         │   ▒ lips over the knob's
-         │       └──┘  ╲  knob   ║ ╲   ╲ spring │     front and slanted sides
-    ═════╪══════════════>        ║  ) )  far   │
-         │       ┌──┐  ╱         ║ ╱   ╱ wall   │
-         │       │  └┘╱▒▒▒▒▒▒▒▒▒╝    ╱         │
- ────────┘       └───────────────────────────┘
+ ────────┐       ┌────────────────────────┐
+         │       │  ▒▒▒  ┌─---------.      │   ▒ lips over the knob's front,
+         │       └─┐▒  / │            \     │     both sides of the neck, out
+    ═════╪═════════> ( knob   way in   )    │     to a straight step across
+         │       ┌─┘▒  \ │            /     │     the band
+         │       │  ▒▒▒  └─---------'      │
+ ────────┘       └────────────────────────┘
+                 niche step
 ```
 
-The last bar ends in a 4.5 mm **neck** and a **knob**, the band's full 4.2 mm
-thick. In plan the knob is a dovetail: 6.2 mm across at its front, widening at
-45° to 13.1 mm, then a 1 mm straight tail, 4.45 mm long in all. Bar 0 is
-lengthened 6.6 mm into a **socket block** with the knob's shape cut through it,
-open top and bottom. Its side walls are solid.
+The last bar ends in a 3.5 mm **neck** and a round **knob**, 8 mm across and
+the band's full 4.2 mm thick. Bar 0 is lengthened 8.5 mm into a **socket
+block** with the hole cut through it, open top and bottom. Its side walls are
+solid.
 
-- **Held by lips.** 1.1 mm **lips** overhang the knob's edge at the top and the
-  bottom along its front (beside the neck) and both slanted sides, so it cannot
-  move up or down. The band's pull draws it into the narrowing pocket, which
-  only wedges it deeper under them.
-- **Two springs.** A curved leaf (0.8 × 5 mm) on each back corner of the knob
-  bends in toward the middle and presses on the block's far wall, 0.3 mm
-  preloaded. They push the knob forward when the band is slack.
-- **To open:** push the ends together 1.4 mm (the springs give, the slanted
-  sides come out from under the lips), then push the knob out downwards.
-- **To close:** push the ends together, push the knob up into the block from
-  below — a 45° chamfer on the far wall's bottom edge bends the springs in —
-  and let go.
-- **Flush.** Both ends are the full band thickness. Fastened, it is 20.1 mm of
-  rigid band including both end bars, with a 1.5 mm seam.
+- **The niche.** In front, the knob's own circle. 1.1 mm **lips** overhang the
+  knob's edge at the top and the bottom, from the neck out to a straight
+  **step** across the band, 75° round the knob from the front either side. The
+  knob cannot move up or down, and the band's pull keeps it in the niche.
+- **The way-in.** Behind the step, a circle 1.4 mm wider than the knob all
+  round, centred where the knob drops in.
+- **Clicks.** The knob's rim behind the step is two springy leaves (0.7 mm),
+  rooted at its back middle, each with a small bump near its free end. A
+  tooth on each side of the way-in sits just behind its bump. To slide back,
+  each bump rides over its tooth and its leaf gives 0.3 mm: ~1.9 % bend, about
+  8 N per leaf at the top of the click.
+- **To close:** push the ends together, drop the knob into the way-in, pull
+  it forward into the niche until it clicks.
+- **To open:** push the ends together firmly, past the click (1.9 mm, the
+  seam's width), and push the knob out downwards.
+- **Flush.** Both ends are the full band thickness. Fastened, it is 22.4 mm of
+  rigid band including both end bars, with a 2.0 mm seam.
 
-**Why the sides slant.** A sideways lip lets go once the knob's edge has moved
-in by the lip's grip plus a little clearance (1.0 mm). Slanted at 45°, the edge
-moves in by sin 45° of the push, so 1.4 mm does it. Straight rails needed the
-knob's whole length. A shallower slant (`tb_a`) gives a longer knob and a
-longer push.
+**The click is not a push spring.** It stops the knob sliding back until it is
+pushed firmly. Past the teeth the knob is free. A spring that pushes the knob
+home would have to bend the whole 1.9 mm pull plus a preload. On an 8 mm knob
+its leaves are only ~4 mm long, so they would bend 15–20 %, and the dovetail's
+springs broke at 8.5 %. A click bends only its own 0.3 mm. `cl_h` sets how
+hard it clicks.
 
-**The springs are short, and that is their risk.** They are as long as half the
-knob is wide, so pushed fully open they bend about 8.5 % at the root. The
-proven leaves here (the old keyhole) bent 2.9 %. In wear they sit at 1.4 %. If
-they take a set, the clasp still holds under the band's pull; only the slack
-knob can wander back. Lowering `sp_pre` or `sp_t` softens them.
+**The pull.** A lip lets go once the knob, moved back, has cleared its tip by
+0.2 mm. The worst tip is the last one, on the step. With the step at 75° that
+takes 1.88 mm; at the widest point it would be 2.72. `tb_lip_end` moves the step.
 
-Each leaf is curved, square off its post and bending back toward the wall: the
-shape a leaf loaded at its tip bends into. Pushed fully open it lies flat
-against the wall. A straight diagonal leaf would dig its middle into it.
+**The neck is 3.5 mm** (it was 4.5), as in the sketch. On an 8 mm knob a 4.5 mm
+neck takes the middle of the front arc and leaves the lips beside it too short.
 
 The lip faces are 60° from vertical, not 45°: pushed up or down, a sloped lip
 cams the knob sideways, out from under itself, and at 60° that cam is about half
 as strong. If it lets go, make the lips deeper (`tb_lip`) or steeper
-(`tb_lip_a`).
+(`tb_lip_a`), or move the step back (`tb_lip_end`).
 
-Everything prints without support: the knob, the springs and the block all
-stand on the bed. The upper lips are a 60° overhang 1.1 deep, stepping 0.35 mm
-a layer, under a bead; each lip's tip has a 0.4 mm vertical land. The far wall's
-chamfer is a 45° ramp off the bed. Slots between the springs and the knob, and
-between the two tips, are at least 0.5 mm, so the first layers don't weld.
+Everything prints without support: the knob, its leaves and bumps, the teeth
+and the block all stand on the bed. The slots behind the leaves are 0.8 mm,
+the gaps in front of their tips ~0.5 mm.
+The upper lips are a 60° overhang 1.1 deep, stepping 0.35 mm a layer, under a
+bead; each lip's tip has a 0.4 mm vertical land.
 
 Fits: 0.15 mm on the vertical walls, 0.3 across the lip faces (a printed
-overhang and an elephant's foot). Checked by intersecting the fastened halves
-(knob and springs separately: the springs are meant to touch the far wall):
+overhang and an elephant's foot). Checked by intersecting the fastened halves:
 
 | test | reads |
 |---|---|
 | home | empty |
 | up / down 0.05 | empty |
-| up / down 0.25 | the lips — front and both slanted sides |
-| pulled apart 0.10 / 0.30 | empty / the slanted walls |
-| pushed 0.5, 1.0 | empty |
-| pushed 1.0, down 1 (control) | the lips |
-| pushed 1.41, moved down by any amount | empty: the knob drops right out |
-| pushed 1.6 | the faces of the seam |
-| springs at home / pushed | the far wall only, 0.3 deep / 1.7 |
-| springs' posts pushed 1.51 / 1.7 (control) | empty / the far wall |
+| up / down 0.25 | the lips |
+| pulled apart 0.10 / 0.30 | empty / the front arc |
+| pushed 0.2 … 1.2 | the bumps on the teeth only (the click), deepest at 0.78 |
+| pushed 1.5 | empty: past the click |
+| pushed 1.0 / 1.5, down 1 (controls) | the lips |
+| pushed 1.88, moved down by any amount | empty: the knob drops right out |
+| pushed 2.1 | the faces of the seam |
 
 ## What is printed over air
 
@@ -602,7 +603,7 @@ printed in place.
 
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
-| `bracelet` | `bracelet` | 151.4 × 16.2 × 4.2 mm | all 12 bars' own flat feet |
+| `bracelet` | `bracelet` | 151.8 × 16.2 × 4.2 mm | all 12 bars' own flat feet |
 | `cone-pin` | `cone-pin` | 6.3 × 6.3 × 8.8 mm, standing | its foot, a ring round the hex socket, 20 mm² |
 | `screwdriver` | `screwdriver` | 65.0 × 32.0 × 8.0 mm, lying flat | its paddle and shaft, 1033 mm² in one piece |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 19.8 × 9.3 mm | its own bottom, 104 mm² in one piece |
@@ -653,16 +654,15 @@ stay on a bar's flat top (asserted), which a narrower band would cut short.
 
 | `wrist` | bars | loop, clasped | joint pitch | printed footprint |
 |---|---|---|---|---|
-| **130 (default, 4-year-old)** | **12** | **142.0 mm** | **11.63 mm** | **151.4 × 16.2 mm** |
-| 140 (child) | 13 | 152.0 mm | 11.49 mm | 161.4 × 16.2 mm |
-| 160 | 15 | 172.0 mm | 11.28 mm | 181.4 × 16.2 mm |
-| 180 (adult) | 16 | 192.0 mm | 11.86 mm | 201.4 × 16.2 mm |
-| 200 | 18 | 212.0 mm | 11.64 mm | 221.4 × 16.2 mm |
-| 180, `rows=3` | 16 | 192.0 mm | 11.52 mm | 206.5 × 26.4 mm |
+| **130 (default, 4-year-old)** | **12** | **142.0 mm** | **11.41 mm** | **151.8 × 16.2 mm** |
+| 140 (child) | 13 | 152.0 mm | 11.30 mm | 161.8 × 16.2 mm |
+| 160 | 14 | 172.0 mm | 11.97 mm | 181.8 × 16.2 mm |
+| 180 (adult) | 16 | 192.0 mm | 11.70 mm | 201.8 × 16.2 mm |
+| 200 | 18 | 212.0 mm | 11.50 mm | 221.8 × 16.2 mm |
+| 180, `rows=3` | 16 | 192.0 mm | 11.70 mm | 201.8 × 26.4 mm |
 
-The buckle is 20.1 mm of rigid band (25.2 at `rows=3`: the knob grows with the band's width), the end bars and the 1.5 mm
-seam included — about 10 mm less than the stud and keyhole, which the band
-takes back as one more bar.
+The buckle is 22.4 mm of rigid band at every size and width, the end bars and
+the 2.0 mm seam included.
 
 The band is 4.2 mm thick at every size, and so is the whole print: nothing
 stands above it any more (a charm station's rib reaches 5.2).
@@ -676,9 +676,8 @@ the play in the hinge) and **`axial_fit`** (0.6 mm, along the pin — both above
 `fit` (0.3 mm, the swing clearance and the buckle's face gap), `knuck_wall` (0.9 mm,
 the deliberate thinnest wall), `knuck_slope` (30.0°, derived — the knuckle
 underside, asserted at ≤ 40°), and the buckle's `tb_lip` / `tb_lip_a` (how
-far and how steeply the lips hold the T), `dt_pinch` / `lf_len` (the detent —
-`lf_strain` is asserted at 2.9 %), and `tb_fit` / `tb_vfit` for how tight it
-sits.
+far and how steeply the lips hold the knob), `tb_lip_end` (how far round
+its front they run, to the straight step), `tb_entry_gap` (how roomy the way-in is), `tb_r` (the knob), and `tb_fit` / `tb_vfit` for how tight it sits.
 
 ## Printing
 
