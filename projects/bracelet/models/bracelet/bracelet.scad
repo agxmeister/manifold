@@ -201,8 +201,8 @@ assert(knuck_slope <= 40,
 //   * Bar 0 is lengthened into a SOCKET BLOCK with the hole cut through it,
 //     open top and bottom. In front, the NICHE: the knob's circle, its LIPS
 //     overhanging the knob's edge at the top and the bottom from the neck back
-//     to the STEP. Behind the step, the WAY-IN: a circle `tb_entry_gap` wider
-//     than the knob all round, centred where the knob drops in. The block's
+//     to the STEP. Behind the step, the WAY-IN: the knob and its bumps swept
+//     from home to where it drops in, `tb_drop_fit` round them. The block's
 //     side walls are solid.
 //   * CLICKS (the user's request, 2026-10-20): the knob's rim behind the step
 //     is two LEAVES, rooted near its back middle, each with a BUMP near its
@@ -241,21 +241,32 @@ tb_vfit    = 0.3;     // across the lip faces — they are a printed overhang
                       //   and an elephant's foot, so more than `tb_fit`
 tb_clear   = 0.2;     // knob pulled back -> the lips' tips; the knob's
                       //   shaped edge past the step
-tb_entry_gap = 1.4;   // the way-in, round the knob as it drops in
+tb_drop_fit = 0.25;   // the way-in, round the knob and its bumps as it drops
+                      //   in and slides home. It was a circle 1.4 wider than
+                      //   the knob all round: printed (2026-10-21), the hole
+                      //   was much too big — the knob sat in a ~3.3 crescent
 
 // The clicks (`cl_*`), angles from the knob's front, the +y one; mirrored.
 cl_t       = 0.7;     // leaf thickness, on the rim
-cl_root    = 168;     // leaf root, near the knob's back middle: a long leaf.
-                      //   The 24° between the two roots stays solid: the clamp
+cl_root    = 172;     // leaf root, near the knob's back middle: a long leaf.
+                      //   The 16° between the two roots stays solid: the clamp
 cl_tip     = 94;      // leaf's free end
 cl_gap0    = 86;      // the rigid rim ends here: the gap in front of the tip
-cl_slot    = 0.8;     // leaf <-> core: room to give `cl_h`, and >= 0.45
+cl_slot    = 0.9;     // leaf <-> core: room to give `cl_h`, and >= 0.45
 cl_ang     = 101;     // the bump
 cl_rbc     = tb_r + 0.2;   // ... its centre's radius
 cl_rb      = 0.5;     // ... its radius
-cl_h       = 0.3;     // how far the leaf gives to pass the tooth
-cl_rt      = 0.5;     // the tooth's tip radius
-cl_c       = 0.05;    // bump <-> tooth, home
+cl_h       = 0.45;    // how far the leaf gives to pass the tooth. 0.3 printed
+                      //   (2026-10-21): the hooks too small to hold. Beam
+                      //   model ~2.5–2.7 % at the root (proven 2.9 %)
+cl_rt      = 0.45;    // the tooth's tip radius: smaller than the bump, so the
+                      //   deeper click still clears within `tb_slide`
+cl_c       = -0.1;    // bump <-> tooth, home: NEGATIVE, the tooth presses the
+                      //   bump forward, so the knob sits pushed into its niche.
+                      //   At +0.05 (printed 2026-10-21) the hooks touched
+                      //   nothing and the knob rattled
+cl_pre     = 0.15;    // the side wall over each bump at home, pressing the
+                      //   leaf in: the knob is gripped between the two walls
 tb_far     = 1.44;    // bar 0 behind the slot's far end, to its +x face:
                       //   the slot must stop short of bar 0's lug arms
 
@@ -274,8 +285,7 @@ tb_ua      = tb_sh + tb_fit;                 // knob front
 tb_uc      = tb_ua + tb_r;                   // knob centre: the lips end here
 tb_ustep   = tb_uc - tb_step;                // the step
 tb_ue      = tb_uc + tb_slide;               // the way-in's centre
-tb_entry_r = tb_r + tb_entry_gap;
-tb_uend    = tb_ue + tb_entry_r;             // the hole's far end
+tb_uend    = tb_ue + tb_r + tb_drop_fit;     // the hole's far end
 function tb_pol(a, r) = [tb_uc - r*cos(a), r*sin(a)];
 cl_bc      = tb_pol(cl_ang, cl_rbc);          // bump centre, home
 cl_dy      = cl_rb + cl_rt - cl_h;            // bump -> tooth centres, across
@@ -291,7 +301,8 @@ assert(0.2 * tan(tb_lip_a) <= 0.4, "the lips step more than a bead a layer");
 assert(tb_zlip > tb_land && tb_zlip < tb_land + tb_lip_h,
        "the lip's face misses its wall");
 assert(2*tb_zlip < thick - 1.5, "the lips leave too little wall face");
-assert(tb_band_w/2 - tb_entry_r >= tb_side, "the block's side walls are too thin");
+assert(tb_band_w/2 - (cl_bc[1] + cl_rb + tb_drop_fit) >= tb_side,
+       "the block's side walls are too thin");
 assert(tb_tip_y - (tb_neck/2 + tb_fit) >= 0.7,
        "the lips beside the neck are too short to hold");
 assert(tb_step > 0, "the step must be ahead of the knob's centre");
@@ -299,15 +310,15 @@ assert(cl_gap0 > tb_lip_end + 5 && cl_tip - cl_gap0 >= 0.45 / tb_r * 180/PI,
        "the leaf's tip gap is too narrow, or runs into the lips");
 assert(cl_slot >= cl_h + 0.45, "the leaf bottoms out on the core");
 assert(180 - cl_root >= 8, "the two leaves' roots leave no solid clamp between them");
-assert(cl_tc[1] - cl_rt >= tb_r + 0.2, "the rigid rim rubs the tooth as the knob slides");
+assert(cl_bc[1] + cl_rb - cl_pre >= tb_r + tb_fit + 0.15,
+       "the cradle rubs the knob's rigid rim");
+assert(norm([tb_slide - cl_tc[0] + cl_bc[0], cl_rb - cl_pre]) >= cl_rb + 0.2,
+       "the cradle still holds the bump where the knob drops out");
+assert(cl_tc[1] - cl_rt >= tb_r * sin(cl_gap0) + 0.15,
+       "the rigid rim rubs the tooth as the knob slides");
 // Pushed fully open the bump is past its tooth: the knob drops out freely.
 assert(norm([tb_slide - cl_du, cl_dy]) >= cl_rb + cl_rt + 0.15,
        "the bump still meets its tooth where the knob drops out");
-assert(norm(cl_bc + [0, cl_rb] - [tb_ue, 0]) <= tb_entry_r - 0.2,
-       "the bump runs into the way-in's wall");
-// The knob at home, behind the step, must lie inside the way-in.
-assert(sqrt(pow(tb_slide + tb_step, 2) + pow(tb_r + tb_fit, 2)) <= tb_entry_r,
-       "the knob's home overhangs the way-in behind the step");
 assert(h - tb_far <= 1.6,
        str("the slot reaches x ", h - tb_far, " of bar 0, into its lug arms"));
 
@@ -468,7 +479,7 @@ echo(str("cols=", cols, " rows=", rows,
          "  pitch=", pitch, " (gap ", pitch - body, ")",
          "  buckle clasped=", body + face_gap + blk_ext + body,
          " (block ", blk_ext, " past bar 0)",
-         "  knob r ", tb_r, ", step at ", tb_lip_end, "deg, way-in r ", tb_entry_r, ", neck ", tb_neck,
+         "  knob r ", tb_r, ", step at ", tb_lip_end, "deg, way-in fit ", tb_drop_fit, ", neck ", tb_neck,
          "  clicks ", cl_h, " on ", cl_t, " leaves",
          " lips ", tb_lip, " at ", tb_lip_a, "deg",
          "  seam ", face_gap, "  push to open ", tb_slide,
@@ -672,6 +683,14 @@ module tb_lips()
         translate([tb_ustep, -50, -6]) cube([100, 100, thick + 12]);
     }
 
+// The way-in: the knob and its bumps, `tb_drop_fit` round them, swept from
+// home back to where the knob drops out. No bigger than the knob needs.
+module tb_way_in_2d()
+    hull() for (u = [0, tb_slide]) translate([u, 0]) {
+        translate([tb_uc, 0]) circle(r = tb_r + tb_drop_fit);
+        for (m = [0, 1]) mirror([0, m]) translate(cl_bc) circle(r = cl_rb + tb_drop_fit);
+    }
+
 // The cut: the neck slot, the niche (the knob's circle at home, its lips left
 // standing) and, behind the step, the way-in less its two teeth. Open top and
 // bottom.
@@ -684,12 +703,17 @@ module clasp_pocket() translate([x_f, band_cy, 0]) {
     }
     translate([0, 0, -1]) linear_extrude(thick + 2) difference() {
         intersection() {
-            translate([tb_ue, 0]) circle(r = tb_entry_r);
+            tb_way_in_2d();
             translate([tb_ustep, -50]) square([100, 100]);
         }
-        // the teeth the bumps click past, grown out of the way-in's wall
-        for (m = [0, 1]) mirror([0, m])
+        // the teeth the bumps click past, grown out of the way-in's wall,
+        // and in front of them the CRADLE: the wall hugging the leaf at home,
+        // `cl_pre` into its bump, from the step to the tooth
+        for (m = [0, 1]) mirror([0, m]) {
             hull() for (dy = [0, 3]) translate(cl_tc + [0, dy]) circle(r = cl_rt);
+            translate([tb_ustep, cl_bc[1] + cl_rb - cl_pre])
+                square([cl_tc[0] - tb_ustep, 10]);
+        }
     }
 }
 

@@ -3,7 +3,36 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
-## The ROUND KNOB IN A NICHE buckle (user's sketch) — 2026-10-20 (last), UNPRINTED
+## The ROUND KNOB IN A NICHE buckle (user's sketch) — 2026-10-20 (last), PRINTED 2026-10-21, reworked, UNPRINTED
+
+**2026-10-21: printed (photos): "The hole is too big, hooks are too small."**
+- Way-in: was a circle `tb_entry_gap` 1.4 round the knob at `tb_ue` (back
+  gap at home 3.3). Now `tb_way_in_2d()` = hull of the knob circle and both
+  bump discs, `tb_drop_fit` 0.25 round them, at home and at `tb_slide`
+  (∩ behind the step, minus the teeth). Back gap at home = slide + 0.25.
+  Buckle 22.44 → 21.29, block 7.32 past bar 0; 130 still 12 bars (pitch
+  11.52, 151.8); 160 now 15 bars.
+- Clicks: `cl_h` 0.3 → 0.45, `cl_rt` 0.5 → 0.45 (bump r stays 0.5: with
+  bigger discs the bump cannot clear the tooth within `tb_slide` 1.875 —
+  asserted), `cl_root` 168 → 172 (longer leaf; clamp 16°), `cl_slot` 0.8 →
+  0.9 (≥ h + 0.45). Curved-cantilever unit-load model (scratch leaf.py,
+  calibrated on the old 1.89 %): ~2.5 % (raw 2.7), force ×1.32; contact
+  normal 30° off the pull (was 42°). Rigid-rim assert now vs r·sin(gap0)
+  + 0.15 (0.17 real).
+- Harness: home, dz ±0.05, dx −0.1 EMPTY; dz ±0.25 0.319 lips; dx −0.3
+  0.87; dx 0.2…1.5 bumps-on-teeth only, peak 1.90 at 0.8; drop dx 1.875 at
+  dz 0/−1/−2/−4.3 EMPTY; dy 0.2 there = neck slot only (0.50), dy 0.35
+  (control) way-in too; CONTROL dx 1.0 dz −1 1.66; dx 2.05 seam faces.
+  Sweep 110–230 shells == cols, genus formula; rows=3 genus 75; c3 36.
+  46 BRIDGE + 2 RAMP, 12 islands 1711 mm². Walls: same lip/rim-stub flags.
+- Same day, user: "your previous change didn't change anything" — the hooks
+  must FIX the knob at home. Added the grip: `cl_c` −0.1 (tooth presses the
+  bump forward) and `cl_pre` 0.15, a CRADLE (wall from the step to the tooth
+  at y = bump top − pre) pressing each bump in. Harness: home / dz ±0.05 /
+  dx −0.15 = bumps only (0.66 / 0.65 / 0.53); dx 0.2…1.2 bumps only, peak
+  1.84 at 0.8; 1.5, 1.7 EMPTY; drop 1.875 at dz 0/−2/−4.3 EMPTY; control
+  dx 1.0 dz −1 1.33. Sweep, rows=3 (75), c3 (36), 48 regions no SUPPORT.
+
 
 From the user's sketch (red knob dropped into a blue hole). Reading confirmed
 by the user before building: a big round WAY-IN behind (r + `tb_entry_gap`
