@@ -5,6 +5,30 @@ applies; the rules here are bracelet-only and win where they add detail.
 
 ## The ROUND KNOB IN A NICHE buckle (user's sketch) — 2026-10-20 (last), PRINTED 2026-10-21, reworked, UNPRINTED
 
+**2026-10-22: LONG TEETH, no bumps — UNPRINTED.** The cradle + 0.45 click
+(cfeaa8f) printed "better, but still" — the user circled the tooth: "should
+be 1.2 or 1.5 mm longer". I pushed back twice (leaf strain); the user: "make
+what I am asking about. It should work." Built:
+- Tooth tip `cl_ty` = r + `cl_cr` 0.2 − `cl_tooth` 1.25 = 2.95 (old tip 4.17:
+  1.22 longer). Tip circle `cl_rt` 0.4, hulled into the wall. Bumps GONE: the
+  tip rests `cl_pre` 0.25 into the leaf's rim behind the equator, at `cl_fu`
+  2.45 behind the knob centre (solved), pressing the knob forward.
+- Leaves `cl_tip` 113 → root 172, rigid rim to `cl_gap0` 88: at drop-out
+  (`cl_fd` 0.57) the tooth stands in that gap. Asserts: clear of rigid rim/core
+  in front, the leaf tip behind, the core; the tip circle meets the leaf's
+  free end below its centre (cams it in when closing). `cl_slot` 1.2 ≥
+  `cl_h` 0.73 + 0.45. Cradle wall = r + 0.2 from the step to the tooth.
+- **Trap hit:** the niche cut was the knob's FULL circle, so it silently ate
+  the tooth's tip inside r + fit (harness read home EMPTY). Now the niche cut
+  stops at the step; behind it the way-in covers the knob.
+- Strain (scratch leaf.py, calibrated): ~7.3 % at the root at 0.73 — told the
+  user twice. If leaves crack: shorten `cl_tooth`.
+- Harness: home 0.96 teeth-on-leaves only; dx −0.15 0.48 (grip survives the
+  knob settling forward); dz ±0.25 lips; dx 0.3…1.4 teeth-on-leaves, peak 3.0
+  at 0.6; 1.5, 1.7 EMPTY; drop 1.875 at dz 0/−1/−2/−4.3 EMPTY; CONTROL dx 1.0
+  dz −1 1.89; dx 2.1 seam. Sweep OK, rows=3 75, c3 36, 48 regions no SUPPORT,
+  walls unchanged.
+
 **2026-10-21: printed (photos): "The hole is too big, hooks are too small."**
 - Way-in: was a circle `tb_entry_gap` 1.4 round the knob at `tb_ue` (back
   gap at home 3.3). Now `tb_way_in_2d()` = hull of the knob circle and both

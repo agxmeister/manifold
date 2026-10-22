@@ -173,26 +173,25 @@ solid.
   knob's edge at the top and the bottom, from the neck out to a straight
   **step** across the band, 75° round the knob from the front either side. The
   knob cannot move up or down, and the band's pull keeps it in the niche.
-- **The way-in.** Behind the step, just the room the knob and its bumps
-  sweep from home back to where the knob drops out, 0.25 mm round them. It
-  used to be a circle 1.4 mm wider than the knob all round; printed, the knob
-  sat in a ~3.3 mm crescent. Now the gap behind the knob at home is the pull
-  itself plus 0.25.
-- **Clicks.** The knob's rim behind the step is two springy leaves (0.7 mm),
-  rooted near its back middle (172°, so the leaves are longer), each with a
-  1 mm bump near its free end. A tooth on each side of the way-in sits just
-  behind its bump. To slide back, each bump rides over its tooth and its leaf
-  gives 0.45 mm (it was 0.3 — printed, too small to hold): ~2.5–2.7 % bend by
-  a beam model (2.9 % is proven), ~1.3× the leaf force, and the deeper
-  overlap meets the tooth on a steeper face (30° off the pull instead of 42°),
-  so the first push needs more again.
-- **Gripped at home.** The side walls hug the leaves from the step back to
-  the teeth and press each bump in 0.15 mm, and each tooth presses its bump
-  0.1 mm forward. The knob is held between the two walls and pushed into its
-  niche, so it does not rattle. (In the first print the bumps were 0.05 short
-  of their teeth and touched nothing.)
+- **The way-in.** Behind the step, just the room the knob sweeps from home
+  back to where it drops out, 0.25 mm round it. It used to be a circle 1.4 mm
+  wider than the knob all round; printed, the knob sat in a ~3.3 mm crescent.
+  Now the gap behind the knob at home is the pull itself plus 0.25.
+- **Teeth and leaves.** The knob's rim behind the step is two springy leaves
+  (0.7 mm, from 113° to their roots at 172°). A long **tooth** stands out of
+  each side wall, 1.25 mm past the wall (the user's call, 2026-10-22: the
+  0.3 mm tooth printed and held better but not enough). At home its rounded
+  tip rests 0.25 mm into its leaf's rim behind the knob's widest point, so it
+  presses the knob forward into its niche and the knob does not rattle. To
+  slide back, the leaf bends in under the tooth, 0.73 mm at most. Pushed fully
+  open, each tooth stands in the gap between the knob's rigid front rim (to
+  88°) and its leaf's tip, and the knob drops out.
+- **The cost:** a beam model puts the leaves at ~7 % bend at their roots
+  when they pass the teeth. 2.9 % is what has held on a print; the dovetail's
+  springs broke at 8.5 %. If the leaves crack, the teeth have to come back
+  in (`cl_tooth`).
 - **To close:** push the ends together, drop the knob into the way-in, pull
-  it forward into the niche until it clicks.
+  it forward into the niche until the teeth snap over the leaves.
 - **To open:** push the ends together firmly, past the click (1.9 mm, the
   seam's width), and push the knob out downwards.
 - **Flush.** Both ends are the full band thickness. Fastened, it is 21.3 mm of
@@ -202,8 +201,8 @@ solid.
 pushed firmly. Past the teeth the knob is free. A spring that pushes the knob
 home would have to bend the whole 1.9 mm pull plus a preload. On an 8 mm knob
 its leaves are only ~4 mm long, so they would bend 15–20 %, and the dovetail's
-springs broke at 8.5 %. A click bends only its own 0.45 mm. `cl_h` sets how
-hard it clicks.
+springs broke at 8.5 %. The teeth bend the leaves only 0.73 mm. `cl_tooth`
+sets how far they reach, and so how hard it holds.
 
 **The pull.** A lip lets go once the knob, moved back, has cleared its tip by
 0.2 mm. The worst tip is the last one, on the step. With the step at 75° that
@@ -217,9 +216,9 @@ cams the knob sideways, out from under itself, and at 60° that cam is about hal
 as strong. If it lets go, make the lips deeper (`tb_lip`) or steeper
 (`tb_lip_a`), or move the step back (`tb_lip_end`).
 
-Everything prints without support: the knob, its leaves and bumps, the teeth
-and the block all stand on the bed. The slots behind the leaves are 0.9 mm,
-the gaps in front of their tips ~0.5 mm.
+Everything prints without support: the knob, its leaves, the teeth
+and the block all stand on the bed. The slots behind the leaves are 1.2 mm,
+the gaps in front of their tips 25°.
 The upper lips are a 60° overhang 1.1 deep, stepping 0.35 mm a layer, under a
 bead; each lip's tip has a 0.4 mm vertical land.
 
@@ -228,11 +227,11 @@ overhang and an elephant's foot). Checked by intersecting the fastened halves:
 
 | test | reads |
 |---|---|
-| home | the bumps only, against the walls and teeth (the grip) |
-| up / down 0.05 | the bumps only |
+| home | the teeth on the leaves only (the grip); still at 0.15 forward |
+| up / down 0.05 | the teeth on the leaves only |
 | up / down 0.25 | the lips |
-| pulled apart 0.10 / 0.30 | empty / the front arc |
-| pushed 0.2 … 1.2 | the bumps on the teeth only (the click), deepest near 0.8 |
+| pulled apart 0.30 | the front arc |
+| pushed 0.3 … 1.4 | the teeth on the leaves only, deepest near 0.6 |
 | pushed 1.5 | empty: past the click |
 | pushed 1.0, down 1 (control) | the lips |
 | pushed 1.88, sideways 0.2 / 0.35 | the neck slot only / the way-in wall too |
@@ -690,7 +689,7 @@ the play in the hinge) and **`axial_fit`** (0.6 mm, along the pin — both above
 the deliberate thinnest wall), `knuck_slope` (30.0°, derived — the knuckle
 underside, asserted at ≤ 40°), and the buckle's `tb_lip` / `tb_lip_a` (how
 far and how steeply the lips hold the knob), `tb_lip_end` (how far round
-its front they run, to the straight step), `tb_drop_fit` (the play round the knob in the way-in), `cl_h` (how deep the click is), `tb_r` (the knob), and `tb_fit` / `tb_vfit` for how tight it sits.
+its front they run, to the straight step), `tb_drop_fit` (the play round the knob in the way-in), `cl_tooth` (how far the teeth reach), `tb_r` (the knob), and `tb_fit` / `tb_vfit` for how tight it sits.
 
 ## Printing
 
