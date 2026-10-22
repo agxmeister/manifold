@@ -201,7 +201,9 @@ assert(knuck_slope <= 40,
 //   * Bar 0 is lengthened into a SOCKET BLOCK with the hole cut through it,
 //     open top and bottom. In front, the NICHE: the knob's circle, its LIPS
 //     overhanging the knob's edge at the top and the bottom from the neck back
-//     to the STEP. Behind the step, the WAY-IN: the knob swept
+//     to the STEP. At home the lips' faces and the knob's insets touch as
+//     a V (the WEDGE SEAT): pressed in by the teeth, it has no play. Behind
+//     the step, the WAY-IN: the knob swept
 //     from home to where it drops in, `tb_drop_fit` round them. The block's
 //     side walls are solid.
 //   * CLICKS (the user's request, 2026-10-20): the knob's rim behind the step
@@ -235,9 +237,15 @@ tb_lip_a   = 60;      // lip faces, from vertical. Steeper than 45 on purpose:
 tb_lip_h   = tb_lip / tan(tb_lip_a);         // 0.64 — the lip face's height
 tb_land    = 0.4;     // a vertical land at the lip's tip, two layers: without
                       //   it the tip is a 30-degree knife edge
-tb_fit     = 0.15;    // vertical walls round the knob and the neck
-tb_vfit    = 0.3;     // across the lip faces — they are a printed overhang
-                      //   and an elephant's foot, so more than `tb_fit`
+tb_fit     = 0.15;    // vertical walls round the neck
+// The WEDGE SEAT (2026-10-22): at home the knob's shaped edge sits in the
+// lips' V, top and bottom faces touching, and the teeth press it in. The V
+// takes up the play and any printed droop: it just seats a hair further back.
+tb_vfit    = 0.0;     // across the lip faces at home: they touch
+tb_wfit    = 0.3;     // the niche's wall round the knob's rim: more than
+                      //   `tb_vfit`, so the V seats before the wall stops it
+tb_tfit    = 0.3;     // a lip's tip <-> the knob's inset under it (the old
+                      //   face fit, printed): the tips must never seat first
 tb_clear   = 0.2;     // knob pulled back -> the lips' tips; the knob's
                       //   shaped edge past the step
 tb_drop_fit = 0.25;   // the way-in, round the knob as it drops
@@ -270,7 +278,7 @@ tb_far     = 1.44;    // bar 0 behind the slot's far end, to its +x face:
                       //   the slot must stop short of bar 0's lug arms
 
 tb_band_w  = (rows - 1) * row_pitch + body;  // = band_w, which comes later
-tb_overlap = tb_lip - tb_vfit;               // a lip's tip over the knob's edge
+tb_overlap = tb_lip - tb_vfit - tb_tfit;     // a lip's tip over the knob's edge
 // The step, ahead of the knob's centre, and the lips' last tip on it.
 tb_step    = tb_r * cos(tb_lip_end);
 tb_tip_y   = sqrt(pow(tb_r - tb_overlap, 2) - tb_step*tb_step);
@@ -280,7 +288,7 @@ tb_slide   = sqrt(pow(tb_r + tb_clear, 2) - tb_tip_y*tb_tip_y) - tb_step;
 face_gap   = tb_slide + 0.1;                 // the seam when fastened
 
 // Positions along the band, from the block's front face, fastened, home.
-tb_ua      = tb_sh + tb_fit;                 // knob front
+tb_ua      = tb_sh + tb_wfit;                // knob front
 tb_uc      = tb_ua + tb_r;                   // knob centre: the lips end here
 tb_ustep   = tb_uc - tb_step;                // the step
 tb_ue      = tb_uc + tb_slide;               // the way-in's centre
@@ -294,13 +302,17 @@ cl_fd      = cl_fu - tb_slide;                // ... off the knob's centre, drop
 cl_h       = tb_r * sin(cl_tip) - cl_ty;      // how far a leaf bends to pass
 cl_end     = (cl_slot/2) / (tb_r - cl_t - cl_slot/2) * 180/PI;  // the slot's
                                               //   rounded end, as an angle
-tb_tipd    = tb_fit + tb_lip - tb_vfit;      // a lip's reach past its wall
-tb_zlip    = tb_land + tb_tipd * tan(90 - tb_lip_a);   // where a lip face
+tb_tipd    = tb_wfit + tb_overlap;           // a lip's reach past its wall
+// The lip's face is the knob's face moved out `tb_vfit`; its tip stops
+// `tb_tfit` short of the knob's inset, so the tip's land is that much taller.
+tb_tip_z   = tb_land + tb_tfit * tan(90 - tb_lip_a);
+tb_zlip    = tb_tip_z + tb_tipd * tan(90 - tb_lip_a);  // where a lip face
                                              //   meets its wall
 
 assert(0.2 * tan(tb_lip_a) <= 0.4, "the lips step more than a bead a layer");
-assert(tb_zlip > tb_land && tb_zlip < tb_land + tb_lip_h,
-       "the lip's face misses its wall");
+assert(tb_vfit >= 0 && tb_wfit >= tb_vfit + 0.2,
+       "the knob's rim meets the niche's wall before the V seats");
+assert(tb_tfit >= 0.2, "the lips' tips seat on the knob's insets before the faces");
 assert(2*tb_zlip < thick - 1.5, "the lips leave too little wall face");
 assert(tb_band_w/2 - (tb_r + tb_drop_fit) >= tb_side,
        "the block's side walls are too thin");
@@ -619,8 +631,8 @@ tb_x0 = x_r + face_gap;
 // (at a = 0) into the cut: what is left standing of the wall's material.
 module tb_lips_2d()
     polygon([[-1, -2], [-1, thick + 2], [tb_tipd, thick + 2],
-             [tb_tipd, thick - tb_land], [0, thick - tb_zlip], [0, tb_zlip],
-             [tb_tipd, tb_land], [tb_tipd, -2]]);
+             [tb_tipd, thick - tb_tip_z], [0, thick - tb_zlip], [0, tb_zlip],
+             [tb_tipd, tb_tip_z], [tb_tipd, -2]]);
 
 // What a lip-shaped edge loses, in section, (a, z) with a measured INTO the
 // part from its edge: the insets at the bottom and the top.
@@ -681,7 +693,7 @@ module clasp_block()
 // from the neck slot to the step.
 module tb_lips()
     difference() {
-        tb_sector(100) translate([tb_r + tb_fit, 0]) mirror([1, 0]) tb_lips_2d();
+        tb_sector(100) translate([tb_r + tb_wfit, 0]) mirror([1, 0]) tb_lips_2d();
         translate([-50, -(tb_neck/2 + tb_fit), -6]) cube([100, tb_neck + 2*tb_fit, thick + 12]);
         translate([tb_ustep, -50, -6]) cube([100, 100, thick + 12]);
     }
@@ -700,7 +712,7 @@ module clasp_pocket() translate([x_f, band_cy, 0]) {
         // in front of the step only: behind it the way-in covers the knob,
         // and the teeth reach inside its circle
         translate([0, 0, -1]) linear_extrude(thick + 2) intersection() {
-            translate([tb_uc, 0]) circle(r = tb_r + tb_fit);
+            translate([tb_uc, 0]) circle(r = tb_r + tb_wfit);
             translate([-50, -50]) square([50 + tb_ustep + 0.01, 100]);
         }
         tb_lips();

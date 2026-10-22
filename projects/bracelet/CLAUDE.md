@@ -5,6 +5,27 @@ applies; the rules here are bracelet-only and win where they add detail.
 
 ## The ROUND KNOB IN A NICHE buckle (user's sketch) — 2026-10-20 (last), PRINTED 2026-10-21, reworked, UNPRINTED
 
+**2026-10-22 (later): WEDGE SEAT — UNPRINTED.** User: "the grip between
+the knob's hooks and the lips is very loose", wanted the knob itself improved,
+NOT a new mechanism (rejected: side-release buckle, sliding lock bolt, roofed
+way-in). Chose option 2 of: tighter `tb_vfit` / WEDGE / deeper lips / lips
+further round. Built: the old `tb_vfit` 0.3 split into three fits —
+`tb_vfit` 0 (lip faces TOUCH at home: a V, top and bottom), `tb_wfit` 0.3
+(niche's wall round the rim; was `tb_fit` 0.15 — so the V seats first,
+asserted ≥ vfit + 0.2) and `tb_tfit` 0.3 (lip tip land ↔ knob's inset,
+asserted ≥ 0.2; tip land now `tb_tip_z` 0.57). Overlap stays 0.8, so
+`tb_slide` 1.875 is unchanged. `tb_ua` uses `tb_wfit` → knob 0.15 deeper,
+buckle 21.29 → 21.44, block 7.47 past bar 0; 130 still 12 bars (11.51,
+151.9); **160 now 14 bars** (12.04). Harness (scratch tfit.scad + `xcut`
+138.8 to split front from teeth): home front 0.0008 (contact sheet on the
+faces only, z 0.57–1.04 / 3.16–3.63); dz ±0.02, dx −0.02 HIT (no play);
+dx +0.1 dz ±0.05 0.06; dx −0.25 wall; teeth rows unchanged (1.5, 1.7
+EMPTY); drop 1.875 at dz 0/−1/−2/−4.3 EMPTY; CONTROL dx 1.0 dz −1 hits;
+dx 2.1 seam. Sweep 110–230 shells == cols, genus formula; rows=3 75; c3 36;
+46 BRIDGE + 2 RAMP, 12 islands 1715 mm². Clasp ends: nothing under 0.61
+(the old 0.52 lip-tip flags are gone). If it is too stiff to close or the
+knob sits back, raise `tb_vfit` to 0.05–0.1.
+
 **2026-10-22: LONG TEETH, no bumps — UNPRINTED.** The cradle + 0.45 click
 (cfeaa8f) printed "better, but still" — the user circled the tooth: "should
 be 1.2 or 1.5 mm longer". I pushed back twice (leaf strain); the user: "make

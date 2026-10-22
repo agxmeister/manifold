@@ -6,7 +6,7 @@ a wrist, and nothing is assembled, glued, or picked out of supports.
 
 **Sized to the wrist it is printed for — by default a 142 mm loop on a
 130 mm wrist (the 4-year-old it was printed for, and fits), 12 bars, printed
-flat in a 151.8 × 16.2 × 4.2 mm strip.** `-D wrist=180` is the adult size.
+flat in a 151.9 × 16.2 × 4.2 mm strip.** `-D wrist=180` is the adult size.
 The buckle is a round knob pulled into a lipped niche, where it clicks; flush, the same at every size;
 length is band, not buckle.
 
@@ -165,7 +165,7 @@ day: rim springs, a zigzag spring, and a plain slot.
 ```
 
 The last bar ends in a 3.5 mm **neck** and a round **knob**, 8 mm across and
-the band's full 4.2 mm thick. Bar 0 is lengthened 7.3 mm into a **socket
+the band's full 4.2 mm thick. Bar 0 is lengthened 7.5 mm into a **socket
 block** with the hole cut through it, open top and bottom. Its side walls are
 solid.
 
@@ -173,6 +173,14 @@ solid.
   knob's edge at the top and the bottom, from the neck out to a straight
   **step** across the band, 75° round the knob from the front either side. The
   knob cannot move up or down, and the band's pull keeps it in the niche.
+- **The wedge seat** (2026-10-22, unprinted). The lips' sloped faces and the
+  knob's matching insets make a V, top and bottom. At home the faces touch and
+  the teeth press the knob into the V, so it has no play up, down or forward.
+  The niche's vertical wall stands 0.3 mm off the knob's rim, and the lips'
+  tips 0.3 mm off its insets, so only the V holds it. If the overhang prints
+  a little droopy or tight, the knob just seats a hair further back, still
+  pressed by the teeth. Before this, 0.3 mm of clearance across the faces let
+  it rattle up to ~0.2 mm: printed, "the grip is just too loose".
 - **The way-in.** Behind the step, just the room the knob sweeps from home
   back to where it drops out, 0.25 mm round it. It used to be a circle 1.4 mm
   wider than the knob all round; printed, the knob sat in a ~3.3 mm crescent.
@@ -194,7 +202,7 @@ solid.
   it forward into the niche until the teeth snap over the leaves.
 - **To open:** push the ends together firmly, past the click (1.9 mm, the
   seam's width), and push the knob out downwards.
-- **Flush.** Both ends are the full band thickness. Fastened, it is 21.3 mm of
+- **Flush.** Both ends are the full band thickness. Fastened, it is 21.4 mm of
   rigid band including both end bars, with a 2.0 mm seam.
 
 **The click is not a push spring.** It stops the knob sliding back until it is
@@ -222,19 +230,20 @@ the gaps in front of their tips 25°.
 The upper lips are a 60° overhang 1.1 deep, stepping 0.35 mm a layer, under a
 bead; each lip's tip has a 0.4 mm vertical land.
 
-Fits: 0.15 mm on the vertical walls, 0.3 across the lip faces (a printed
-overhang and an elephant's foot). Checked by intersecting the fastened halves:
+Fits: 0.15 mm round the neck; at home the lip faces touch (the wedge), with
+0.3 at the niche's wall and 0.3 between the lips' tips and the knob's insets.
+Checked by intersecting the fastened halves (the front: lips, V and wall; the
+back: the teeth):
 
 | test | reads |
 |---|---|
-| home | the teeth on the leaves only (the grip); still at 0.15 forward |
-| up / down 0.05 | the teeth on the leaves only |
-| up / down 0.25 | the lips |
-| pulled apart 0.30 | the front arc |
+| home | front: a contact sheet on the lip faces only (0.0008 mm³); back: the teeth on the leaves (the grip) |
+| up / down 0.02, forward 0.02 | front: the lip faces — no play left |
+| pushed 0.1, up / down 0.05 | front: the lip faces (0.06) — the play opens only as the knob moves back |
+| pulled apart 0.25 | the niche's wall |
 | pushed 0.3 … 1.4 | the teeth on the leaves only, deepest near 0.6 |
 | pushed 1.5 | empty: past the click |
 | pushed 1.0, down 1 (control) | the lips |
-| pushed 1.88, sideways 0.2 / 0.35 | the neck slot only / the way-in wall too |
 | pushed 1.88, moved down by any amount | empty: the knob drops right out |
 | pushed 2.1 | the faces of the seam |
 
@@ -615,7 +624,7 @@ printed in place.
 
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
-| `bracelet` | `bracelet` | 151.8 × 16.2 × 4.2 mm | all 12 bars' own flat feet |
+| `bracelet` | `bracelet` | 151.9 × 16.2 × 4.2 mm | all 12 bars' own flat feet |
 | `cone-pin` | `cone-pin` | 6.3 × 6.3 × 8.8 mm, standing | its foot, a ring round the hex socket, 20 mm² |
 | `screwdriver` | `screwdriver` | 65.0 × 32.0 × 8.0 mm, lying flat | its paddle and shaft, 1033 mm² in one piece |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 19.8 × 9.3 mm | its own bottom, 104 mm² in one piece |
@@ -646,7 +655,7 @@ not approximate — the loop lands on `wrist + 12` at every size.
 plate used to soak up whatever the band could not cover, since the band only
 came in whole bars. On a small wrist that left a 27 mm slab of flat plate
 hanging off the end of a 149 mm bracelet. Now the buckle is fixed — **the
-socket block reaches 4.9 mm past bar 0, the same at every size** — and the
+socket block reaches 7.5 mm past bar 0, the same at every size** — and the
 band makes up the difference: the solver picks the bar count that lands
 nearest the nominal 11.6 mm spacing, then stretches or squeezes **every joint
 equally**, by a fraction of a millimetre, to hit the length exactly. Bars never
@@ -666,14 +675,14 @@ stay on a bar's flat top (asserted), which a narrower band would cut short.
 
 | `wrist` | bars | loop, clasped | joint pitch | printed footprint |
 |---|---|---|---|---|
-| **130 (default, 4-year-old)** | **12** | **142.0 mm** | **11.52 mm** | **151.8 × 16.2 mm** |
-| 140 (child) | 13 | 152.0 mm | 11.39 mm | 161.8 × 16.2 mm |
-| 160 | 15 | 172.0 mm | 11.19 mm | 181.8 × 16.2 mm |
-| 180 (adult) | 16 | 192.0 mm | 11.78 mm | 201.8 × 16.2 mm |
-| 200 | 18 | 212.0 mm | 11.57 mm | 221.8 × 16.2 mm |
-| 180, `rows=3` | 16 | 192.0 mm | 11.78 mm | 201.8 × 26.4 mm |
+| **130 (default, 4-year-old)** | **12** | **142.0 mm** | **11.51 mm** | **151.9 × 16.2 mm** |
+| 140 (child) | 13 | 152.0 mm | 11.38 mm | 161.9 × 16.2 mm |
+| 160 | 14 | 172.0 mm | 12.04 mm | 181.9 × 16.2 mm |
+| 180 (adult) | 16 | 192.0 mm | 11.77 mm | 201.9 × 16.2 mm |
+| 200 | 18 | 212.0 mm | 11.56 mm | 221.9 × 16.2 mm |
+| 180, `rows=3` | 16 | 192.0 mm | 11.77 mm | 201.9 × 26.4 mm |
 
-The buckle is 21.3 mm of rigid band at every size and width, the end bars and
+The buckle is 21.4 mm of rigid band at every size and width, the end bars and
 the 2.0 mm seam included.
 
 The band is 4.2 mm thick at every size, and so is the whole print: nothing
@@ -689,7 +698,7 @@ the play in the hinge) and **`axial_fit`** (0.6 mm, along the pin — both above
 the deliberate thinnest wall), `knuck_slope` (30.0°, derived — the knuckle
 underside, asserted at ≤ 40°), and the buckle's `tb_lip` / `tb_lip_a` (how
 far and how steeply the lips hold the knob), `tb_lip_end` (how far round
-its front they run, to the straight step), `tb_drop_fit` (the play round the knob in the way-in), `cl_tooth` (how far the teeth reach), `tb_r` (the knob), and `tb_fit` / `tb_vfit` for how tight it sits.
+its front they run, to the straight step), `tb_drop_fit` (the play round the knob in the way-in), `cl_tooth` (how far the teeth reach), `tb_r` (the knob), and `tb_vfit` / `tb_wfit` / `tb_tfit` for how it seats (the wedge, above).
 
 ## Printing
 
