@@ -164,8 +164,9 @@ day: rim springs, a zigzag spring, and a plain slot.
                  niche step
 ```
 
-The last bar ends in a 3.5 mm **neck** and a round **knob**, 8 mm across and
-the band's full 4.2 mm thick. Bar 0 is lengthened 7.5 mm into a **socket
+The last bar ends in a 3.5 mm **neck** and a **knob**, 8 mm across and the
+band's full 4.2 mm thick, solid, with a small notch in each side. Bar 0 is
+lengthened 9.0 mm into a **socket
 block** with the hole cut through it, open top and bottom. Its side walls are
 solid.
 
@@ -175,42 +176,50 @@ solid.
   knob cannot move up or down, and the band's pull keeps it in the niche.
 - **The wedge seat** (2026-10-22, unprinted). The lips' sloped faces and the
   knob's matching insets make a V, top and bottom. At home the faces touch and
-  the teeth press the knob into the V, so it has no play up, down or forward.
+  the bumps press the knob into the V, so it has no play up, down or forward.
   The niche's vertical wall stands 0.3 mm off the knob's rim, and the lips'
   tips 0.3 mm off its insets, so only the V holds it. If the overhang prints
   a little droopy or tight, the knob just seats a hair further back, still
-  pressed by the teeth. Before this, 0.3 mm of clearance across the faces let
+  pressed by the bumps. Before this, 0.3 mm of clearance across the faces let
   it rattle up to ~0.2 mm: printed, "the grip is just too loose".
 - **The way-in.** Behind the step, just the room the knob sweeps from home
-  back to where it drops out, 0.25 mm round it. It used to be a circle 1.4 mm
-  wider than the knob all round; printed, the knob sat in a ~3.3 mm crescent.
-  Now the gap behind the knob at home is the pull itself plus 0.25.
-- **Teeth and leaves.** The knob's rim behind the step is two springy leaves
-  (0.7 mm, from 113° to their roots at 172°). A long **tooth** stands out of
-  each side wall, 1.25 mm past the wall (the user's call, 2026-10-22: the
-  0.3 mm tooth printed and held better but not enough). At home its rounded
-  tip rests 0.25 mm into its leaf's rim behind the knob's widest point, so it
-  presses the knob forward into its niche and the knob does not rattle. To
-  slide back, the leaf bends in under the tooth, 0.73 mm at most. Pushed fully
-  open, each tooth stands in the gap between the knob's rigid front rim (to
-  88°) and its leaf's tip, and the knob drops out.
-- **The cost:** a beam model puts the leaves at ~7 % bend at their roots
-  when they pass the teeth. 2.9 % is what has held on a print; the dovetail's
-  springs broke at 8.5 %. If the leaves crack, the teeth have to come back
-  in (`cl_tooth`).
+  back to where it drops out, 0.25 mm round it. Its far wall, between the
+  hole and bar 0's hinge, is 3.0 mm (2026-10-23; it was 1.44 and bent when
+  the buckle was closed).
+- **Springs in the walls** (2026-10-23, unprinted). Each side wall of the
+  way-in is a straight 0.8 mm **leaf**, 4.3 mm long, freed by a slot behind
+  it, with a rounded **bump** on its inner face. The knob's sides, behind
+  the step, have a shallow **recess** (where the bump stands while the knob
+  drops in), a **lead-in** rising at ~21° to a **crest** just behind the
+  widest point, and a 60° **catch** falling into a **notch**. At home the
+  bump sits in the notch, 0.15 mm into the catch, pressing the knob forward
+  into the V so it does not rattle.
+  - **Closing**, the bump rides up the gentle lead-in and the leaf bends out
+    0.4 mm, then it snaps into the notch.
+  - **Opening**, it has to climb the 60° catch: roughly 4–5× the push.
+  - Why not springs on the knob, as before: a leaf on a round knob's rim
+    bends in *and forward*, whichever end it is rooted at, and forward is
+    the way the tooth pushes it when the knob is pulled out. The printed
+    leaves (rooted at the back) were hard to close and easy to open. A
+    straight leaf in the wall bends straight out, so only the face angles
+    decide.
+- **The cost:** ~3.6 % bend at the leaf's root by a straight-beam estimate
+  (2.9 % has held on a print, the old knob leaves ran ~7 %). Past ~70° the
+  catch would lock for good; `cl_catch` is asserted ≤ 65.
 - **To close:** push the ends together, drop the knob into the way-in, pull
-  it forward into the niche until the teeth snap over the leaves.
+  it forward into the niche until the bumps snap into the notches.
 - **To open:** push the ends together firmly, past the click (1.9 mm, the
   seam's width), and push the knob out downwards.
-- **Flush.** Both ends are the full band thickness. Fastened, it is 21.4 mm of
+- **Flush.** Both ends are the full band thickness. Fastened, it is 23.0 mm of
   rigid band including both end bars, with a 2.0 mm seam.
 
 **The click is not a push spring.** It stops the knob sliding back until it is
-pushed firmly. Past the teeth the knob is free. A spring that pushes the knob
+pushed firmly. Past the bumps the knob is free. A spring that pushes the knob
 home would have to bend the whole 1.9 mm pull plus a preload. On an 8 mm knob
 its leaves are only ~4 mm long, so they would bend 15–20 %, and the dovetail's
-springs broke at 8.5 %. The teeth bend the leaves only 0.73 mm. `cl_tooth`
-sets how far they reach, and so how hard it holds.
+springs broke at 8.5 %. The wall leaves bend only 0.4 mm. To tune the
+click: `cl_h` sets how far they bend (how hard it is either way), `cl_catch`
+how much harder opening is than closing.
 
 **The pull.** A lip lets go once the knob, moved back, has cleared its tip by
 0.2 mm. The worst tip is the last one, on the step. With the step at 75° that
@@ -224,24 +233,24 @@ cams the knob sideways, out from under itself, and at 60° that cam is about hal
 as strong. If it lets go, make the lips deeper (`tb_lip`) or steeper
 (`tb_lip_a`), or move the step back (`tb_lip_end`).
 
-Everything prints without support: the knob, its leaves, the teeth
-and the block all stand on the bed. The slots behind the leaves are 1.2 mm,
-the gaps in front of their tips 25°.
+Everything prints without support: the knob, the leaves, their bumps
+and the block all stand on the bed. The slots behind the leaves are 0.9 mm.
 The upper lips are a 60° overhang 1.1 deep, stepping 0.35 mm a layer, under a
 bead; each lip's tip has a 0.4 mm vertical land.
 
 Fits: 0.15 mm round the neck; at home the lip faces touch (the wedge), with
 0.3 at the niche's wall and 0.3 between the lips' tips and the knob's insets.
 Checked by intersecting the fastened halves (the front: lips, V and wall; the
-back: the teeth):
+back: the bumps):
 
 | test | reads |
 |---|---|
-| home | front: a contact sheet on the lip faces only (0.0008 mm³); back: the teeth on the leaves (the grip) |
+| home | front: a contact sheet on the lip faces only (0.0008 mm³); back: the bumps in the notches (the grip) |
 | up / down 0.02, forward 0.02 | front: the lip faces — no play left |
 | pushed 0.1, up / down 0.05 | front: the lip faces (0.06) — the play opens only as the knob moves back |
 | pulled apart 0.25 | the niche's wall |
-| pushed 0.3 … 1.4 | the teeth on the leaves only, deepest near 0.6 |
+| pulled forward 0.15 | the bumps still in the notches |
+| pushed 0.1 … 1.3 | the bumps on the knob only, deepest near 0.6 |
 | pushed 1.5 | empty: past the click |
 | pushed 1.0, down 1 (control) | the lips |
 | pushed 1.88, moved down by any amount | empty: the knob drops right out |
@@ -698,7 +707,7 @@ the play in the hinge) and **`axial_fit`** (0.6 mm, along the pin — both above
 the deliberate thinnest wall), `knuck_slope` (30.0°, derived — the knuckle
 underside, asserted at ≤ 40°), and the buckle's `tb_lip` / `tb_lip_a` (how
 far and how steeply the lips hold the knob), `tb_lip_end` (how far round
-its front they run, to the straight step), `tb_drop_fit` (the play round the knob in the way-in), `cl_tooth` (how far the teeth reach), `tb_r` (the knob), and `tb_vfit` / `tb_wfit` / `tb_tfit` for how it seats (the wedge, above).
+its front they run, to the straight step), `tb_drop_fit` (the play round the knob in the way-in), `cl_h` and `cl_catch` (the click, above), `tb_r` (the knob), and `tb_vfit` / `tb_wfit` / `tb_tfit` for how it seats (the wedge, above).
 
 ## Printing
 

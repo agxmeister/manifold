@@ -5,6 +5,51 @@ applies; the rules here are bracelet-only and win where they add detail.
 
 ## The ROUND KNOB IN A NICHE buckle (user's sketch) — 2026-10-20 (last), PRINTED 2026-10-21, reworked, UNPRINTED
 
+**2026-10-23: SPRINGS IN THE BLOCK WALLS, solid round knob; far wall 3.0 — UNPRINTED.**
+af3113f printed: "hard to close and relatively easy to open. It should be
+the opposite", plus a screenshot circling the wall between the way-in and
+bar 0's hinge (`tb_far` 1.44): "deformed while closing".
+- **Why it was backwards.** A cantilever's tip moves about square to its
+  root→tip chord. Leaves on a round knob's rim behind the widest point have a
+  chord that falls going back, so the tip bends in AND FORWARD — the way a
+  tooth pushes it when the knob is pulled out (opening easy, ratio ~0.5),
+  whichever end it is rooted at. Back-rooted, closing also butts the free end
+  face (a jam). Only a leaf whose chord RISES toward its free tip works.
+- **First fix, REJECTED by the user the same day ("I don't like this shape
+  of knob. Round one with springs on its side was better"):** two BARBS
+  rooted in a front half-disc, swept back (arrowhead), tooth behind the tip.
+  Physically right; the look is not wanted. Do not re-offer it.
+- **Built (user chose it from two previews; the other was "back to af3113f
+  + thick wall"):** a SOLID round knob; the springs are straight LEAVES in the
+  way-in's side walls. `cl_*`, knob frame x' back from centre:
+  - Knob = circle minus, each side, behind `cl_x0` (step + `tb_clear`): a
+    RECESS, a LEAD-IN line rising at `cl_psi` (SOLVED so the bump at drop is
+    `cl_rb + cl_dc` 0.65 off it: 21.4°) to the CREST C at `cl_xc` 1.35 on the
+    circle, the CATCH at `cl_catch` 60° down to the NOTCH floor `cl_yn` (bump
+    bottom − 0.15), floor back to the circle.
+  - Bump r `cl_rb` 0.5 at home `cl_xb` 1.70, `cl_rb − cl_pre` (0.15) off the
+    catch; hulled to the leaf face (base 1.2).
+  - Way-in = hull(home circle r + 0.25, two corner discs `cl_wr` 0.8 at the
+    old far end): straight side walls `cl_wy` 4.25 back to `cl_root`.
+  - Leaf `cl_t` 0.8 from `cl_tip` (bump − 0.7) to `cl_root`, slot `cl_slot`
+    0.9 behind it, mouth `cl_gap` 0.6 in front of the tip into the way-in,
+    rounded root end. Outer wall 2.15. Straight-beam strain 3.6 %
+    (`cl_strain`, asserted ≤ 4).
+  - Effort ~tan(face + friction): close ~0.8 (21°), open ~4.3 (60°) × leaf
+    force. Locks from ~73°; asserted `cl_catch` ≤ 65.
+- **Far wall** `tb_far` 1.44 → 3.0. Buckle 21.44 → 23.00 (block 9.03 past
+  bar 0); 130 still 12 bars, 151.9 flat; 160 still 14.
+- Harness (scratch tfit.scad: socket moved `tb_x0 − x_f`, tab dx/dz; knob
+  centre at x 135.875, split at 136.4): front home 0.0008 sheet (unchanged),
+  dz 0.05 0.21, dx 0.1 EMPTY; bumps home 0.37, dx −0.1 0.12, −0.15 0.004,
+  −0.2 EMPTY; dx 0.1…1.3 bumps only (peak 1.34 at 0.6); 1.5, 1.7 EMPTY; drop
+  1.875 at dz 0/−1/−2/−4.3 EMPTY; CONTROL dx 1.0 dz −1 0.88; dx 2.1 seam.
+  Sweep 110–230 genus 3·cols − 3, pieces == cols; rows=3 75; c3 36. 46
+  BRIDGE + 2 RAMP, 12 islands 1722 mm². Walls (ends clipped short of the lug
+  arms): block lip tips 0.67–0.72 only; tab ≥ 1.5.
+- Trap hit in the wall check: a clip `.scad` with a syntax error writes no
+  file and the checker re-reads the STALE one — rm the output first.
+
 **2026-10-22 (later): WEDGE SEAT — UNPRINTED.** User: "the grip between
 the knob's hooks and the lips is very loose", wanted the knob itself improved,
 NOT a new mechanism (rejected: side-release buckle, sliding lock bolt, roofed
