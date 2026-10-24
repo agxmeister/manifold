@@ -38,7 +38,48 @@ Strain 4.6 %, lead-in 23.3°. Buckle 23.0 → 25.14, seam 2.49; 130 still
   1.80, dx −0.15 1.01, −0.3 0.24, −0.4 EMPTY; dx 0.3 2.99, 0.6 3.39 peak,
   1.2 1.71, 1.8 0.21, 2.0 0.001, 2.2 EMPTY; drop 2.394 dz 0/−1/−2/−4.3 EMPTY;
   CONTROL dx 1.5 dz −1 0.85; dx 2.6 0.68 (seam faces). 12 pieces, 46 BRIDGE +
-  2 RAMP. Numbers below are pre-2026-10-24.
+  2 RAMP. Committed a65b712.
+
+**2026-10-24 (latest): SHORTER HOOKS — UNPRINTED.** a65b712 printed "almost
+good", but closed the bumps pressed the knob hard enough to bend the
+buckle. User asked: hooks shorter, gap behind the leaves narrower, sides
+wider. `cl_h` 0.7 → 0.55, `cl_pre` 0.35 → 0.2, `cl_slot` 1.2 → 0.85 (assert
+now `cl_h` + 0.3), outer wall 1.85 → 2.2. Lead-in 20.2°, strain 3.8 %,
+buckle 24.96. Harness: front home 0.0012, dx 0.1 EMPTY; bumps home 0.76,
+dx −0.15 0.16, −0.3 EMPTY; dx 0.6 2.37 peak, 1.8 0.09, 2.0 EMPTY; drop 2.394
+dz 0/−1/−2/−4.3 EMPTY; CONTROL dx 1.5 dz −1 0.64. ("Legs of hooks" = the
+bumps' reach; read that way, not as shorter leaves.)
+
+**2026-10-24 (last): LIPS 85 → 80°, SHORT HOOKS — UNPRINTED.** User circled
+the bump: still too long. Its reach from the wall (`cl_wy` − bump tip) was
+1.76: the wall must clear the knob's widest point at drop, the crest sits
+on the knob's narrow back half, and the longer the lips, the further back.
+At 85° the best trim was 1.64; user chose (question) lips 80°: `cl_xc` 1.9,
+`cl_rb` 0.4 → reach 1.28. Slide 2.11, lead-in 22.6°, strain 3.1 %, buckle
+24.40; 140 back to 13 bars. Harness: front home 0.0010, dx 0.1 EMPTY; bumps
+home 0.76, −0.15 0.15, −0.3 EMPTY; 0.6 2.07 peak, 1.6 0.05, 1.8 EMPTY; drop
+2.113 dz 0/−1/−2/−4.3 EMPTY; CONTROL dx 1.2 dz −1 0.84. 12 pieces, 46 BRIDGE
++ 2 RAMP.
+
+**2026-10-24 (final): legs a bit shorter, hooks a bit longer — UNPRINTED.**
+User: "No major changes, please". `cl_ext` 1.3 → 0.9 (leaf root 0.4
+forward, leaf 4.89), `cl_h` 0.55 → 0.65 (hook reach 1.28 → 1.38), slot kept
+0.85 (assert margin now `cl_h` + 0.2). Strain 4.4 %, lead-in 26.4°, buckle
+24.0. Harness: front home 0.0010, dx 0.1 EMPTY; bumps home 0.85, −0.15 0.14,
+−0.3 EMPTY; 0.6 2.60, 1.6 0.15, 1.8 EMPTY; drop 2.113 all dz EMPTY; CONTROL
+1.10. Then "a bit shorter legs" again: `cl_ext` 0.9 → 0.5.
+
+**2026-10-24 (night): BUMPS CLEAR OF THE KNOB AT HOME — UNPRINTED.** The two
+root trims were a MISREADING. The user's screenshot (arrow along the band,
+niche → hooks): "legs shorter" meant the space where the knob seats should
+be longer, so the knob sits freely, without the bumps' pressure that bends
+the buckle. `cl_pre` 0.2 → −0.1 (a gap; bumps move back, `cl_xb` 2.62),
+`cl_ext` back to 1.3. Lead-in solves to 33.1° (closing a bit firmer), recess
+sanity bound relaxed to 0.8, strain 4.3 %, buckle 24.40. Harness: front home
+0.0010, dx 0.1 EMPTY; bumps home EMPTY, dx 0.05/0.1 EMPTY, 0.15 0.02, 0.3 0.62,
+0.6 1.90, 1.2 1.70, 1.7 0.14, 1.9 EMPTY; drop 2.113 all dz EMPTY; CONTROL dx
+1.2 dz −1 1.59. 12 pieces, 46 BRIDGE + 2 RAMP. Numbers below are
+pre-2026-10-24.
 
 **2026-10-23: SPRINGS IN THE BLOCK WALLS, solid round knob; far wall 3.0 — UNPRINTED.**
 af3113f printed: "hard to close and relatively easy to open. It should be

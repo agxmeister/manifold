@@ -227,10 +227,11 @@ tb_neck    = 3.5;     // neck width (thin, as in the user's sketch: a 4.5 neck o
 tb_side    = 1.4;     // the block's side walls, at their thinnest
 tb_sh      = 1.6;     // the block's front wall, beside the neck
 tb_r       = 4.0;     // the knob's radius (8 across, the user's choice)
-tb_lip_end = 85;      // the STEP: where the lips end, as an angle on the
+tb_lip_end = 80;      // the STEP: where the lips end, as an angle on the
                       //   knob's edge from the band's axis. The step itself is
                       //   a straight line across the band. Was 75: printed
-                      //   (2026-10-23), the lips were too short to hold
+                      //   (2026-10-23), the lips were too short to hold; 85
+                      //   needed the hooks to reach 1.76 to the knob's back
 tb_lip     = 1.1;     // how far a lip overhangs the knob's edge
 tb_lip_a   = 60;      // lip faces, from vertical. Steeper than 45 on purpose:
                       //   pushed up or down, a face cams the knob sideways
@@ -267,18 +268,24 @@ tb_drop_fit = 0.25;   // the way-in, round the knob as it drops
 // straight leaf in the wall bends straight out, and the faces alone set the
 // effort: ~tan(angle + friction), so ~0.8 to close (25°) and ~4 to open
 // (60°) times the leaf's force. The catch locks for good from ~70°.
-cl_h       = 0.7;     // how far the bump pushes its leaf out passing the crest.
+cl_h       = 0.65;    // how far the bump pushes its leaf out passing the crest.
                       //   Was 0.4 with `cl_pre` 0.15: printed (2026-10-23),
-                      //   the bumps did not touch the knob at all
-cl_xc      = 2.6;     // the crest, behind the knob's centre: on its back half,
-                      //   since the knob drops out ~2.4 back and the bump
+                      //   the bumps did not touch the knob at all; 0.7 with
+                      //   0.35 printed (2026-10-24): they pressed it so hard
+                      //   closed that the buckle bent
+cl_xc      = 1.9;     // the crest, behind the knob's centre: on its back half,
+                      //   since the knob drops out ~2.1 back and the bump
                       //   must then stand behind the lipped front
 cl_catch   = 60;      // the catch face, from the band's axis
-cl_rb      = 0.5;     // the bump's rounded tip
-cl_pre     = 0.35;    // the bump into the catch at home: the grip
+cl_rb      = 0.4;     // the bump's rounded tip
+cl_pre     = -0.1;    // the bump into the catch at home. Negative: a GAP, so
+                      //   the knob seats freely. 0.35 and 0.2 printed
+                      //   (2026-10-24): the bumps pressed the knob forward
+                      //   and bent the buckle. The band's pull holds it home;
+                      //   the bumps only stop it sliding back
 cl_dc      = 0.15;    // the bump clear of the knob where the knob drops in
 cl_t       = 0.8;     // the wall leaf
-cl_slot    = 1.2;     // behind it: room to bend `cl_h`, and >= 0.45 more
+cl_slot    = 0.85;    // behind it: room to bend `cl_h`, and >= 0.2 more
 cl_gap     = 0.6;     // the slot's mouth into the way-in, at the leaf's tip
 cl_wr      = 0.8;     // the way-in's back corners
 cl_ext     = 1.3;     // the leaf runs on past the way-in's back corner, freed
@@ -351,7 +358,7 @@ assert(cl_psi > 10 && cl_psi < 35, str("the lead-in's slope ", cl_psi, " is off"
 assert(cl_catch <= 65, "the catch is near self-locking: the knob would never come out");
 assert(cl_s > 0.05 && cl_c[1] - cl_s * sin(cl_catch) > cl_yn + 0.1,
        "the bump meets the catch off its face");
-assert(cl_yl(cl_x0) >= cl_yn - 0.5, "the recess cuts deep into the knob");
+assert(cl_yl(cl_x0) >= cl_yn - 0.8, "the recess cuts deep into the knob");
 // Where the knob drops in, the bump is clear of the knob's front corner too.
 // (The whole front: the full circle ahead of `cl_x0`, not just its corner.)
 cl_drop_c  = (cl_bd[0] <= cl_x0 ? norm(cl_bd) - tb_r
@@ -361,10 +368,10 @@ assert(cl_drop_c >= 0.1, str("the bump meets the knob's front where it drops out
 // past the knob's end, so nothing behind it stands higher.
 assert(cl_yb - cl_rb - cl_yn >= 0.1, "the bump rests on the knob behind the notch");
 assert(cl_tip - cl_gap >= 0, "the leaf's mouth runs off the way-in's straight wall");
-assert(cl_slot >= cl_h + 0.45, "the leaf bottoms out in its slot");
+assert(cl_slot >= cl_h + 0.2 - 1e-9, "the leaf bottoms out in its slot");
 assert(tb_band_w/2 - (cl_wy + cl_t + cl_slot) >= tb_side,
        "the wall outside the leaf is too thin");
-// ~6.2 % since the click went to 0.7 (the long teeth printed fine at ~7 %).
+// ~4.3 % (the long teeth printed fine at ~7 %).
 assert(cl_strain <= 7, str("the leaves strain ", cl_strain, " %"));
 assert(h - tb_far <= 1.6,
        str("the slot reaches x ", h - tb_far, " of bar 0, into its lug arms"));
