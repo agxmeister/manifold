@@ -5,6 +5,41 @@ applies; the rules here are bracelet-only and win where they add detail.
 
 ## The ROUND KNOB IN A NICHE buckle (user's sketch) — 2026-10-20 (last), PRINTED 2026-10-21, reworked, UNPRINTED
 
+**2026-10-24: CLICK DEEPENED — UNPRINTED.** 304d14a printed: "hooks on the
+side don't touch the knob, so it can be opened without any effort". The
+designed engagement (click `cl_h` 0.4, bump `cl_pre` 0.15 into the catch)
+was below print rounding of the sharp crest and the r 0.5 bump. Now `cl_h`
+0.7, `cl_pre` 0.35, `cl_slot` 1.2; lead-in solves to 31.2° (closing a bit
+stiffer), strain 6.2 % (assert ≤ 7; user accepted ~7 % for the long teeth).
+`cl_h` 0.8 fails (lead-in > 35°); `cl_rb` 0.6 with `cl_pre` 0.35 hits the
+knob's front at drop. Harness (scratch fit.scad, socket frame, tab moved
+`x_f − tb_x0 + dx`): front home 0.0008; bumps home 1.78 (was 0.37), dx −0.15
+1.04, −0.3 0.25, −0.4 EMPTY; dx 0.3 2.81, 0.6 2.97 peak, 1.2 0.83, 1.5 0.06,
+1.6 EMPTY; drop 1.875 at dz 0/−1/−2/−4.3 EMPTY; CONTROL dx 1 dz −1 1.59.
+12 pieces, genus 33, 46 BRIDGE + 2 RAMP.
+
+**2026-10-24 (later): LIPS TO 85° — UNPRINTED.** User (screenshot of the
+socket, red box behind the lips' end): the groove holding the knob was too
+short, "reduced the grip drastically". (The lip arc itself was 75° in every
+version since 1ac415e; 304d14a only opened the leaf's slot mouth there.)
+`tb_lip_end` 75 → 85: `tb_slide` 1.875 → 2.394. Then the bump at drop
+(home − slide) lands on the knob's lipped front unless the click moves back:
+`cl_xc` 1.35 → 2.6 (crest on the knob's back half), which shortened the leaf,
+so `cl_ext` 1.3: leaf root past the way-in's back corner (`cl_back`), freed
+by an inner slit `cl_slit` 0.6; block sized off `max(tb_uend, cl_uslot)`.
+Strain 4.6 %, lead-in 23.3°. Buckle 23.0 → 25.14, seam 2.49; 130 still
+12 bars (pitch 11.17), 140 now 12 bars.
+- The old "bump meets the knob's front" assert only tested the front corner
+  and would have passed a knob that cannot drop out — replaced by the real
+  distance to the circle ahead of `cl_x0` (`cl_drop_c` ≥ 0.1). The old
+  "bump rests on the knob behind the notch" assert was stricter than the
+  geometry (the floor is cut straight back) — now `cl_yb − cl_rb − cl_yn`.
+- Harness: front home 0.0012 sheet, dz 0.05 0.26, dx 0.1 EMPTY; bumps home
+  1.80, dx −0.15 1.01, −0.3 0.24, −0.4 EMPTY; dx 0.3 2.99, 0.6 3.39 peak,
+  1.2 1.71, 1.8 0.21, 2.0 0.001, 2.2 EMPTY; drop 2.394 dz 0/−1/−2/−4.3 EMPTY;
+  CONTROL dx 1.5 dz −1 0.85; dx 2.6 0.68 (seam faces). 12 pieces, 46 BRIDGE +
+  2 RAMP. Numbers below are pre-2026-10-24.
+
 **2026-10-23: SPRINGS IN THE BLOCK WALLS, solid round knob; far wall 3.0 — UNPRINTED.**
 af3113f printed: "hard to close and relatively easy to open. It should be
 the opposite", plus a screenshot circling the wall between the way-in and

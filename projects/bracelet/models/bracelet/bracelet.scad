@@ -213,7 +213,7 @@ assert(knuck_slope <= 40,
 //     NOTCH, against a steep CATCH face. Easy to close, hard to open.
 //   * To close: push the ends together, drop the knob into the way-in, pull it
 //     forward into the niche — it clicks. The band's pull keeps it there.
-//   * To open: push the ends together firmly (past the click; `tb_slide`, ~1.9,
+//   * To open: push the ends together firmly (past the click; `tb_slide`, ~2.4,
 //     the seam's width), push the knob out downwards.
 //
 // A push spring was ruled out: it would bend `tb_slide` + preload, ~2.3, and
@@ -227,9 +227,10 @@ tb_neck    = 3.5;     // neck width (thin, as in the user's sketch: a 4.5 neck o
 tb_side    = 1.4;     // the block's side walls, at their thinnest
 tb_sh      = 1.6;     // the block's front wall, beside the neck
 tb_r       = 4.0;     // the knob's radius (8 across, the user's choice)
-tb_lip_end = 75;      // the STEP: where the lips end, as an angle on the
+tb_lip_end = 85;      // the STEP: where the lips end, as an angle on the
                       //   knob's edge from the band's axis. The step itself is
-                      //   a straight line across the band
+                      //   a straight line across the band. Was 75: printed
+                      //   (2026-10-23), the lips were too short to hold
 tb_lip     = 1.1;     // how far a lip overhangs the knob's edge
 tb_lip_a   = 60;      // lip faces, from vertical. Steeper than 45 on purpose:
                       //   pushed up or down, a face cams the knob sideways
@@ -266,16 +267,24 @@ tb_drop_fit = 0.25;   // the way-in, round the knob as it drops
 // straight leaf in the wall bends straight out, and the faces alone set the
 // effort: ~tan(angle + friction), so ~0.8 to close (25°) and ~4 to open
 // (60°) times the leaf's force. The catch locks for good from ~70°.
-cl_h       = 0.4;     // how far the bump pushes its leaf out passing the crest
-cl_xc      = 1.35;    // the crest, behind the knob's centre
+cl_h       = 0.7;     // how far the bump pushes its leaf out passing the crest.
+                      //   Was 0.4 with `cl_pre` 0.15: printed (2026-10-23),
+                      //   the bumps did not touch the knob at all
+cl_xc      = 2.6;     // the crest, behind the knob's centre: on its back half,
+                      //   since the knob drops out ~2.4 back and the bump
+                      //   must then stand behind the lipped front
 cl_catch   = 60;      // the catch face, from the band's axis
 cl_rb      = 0.5;     // the bump's rounded tip
-cl_pre     = 0.15;    // the bump into the catch at home: the grip
+cl_pre     = 0.35;    // the bump into the catch at home: the grip
 cl_dc      = 0.15;    // the bump clear of the knob where the knob drops in
 cl_t       = 0.8;     // the wall leaf
-cl_slot    = 0.9;     // behind it: room to bend `cl_h`, and >= 0.45 more
+cl_slot    = 1.2;     // behind it: room to bend `cl_h`, and >= 0.45 more
 cl_gap     = 0.6;     // the slot's mouth into the way-in, at the leaf's tip
 cl_wr      = 0.8;     // the way-in's back corners
+cl_ext     = 1.3;     // the leaf runs on past the way-in's back corner, freed
+                      //   by a slit `cl_slit` inside it: the click's on the
+                      //   knob's back half, so the leaf needs the length
+cl_slit    = 0.6;
 tb_far     = 3.0;     // bar 0 behind the slot's far end, to its +x face:
                       //   the slot must stop short of bar 0's lug arms. Was
                       //   1.44: printed (2026-10-23), that wall bent closing
@@ -316,7 +325,9 @@ cl_f       = [cl_xc + (cl_c[1] - cl_yn) / tan(cl_catch), cl_yn];  // catch's foo
 // The leaf: free tip just in front of the bump, root where the way-in's
 // back corner begins. Straight-beam strain at the bump.
 cl_tip     = cl_xb - 0.7;
-cl_root    = tb_slide + tb_r + tb_drop_fit - cl_wr;
+cl_back    = tb_slide + tb_r + tb_drop_fit - cl_wr;  // the way-in's back corners
+cl_root    = cl_back + cl_ext;
+cl_uslot   = tb_uc + cl_root + cl_slot/2;     // the slots' far end
 cl_strain  = 1.5 * cl_t * cl_h / pow(cl_root - cl_xb, 2) * 100;
 function tb_pol(a, r) = [tb_uc - r*cos(a), r*sin(a)];
 tb_tipd    = tb_wfit + tb_overlap;           // a lip's reach past its wall
@@ -342,16 +353,19 @@ assert(cl_s > 0.05 && cl_c[1] - cl_s * sin(cl_catch) > cl_yn + 0.1,
        "the bump meets the catch off its face");
 assert(cl_yl(cl_x0) >= cl_yn - 0.5, "the recess cuts deep into the knob");
 // Where the knob drops in, the bump is clear of the knob's front corner too.
-assert(norm(cl_bd - [cl_x0, sqrt(tb_r*tb_r - cl_x0*cl_x0)]) >= cl_rb + cl_dc,
-       "the bump meets the knob's front where it drops out");
-// At home, the notch's floor and the circle behind it clear the bump.
-assert(norm([cl_xb, cl_yb]) >= tb_r + cl_rb + 0.15 || cl_xb + cl_rb + 0.15 <=
-       sqrt(tb_r*tb_r - cl_yn*cl_yn), "the bump rests on the knob behind the notch");
+// (The whole front: the full circle ahead of `cl_x0`, not just its corner.)
+cl_drop_c  = (cl_bd[0] <= cl_x0 ? norm(cl_bd) - tb_r
+              : norm(cl_bd - [cl_x0, min(cl_bd[1], sqrt(tb_r*tb_r - cl_x0*cl_x0))])) - cl_rb;
+assert(cl_drop_c >= 0.1, str("the bump meets the knob's front where it drops out: ", cl_drop_c));
+// At home, the notch's floor clears the bump: the floor is cut straight back
+// past the knob's end, so nothing behind it stands higher.
+assert(cl_yb - cl_rb - cl_yn >= 0.1, "the bump rests on the knob behind the notch");
 assert(cl_tip - cl_gap >= 0, "the leaf's mouth runs off the way-in's straight wall");
 assert(cl_slot >= cl_h + 0.45, "the leaf bottoms out in its slot");
 assert(tb_band_w/2 - (cl_wy + cl_t + cl_slot) >= tb_side,
        "the wall outside the leaf is too thin");
-assert(cl_strain <= 4, str("the leaves strain ", cl_strain, " %"));
+// ~6.2 % since the click went to 0.7 (the long teeth printed fine at ~7 %).
+assert(cl_strain <= 7, str("the leaves strain ", cl_strain, " %"));
 assert(h - tb_far <= 1.6,
        str("the slot reaches x ", h - tb_far, " of bar 0, into its lug arms"));
 
@@ -363,7 +377,7 @@ assert(h - tb_far <= 1.6,
 // The block is as short as the pocket allows: the pocket's far end stops
 // `tb_far` short of bar 0's +x face, so it runs on into bar 0 itself, and the
 // block reaches `blk_ext` past bar 0's -x face.
-x_f       = (h - tb_far) - tb_uend;              // the block's front face
+x_f       = (h - tb_far) - max(tb_uend, cl_uslot); // the block's front face
 blk_ext   = -h - x_f;
 
 // Which leaves a remainder problem, so: the number of bars is chosen to land
@@ -714,7 +728,7 @@ module tb_lips()
 module tb_way_in_2d()
     hull() {
         translate([tb_uc, 0]) circle(r = cl_wy);
-        for (m = [-1, 1]) translate([tb_uc + cl_root, m * (cl_wy - cl_wr)]) circle(r = cl_wr);
+        for (m = [-1, 1]) translate([tb_uc + cl_back, m * (cl_wy - cl_wr)]) circle(r = cl_wr);
     }
 
 // The cut: the neck slot, the niche (the knob's circle at home, its lips left
@@ -750,6 +764,11 @@ module clasp_pocket() translate([x_f, band_cy, 0]) {
         translate([tb_uc + cl_tip - cl_gap, cl_wy - 0.5])
             square([cl_gap, cl_t + cl_slot + 0.5]);
         translate([tb_uc + cl_root, cl_wy + cl_t + cl_slot/2]) circle(d = cl_slot);
+        // the slit inside the leaf, from the way-in's back corner on
+        hull() {
+            translate([tb_uc + cl_back, cl_wy - cl_slit]) square([0.01, cl_slit]);
+            translate([tb_uc + cl_root, cl_wy - cl_slit/2]) circle(d = cl_slit);
+        }
     }
 }
 
