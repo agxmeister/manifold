@@ -8,7 +8,9 @@ a wrist, and nothing is assembled, glued, or picked out of supports.
 130 mm wrist (the 4-year-old it was printed for, and fits), 12 bars, printed
 flat in a 151.9 × 16.2 × 4.2 mm strip.** `-D wrist=180` is the adult size.
 The buckle is a round knob pulled into a lipped niche, where it clicks; flush, the same at every size;
-length is band, not buckle.
+length is band, not buckle. An alternative buckle, a dovetail under a roof
+(`-D 'buckle="roof"'`), is waiting to be compared on a print — see
+[the clasp](#alternative-the-roofed-dovetail-buckle--roof--unprinted).
 
 ![the bracelet as it comes off the bed](previews/bracelet-bracelet.png)
 
@@ -261,6 +263,49 @@ back: the bumps):
 | pushed 1.0, down 1 (control) | the lips |
 | pushed 2.11, moved down by any amount | empty: the knob drops right out |
 | pushed 2.1 | the faces of the seam |
+
+### Alternative: the roofed dovetail (`buckle = "roof"`) — unprinted
+
+A second buckle to print and compare with the one above (2026-10-25). Only
+the niche is different. The knob, neck, way-in, clicks and block are the same,
+and so are the buckle's length, the pull and the band.
+
+- **A roof** over the block's front end, 1.2 mm thick, from its front face to
+  the step. It covers the knob's front half and the neck's way in (now a
+  tunnel). The knob's front half and the neck are 2.75 mm tall to pass under
+  it, 0.25 below the roof. The back half stays the band's full 4.2,
+  flush with the top in the way-in, where the clicks work on it.
+- **A dovetail** instead of the V. The knob's front edge widens toward the
+  top, at 40° from vertical, over the niche's lower lip, which reaches 1.1 mm
+  under it. There is no upper lip; the roof stops the knob from going up.
+  The band's pull pushes the knob out along the dovetail face, and that
+  slope lifts it up into the roof. It then sits wedged between the lip and
+  the roof with no play.
+- **To close:** push the ends together and push the knob **up into the way-in
+  from below** (the roof is over its front). Then pull it forward until it
+  clicks. **To open:** push the ends together past the click and push the knob
+  out downwards. It cannot come out the top.
+- **Costs:** the neck is 3.5 × 2.75 instead of 3.5 × 4.2, because it runs
+  under the roof whenever the buckle is pushed to open. The roof is an 8.5 mm
+  bridge across the band, anchored on the block's side walls. The knob's
+  dovetail face is a 40° overhang. Neither needs support, and the 60° upper
+  lips are gone.
+
+```sh
+openscad -D 'buckle="roof"' -o exports/bracelet-bracelet-roof.stl models/bracelet/bracelet.scad
+```
+
+| test (knob moved against the socket) | reads |
+|---|---|
+| home | a contact sheet on the dovetail face only |
+| up 0.24 / 0.3 | empty / the roof |
+| down 0.05, forward 0.1 | the dovetail face: no play down or forward |
+| forward along the face, 0.21 out and 0.25 up | the roof only: seated |
+| pushed 0.15 … 1.7 | the bumps only (as above) |
+| pushed 1.9 | empty: past the click |
+| pushed 2.11, down by any amount | empty: it drops out |
+| pushed 2.11, up 0.3 | the roof: it cannot come out the top |
+| pushed 1.2, down 1 (control) | hits |
 
 ## What is printed over air
 

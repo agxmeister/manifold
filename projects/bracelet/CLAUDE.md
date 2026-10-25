@@ -3,6 +3,52 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
+## ALTERNATIVE: the ROOFED DOVETAIL buckle (`buckle = "roof"`) — 2026-10-25, UNPRINTED
+
+The user asked for an alternative to compare on a print ("I will choose one
+that wins later"): "similar to the current one" plus (1) a ROOF at the end
+of part B covering half the knob, (2) the knob's fixation a DOVETAIL,
+widening to the top. Knob still plays two ways: the front half in the
+dovetail groove, the back half on the hooks/springs. Built as a parameter;
+`buckle = "lips"` (default) is the d595089 buckle and exports
+byte-identical (`cmp` plain, w180, c3 checked against HEAD's source).
+Export: `exports/bracelet-bracelet-roof.stl`, preview `-roof.png`.
+- `dv_*`: roof `dv_roof` 1.2 from the block's front face to `tb_ustep`
+  (pocket's neck slot + niche cut only to `thick − dv_roof`: the neck slot is
+  a TUNNEL); knob front half + neck `dv_h` 2.75 tall (`dv_rfit` 0.25 under
+  the roof); back half full height from `dv_ub` = step + `tb_clear` +
+  `dv_back` 0.2. The dovetail reuses the V's reach (`tb_lip` 1.1, `tb_land`,
+  `tb_tfit`, `tb_vfit` 0, `tb_wfit`) at `dv_a` 40°, so `tb_slide`, the clicks
+  and the buckle length (24.40) are UNCHANGED. Only the lower lip is kept
+  (`dv_lips_2d`; `tb_lips()` now takes its section as a child).
+- Why it holds: the face leans out going up, so the band's pull wedges the
+  knob UP into the roof. Insert from BELOW, open downwards (roof over the
+  front even at the drop position).
+- Neck is low ALL the way (3.5 × 2.75): pushed to open, it travels
+  `tb_slide` under the roof, and the seam is only that wide.
+- Traps hit: (a) wedged into the roof the knob moves 0.21 forward (> `tb_clear`
+  0.2), and its full-height back face hit the roof's edge → `dv_back`,
+  asserted. (b) The knob's front/back blocks only TOUCHING at `dv_ub` left a
+  non-manifold edge on the bed: genus 33 (= the default's, looked fine!)
+  while the tab alone read −1 → front block overlaps by 1. Check sock/tab
+  genus separately (sock 3, tab 0).
+- Genus = default formula + 1 (the roof bridges the tunnel: a handle): 34 at
+  130; sweep 110–230 pieces == cols; rows=3 56, c3 37.
+- Harness (scratch fit.scad, socket moved `tb_x0 − x_f`, knob dx back/dz;
+  "front"/"back" split at the knob's centre): home 0.0010 sheet on the
+  dovetail only (z 0.76–1.71); up 0.24 EMPTY, 0.3 roof; down 0.05 0.235 and
+  forward 0.1 0.336 (face); along the face −0.16/+0.2 EMPTY, −0.21/+0.25
+  0.0000 at z 3.00 only (roof); bumps 0.15 0.02, 0.3 0.62, 0.6 1.90, 1.2
+  1.70, 1.7 0.14, 1.9 EMPTY (= lips); drop 2.113 dz 0/−1/−2/−4.3 EMPTY,
+  dz +0.3 0.96 roof; CONTROL dx 1.2 dz −1 1.45.
+- Overhangs: 45 BRIDGE (44 hinge + the roof, 8.5 across at z 3.0), no RAMP
+  (the upper lips' 2 are gone), no SUPPORT; 40° knob face unflagged. Bed
+  1733.4 in 12. Walls (clasp clipped short of the lug arms): socket only
+  0.80 = the leaves; the lips version's 0.68–0.72 lip-tip flags are gone; tab
+  ≥ 1.03.
+- Not run: slicer, roof sag. If the knob rubs the roof, raise `dv_rfit`;
+  if it rattles, lower it.
+
 ## The ROUND KNOB IN A NICHE buckle (user's sketch) — 2026-10-20 (last), PRINTED 2026-10-21, reworked, UNPRINTED
 
 **2026-10-24: CLICK DEEPENED — UNPRINTED.** 304d14a printed: "hooks on the

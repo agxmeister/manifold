@@ -376,6 +376,72 @@ assert(cl_strain <= 7, str("the leaves strain ", cl_strain, " %"));
 assert(h - tb_far <= 1.6,
        str("the slot reaches x ", h - tb_far, " of bar 0, into its lug arms"));
 
+// ---------------------------------------------- the ROOFED buckle (alternative)
+// `buckle = "roof"` (the user's alternative, 2026-10-25; the lipped niche
+// above stays the default until one of them wins on a print). Everything is
+// the same — knob, neck, way-in, the clicks, the block — except the niche:
+//
+//   section through the knob's front, fastened
+//                 roof
+//     ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓──────┐  step
+//     ▓▓▓  ┌────────────────────────┐   │
+//     ▓▓▓  │     knob, front half    │   │  back half: full height,
+//     ▓▓▓▓  \                      /    │  the clicks, as before
+//     ▓▓▓▓▓▓ \____________________/     │
+//     ▓▓▓▓▓▓▓|                    |     │
+//    ─────────────────────────────────────── bed
+//      lower lip (DOVETAIL)
+//
+//   * A ROOF over the block's front end, from its front face to the step:
+//     it covers the knob's front half, and the neck's way in, as a tunnel.
+//     The knob's front half and the neck are `dv_h` tall to pass under it;
+//     the back half stays the band's full height, flush with it in the
+//     way-in, where the clicks are.
+//   * A DOVETAIL instead of the V: the knob's front edge WIDENS TO THE TOP,
+//     at `dv_a` from vertical, over the niche's lower lip, which reaches in
+//     `tb_lip` under it, as before. No upper lip: the roof is the stop.
+//     The band's pull wedges the knob out along that face, so up into the
+//     roof: it seats between lip and roof without play.
+//   * To close: push the ends together, push the knob UP into the way-in
+//     from BELOW (the roof is over its front), pull it forward. It clicks.
+//     To open: push together past the click, push the knob out downwards.
+//
+// The lip's reach is the V's (`tb_lip`, `tb_tfit`, `tb_vfit`, `tb_wfit`),
+// so the pull, the clicks and the buckle's length are all unchanged.
+// Printed lying, no support: the knob's flaring face is a `dv_a` overhang,
+// the lip's face looks up, and the roof bridges the niche across the band,
+// anchored on its walls both sides.
+buckle  = "lips";     // "lips": the V-lipped niche; "roof": the roofed dovetail
+dv_roof = 1.2;        // the roof
+dv_rfit = 0.25;       // the knob's top under the roof, while nothing pulls it
+dv_a    = 40;         // the dovetail face, from vertical. On the knob it is an
+                      //   overhang, so keep it inside 45.
+dv_back = 0.2;        // the knob's full-height back half starts this much
+                      //   further behind the roof's edge than `tb_clear`:
+                      //   wedged up into the roof, the knob moves forward
+dv_h    = thick - dv_roof - dv_rfit;          // 2.75 — the knob's front half
+dv_ub   = tb_ustep + tb_clear + dv_back;      // where the back half starts
+dv_lip_h = tb_lip / tan(dv_a);                // 1.31 — the face's height
+// The socket's face is the knob's moved out `tb_vfit`; the lip's tip stops
+// `tb_tfit` short of the knob's foot (as in the V, see `tb_tip_z`).
+dv_tip_z = tb_land + tb_tfit / tan(dv_a);     // the lip tip's land
+dv_zlip  = dv_tip_z + tb_tipd / tan(dv_a);    // where the face meets the wall
+
+assert(buckle == "lips" || buckle == "roof", str("unknown buckle ", buckle));
+assert(dv_a <= 40, "the knob's dovetail face is past 40 deg — it would droop");
+assert(dv_roof >= 1.0, "the roof is too thin to hold the knob's wedge");
+assert(dv_h - (tb_land + dv_lip_h) >= 0.6,
+       "too little knob rim above the dovetail face");
+assert(dv_zlip <= dv_h + dv_rfit - 0.4,
+       "the niche's wall has no vertical rim left under the roof");
+// Pulled, the knob climbs the face into the roof: `dv_rfit` up moves it
+// out by rfit·tan(a). Its foot and rim must not meet the lip's tip or the
+// wall first, or it seats on them instead of the face.
+assert(dv_rfit * tan(dv_a) <= min(tb_tfit, tb_wfit - tb_vfit) - 0.05,
+       "climbing into the roof, the knob meets the lip's tip or the wall");
+assert(tb_clear + dv_back - dv_rfit * tan(dv_a) >= 0.15,
+       "wedged into the roof, the knob's back half meets the roof's edge");
+
 // ------------------------------------------------------------ length budget
 // Clasped, the loop runs: bar 0's +x face -> band -> last bar's +x face ->
 // `face_gap` -> socket block -> bar 0. The block is fixed at every size; the
@@ -537,7 +603,10 @@ echo(str("cols=", cols, " rows=", rows,
          "  wall leaves ", cl_t, " x ", cl_root - cl_tip, ", click ", cl_h,
                     ", lead-in ", cl_psi, "deg, catch ", cl_catch, "deg, strain ",
                     cl_strain, "%",
-         " lips ", tb_lip, " at ", tb_lip_a, "deg",
+         buckle == "roof"
+             ? str(" ROOF ", dv_roof, " over the front half, knob front ", dv_h,
+                   " tall, dovetail ", tb_lip, " at ", dv_a, "deg")
+             : str(" lips ", tb_lip, " at ", tb_lip_a, "deg"),
          "  seam ", face_gap, "  push to open ", tb_slide,
          "  footprint=", (tb_x0 + tb_uc + tb_r) - x_f,
                     " x ", band_w, " x ", top_z,
@@ -688,7 +757,19 @@ module tb_sector(ang)
     translate([tb_uc, 0, 0]) rotate([0, 0, 180 - ang])
         rotate_extrude(angle = 2*ang) children();
 
-module clasp_tab() {
+// The roofed buckle's sections. The knob's foot: what its front edge loses,
+// (a, z) with a measured INTO the knob — the dovetail, narrow at the bed.
+module dv_edge_cut_2d()
+    polygon([[-1, -1], [tb_lip, -1], [tb_lip, tb_land],
+             [0, tb_land + dv_lip_h], [-1, tb_land + dv_lip_h]]);
+
+// The lower lip the niche's wall keeps, (a, z) with a measured from the wall
+// into the cut. Above it the wall is plain, up to the roof.
+module dv_lips_2d()
+    polygon([[-1, -2], [-1, thick + 2], [0, thick + 2], [0, dv_zlip],
+             [tb_tipd, dv_tip_z], [tb_tipd, -2]]);
+
+module clasp_tab() if (buckle == "roof") clasp_tab_roofed(); else {
     // neck, from inside the last bar into the knob — past the lip's inset,
     // so it meets the knob's chamfered top and bottom too
     translate([x_r - 1.0, band_cy - tb_neck/2, 0])
@@ -699,6 +780,30 @@ module clasp_tab() {
         linear_extrude(thick) tb_knob_2d();
         intersection() {
             tb_sector(100) translate([tb_r, 0]) mirror([1, 0]) tb_edge_cut_2d();
+            translate([-50, -50, -5]) cube([50 + tb_ustep + tb_clear, 100, thick + 10]);
+        }
+    }
+}
+
+// The roofed knob: the front half (to the step, `tb_clear` past it) and the
+// neck `dv_h` tall with the dovetail foot; the back half full height. The
+// neck is low all the way: pushed to open it travels `tb_slide` under the
+// roof, and the seam is only that wide.
+module clasp_tab_roofed() {
+    translate([x_r - 1.0, band_cy - tb_neck/2, 0])
+        cube([tb_x0 + tb_ua + tb_lip + 0.5 - (x_r - 1.0), tb_neck, dv_h]);
+    translate([tb_x0, band_cy, 0]) difference() {
+        intersection() {
+            linear_extrude(thick) tb_knob_2d();
+            union() {
+                // overlapping the back half: merely touching it, the two
+                // kept a seam (a non-manifold edge on the bed)
+                translate([-50, -50, 0]) cube([50 + dv_ub + 1, 100, dv_h]);
+                translate([dv_ub, -50, 0]) cube([50, 100, thick]);
+            }
+        }
+        intersection() {
+            tb_sector(100) translate([tb_r, 0]) mirror([1, 0]) dv_edge_cut_2d();
             translate([-50, -50, -5]) cube([50 + tb_ustep + tb_clear, 100, thick + 10]);
         }
     }
@@ -720,10 +825,10 @@ module clasp_block()
     translate([(x_f + h)/2, band_cy, 0]) slab(h - x_f);
 
 // The lips the block keeps, in the local frame: round the niche's front arc
-// from the neck slot to the step.
+// from the neck slot to the step. Their section is the child.
 module tb_lips()
     difference() {
-        tb_sector(100) translate([tb_r + tb_wfit, 0]) mirror([1, 0]) tb_lips_2d();
+        tb_sector(100) translate([tb_r + tb_wfit, 0]) mirror([1, 0]) children();
         translate([-50, -(tb_neck/2 + tb_fit), -6]) cube([100, tb_neck + 2*tb_fit, thick + 12]);
         translate([tb_ustep, -50, -6]) cube([100, 100, thick + 12]);
     }
@@ -741,16 +846,20 @@ module tb_way_in_2d()
 // The cut: the neck slot, the niche (the knob's circle at home, its lips left
 // standing) and, behind the step, the way-in less its two bumps, plus the slots that free the leaves. Open top and
 // bottom.
+// Roofed (`buckle = "roof"`), the neck slot and the niche stop under the
+// roof: `ct` is how high they cut.
 module clasp_pocket() translate([x_f, band_cy, 0]) {
-    translate([-1, -(tb_neck/2 + tb_fit), -1]) cube([tb_ua + 2, tb_neck + 2*tb_fit, thick + 2]);
+    roof = buckle == "roof";
+    ct   = roof ? 1 + thick - dv_roof : thick + 2;
+    translate([-1, -(tb_neck/2 + tb_fit), -1]) cube([tb_ua + 2, tb_neck + 2*tb_fit, ct]);
     difference() {
         // in front of the step only: behind it the way-in covers the knob,
         // and the bumps reach inside its circle
-        translate([0, 0, -1]) linear_extrude(thick + 2) intersection() {
+        translate([0, 0, -1]) linear_extrude(ct) intersection() {
             translate([tb_uc, 0]) circle(r = tb_r + tb_wfit);
             translate([-50, -50]) square([50 + tb_ustep + 0.01, 100]);
         }
-        tb_lips();
+        if (roof) tb_lips() dv_lips_2d(); else tb_lips() tb_lips_2d();
     }
     translate([0, 0, -1]) linear_extrude(thick + 2) difference() {
         intersection() {
