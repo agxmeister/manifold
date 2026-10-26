@@ -61,6 +61,9 @@ $fs = 0.3;
 // Everything in it is named `cn_*`, so nothing shadows the HINGE pin's
 // `pin_d` / `pin_z`.
 include <../../lib/charm-cone.scad>
+// The buckle's lock screw (`buckle = "screw"`): the screw's thread and size,
+// which the socket's threaded hole must match. Named `sk_*`.
+include <../../lib/lock-screw.scad>
 
 // ------------------------------------------------------------------- sizing
 wrist   = 130;   // wrist circumference in mm. 130 is the 4-year-old this was
@@ -376,17 +379,17 @@ assert(cl_strain <= 7, str("the leaves strain ", cl_strain, " %"));
 assert(h - tb_far <= 1.6,
        str("the slot reaches x ", h - tb_far, " of bar 0, into its lug arms"));
 
-// ---------------------------------------------- the ROOFED buckle (alternative)
-// `buckle = "roof"` (the user's alternative, 2026-10-25; the lipped niche
-// above stays the default until one of them wins on a print). Everything is
-// the same — knob, neck, way-in, the clicks, the block — except the niche:
+// ------------------------------------- the ROOFED niche (`buckle = "screw"`)
+// The lock-screw buckle's niche (the user's alternative, 2026-10-25; the
+// lipped niche above stays the default). Knob, neck, way-in and block are the
+// lipped buckle's, less the clicks (the screw locks it, below); the niche:
 //
 //   section through the knob's front, fastened
 //                 roof
 //     ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓──────┐  step
 //     ▓▓▓  ┌────────────────────────┐   │
 //     ▓▓▓  │     knob, front half    │   │  back half: full height,
-//     ▓▓▓▓  \                      /    │  the clicks, as before
+//     ▓▓▓▓  \                      /    │
 //     ▓▓▓▓▓▓ \____________________/     │
 //     ▓▓▓▓▓▓▓|                    |     │
 //    ─────────────────────────────────────── bed
@@ -396,22 +399,26 @@ assert(h - tb_far <= 1.6,
 //     it covers the knob's front half, and the neck's way in, as a tunnel.
 //     The knob's front half and the neck are `dv_h` tall to pass under it;
 //     the back half stays the band's full height, flush with it in the
-//     way-in, where the clicks are.
+//     way-in.
 //   * A DOVETAIL instead of the V: the knob's front edge WIDENS TO THE TOP,
 //     at `dv_a` from vertical, over the niche's lower lip, which reaches in
 //     `tb_lip` under it, as before. No upper lip: the roof is the stop.
 //     The band's pull wedges the knob out along that face, so up into the
 //     roof: it seats between lip and roof without play.
 //   * To close: push the ends together, push the knob UP into the way-in
-//     from BELOW (the roof is over its front), pull it forward. It clicks.
-//     To open: push together past the click, push the knob out downwards.
+//     from BELOW (the roof is over its front), pull it forward, screw the
+//     lock out. To open: screw it in, push together, push the knob out
+//     downwards.
 //
 // The lip's reach is the V's (`tb_lip`, `tb_tfit`, `tb_vfit`, `tb_wfit`),
-// so the pull, the clicks and the buckle's length are all unchanged.
+// so the pull is unchanged.
+// (A `buckle = "roof"` WITH the clicks and no screw existed for a day; the
+// user kept only the two buckles, 2026-10-26.)
 // Printed lying, no support: the knob's flaring face is a `dv_a` overhang,
 // the lip's face looks up, and the roof bridges the niche across the band,
 // anchored on its walls both sides.
-buckle  = "lips";     // "lips": the V-lipped niche; "roof": the roofed dovetail
+buckle  = "lips";     // "lips": the V-lipped niche, held by clicks;
+                      //   "screw": the roofed dovetail locked by a screw (below)
 dv_roof = 1.2;        // the roof
 dv_rfit = 0.25;       // the knob's top under the roof, while nothing pulls it
 dv_a    = 40;         // the dovetail face, from vertical. On the knob it is an
@@ -427,7 +434,7 @@ dv_lip_h = tb_lip / tan(dv_a);                // 1.31 — the face's height
 dv_tip_z = tb_land + tb_tfit / tan(dv_a);     // the lip tip's land
 dv_zlip  = dv_tip_z + tb_tipd / tan(dv_a);    // where the face meets the wall
 
-assert(buckle == "lips" || buckle == "roof", str("unknown buckle ", buckle));
+assert(buckle == "lips" || buckle == "screw", str("unknown buckle ", buckle));
 assert(dv_a <= 40, "the knob's dovetail face is past 40 deg — it would droop");
 assert(dv_roof >= 1.0, "the roof is too thin to hold the knob's wedge");
 assert(dv_h - (tb_land + dv_lip_h) >= 0.6,
@@ -442,6 +449,36 @@ assert(dv_rfit * tan(dv_a) <= min(tb_tfit, tb_wfit - tb_vfit) - 0.05,
 assert(tb_clear + dv_back - dv_rfit * tan(dv_a) >= 0.15,
        "wedged into the roof, the knob's back half meets the roof's edge");
 
+// -------------------------------------------- the LOCK SCREW (`buckle = "screw"`)
+// The roofed niche above, without clicks (a plain round knob, solid way-in
+// walls), locked by a separately printed SCREW along the band's middle, in the far
+// wall (the user's sketch, 2026-10-25). Its thread, head and travel are in
+// lib/lock-screw.scad; see there. Here, what the band does for it:
+//   * the far wall is `sk_far` thick instead of `tb_far`: the thread runs in it;
+//   * joint 0's two knuckle clusters are narrowed (`sk_lug`, `sk_blade`) and
+//     pushed out to the band's edges, to open the gap between them for the
+//     ribbed head (`sk_head_d`), which turns there.
+// The cross bolt that came before it (same day) printed and failed: "parts
+// are too small". Its nub, bridges and detent leaf were 0.5–0.6 thick.
+sk_lug    = 1.2;      // joint 0's lugs (`lug_w` elsewhere, 1.4; asserted >= 1.2)
+sk_blade  = 1.6;      // ... and its blade (`blade_w`, 2.0)
+sk_head_fit = 0.4;    // the head <-> joint 0's knuckles, either side
+sk_cw     = 2*sk_lug + sk_blade + 2*axial_fit;      // 5.2 — a narrowed cluster
+sk_shift  = (body - sk_cw) / 2;                     // pushed out this far
+sk_gap    = (row_pitch - body) + 2*(body - sk_cw);  // 5.8 — the gap for the head
+// Locked, how far the knob can still go back before it meets the tip.
+sk_play   = tb_slide + tb_drop_fit - sk_ext;
+
+if (buckle == "screw") {
+    assert(rows == 2, "the lock screw's head sits between joint 0's two clusters: rows must be 2");
+    assert(sk_lug >= 1.2, "joint 0's lugs too narrow");
+    assert(sk_gap >= sk_head_d + 2*sk_head_fit - 1e-9,
+           str("the head (", sk_head_d, ") does not fit between joint 0's clusters (", sk_gap, ")"));
+    assert(sk_play >= 0.3 && sk_play <= tb_slide - 1.2,
+           str("locked, the knob's play ", sk_play, " must clear the tip and stop it well short of dropping out"));
+    assert(sk_hole_maj <= thick - 2*0.5, "the screw's hole leaves too thin a skin over it");
+}
+
 // ------------------------------------------------------------ length budget
 // Clasped, the loop runs: bar 0's +x face -> band -> last bar's +x face ->
 // `face_gap` -> socket block -> bar 0. The block is fixed at every size; the
@@ -450,7 +487,8 @@ assert(tb_clear + dv_back - dv_rfit * tan(dv_a) >= 0.15,
 // The block is as short as the pocket allows: the pocket's far end stops
 // `tb_far` short of bar 0's +x face, so it runs on into bar 0 itself, and the
 // block reaches `blk_ext` past bar 0's -x face.
-x_f       = (h - tb_far) - max(tb_uend, cl_uslot); // the block's front face
+x_f       = buckle == "screw" ? (h - sk_far) - tb_uend      // the block's front face
+                              : (h - tb_far) - max(tb_uend, cl_uslot);
 blk_ext   = -h - x_f;
 
 // Which leaves a remainder problem, so: the number of bars is chosen to land
@@ -603,8 +641,11 @@ echo(str("cols=", cols, " rows=", rows,
          "  wall leaves ", cl_t, " x ", cl_root - cl_tip, ", click ", cl_h,
                     ", lead-in ", cl_psi, "deg, catch ", cl_catch, "deg, strain ",
                     cl_strain, "%",
-         buckle == "roof"
-             ? str(" ROOF ", dv_roof, " over the front half, knob front ", dv_h,
+         buckle != "lips"
+             ? str(" LOCK SCREW ", sk_maj, " x ", sk_pitch, ", head ", sk_head_d,
+                   ", travel ", sk_travel, " (", sk_turns, " turns), knob play locked ",
+                   sk_play, ", far wall ", sk_far, ", joint 0 gap ", sk_gap, ";",
+                   " ROOF ", dv_roof, " over the front half, knob front ", dv_h,
                    " tall, dovetail ", tb_lip, " at ", dv_a, "deg")
              : str(" lips ", tb_lip, " at ", tb_lip_a, "deg"),
          "  seam ", face_gap, "  push to open ", tb_slide,
@@ -687,8 +728,7 @@ module xz_extrude(y0, w) {
 // The pin: one cylinder spanning the whole joint, flattened underneath, fused
 // into both lugs. Its free span is blade_w + 2*axial_fit = 3.0 mm, anchored
 // at each end in a lug that stands on the bed.
-module pin() {
-    pl = blade_w + 2*axial_fit + 2*lug_w;   // == body
+module pin(pl = blade_w + 2*axial_fit + 2*lug_w) {   // == body
     intersection() {
         translate([pitch/2, -pl/2, pin_z]) rotate([-90, 0, 0])
             cylinder(h = pl, r = pin_r);
@@ -698,22 +738,22 @@ module pin() {
 }
 
 // The +x half of a joint: two lugs straddling the neighbour's blade, plus the
-// pin they both carry.
-module fork() {
+// pin they both carry. (`lw`, `bw`: narrower at joint 0 for the lock screw.)
+module fork(lw = lug_w, bw = blade_w) {
     for (s = [-1, 1])
-        xz_extrude(s > 0 ? blade_w/2 + axial_fit
-                         : -(blade_w/2 + axial_fit + lug_w), lug_w)
+        xz_extrude(s > 0 ? bw/2 + axial_fit
+                         : -(bw/2 + axial_fit + lw), lw)
             knuckle_2d(pitch/2, +1, h - 1.0);
-    pin();
+    pin(bw + 2*axial_fit + 2*lw);
 }
 
 // The -x half: one central blade with a closed bore. Closed, not hooked — a
 // hook opening toward the neighbour would simply pull off the pin.
-module blade() {
+module blade(bw = blade_w) {
     difference() {
-        xz_extrude(-blade_w/2, blade_w) knuckle_2d(-pitch/2, -1, -(h - 1.0));
-        translate([-pitch/2, -blade_w, pin_z]) rotate([-90, 0, 0])
-            cylinder(h = 2*blade_w, r = bore_r);
+        xz_extrude(-bw/2, bw) knuckle_2d(-pitch/2, -1, -(h - 1.0));
+        translate([-pitch/2, -bw, pin_z]) rotate([-90, 0, 0])
+            cylinder(h = 2*bw, r = bore_r);
     }
 }
 
@@ -721,13 +761,20 @@ module blade() {
 // The joint is spread into `rows` knuckle clusters along the bar — one at each
 // old tile centre — so a wide band is held by several knuckles rather than
 // one, and the bar cannot twist about a single pin.
+// With the lock screw, joint 0 (bar 0's fork, bar 1's blade) has narrowed
+// clusters pushed out to the band's edges: the screw's head turns between them.
 module bar(col) {
     translate([col*pitch, band_cy, 0]) bar_body();
-    for (row = [0 : rows - 1])
+    for (row = [0 : rows - 1]) {
+        j0 = buckle == "screw";
+        dy = row == 0 ? -sk_shift : sk_shift;
         translate([col*pitch, row*row_pitch, 0]) {
-            if (col > 0)        blade();
-            if (col < cols - 1) fork();
+            if (col > 0)
+                if (j0 && col == 1) translate([0, dy, 0]) blade(sk_blade); else blade();
+            if (col < cols - 1)
+                if (j0 && col == 0) translate([0, dy, 0]) fork(sk_lug, sk_blade); else fork();
         }
+    }
 }
 
 // The clasp, in the print frame: `tb_x0` is where the block's front face lands
@@ -769,7 +816,7 @@ module dv_lips_2d()
     polygon([[-1, -2], [-1, thick + 2], [0, thick + 2], [0, dv_zlip],
              [tb_tipd, dv_tip_z], [tb_tipd, -2]]);
 
-module clasp_tab() if (buckle == "roof") clasp_tab_roofed(); else {
+module clasp_tab() if (buckle != "lips") clasp_tab_roofed(); else {
     // neck, from inside the last bar into the knob — past the lip's inset,
     // so it meets the knob's chamfered top and bottom too
     translate([x_r - 1.0, band_cy - tb_neck/2, 0])
@@ -814,7 +861,7 @@ module clasp_tab_roofed() {
 module tb_knob_2d()
     translate([tb_uc, 0]) difference() {
         circle(r = tb_r);
-        for (m = [0, 1]) mirror([0, m])
+        if (buckle == "lips") for (m = [0, 1]) mirror([0, m])
             polygon([[cl_x0, tb_r + 1], [cl_x0, cl_yl(cl_x0)], cl_c, cl_f,
                       [tb_r + 1, cl_yn], [tb_r + 1, tb_r + 1]]);
     }
@@ -846,10 +893,10 @@ module tb_way_in_2d()
 // The cut: the neck slot, the niche (the knob's circle at home, its lips left
 // standing) and, behind the step, the way-in less its two bumps, plus the slots that free the leaves. Open top and
 // bottom.
-// Roofed (`buckle = "roof"`), the neck slot and the niche stop under the
+// Roofed (`buckle = "screw"`), the neck slot and the niche stop under the
 // roof: `ct` is how high they cut.
 module clasp_pocket() translate([x_f, band_cy, 0]) {
-    roof = buckle == "roof";
+    roof = buckle != "lips";
     ct   = roof ? 1 + thick - dv_roof : thick + 2;
     translate([-1, -(tb_neck/2 + tb_fit), -1]) cube([tb_ua + 2, tb_neck + 2*tb_fit, ct]);
     difference() {
@@ -867,14 +914,18 @@ module clasp_pocket() translate([x_f, band_cy, 0]) {
             translate([tb_ustep, -50]) square([100, 100]);
         }
         // the bumps, on the leaves' inner faces
-        for (m = [0, 1]) mirror([0, m]) hull() {
+        if (buckle == "lips") for (m = [0, 1]) mirror([0, m]) hull() {
             translate([tb_uc + cl_xb, cl_yb]) circle(r = cl_rb);
             translate([tb_uc + cl_xb - 0.6, cl_wy - 0.01]) square([1.2, 0.2]);
         }
     }
     // the slots that free the leaves: behind each, and its mouth in front
     // of its tip, into the way-in; the root end rounded
-    translate([0, 0, -1]) linear_extrude(thick + 2) for (m = [0, 1]) mirror([0, m]) {
+    // the lock screw's threaded hole: from bar 0's +x face, through the far
+    // wall, out into the way-in
+    if (buckle == "screw")
+        translate([h - x_f, 0, thick/2]) rotate([0, -90, 0]) sk_female(sk_far);
+    if (buckle == "lips") translate([0, 0, -1]) linear_extrude(thick + 2) for (m = [0, 1]) mirror([0, m]) {
         translate([tb_uc + cl_tip - cl_gap, cl_wy + cl_t])
             square([cl_root - (cl_tip - cl_gap), cl_slot]);
         translate([tb_uc + cl_tip - cl_gap, cl_wy - 0.5])

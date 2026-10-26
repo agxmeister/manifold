@@ -8,9 +8,10 @@ a wrist, and nothing is assembled, glued, or picked out of supports.
 130 mm wrist (the 4-year-old it was printed for, and fits), 12 bars, printed
 flat in a 151.9 × 16.2 × 4.2 mm strip.** `-D wrist=180` is the adult size.
 The buckle is a round knob pulled into a lipped niche, where it clicks; flush, the same at every size;
-length is band, not buckle. An alternative buckle, a dovetail under a roof
-(`-D 'buckle="roof"'`), is waiting to be compared on a print — see
-[the clasp](#alternative-the-roofed-dovetail-buckle--roof--unprinted).
+length is band, not buckle. The alternative buckle, a dovetail under a roof
+locked by a screw (`-D 'buckle="screw"'`), is waiting to be compared on a
+print — see
+[the clasp](#alternative-the-roofed-dovetail-with-a-lock-screw-buckle--screw--unprinted).
 
 ![the bracelet as it comes off the bed](previews/bracelet-bracelet.png)
 
@@ -264,48 +265,75 @@ back: the bumps):
 | pushed 2.11, moved down by any amount | empty: the knob drops right out |
 | pushed 2.1 | the faces of the seam |
 
-### Alternative: the roofed dovetail (`buckle = "roof"`) — unprinted
+### Alternative: the roofed dovetail with a lock screw (`buckle = "screw"`) — unprinted
 
-A second buckle to print and compare with the one above (2026-10-25). Only
-the niche is different. The knob, neck, way-in, clicks and block are the same,
-and so are the buckle's length, the pull and the band.
+A second buckle to print and compare with the one above (2026-10-25). The
+knob, neck, way-in and block are as above, without the clicks; the niche is
+roofed and the knob is locked by a **screw** along the band's middle (the
+user's sketch).
 
 - **A roof** over the block's front end, 1.2 mm thick, from its front face to
   the step. It covers the knob's front half and the neck's way in (now a
   tunnel). The knob's front half and the neck are 2.75 mm tall to pass under
   it, 0.25 below the roof. The back half stays the band's full 4.2,
-  flush with the top in the way-in, where the clicks work on it.
+  flush with the top in the way-in.
 - **A dovetail** instead of the V. The knob's front edge widens toward the
   top, at 40° from vertical, over the niche's lower lip, which reaches 1.1 mm
   under it. There is no upper lip; the roof stops the knob from going up.
   The band's pull pushes the knob out along the dovetail face, and that
   slope lifts it up into the roof. It then sits wedged between the lip and
   the roof with no play.
-- **To close:** push the ends together and push the knob **up into the way-in
-  from below** (the roof is over its front). Then pull it forward until it
-  clicks. **To open:** push the ends together past the click and push the knob
-  out downwards. It cannot come out the top.
 - **Costs:** the neck is 3.5 × 2.75 instead of 3.5 × 4.2, because it runs
   under the roof whenever the buckle is pushed to open. The roof is an 8.5 mm
   bridge across the band, anchored on the block's side walls. The knob's
   dovetail face is a 40° overhang. Neither needs support, and the 60° upper
-  lips are gone.
+  lips are gone. There are no clicks: the knob is a plain round knob and the
+  way-in's side walls are solid.
+
+![the lock screw buckle](previews/bracelet-bracelet-screw.png)
+![the lock screw](previews/lock-screw-lock-screw.png)
+
+- **The screw** runs in the socket's far wall, between the way-in and bar
+  0's hinge. **Screwed out** towards the knob (1.5 turns), its tip stands
+  1.8 mm into the gap behind the knob: the knob can go back only 0.56 (it
+  needs 2.11 to drop out). The knob pushes straight along the screw, and a
+  thread does not turn under an end push, so nothing but a finger opens it.
+  **Screwed back**, the tip hides 0.2 inside the wall and the knob is free.
+- **The head** is a 5 mm ribbed wheel behind bar 0, in the gap between the
+  two hinge clusters, turned by a finger from above or below. It stands
+  0.4 proud of the band's top and bottom, which is what the finger rolls.
+  To make room, **joint 0's clusters are narrower** (lugs 1.2, blade 1.6,
+  5.2 wide instead of 6.0) and pushed out to the band's edges: the gap
+  between them is 5.8 instead of 4.2. Every other joint is unchanged.
+- **The thread** is about M3 (2.9 mm, 1.3 pitch, 45° flanks), because the
+  band is 4.2 thick: the hole leaves 0.53 of socket over and under it. The
+  45° flanks are so the socket's half, printed lying, hangs no flatter than
+  that. The far wall is 4.5 thick (3.0 before), so locked, 2 turns still
+  hold. The buckle is 0.6 longer than the lipped one: 25.0 mm.
+- **It prints separately** (`lock-screw`), standing on its head. To fit it,
+  bend joint 0 right over (bar 1 down, the way it bends on the wrist): bar 1
+  swings clear and the screw goes in from behind bar 0, tip first.
+- **To close:** screw back, push the ends together and push the knob **up
+  into the way-in from below** (the roof is over its front), pull it forward,
+  screw out. **To open:** screw back, push the ends together and push the
+  knob out downwards. It cannot come out the top.
 
 ```sh
-openscad -D 'buckle="roof"' -o exports/bracelet-bracelet-roof.stl models/bracelet/bracelet.scad
+openscad -D 'buckle="screw"' -o exports/bracelet-bracelet-screw.stl models/bracelet/bracelet.scad
+openscad -o exports/lock-screw-lock-screw.stl models/lock-screw/lock-screw.scad
 ```
 
-| test (knob moved against the socket) | reads |
+| test | reads |
 |---|---|
-| home | a contact sheet on the dovetail face only |
-| up 0.24 / 0.3 | empty / the roof |
-| down 0.05, forward 0.1 | the dovetail face: no play down or forward |
-| forward along the face, 0.21 out and 0.25 up | the roof only: seated |
-| pushed 0.15 … 1.7 | the bumps only (as above) |
-| pushed 1.9 | empty: past the click |
-| pushed 2.11, down by any amount | empty: it drops out |
-| pushed 2.11, up 0.3 | the roof: it cannot come out the top |
-| pushed 1.2, down 1 (control) | hits |
+| screw in its hole, along its path (turned as it moves), 0 … 2.0 back from locked | empty |
+| ... moved 1.0 straight, not turned / half a turn out of phase (controls) | hit |
+| locked, knob home / wedged into the roof / pushed 0.5 | empty |
+| locked, knob pushed 0.65 / to its drop point | the screw's tip: it cannot open |
+| released, knob dropping out at 0 / −2 / −4.3 | empty |
+| half out (1.5 back), knob at its drop point (control) | hit |
+| head vs joint 0's knuckles, locked and released / moved 0.35 / 0.45 sideways | empty / empty / hit |
+| head vs bar 1, joint 0 bent 24 … 60° either way | empty, but released at 60° backwards (bar 1 up) the head's top touches |
+| joint 0, narrowed, bent ±24 / ±100 / ±110 | empty / empty / binds, as every joint |
 
 ## What is printed over air
 
@@ -664,10 +692,13 @@ projects/bracelet/
 ├── lib/charm-cone.scad                   # the bolt: its thread, the bar's hole,
 │                                         #   countersink and rib, a charm's socket
 │                                         #   and grooves
+├── lib/lock-screw.scad                   # the buckle's lock screw: its thread,
+│                                         #   head and travel (`buckle = "screw"`)
 └── models/
     ├── bracelet/bracelet.scad            # the whole bracelet — one printed object
     ├── cone-pin/cone-pin.scad            # the bolt every charm is held by
     ├── screwdriver/screwdriver.scad      # a kid's hex key for the bolt
+    ├── lock-screw/lock-screw.scad        # the lock screw (`buckle = "screw"` only)
     ├── butterfly-charm/butterfly-charm.scad  # a 3D butterfly
     ├── ladybug-charm/ladybug-charm.scad      # a ladybug, in two colours
     ├── heart-charm/heart-charm.scad          # a puffy heart
@@ -687,6 +718,7 @@ printed in place.
 | `bracelet` | `bracelet` | 151.9 × 16.2 × 4.2 mm | all 12 bars' own flat feet |
 | `cone-pin` | `cone-pin` | 6.3 × 6.3 × 8.8 mm, standing | its foot, a ring round the hex socket, 20 mm² |
 | `screwdriver` | `screwdriver` | 65.0 × 32.0 × 8.0 mm, lying flat | its paddle and shaft, 1033 mm² in one piece |
+| `lock-screw` | `lock-screw` | 5.0 × 5.0 × 8.0 mm, standing | its ribbed head, 17 mm² |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 19.8 × 9.3 mm | its own bottom, 104 mm² in one piece |
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 21.6 × 8.8 mm | its own bottom and legs, 177 mm² in one piece |
 | `heart-charm` | `heart-charm` | 23.0 × 19.4 × 9.2 mm | its own flat bottom, 252 mm² in one piece |

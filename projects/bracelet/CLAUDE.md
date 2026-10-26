@@ -3,7 +3,63 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
-## ALTERNATIVE: the ROOFED DOVETAIL buckle (`buckle = "roof"`) — 2026-10-25, UNPRINTED
+## ALTERNATIVE: the LOCK SCREW buckle (`buckle = "screw"`) — 2026-10-25, UNPRINTED
+
+History, same day (do not re-offer): (1) a pin sliding ALONG the band in the
+knob — flawed (nothing stopped it sliding back in; along the load = only a
+detent); (2) a CROSS BOLT in the socket's side wall with a detent leaf —
+PRINTED, "not working, parts are too small" (nub 0.5, bridges 0.62, leaf
+0.5); user picked "the parts are simply too small" over a separate bolt or
+dropping the lock, then sketched (3): a SCREW along the band in the far wall
+(screenshot: red arrow from the way-in into the far wall, rectangle between
+way-in and bar 0's hinge), ribbed head turned by a kid's finger, printed
+separately; user chose a BIGGER head by narrowing joint 0's clusters.
+Hooks stay removed (plain knob, solid way-in walls), as in (2).
+- `lib/lock-screw.scad` (`sk_*`, draws nothing) + `models/lock-screw`
+  (export `lock-screw-lock-screw`, 5 × 5 × 8, standing on its head). Thread
+  maj 2.9, depth 0.32, pitch 1.3, crest 0.15, 45° flanks, fit 0.12; socket
+  ridge 0.27. `sk_far` 4.5 replaces `tb_far` in `x_f` (buckle 24.98, pitch
+  11.18, 12 bars at 130). Locked tip `sk_ext` 1.8 out (play `sk_play` 0.56),
+  released `sk_rec` 0.2 in, 1.54 turns; engaged locked 2.08 turns. Head
+  `sk_head_d` 5.0 (16 ribs 0.35), 1.4 long, `sk_hgap` 0.3 to bar 0's face
+  when locked; stands 0.4 proud top and bottom.
+- Joint 0: `fork(lw, bw)`, `blade(bw)`, `pin(pl)` now take widths (defaults
+  = old: all other exports byte-identical); `bar(col)` uses `sk_lug` 1.2 /
+  `sk_blade` 1.6 at col 0's fork and col 1's blade, shifted `sk_shift` 0.4
+  out → gap `sk_gap` 5.8 (= 4.2 + 2·(6 − 5.2); I first wrote + 2·shift).
+  `rows == 2` asserted.
+- Socket hole: `sk_female(sk_far)` from bar 0's +x face along −x at
+  z = thick/2. Skin over/under 0.53 (asserted ≥ 0.5) — not flagged by the
+  wall check, real. Genus 35 = roof 34 + the hole. 12 pieces.
+- Harness (scratch fit3.scad, print frame, `screw_at(d, ph)`: X0 = h +
+  hgap + head_l, rotate([0,−90,0]), twist ph − d/pitch·360): phase −138.46°
+  (= −0.5/1.3·360; empty from about −180 to −90); path d −0.3…2.5 EMPTY;
+  CONTROLS straight d 1.0 0.35, phase +180 1.74. Knob (`knob()` =
+  clasp_tab moved x_f − tb_x0 + kx): locked home / wedged / 0.5 EMPTY, 0.65
+  0.17, drop 7.1; released drop dz 0/−2/−4.3 EMPTY; d 1.5 at drop 0.07
+  (CTRL). Head vs `fork0()` (bar(0) beyond x = h — bar(0) alone is UNHOLED,
+  a first row read 29 mm³ for that) EMPTY, dy 0.35 EMPTY, 0.45 hit. Head vs
+  bar 1 turned about joint 0: EMPTY ±24/±40/+60 and locked ±60; released
+  −60 (bar 1 up, backwards) 0.009 at the head's top. Joint 0 swing ±100
+  EMPTY, ±110 binds.
+- Insertion: bend joint 0 ~90° (+a, bar 1 down): bar 1 then lies below
+  z −0.64 at x 3.6–7.8, the screw's line (z −0.4…4.6) is clear.
+- 48 BRIDGE (44 hinge + roof + 3 small on the hole's ceiling, 1.2 each), no
+  SUPPORT. Bed 1741.9 in 12. Walls: the thread ridges' run-out edges at the
+  hole's two mouths only. Screw: 1 piece, no overhang, thin flags = teeth.
+- Not run: slicer; the screw in the real hole (a 2.9 thread printed lying
+  is the risk — if it binds raise `sk_fit`, if the ridges crumble, the far
+  wall needs thickening, which only the band's 4.2 limits).
+
+## The ROOFED DOVETAIL niche — the screw buckle's base (2026-10-25)
+
+2026-10-26: user "Keep two options of buckle — the basic one, and this one,
+with the bolt": `buckle = "roof"` (roof + clicks, no screw) REMOVED as an
+option; `buckle` is "lips" | "screw". Its niche/knob code (`dv_*`,
+`clasp_tab_roofed`, `dv_lips_2d`) stays — the screw buckle is built on it;
+the click code is now gated `buckle == "lips"`. lips and screw exports
+`cmp`-identical across the change; roof export/preview deleted. The notes
+below are from when it was its own option (clicks numbers no longer apply).
 
 The user asked for an alternative to compare on a print ("I will choose one
 that wins later"): "similar to the current one" plus (1) a ROOF at the end
@@ -12,7 +68,6 @@ widening to the top. Knob still plays two ways: the front half in the
 dovetail groove, the back half on the hooks/springs. Built as a parameter;
 `buckle = "lips"` (default) is the d595089 buckle and exports
 byte-identical (`cmp` plain, w180, c3 checked against HEAD's source).
-Export: `exports/bracelet-bracelet-roof.stl`, preview `-roof.png`.
 - `dv_*`: roof `dv_roof` 1.2 from the block's front face to `tb_ustep`
   (pocket's neck slot + niche cut only to `thick − dv_roof`: the neck slot is
   a TUNNEL); knob front half + neck `dv_h` 2.75 tall (`dv_rfit` 0.25 under
@@ -986,7 +1041,7 @@ bought nothing.
 **knuckle clusters** spaced along each joint, which is what stops a wide bar
 twisting about a single pin.
 
-## Seven models, one library, `cols` shells
+## Eight models, two libraries, `cols` shells
 
 `models/bracelet/bracelet.scad` is the bracelet, and every dimension of the band
 is at the top of it. `lib/charm-cone.scad` holds the charm mount — the bolt
@@ -1015,6 +1070,7 @@ openscad -o /tmp/b180.stl -D wrist=180 models/bracelet/bracelet.scad && cmp /tmp
 openscad -o /tmp/c3.stl -D charms=3 models/bracelet/bracelet.scad && cmp /tmp/c3.stl exports/bracelet-bracelet-c3.stl
 openscad -o /tmp/p.stl models/cone-pin/cone-pin.scad && cmp /tmp/p.stl exports/cone-pin-cone-pin.stl
 openscad -o /tmp/s.stl models/screwdriver/screwdriver.scad && cmp /tmp/s.stl exports/screwdriver-screwdriver.stl
+openscad -o /tmp/ls.stl models/lock-screw/lock-screw.scad && cmp /tmp/ls.stl exports/lock-screw-lock-screw.stl
 openscad -o /tmp/f.stl models/butterfly-charm/butterfly-charm.scad && cmp /tmp/f.stl exports/butterfly-charm-butterfly-charm.stl
 openscad -o /tmp/l.stl models/ladybug-charm/ladybug-charm.scad && cmp /tmp/l.stl exports/ladybug-charm-ladybug-charm.stl
 openscad -o /tmp/h.stl models/heart-charm/heart-charm.scad && cmp /tmp/h.stl exports/heart-charm-heart-charm.stl
@@ -1854,7 +1910,7 @@ exactly at dx 0.
 ## Verifying a change
 
 0. If the lib, `bracelet.scad` or a charm model was touched: the `cmp` block
-   in "Seven models", then the rib harness in the bolt section at the top
+   in "Eight models", then the rib harness in the bolt section at the top
    (every 45° a contact sheet; 22.5° and dz −0.2 must hit). If the charm
    stations were touched, re-run steps 1–6 at `charms = 3`. If a charm
    changed: connectivity (1 piece; the dolphin 4), wall thickness outside the
