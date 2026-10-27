@@ -64,6 +64,9 @@ include <../../lib/charm-cone.scad>
 // The buckle's lock screw (`buckle = "screw"`): the screw's thread and size,
 // which the socket's threaded hole must match. Named `sk_*`.
 include <../../lib/lock-screw.scad>
+// The puzzle buckle's sliding key (`buckle = "puzzle"`): its section, and
+// the grooves and click it needs in the band's two ends. Named `pz_*`.
+include <../../lib/puzzle-key.scad>
 
 // ------------------------------------------------------------------- sizing
 wrist   = 130;   // wrist circumference in mm. 130 is the 4-year-old this was
@@ -77,6 +80,10 @@ rows    =   2;   // how many tile-widths wide the band is. It no longer means
                  //   a row of separate tiles — a column is a single bar — but
                  //   it still sets the width AND the number of hinge knuckle
                  //   clusters spaced along each joint. 2 -> a 16.2 mm band.
+
+buckle  = "lips"; // "lips": a round knob in a V-lipped niche, held by clicks;
+                  //   "screw": the knob under a roof, locked by a screw;
+                  //   "puzzle": a key slid in across the seam. See "clasp".
 
 // --------------------------------------------------------------------- bars
 pitch_nom = 11.6;         // what bar spacing WANTS to be. The spacing actually
@@ -182,7 +189,23 @@ assert(pin_flat < pin_r, "pin flattened away to nothing");
 assert(knuck_slope <= 40,
        str("knuckle underside hangs at ", knuck_slope, " deg from vertical"));
 
-// -------------------------------------------------------------------- clasp
+// ---------------------------------------- the PUZZLE KEY (`buckle = "puzzle"`)
+// The third buckle (2026-10-27, from a photo of a three-piece puzzle clasp):
+// the two ends butt together, each with a dovetail GROOVE across the band,
+// and a separately printed KEY slides into both from the band's edge. The
+// key, its section and the click are in lib/puzzle-key.scad; see there.
+// Here, where the grooves go:
+//   * bar 0 is lengthened to `x_f`, the last bar by `pz_text`, so that each
+//     end's cuts stop `pz_reach` past its bar's centre — clear of the
+//     knuckle arms, which start `h - 1.0` out;
+//   * both grooves carry a click: each outer wall is a spring LEAF (the
+//     last bar's was added 2026-10-27 at the user's request, so the key is
+//     held at both ends; it lengthened that bar by the leaf and its slot).
+// No magnets: this is for a child (the user's call).
+pz_reach  = 1.0;
+pz_text   = max(0, pz_dmax - h - pz_reach); // 1.95 — the last bar lengthened
+
+// ----------------------------------------------------- clasp: the round knob
 // A ROUND KNOB in a NICHE (the user's design and sketch, 2026-10-20): the
 // knob drops into a roomy round WAY-IN at the back of the socket's hole and
 // is pulled forward ~2 mm into the NICHE in front, whose lips hold its front.
@@ -307,7 +330,8 @@ tb_tip_y   = sqrt(pow(tb_r - tb_overlap, 2) - tb_step*tb_step);
 // The pull: that tip, the worst point, ends up `tb_clear` outside the knob
 // moved back by it.
 tb_slide   = sqrt(pow(tb_r + tb_clear, 2) - tb_tip_y*tb_tip_y) - tb_step;
-face_gap   = tb_slide + 0.1;                 // the seam when fastened
+// The seam when fastened: the puzzle key's ends butt (see that section).
+face_gap   = buckle == "puzzle" ? pz_text + 2*pz_seam : tb_slide + 0.1;
 
 // Positions along the band, from the block's front face, fastened, home.
 tb_ua      = tb_sh + tb_wfit;                // knob front
@@ -417,8 +441,7 @@ assert(h - tb_far <= 1.6,
 // Printed lying, no support: the knob's flaring face is a `dv_a` overhang,
 // the lip's face looks up, and the roof bridges the niche across the band,
 // anchored on its walls both sides.
-buckle  = "lips";     // "lips": the V-lipped niche, held by clicks;
-                      //   "screw": the roofed dovetail locked by a screw (below)
+// (`buckle` is set at the top, with the sizing.)
 dv_roof = 1.2;        // the roof
 dv_rfit = 0.25;       // the knob's top under the roof, while nothing pulls it
 dv_a    = 40;         // the dovetail face, from vertical. On the knob it is an
@@ -434,7 +457,20 @@ dv_lip_h = tb_lip / tan(dv_a);                // 1.31 — the face's height
 dv_tip_z = tb_land + tb_tfit / tan(dv_a);     // the lip tip's land
 dv_zlip  = dv_tip_z + tb_tipd / tan(dv_a);    // where the face meets the wall
 
-assert(buckle == "lips" || buckle == "screw", str("unknown buckle ", buckle));
+assert(buckle == "lips" || buckle == "screw" || buckle == "puzzle",
+       str("unknown buckle ", buckle));
+if (buckle == "puzzle") {
+    assert(pz_thick == thick, str("the key is drawn for a ", pz_thick, " band; it is ", thick));
+    assert(abs(pz_len - tb_band_w) < 1e-9,
+           str("the key is ", pz_len, " long; the band is ", tb_band_w, " wide"));
+    assert(pz_a <= 40, "the ridges lean past 40 deg over their grooves");
+    assert(pz_ridge >= 1.0 && pz_floor >= 1.0, "a ridge or a floor is too thin to carry the pull");
+    assert(pz_leg - pz_nd >= 0.8, str("the key's leg is only ", pz_leg - pz_nd, " behind its notch"));
+    assert(pz_slot >= pz_click + 0.25 - 1e-9, "the leaf bottoms out in its slot");
+    assert(tb_band_w/2 - (pz_ll + pz_slot/2) >= 1.2, "the leaf's root runs off the band's edge");
+    assert(pz_strain <= 2, str("the leaf strains ", pz_strain, " %"));
+    assert(pz_reach <= h - 1.0 - 0.8, "the cuts run into the knuckle arms");
+}
 assert(dv_a <= 40, "the knob's dovetail face is past 40 deg — it would droop");
 assert(dv_roof >= 1.0, "the roof is too thin to hold the knob's wedge");
 assert(dv_h - (tb_land + dv_lip_h) >= 0.6,
@@ -487,7 +523,8 @@ if (buckle == "screw") {
 // The block is as short as the pocket allows: the pocket's far end stops
 // `tb_far` short of bar 0's +x face, so it runs on into bar 0 itself, and the
 // block reaches `blk_ext` past bar 0's -x face.
-x_f       = buckle == "screw" ? (h - sk_far) - tb_uend      // the block's front face
+x_f       = buckle == "puzzle" ? pz_reach - pz_dmax           // the block's front face
+          : buckle == "screw" ? (h - sk_far) - tb_uend
                               : (h - tb_far) - max(tb_uend, cl_uslot);
 blk_ext   = -h - x_f;
 
@@ -641,7 +678,11 @@ echo(str("cols=", cols, " rows=", rows,
          "  wall leaves ", cl_t, " x ", cl_root - cl_tip, ", click ", cl_h,
                     ", lead-in ", cl_psi, "deg, catch ", cl_catch, "deg, strain ",
                     cl_strain, "%",
-         buckle != "lips"
+         buckle == "puzzle"
+             ? str(" PUZZLE KEY ", 2*pz_so, " x ", pz_len, " x ", pz_thick - pz_zl,
+                   ", ridges ", pz_ridge, " leaning ", pz_a, "deg, leaf ", pz_lt, " x ", pz_ll,
+                   ", click ", pz_click, ", strain ", pz_strain, "%")
+         : buckle != "lips"
              ? str(" LOCK SCREW ", sk_maj, " x ", sk_pitch, ", head ", sk_head_d,
                    ", travel ", sk_travel, " (", sk_turns, " turns), knob play locked ",
                    sk_play, ", far wall ", sk_far, ", joint 0 gap ", sk_gap, ";",
@@ -649,7 +690,7 @@ echo(str("cols=", cols, " rows=", rows,
                    " tall, dovetail ", tb_lip, " at ", dv_a, "deg")
              : str(" lips ", tb_lip, " at ", tb_lip_a, "deg"),
          "  seam ", face_gap, "  push to open ", tb_slide,
-         "  footprint=", (tb_x0 + tb_uc + tb_r) - x_f,
+         "  footprint=", (buckle == "puzzle" ? x_r + pz_text : tb_x0 + tb_uc + tb_r) - x_f,
                     " x ", band_w, " x ", top_z,
          "  band thick=", thick,
          "  knuckle cap at bed=", knuck_foot,
@@ -816,7 +857,7 @@ module dv_lips_2d()
     polygon([[-1, -2], [-1, thick + 2], [0, thick + 2], [0, dv_zlip],
              [tb_tipd, dv_tip_z], [tb_tipd, -2]]);
 
-module clasp_tab() if (buckle != "lips") clasp_tab_roofed(); else {
+module clasp_tab() if (buckle == "puzzle") pz_tab(); else if (buckle != "lips") clasp_tab_roofed(); else {
     // neck, from inside the last bar into the knob — past the lip's inset,
     // so it meets the knob's chamfered top and bottom too
     translate([x_r - 1.0, band_cy - tb_neck/2, 0])
@@ -866,6 +907,10 @@ module tb_knob_2d()
                       [tb_r + 1, cl_yn], [tb_r + 1, tb_r + 1]]);
     }
 
+// The puzzle buckle's other end: the last bar lengthened by `pz_text`.
+module pz_tab()
+    translate([x_r + pz_text - (body + pz_text)/2, band_cy, 0]) slab(body + pz_text);
+
 // Bar 0 lengthened to the block's front face: the same slab as a bar, so the
 // two read as one.
 module clasp_block()
@@ -895,7 +940,7 @@ module tb_way_in_2d()
 // bottom.
 // Roofed (`buckle = "screw"`), the neck slot and the niche stop under the
 // roof: `ct` is how high they cut.
-module clasp_pocket() translate([x_f, band_cy, 0]) {
+module clasp_pocket() if (buckle == "puzzle") pz_pocket(); else translate([x_f, band_cy, 0]) {
     roof = buckle != "lips";
     ct   = roof ? 1 + thick - dv_roof : thick + 2;
     translate([-1, -(tb_neck/2 + tb_fit), -1]) cube([tb_ua + 2, tb_neck + 2*tb_fit, ct]);
@@ -937,6 +982,32 @@ module clasp_pocket() translate([x_f, band_cy, 0]) {
             translate([tb_uc + cl_root, cl_wy - cl_slit/2]) circle(d = cl_slit);
         }
     }
+}
+
+// The puzzle buckle's cuts, the same in each end: the recess and the
+// dovetail groove, right across the band, and the leaf's slot and mouth,
+// with the bump left standing on the leaf. In the end's own frame: d along
+// the band from its face, into the end; y off the band's middle.
+module pz_end_cut() {
+    difference() {
+        translate([0, tb_band_w/2 + 1, 0]) rotate([90, 0, 0])
+            linear_extrude(tb_band_w + 2) pz_cut_2d();
+        translate([pz_bd, 0, -1]) cylinder(r = pz_br, h = thick + 2);
+    }
+    translate([0, 0, -1]) linear_extrude(thick + 2) {
+        // the slot behind the leaf, its root end rounded
+        translate([pz_do + pz_lt, -(pz_tipx + pz_gap)])
+            square([pz_slot, pz_ll + pz_tipx + pz_gap]);
+        translate([pz_do + pz_lt + pz_slot/2, pz_ll]) circle(d = pz_slot);
+        // the mouth in front of the leaf's tip, into the groove
+        translate([pz_do - 0.5, -(pz_tipx + pz_gap)])
+            square([pz_lt + pz_slot + 0.5, pz_gap]);
+    }
+}
+
+module pz_pocket() {
+    translate([x_f, band_cy, 0]) pz_end_cut();
+    translate([x_r + pz_text, band_cy, 0]) mirror([1, 0, 0]) pz_end_cut();
 }
 
 // A station: the hole and the countersink, cut from bar `col` on the pin's

@@ -3,6 +3,62 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
+## ALTERNATIVE: the PUZZLE KEY buckle (`buckle = "puzzle"`) — 2026-10-27, UNPRINTED
+
+From a photo of a 3-piece puzzle clasp (two end caps with rolled knobs + a
+middle piece that slides over both SIDEWAYS). User: no magnets (kid,
+swallowing), flush with the band, a third option. I first proposed a
+2-PART version (tab hook slid sideways into a lipped socket, far side
+closed + edge click), the user agreed, then I found it CANNOT PRINT:
+**two flat-printed parts cannot both slide together along y and lock each
+other in the xz section.** Every printable (bed-grown) pair of xz regions
+fails to interlock (descending paths to the bed would cross); one part must
+overhang the other, i.e. a 16 mm one-edge cantilever. Told the user; they
+chose the 3-part key. Do not re-offer the 2-part slide.
+- `lib/puzzle-key.scad` (`pz_*`, draws nothing) + `models/puzzle-key`
+  (export `puzzle-key-puzzle-key`, prints STANDING on an end, 13 mm²,
+  adhesion 4.5; only overhangs: the notch's 45° flanks, 2 BRIDGE).
+- Section (d from an end's face): recess over the RIDGE to `pz_zr` 2.8,
+  dovetail groove from the floor (`pz_floor` 1.0) out to `pz_do` 4.30,
+  ridge 1.0 at the floor leaning 35° over the groove (`pz_a`). Key: bridge
+  1.2 (z 3.0–4.2), legs to z 1.2, `pz_fit` 0.15 on both faces, `pz_vfit`
+  0.2. Seam 0.3. Key 8.6 × 16.2 × 3.0, chamfered top ends (0.5 × 0.6) +
+  0.6 lead-ins on its outer faces' ends, V-notch `pz_nd` 0.72 mid-length.
+- Click: bar 0's groove OUTER WALL is a leaf (`pz_lt` 1.0, root at y +6.5,
+  tip 1.0 past the middle, slot 0.65 + mouth 0.6, full height); bump r 0.6
+  `pz_click` 0.4 into the key's path; strain 1.42 % (assert ≤ 2). The leaf
+  bends in the band's layer plane. A leaf on the standing KEY would bend
+  across its layers — that is why the spring is in the band.
+- Grooves open at BOTH band edges (my earlier "closed far side" was
+  dropped: a flush key in a closed groove can't be pulled out by a kid;
+  it's pushed through instead). Told the user in the README.
+- Placement: cuts stop `pz_reach` 1.0 past each end bar's centre (arms at
+  h − 1.0). Bar 0's block `x_f` = −4.95 (blk_ext 1.95); the last bar
+  lengthened `pz_text` 0.3. `face_gap` 0.6. Buckle 14.55; 130 → 13 bars,
+  pitch 11.12. 13 shells, genus 37 = formula + 1 (the leaf's through-slot).
+- `buckle` moved to the TOP of bracelet.scad (face_gap needs it; a forward
+  reference read undef and silently used the lips' face_gap). lips, w180,
+  c3 and screw exports `cmp`-identical after the change.
+- Checks: 48 BRIDGE (all hinge), no SUPPORT, 13 islands 1731.6 mm². Walls
+  (ends clipped just short of the knuckle arms): ≥ 0.95 = the clip slab.
+- Harness (scratch fit.scad: bracelet() ∩ box per end — MAKE THE BOX COVER
+  THE WHOLE CUT, a 1.8 box over the tab hid its groove and read EMPTY;
+  tab end moved to `x_f − 2·pz_seam`, key at `x_f − pz_seam`): nominal both
+  EMPTY; kz +0.15 EMPTY, +0.25 0.55 (undercut); kz −0.25 4.04 floor; kx ±0.2
+  hit; ends apart (ex) 0.1 EMPTY, 0.2 1.30 (ridge on leg); ky 1.5 0.94 bump
+  only (block), EMPTY (tab); kx +0.1 0.01 bump in notch (tolerated).
+- Not run: slicer, a real click force (~5 N leaf, ~10 N to push out).
+- **Later 2026-10-27, user:** a click on the OTHER end too, and print the
+  key HORIZONTALLY. `pz_end_cut()` now holds groove + leaf + bump and is
+  used for both ends (mirrored); `pz_text` 0.3 → 1.95 (room for the leaf),
+  buckle 16.2, 130 → 12 bars (11.98), genus 35 = 33 + 2 slots, 44 BRIDGE,
+  1658.8 mm² / 12 islands. Harness: identical rows at both ends (tab ky 1.5
+  0.94 now). Key lies TOP DOWN (`rotate([180,0,0])`): 132.5 mm², no
+  overhang flagged (inner leg faces 35°). Flagged once: legs join the top
+  across layers; if a leg snaps, go back to standing. ~20 N to push out.
+  lips/w180/c3/screw still cmp-identical. Numbers above are pre-change.
+
+
 ## ALTERNATIVE: the LOCK SCREW buckle (`buckle = "screw"`) — 2026-10-25, UNPRINTED
 
 History, same day (do not re-offer): (1) a pin sliding ALONG the band in the
@@ -1071,6 +1127,8 @@ openscad -o /tmp/c3.stl -D charms=3 models/bracelet/bracelet.scad && cmp /tmp/c3
 openscad -o /tmp/p.stl models/cone-pin/cone-pin.scad && cmp /tmp/p.stl exports/cone-pin-cone-pin.stl
 openscad -o /tmp/s.stl models/screwdriver/screwdriver.scad && cmp /tmp/s.stl exports/screwdriver-screwdriver.stl
 openscad -o /tmp/ls.stl models/lock-screw/lock-screw.scad && cmp /tmp/ls.stl exports/lock-screw-lock-screw.stl
+openscad -D 'buckle="puzzle"' -o /tmp/pz.stl models/bracelet/bracelet.scad && cmp /tmp/pz.stl exports/bracelet-bracelet-puzzle.stl
+openscad -o /tmp/pk.stl models/puzzle-key/puzzle-key.scad && cmp /tmp/pk.stl exports/puzzle-key-puzzle-key.stl
 openscad -o /tmp/f.stl models/butterfly-charm/butterfly-charm.scad && cmp /tmp/f.stl exports/butterfly-charm-butterfly-charm.stl
 openscad -o /tmp/l.stl models/ladybug-charm/ladybug-charm.scad && cmp /tmp/l.stl exports/ladybug-charm-ladybug-charm.stl
 openscad -o /tmp/h.stl models/heart-charm/heart-charm.scad && cmp /tmp/h.stl exports/heart-charm-heart-charm.stl

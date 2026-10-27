@@ -12,6 +12,9 @@ length is band, not buckle. The alternative buckle, a dovetail under a roof
 locked by a screw (`-D 'buckle="screw"'`), is waiting to be compared on a
 print — see
 [the clasp](#alternative-the-roofed-dovetail-with-a-lock-screw-buckle--screw--unprinted).
+A third, a **puzzle key** slid in across the seam (`-D 'buckle="puzzle"'`),
+is the shortest of the three — see
+[the puzzle key](#alternative-the-puzzle-key-buckle--puzzle--unprinted).
 
 ![the bracelet as it comes off the bed](previews/bracelet-bracelet.png)
 
@@ -334,6 +337,65 @@ openscad -o exports/lock-screw-lock-screw.stl models/lock-screw/lock-screw.scad
 | head vs joint 0's knuckles, locked and released / moved 0.35 / 0.45 sideways | empty / empty / hit |
 | head vs bar 1, joint 0 bent 24 … 60° either way | empty, but released at 60° backwards (bar 1 up) the head's top touches |
 | joint 0, narrowed, bent ±24 / ±100 / ±110 | empty / empty / binds, as every joint |
+
+### Alternative: the puzzle key (`buckle = "puzzle"`) — unprinted
+
+A third buckle (2026-10-27), from a photo of a three-piece puzzle clasp: two
+end caps and a middle piece that slides over both **sideways**. No magnets
+(this is for a child). The band's two ends butt together, and a separately
+printed **key** slides in across the band from either edge and ties them.
+
+![the puzzle key buckle, closed](previews/bracelet-bracelet-puzzle-closed.png)
+![the puzzle key](previews/puzzle-key-puzzle-key.png)
+
+- **Why a third part.** Two ends that both print flat on the bed cannot both
+  slide together sideways and lock each other against the pull: one of them
+  has to reach over the other, and that overhang would run the band's whole
+  16 mm width, anchored at one edge only. The key is a separate print, so
+  it has no such limit.
+- **Each end** has a groove across the band, cut from the top, and a
+  **ridge** between the groove and the seam. The ridge leans out over its
+  groove at 35° (a 35° overhang on the groove's 1.0 mm floor, no support):
+  the groove is a dovetail, wider at the floor.
+- **The key** is a 1.2 mm top bridging the seam, flush with the band, and
+  two legs filling the grooves. It cannot lift out: the ridges hold its legs
+  down. The band's pull, each ridge pushing its leg away from the seam,
+  wedges it further down onto the floors. 8.6 × 16.2 × 3.0 mm; it sits flush
+  at both edges, its top edges chamfered like the band's.
+- **The clicks, one at each end.** Each groove has a spring **leaf** for its
+  outer wall (1.0 thick, 6.5 long, a slot behind it, rooted towards one
+  edge). A bump on it stands 0.4 into the key's path and drops into a
+  V-notch in the middle of the key's outer face, one per leg. (Bar 0's only
+  at first; the last bar's was added the same day, so the key is held at
+  both ends. Expect roughly twice the push to open, ~20 N estimated: if it
+  is too stiff, lower `pz_click`.) The leaf bends in the band's own layers (1.4 %
+  strain, under the 2.9 % printed and proven on the old detent leaves). The
+  key is symmetric: it goes in either edge first and either way round, only
+  not upside down.
+- **To close:** butt the ends together and push the key in from either edge
+  until it clicks, flush. **To open:** push it out from the other edge with
+  a thumb, or with the screwdriver's tip.
+- **Shortest buckle:** 16.2 mm of rigid band (24.4 for the lipped one); 130
+  is 12 bars at 11.98.
+- **The key prints lying,** top face down, legs up (the user's choice). The
+  legs' undercut faces are then 35° overhangs. The legs join the top across
+  the layers, which is where the pull bends them: if one snaps at its root,
+  print the key standing on an end instead.
+- **The key is a small loose part,** like the lock screw.
+
+```sh
+openscad -D 'buckle="puzzle"' -o exports/bracelet-bracelet-puzzle.stl models/bracelet/bracelet.scad
+openscad -o exports/puzzle-key-puzzle-key.stl models/puzzle-key/puzzle-key.scad
+```
+
+| test | reads |
+|---|---|
+| key in both ends, fastened | empty |
+| key lifted 0.15 / 0.25 | empty / the ridges' undercut: it cannot come out the top |
+| key down 0.25 | the floors |
+| key moved 0.2 along the band, either way | the ridges / the groove wall and bump |
+| ends pulled 0.1 / 0.2 apart | empty / a ridge on its leg: the pull is carried |
+| key slid 1.5 across the band | the bump only, 0.38 deep, at each end |
 
 ## What is printed over air
 
@@ -694,11 +756,14 @@ projects/bracelet/
 │                                         #   and grooves
 ├── lib/lock-screw.scad                   # the buckle's lock screw: its thread,
 │                                         #   head and travel (`buckle = "screw"`)
+├── lib/puzzle-key.scad                   # the puzzle buckle's key: its section,
+│                                         #   the grooves and click (`buckle = "puzzle"`)
 └── models/
     ├── bracelet/bracelet.scad            # the whole bracelet — one printed object
     ├── cone-pin/cone-pin.scad            # the bolt every charm is held by
     ├── screwdriver/screwdriver.scad      # a kid's hex key for the bolt
     ├── lock-screw/lock-screw.scad        # the lock screw (`buckle = "screw"` only)
+    ├── puzzle-key/puzzle-key.scad        # the sliding key (`buckle = "puzzle"` only)
     ├── butterfly-charm/butterfly-charm.scad  # a 3D butterfly
     ├── ladybug-charm/ladybug-charm.scad      # a ladybug, in two colours
     ├── heart-charm/heart-charm.scad          # a puffy heart
@@ -719,6 +784,7 @@ printed in place.
 | `cone-pin` | `cone-pin` | 6.3 × 6.3 × 8.8 mm, standing | its foot, a ring round the hex socket, 20 mm² |
 | `screwdriver` | `screwdriver` | 65.0 × 32.0 × 8.0 mm, lying flat | its paddle and shaft, 1033 mm² in one piece |
 | `lock-screw` | `lock-screw` | 5.0 × 5.0 × 8.0 mm, standing | its ribbed head, 17 mm² |
+| `puzzle-key` | `puzzle-key` | 8.6 × 16.2 × 3.0 mm, lying top down | its top face, 133 mm² |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 19.8 × 9.3 mm | its own bottom, 104 mm² in one piece |
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 21.6 × 8.8 mm | its own bottom and legs, 177 mm² in one piece |
 | `heart-charm` | `heart-charm` | 23.0 × 19.4 × 9.2 mm | its own flat bottom, 252 mm² in one piece |
