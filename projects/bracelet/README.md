@@ -397,6 +397,26 @@ openscad -o exports/puzzle-key-puzzle-key.stl models/puzzle-key/puzzle-key.scad
 | ends pulled 0.1 / 0.2 apart | empty / a ridge on its leg: the pull is carried |
 | key slid 1.5 across the band | the bump only, 0.38 deep, at each end |
 
+#### Decorated keys (`face`) — unprinted
+
+The key's top can carry a design (2026-10-28). Underneath, every decorated
+key is exactly the plain key, so all of them fit the same band; swap them
+like charms. A decorated key prints **upright, legs down**, the way it sits
+in the band, with its top bridging the 5.4 mm between the legs.
+
+- **`face = "elephant"`**: a cute elephant head, seen from above like a watch
+  face: big ears across the band (with shallow inner-ear dishes), a round
+  head with dimpled eyes, and a trunk that hangs along the band and curls at
+  its tip. It stands 3.5 mm above the band and stays inside the key's
+  outline, so it slides in from the edge like the plain key.
+
+![the elephant key in the buckle](previews/bracelet-bracelet-puzzle-elephant-closed.png)
+![the elephant key](previews/puzzle-key-puzzle-key-elephant.png)
+
+```sh
+openscad -D 'face="elephant"' -o exports/puzzle-key-puzzle-key-elephant.stl models/puzzle-key/puzzle-key.scad
+```
+
 ## What is printed over air
 
 | layer | reaches past a bead | what it is |
@@ -764,6 +784,7 @@ projects/bracelet/
     ├── screwdriver/screwdriver.scad      # a kid's hex key for the bolt
     ├── lock-screw/lock-screw.scad        # the lock screw (`buckle = "screw"` only)
     ├── puzzle-key/puzzle-key.scad        # the sliding key (`buckle = "puzzle"` only)
+    ├── puzzle-key/elephant.scad          #   its elephant-head top (`face`)
     ├── butterfly-charm/butterfly-charm.scad  # a 3D butterfly
     ├── ladybug-charm/ladybug-charm.scad      # a ladybug, in two colours
     ├── heart-charm/heart-charm.scad          # a puffy heart
@@ -785,6 +806,7 @@ printed in place.
 | `screwdriver` | `screwdriver` | 65.0 × 32.0 × 8.0 mm, lying flat | its paddle and shaft, 1033 mm² in one piece |
 | `lock-screw` | `lock-screw` | 5.0 × 5.0 × 8.0 mm, standing | its ribbed head, 17 mm² |
 | `puzzle-key` | `puzzle-key` | 8.6 × 16.2 × 3.0 mm, lying top down | its top face, 133 mm² |
+| `puzzle-key` | `puzzle-key-elephant` | 8.6 × 16.2 × 6.5 mm, upright | its two legs' feet, 86 mm² |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 19.8 × 9.3 mm | its own bottom, 104 mm² in one piece |
 | `ladybug-charm` | `ladybug-charm` | 20.6 × 21.6 × 8.8 mm | its own bottom and legs, 177 mm² in one piece |
 | `heart-charm` | `heart-charm` | 23.0 × 19.4 × 9.2 mm | its own flat bottom, 252 mm² in one piece |

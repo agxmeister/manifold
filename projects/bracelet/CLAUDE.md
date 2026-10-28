@@ -3,6 +3,34 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
+## DECORATED KEYS (`face` in models/puzzle-key) — 2026-10-28, UNPRINTED
+
+Puzzle buckle a9becc5 printed well. A charm ON the key was tried and dropped
+the same day (do not re-offer): a raised key can't take the bolt (it enters
+between the legs, 2.9–5.4 apart, cone 6.7); a bolt through the seam can't be
+fitted on a wrist; a wider key with a bolt block worked geometrically, but
+the user dropped the idea ("the problem is the level"). Instead: keep the
+printed key and DECORATE ITS TOP, printing upright ("in the same direction
+as it fits the bracelet"). First design: an elephant head.
+- `face` = "plain" (default, top-down print, cmp-identical) | "elephant".
+  A face is a module in its own file in models/puzzle-key (elephant.scad,
+  `ek_*`), unioned on `pz_key()`, the key printed `translate(-pz_zl)`.
+- Rule for faces: a HEIGHT FIELD on z = `pz_thick` (half-ellipsoid domes,
+  hulls of domes), clipped to `ek_outline_2d()` (key outline − notches −
+  lead-ins − top end chamfers, inset 0.15). Then nothing hangs and nothing
+  reaches the band. Move the outline to a shared file when a second face
+  needs it.
+- Elephant: head dome (0.5,0) 3.4×4.0×2.8; ears (−0.2,±4.4) 3.9×3.0×1.5 with
+  a 0.3 dish; trunk = hull chain of domes, 0.7 above the head; eyes = 0.45
+  dimples. 8.6 × 16.2 × 6.5 printed (3.5 over the band).
+- Checks: 1 piece, genus 0, walls ≥ 1.05, bed 85.7 mm² in 2 legs. Overhang
+  check: one SUPPORT region = the top's underside between the legs, z 3.0
+  — a 5.4 bridge anchored on both legs, 16.2 long; the checker rates it by
+  the long side. Accepted. Harness (scratch fit3.scad, plain ends, bash — the
+  zsh `set -- $a` trap hit again): nominal EMPTY, kx 0.1 0.01 (bump), kz
+  +0.15 EMPTY, +0.25 1.10, −0.25 8.09 = the plain key's rows; all contact
+  z ≤ 4.2, the face touches nothing.
+
 ## ALTERNATIVE: the PUZZLE KEY buckle (`buckle = "puzzle"`) — 2026-10-27, UNPRINTED
 
 From a photo of a 3-piece puzzle clasp (two end caps with rolled knobs + a
@@ -1129,6 +1157,7 @@ openscad -o /tmp/s.stl models/screwdriver/screwdriver.scad && cmp /tmp/s.stl exp
 openscad -o /tmp/ls.stl models/lock-screw/lock-screw.scad && cmp /tmp/ls.stl exports/lock-screw-lock-screw.stl
 openscad -D 'buckle="puzzle"' -o /tmp/pz.stl models/bracelet/bracelet.scad && cmp /tmp/pz.stl exports/bracelet-bracelet-puzzle.stl
 openscad -o /tmp/pk.stl models/puzzle-key/puzzle-key.scad && cmp /tmp/pk.stl exports/puzzle-key-puzzle-key.stl
+openscad -D 'face="elephant"' -o /tmp/pke.stl models/puzzle-key/puzzle-key.scad && cmp /tmp/pke.stl exports/puzzle-key-puzzle-key-elephant.stl
 openscad -o /tmp/f.stl models/butterfly-charm/butterfly-charm.scad && cmp /tmp/f.stl exports/butterfly-charm-butterfly-charm.stl
 openscad -o /tmp/l.stl models/ladybug-charm/ladybug-charm.scad && cmp /tmp/l.stl exports/ladybug-charm-ladybug-charm.stl
 openscad -o /tmp/h.stl models/heart-charm/heart-charm.scad && cmp /tmp/h.stl exports/heart-charm-heart-charm.stl
