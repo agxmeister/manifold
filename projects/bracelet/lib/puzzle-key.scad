@@ -37,22 +37,26 @@
 // This file draws nothing — variables, functions and modules only. Everything
 // is named `pz_*`.
 
-pz_thick  = 4.2;     // the band's thickness (asserted == `thick`)
+pz_thick  = 4.8;     // the band's thickness (asserted == `thick`; 4.2 until
+                     //   2026-10-29)
 pz_len    = 16.2;    // the key across the band = the band's width (asserted)
 
 pz_seam   = 0.15;    // each end's face from the seam's middle: 0.3 apart
 pz_fit    = 0.15;    // across the key's faces: leg <-> ridge, leg <-> wall
 pz_vfit   = 0.2;     // vertical: a leg's foot over the floor, a ridge's top
                      //   under the key's bridge
-pz_floor  = 1.0;     // the band under the grooves: it carries the pull
+pz_floor  = 1.6;     // the band under the grooves: it carries the pull.
+                     //   Was 1.0 on the 4.2 band; it rose with the band
+                     //   (2026-10-29) so everything above it, and the KEY,
+                     //   kept its shape: a printed key still fits
 pz_bridge = 1.2;     // the key's top, over the ridges and the seam
 pz_ridge  = 1.0;     // a ridge at the floor, along the band
 pz_a      = 35;      // the ridge's undercut face, from vertical
 pz_leg    = 1.6;     // a leg at the bridge, along the band
 
-pz_zk = pz_thick - pz_bridge;     // 3.0 — the bridge's underside
-pz_zr = pz_zk - pz_vfit;          // 2.8 — the ridges' tops
-pz_zl = pz_floor + pz_vfit;       // 1.2 — the legs' feet
+pz_zk = pz_thick - pz_bridge;     // 3.6 — the bridge's underside
+pz_zr = pz_zk - pz_vfit;          // 3.4 — the ridges' tops
+pz_zl = pz_floor + pz_vfit;       // 1.8 — the legs' feet
 
 // A ridge's face, d along the band from its end's face, at height z.
 function pz_dr(z) = pz_ridge + (z - pz_floor) * tan(pz_a);

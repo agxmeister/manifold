@@ -25,7 +25,7 @@
 // is named `sk_*`.
 
 // ------------------------------------------------------------------ thread
-sk_maj    = 2.9;     // male major diameter. The band is only 4.2 thick: the
+sk_maj    = 2.9;     // male major diameter. The band is only 4.8 thick: the
                      //   hole leaves `sk_skin` of socket over and under it.
 sk_depth  = 0.32;    // radial depth of the tooth
 sk_pitch  = 1.3;     // lead per turn: coarse, for a 0.4 nozzle

@@ -86,7 +86,8 @@ buckle  = "lips"; // "lips": a round knob in a V-lipped niche, held by clicks;
                   //   "puzzle": a key slid in across the seam. See "clasp".
 
 // --------------------------------------------------------------------- bars
-pitch_nom = 11.6;         // what bar spacing WANTS to be. The spacing actually
+pitch_nom = 12.2;         // what bar spacing WANTS to be (11.6 until the 4.8 band,
+                          //   2026-10-29: 0.5 over `pitch_min`). The spacing actually
                           //   used is solved for in the length budget below,
                           //   within a millimetre of this — see `pitch`.
 body      =  6.0;         // the bar slab, along the band. Also the width of
@@ -138,18 +139,27 @@ pin_d      = 1.8;               // the pin — the entire load path of the band.
                                 //   to 4.2 so the accent stripe can split the
                                 //   band into three equal 1.4 mm bands.
                                 //   Bending strength goes as d^3: 0.73x.
+                                //   Kept at 1.8 when the band went back up to
+                                //   4.8 (2026-10-29): the RING cracked, not
+                                //   the pin, and the 0.6 went into the ring.
 pin_r      = pin_d/2;
 bore_r     = pin_r + bore_fit;  // 1.35
-knuck_wall = 0.9;               // material around the bore
-rk         = bore_r + knuck_wall;   // 2.25 — the knuckle's outer radius, and
+knuck_wall = 1.2;               // material around the bore: the blade's RING.
+                                //   Was 0.9: printed (2026-10-28), rings
+                                //   cracked all over the band while the
+                                //   puzzle buckle was being opened. With
+                                //   `pin_z` it sets the band's thickness.
+rk         = bore_r + knuck_wall;   // 2.55 — the knuckle's outer radius, and
                                     //   the radius everything sweeps through
                                     //   when the hinge turns
-pin_z      = 1.95;              // pin axis height. NOT free: see the two
+pin_z      = 2.25;              // pin axis height. NOT free: see the two
                                 //   asserts below — it is squeezed between
                                 //   needing floor under the bore and needing
-                                //   the knuckle to reach the bed. 1.95 leaves
-                                //   exactly the 0.6 mm floor the assert asks.
-thick      = pin_z + rk;        // 4.2 — the knuckle's top IS the band's top
+                                //   the knuckle to reach the bed. 2.25 leaves
+                                //   a 0.9 mm floor under the bore (was 0.6,
+                                //   the ring's thinnest side, 2026-10-29).
+thick      = pin_z + rk;        // 4.8 — the knuckle's top IS the band's top
+                                //   (4.2 until 2026-10-29)
 
 pin_flat   = 0.2;   // the pin's underside is cut flat this far above where a
                     //   full cylinder would have been tangent. A cylinder
@@ -160,8 +170,11 @@ pin_flat   = 0.2;   // the pin's underside is cut flat this far above where a
                     //   the worst step after it is 0.20 mm. The bore stays
                     //   round, so the flat only ever adds clearance.
 
-blade_w = 2.0;                                // the middle knuckle (tile B's)
-lug_w   = (body - blade_w - 2*axial_fit)/2;   // 1.4 — the two outer (A's)
+blade_w = 2.4;                                // the middle knuckle (tile B's).
+                                              //   Was 2.0 with 1.4 lugs: the
+                                              //   lone blade, not the pair of
+                                              //   lugs, is what cracked
+lug_w   = (body - blade_w - 2*axial_fit)/2;   // 1.2 — the two outer (A's)
 
 // How far the cap still reaches past the pin axis where it meets the bed.
 // (Not the whole footprint: the arm carries the rest of it.) If this goes to
@@ -598,9 +611,10 @@ assert(charms == 0 || charm_sep * pitch >= charm_reach,
 //   openscad --enable=lazy-union -D accent=true -o ....3mf bracelet.scad
 // A horizontal slab costs the printer exactly TWO filament swaps per print.
 accent       = false;
-accent_lo    = 1.4;       // both on a 0.2 layer boundary, and off every
-accent_hi    = 2.8;       //   feature plane of the band (see CLAUDE.md §3):
-                          //   three equal 1.4 mm bands of the 4.2 band
+accent_lo    = 1.6;       // both on a 0.2 layer boundary, and off every
+accent_hi    = 3.2;       //   feature plane of the band (see CLAUDE.md §3):
+                          //   three equal 1.6 mm bands of the 4.8 band
+                          //   (1.4 / 2.8 on the 4.2 band before 2026-10-29)
 base_color   = "white";   // only a hint for the slicer's preview — the
 accent_color = "hotpink"; //   filament is chosen per object when slicing
 
@@ -629,7 +643,11 @@ assert(cn_bar == thick,
            thick, " thick"));
 assert(cn_wall_bar >= 0.7,
        str("only ", cn_wall_bar, " mm of bar beside the countersink, -x side"));
-assert(cn_chord <= cn_gap_y + lug_w - 0.7,
+// The lug's face left beside the countersink, at the bed. 0.74 with 1.4
+// lugs; 0.54 since the lugs went to 1.2 (2026-10-29), and only for the
+// bottom ~0.6 mm (the cone narrows upward: 0.71 at z 0.6), with the fill
+// solid behind it.
+assert(cn_chord <= cn_gap_y + lug_w - 0.5,
        str("past the +x face the countersink is ", 2*cn_chord,
            " across — it cuts too far into the fork lugs"));
 assert(cn_boss_y >= cn_gap_y + 0.3 && cn_boss_y <= cn_gap_y + lug_w - 0.4,

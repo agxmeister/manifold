@@ -5,8 +5,9 @@ print-in-place **hinges**. It comes off the bed as a band that rolls up around
 a wrist, and nothing is assembled, glued, or picked out of supports.
 
 **Sized to the wrist it is printed for — by default a 142 mm loop on a
-130 mm wrist (the 4-year-old it was printed for, and fits), 12 bars, printed
-flat in a 151.9 × 16.2 × 4.2 mm strip.** `-D wrist=180` is the adult size.
+130 mm wrist (the 4-year-old it was printed for, and fits), 11 bars, printed
+flat in a 151.9 × 16.2 × 4.8 mm strip.** (4.2 mm thick until 2026-10-29 —
+see [Stronger joints](#stronger-joints--2026-10-29-unprinted).) `-D wrist=180` is the adult size.
 The buckle is a round knob pulled into a lipped niche, where it clicks; flush, the same at every size;
 length is band, not buckle. The alternative buckle, a dovetail under a roof
 locked by a screw (`-D 'buckle="screw"'`), is waiting to be compared on a
@@ -63,6 +64,36 @@ side without asking whether those features are *bonded* to the region, and one
 "anchor" was a loose floating head. **A `BRIDGE` verdict is only worth what its
 anchors are worth.**
 
+## Stronger joints — 2026-10-29, unprinted
+
+The blade's **ring** round the pin cracked, at joints all over the band, while
+the puzzle buckle was being opened. The ring was the joint's weakest part: 0.6 mm
+of floor under the bore, 0.9 mm of wall round it, on a 2.0 mm blade, while the
+pin it holds is gripped by two lugs. Now:
+
+| | before | now |
+|---|---|---|
+| floor under the bore (`pin_z` − bore) | 0.6 mm | **0.9 mm** |
+| ring wall (`knuck_wall`) | 0.9 mm | **1.2 mm** |
+| ring's thinnest wall, on the chord side (measured) | 0.60 mm | **0.84 mm** |
+| blade (`blade_w`) / each lug | 2.0 / 1.4 mm | **2.4 / 1.2 mm** |
+| band thickness | 4.2 mm | **4.8 mm** |
+| joint pitch at 130 (lips buckle) | 11.24 mm, 12 bars | 12.36 mm, 11 bars |
+
+The pin is still 1.8 mm, the play is unchanged (0.45 radial, 0.6 along the pin),
+and the hinge still swings ±100°. Its free span grew 3.2 → 3.6 mm (a bridge, no
+support). What else moved with the band's thickness:
+
+- **The bolt** is 0.6 mm longer (9.4 mm) and its thread starts 1.1 mm inside
+  the bar instead of 0.5, so the cone keeps the 12.9° that printed. **Reprint
+  the bolts.** The charms do not change: they export identical.
+- **The puzzle key** does not change: the grooves' floor rose with the band
+  (1.0 → 1.6), so the old keys fit. Its click leaf is full band height, so it is
+  ~14 % stiffer; so are the lips buckle's click leaves.
+- **The accent stripe** is now 1.6–3.2 mm, three equal 1.6 mm bands.
+- At a charm station, the countersink leaves 0.54 mm of lug face at the bed
+  corner (0.74 before), backed by the solid fill.
+
 ## How the joint works
 
 ```
@@ -79,7 +110,7 @@ band is held by two knuckle clusters per joint and the bar cannot twist about a
 single pin. Bar A carries **two lugs** with a **pin** fused into both of them;
 bar B carries a single **blade** with a closed **bore** around that pin.
 
-- The pin's free span is **3.2 mm**, anchored at each end inside a lug that is
+- The pin's free span is **3.6 mm** (3.2 before the 4.8 band), anchored at each end inside a lug that is
   solid from the plate up. A bridge, not a cantilever.
 - The blade's bore is a *closed* hole, so the roof over the pin is anchored on
   both sides too. (A hook opening toward the neighbour would simply pull off.)
@@ -90,7 +121,7 @@ Measured on the exported mesh:
 
 | probe | reading |
 |---|---|
-| along the pin, at the bed (z = 0.10) | `lug 1.400 \| air 0.600 \| blade 2.000 \| air 0.600 \| lug 1.400` |
+| along the pin, at the bed (z = 0.10) | `lug 1.200 \| air 0.600 \| blade 2.400 \| air 0.600 \| lug 1.200` (4.8 band; 1.4/2.0/1.4 before) |
 | along the pin, at its axis | one unbroken `SOLID 6.000` — fused lug to lug |
 | vertical through the pin's free span | `floor 0.605 \| air 0.645 \| pin 1.590 \| air 0.455 \| roof 0.905` |
 | vertical through a lug | `SOLID 4.199` — bed to top |
@@ -744,8 +775,8 @@ joints the tail curls about 70° sideways and about 35° up or down.
 ## Two colours
 
 `-D accent=true` prints **the middle of the band in a second colour**: a
-stripe from 1.4 to 2.8 mm up, with the bottom and the top in the first colour
-— three equal bands of 1.4 mm. To make them equal the whole band was thinned
+stripe from 1.6 to 3.2 mm up (1.4 to 2.8 on the old 4.2 mm band), with the bottom and the top in the first colour
+— three equal bands, 1.6 mm each on the 4.8 mm band. To make them equal the whole band was first thinned
 from 4.45 to 4.2 mm (2026-09-25): the hinge pin went from 2.0 to 1.8 mm, and
 the H-pin pocket's floor from 0.8 to 0.6 mm, so the pins and charms did not
 change. **The 4.2 mm band was printed and confirmed on 2026-09-25** in one colour, with
@@ -761,7 +792,7 @@ into **two parts**, the stripe and the rest, which together are exactly the
 plain band. It exports as a **3MF** holding **one object made of those two
 parts**, with the rest on filament 1 and the stripe on filament 2, for a
 multi-material printer (AMS, MMU). Because the stripe is horizontal, it costs
-only **two filament swaps per print**, one at 1.4 mm and one back at 2.8.
+only **two filament swaps per print**, one at 1.6 mm and one back at 3.2.
 
 `accent_lo` / `accent_hi` move the stripe; keep them on 0.2 mm layer
 boundaries. `base_color` / `accent_color` only tint the preview; the slicer
@@ -801,8 +832,8 @@ printed in place.
 
 | Model | Part | Size (print pose) | Sits on |
 |---|---|---|---|
-| `bracelet` | `bracelet` | 151.9 × 16.2 × 4.2 mm | all 12 bars' own flat feet |
-| `cone-pin` | `cone-pin` | 6.3 × 6.3 × 8.8 mm, standing | its foot, a ring round the hex socket, 20 mm² |
+| `bracelet` | `bracelet` | 151.9 × 16.2 × 4.8 mm | all 11 bars' own flat feet |
+| `cone-pin` | `cone-pin` | 6.3 × 6.3 × 9.4 mm, standing | its foot, a ring round the hex socket, 20 mm² |
 | `screwdriver` | `screwdriver` | 65.0 × 32.0 × 8.0 mm, lying flat | its paddle and shaft, 1033 mm² in one piece |
 | `lock-screw` | `lock-screw` | 5.0 × 5.0 × 8.0 mm, standing | its ribbed head, 17 mm² |
 | `puzzle-key` | `puzzle-key` | 8.6 × 16.2 × 3.0 mm, lying top down | its top face, 133 mm² |
@@ -837,10 +868,10 @@ came in whole bars. On a small wrist that left a 27 mm slab of flat plate
 hanging off the end of a 149 mm bracelet. Now the buckle is fixed — **the
 socket block reaches 7.5 mm past bar 0, the same at every size** — and the
 band makes up the difference: the solver picks the bar count that lands
-nearest the nominal 11.6 mm spacing, then stretches or squeezes **every joint
+nearest the nominal 12.2 mm spacing, then stretches or squeezes **every joint
 equally**, by a fraction of a millimetre, to hit the length exactly. Bars never
 change; only the gaps do, and they have about a millimetre of room between the
-knuckles binding (11.1 mm) and the band looking gappy (12.5 mm).
+knuckles binding (11.7 mm) and the band looking gappy (13.1 mm).
 
 `charms` is independent of all of it — it does not touch the length budget, and
 the stations are placed on whatever bar count the solver lands on.
@@ -855,18 +886,20 @@ stay on a bar's flat top (asserted), which a narrower band would cut short.
 
 | `wrist` | bars | loop, clasped | joint pitch | printed footprint |
 |---|---|---|---|---|
-| **130 (default, 4-year-old)** | **12** | **142.0 mm** | **11.24 mm** | **151.9 × 16.2 mm** |
-| 140 (child) | 13 | 152.0 mm | 11.13 mm | 161.9 × 16.2 mm |
+| **130 (default, 4-year-old)** | **11** | **142.0 mm** | **12.36 mm** | **151.9 × 16.2 mm** |
+| 140 (child) | 12 | 152.0 mm | 12.15 mm | 161.9 × 16.2 mm |
 | 160 | 14 | 172.0 mm | 11.82 mm | 181.9 × 16.2 mm |
-| 180 (adult) | 16 | 192.0 mm | 11.57 mm | 201.9 × 16.2 mm |
-| 200 | 18 | 212.0 mm | 11.39 mm | 221.9 × 16.2 mm |
-| 180, `rows=3` | 16 | 192.0 mm | 11.57 mm | 201.9 × 26.4 mm |
+| 180 (adult) | 15 | 192.0 mm | 12.40 mm | 201.9 × 16.2 mm |
+| 200 | 17 | 212.0 mm | 12.10 mm | 221.9 × 16.2 mm |
+
+(Lips buckle. The puzzle buckle is 10 mm shorter, so it lands on a bar more:
+12 bars at 130, 16 at 180.)
 
 The buckle is 24.4 mm of rigid band at every size and width, the end bars and
 the 2.2 mm seam included.
 
-The band is 4.2 mm thick at every size, and so is the whole print: nothing
-stands above it any more (a charm station's rib reaches 5.2).
+The band is 4.8 mm thick at every size, and so is the whole print: nothing
+stands above it any more (a charm station's rib reaches 5.8).
 
 Other parameters worth knowing: `pitch_nom` / `body` (what bar spacing wants to
 be, and the bar itself — the knuckles need room to swing, so `pitch_min` is
@@ -874,8 +907,8 @@ derived from `body` and the knuckle radius),
 `pin_d` (1.8 mm — the entire load path of the band; it was 2.0 until the band
 was thinned to 4.2 mm for three equal colour bands), **`bore_fit`** (0.45 mm,
 the play in the hinge) and **`axial_fit`** (0.6 mm, along the pin — both above),
-`fit` (0.3 mm, the swing clearance and the buckle's face gap), `knuck_wall` (0.9 mm,
-the deliberate thinnest wall), `knuck_slope` (30.0°, derived — the knuckle
+`fit` (0.3 mm, the swing clearance and the buckle's face gap), `knuck_wall` (1.2 mm since
+2026-10-29, the ring round the bore), `knuck_slope` (31.0°, derived — the knuckle
 underside, asserted at ≤ 40°), and the buckle's `tb_lip` / `tb_lip_a` (how
 far and how steeply the lips hold the knob), `tb_lip_end` (how far round
 its front they run, to the straight step), `tb_drop_fit` (the play round the knob in the way-in), `cl_h` and `cl_catch` (the click, above), `tb_r` (the knob), and `tb_vfit` / `tb_wfit` / `tb_tfit` for how it seats (the wedge, above).

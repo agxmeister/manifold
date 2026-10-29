@@ -73,7 +73,7 @@ cn_tip    = 0.60;   // lead-in taper at the top of the male thread
 cn_thread = 5.0;    // male thread above the bar's top: what a charm screws on
 cn_lead   = 0.5;    // dead depth past the male's tip in the charm's bore, so
                     //   the charm clamps the bar before the thread bottoms out
-cn_sink   = 0.5;    // the thread starts this far DOWN inside the bar, so the
+cn_sink   = 1.1;    // the thread starts this far DOWN inside the bar, so the
                     //   smooth shaft's shoulder stays below the bar's top. Run
                     //   it to the top face exactly and a cone printed a hair
                     //   fat stands the shoulder proud: the charm tightens on
@@ -84,7 +84,7 @@ cn_hole_maj = cn_maj + 2*cn_fit;            // 5.30
 cn_hole_min = cn_minor + 2*cn_fit;          // 4.50
 
 // ---------------------------------------------------------------- the bar
-cn_bar    = 4.2;    // the bar's thickness == the band's `thick`, asserted there
+cn_bar    = 4.8;    // the bar's thickness == the band's `thick`, asserted there
 cn_hole   = cn_hole_maj;   // the bar's plain hole: the thread passes up it
 cn_cs_r   = 3.35;   // the countersink's radius at the bar's underside
 // The cone is LONG (the user's sketch, 2026-10-04): it runs the whole way
@@ -95,7 +95,7 @@ cn_cs_r   = 3.35;   // the countersink's radius at the bar's underside
 //   It costs two things, both small here. A steep wedge pushes the bar's walls
 // apart ~4.4x the clamp's pull (a 35-degree cone: ~1.4x), so do not crank a
 // charm down hard. And a cone printed `e` fat radially sits `e/tan(a)` ~ 4.4e
-// higher: the 0.5 of `cn_sink` covers e up to ~0.11, past which the thread's
+// higher: the 1.1 of `cn_sink` covers e up to ~0.25, past which the thread's
 // start reaches the charm's seat.
 cn_cs_a   = atan((cn_cs_r - cn_maj/2) / (cn_bar - cn_sink));
 cn_off    = 1.10;   // the pin's axis, from the station bar's centre, towards
@@ -146,7 +146,7 @@ cn_g_roof = 1.0;    // ... and over a groove's ridge
 
 // --------------------------------------------------------------- derived
 cn_cs_h   = (cn_cs_r - cn_hole/2) / tan(cn_cs_a);       // 3.05 — countersink
-cn_base   = -cn_bar + cn_recess;                        // -4.10 — pin's foot
+cn_base   = -cn_bar + cn_recess;                        // -4.40 — pin's foot
 cn_base_r = cn_cs_r - cn_recess * tan(cn_cs_a);         // its radius there
 cn_cone_top = -cn_bar + (cn_cs_r - cn_shaft/2) / tan(cn_cs_a);
 cn_len    = cn_thread - cn_base;                        // overall

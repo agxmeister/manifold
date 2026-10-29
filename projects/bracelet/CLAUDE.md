@@ -3,6 +3,35 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
+## STRONGER JOINTS: the 4.8 band — 2026-10-29, UNPRINTED
+
+User: the blade's RING (bore wall) cracked at joints all over the band while
+opening the puzzle buckle. User chose "both" over a free wider blade or a
+thicker band alone. Done: `pin_z` 1.95 → 2.25 (bore floor 0.6 → 0.9),
+`knuck_wall` 0.9 → 1.2 (rk 2.55), `thick` 4.2 → 4.8, `blade_w` 2.0 → 2.4,
+`lug_w` 1.2 (its assert minimum). Pin kept at 1.8 (it did not break); its
+free span is 3.6. `pitch_min` 11.7, `pitch_nom` 11.6 → 12.2; 130 = 11 bars
+(lips/screw), 12 (puzzle). Accent stripe 1.6/3.2.
+- Bolt: `cn_bar` 4.8, `cn_sink` 0.5 → 1.1 so the cone stays 12.9°; pin 9.4
+  long, reprint. Charms export cmp-identical (heart, rose, butterfly) /
+  same volume (ladybug, dolphin).
+- Puzzle: `pz_thick` 4.8, `pz_floor` 1.0 → 1.6, so the KEY is the same
+  geometry (vertex sets equal; bytes differ by float noise): printed keys
+  fit. Click leaves (puzzle and lips) are full band height → ~14 % stiffer;
+  not compensated (0.04 mm of leaf is below print resolution).
+- `cn_chord` assert margin 0.7 → 0.5: the countersink leaves 0.54 of lug
+  face at a station's bed corner (0.71 by z 0.6), fill solid behind it.
+- Verified: shells = bars at 130/180/c3/puzzle/screw; no SUPPORT (pin
+  bridges 3.7); swing ±100 EMPTY, ±110 HIT; first contact dx 0.5, dy 0.65,
+  dz −0.55 (as before); ring's thinnest wall 0.60 → 0.84 (chord side,
+  measured on a lone bar); flat charm disc r 5.8/6.0 vs a bent neighbour —
+  same or better than the old band at every angle (longer pitch); puzzle key
+  rows identical to the old harness at both ends; screw head vs joint 0
+  EMPTY at 0/±24/±40/±60/90, dy 0.45 control HIT; lips/screw knob volumes
+  as before (lips kx 0.5 scales 4.2 → 4.8 exactly); size sweep 110–230
+  lands every loop exactly. Not re-run: §1 ray probes, §3 layer raster.
+- The probe/feature-plane numbers further down are the 4.2 band's.
+
 ## DECORATED KEYS (`face` in models/puzzle-key) — 2026-10-28, UNPRINTED
 
 Puzzle buckle a9becc5 printed well. A charm ON the key was tried and dropped
