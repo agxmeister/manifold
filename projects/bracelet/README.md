@@ -306,51 +306,56 @@ knob, neck, way-in and block are as above, without the clicks; the niche is
 roofed and the knob is locked by a **screw** along the band's middle (the
 user's sketch).
 
-- **A roof** over the block's front end, 1.2 mm thick, from its front face to
-  the step. It covers the knob's front half and the neck's way in (now a
-  tunnel). The knob's front half and the neck are 2.75 mm tall to pass under
-  it, 0.25 below the roof. The back half stays the band's full 4.2,
-  flush with the top in the way-in.
+- **A roof** over the whole socket, from the block's front face to the end
+  of the way-in. The top of the buckle is closed and flat: nothing of the
+  knob or the screw shows from outside. Over the knob's front half and the
+  neck (now a tunnel) the roof is 1.2 mm thick; they are 3.35 mm tall to pass
+  under it, 0.25 below. The knob's back half is only 2.0 mm tall, and over it,
+  where the screw stands, the roof is a low 2.55 mm, so the screw's thread
+  has room to hold.
 - **A dovetail** instead of the V. The knob's front edge widens toward the
   top, at 40° from vertical, over the niche's lower lip, which reaches 1.1 mm
   under it. There is no upper lip; the roof stops the knob from going up.
   The band's pull pushes the knob out along the dovetail face, and that
   slope lifts it up into the roof. It then sits wedged between the lip and
   the roof with no play.
-- **Costs:** the neck is 3.5 × 2.75 instead of 3.5 × 4.2, because it runs
-  under the roof whenever the buckle is pushed to open. The roof is an 8.5 mm
-  bridge across the band, anchored on the block's side walls. The knob's
-  dovetail face is a 40° overhang. Neither needs support, and the 60° upper
-  lips are gone. There are no clicks: the knob is a plain round knob and the
-  way-in's side walls are solid.
+- **Costs:** the neck is 3.5 × 3.35 instead of 3.5 × 4.8, because it runs
+  under the roof whenever the buckle is pushed to open. The two roofs are
+  8.5 mm bridges across the band, anchored on the block's side walls. The
+  knob's dovetail face is a 40° overhang. None of these needs support. There
+  are no clicks: the knob is a plain round knob and the way-in's side walls
+  are solid.
 
 ![the lock screw buckle](previews/bracelet-bracelet-screw.png)
+![the buckle clasped, the screw locked](previews/bracelet-bracelet-screw-clasped.png)
 ![the lock screw](previews/lock-screw-lock-screw.png)
 
-- **The screw** runs in the socket's far wall, between the way-in and bar
-  0's hinge. **Screwed out** towards the knob (1.5 turns), its tip stands
-  1.8 mm into the gap behind the knob: the knob can go back only 0.56 (it
-  needs 2.11 to drop out). The knob pushes straight along the screw, and a
-  thread does not turn under an end push, so nothing but a finger opens it.
-  **Screwed back**, the tip hides 0.2 inside the wall and the knob is free.
-- **The head** is a 5 mm ribbed wheel behind bar 0, in the gap between the
-  two hinge clusters, turned by a finger from above or below. It stands
-  0.4 proud of the band's top and bottom, which is what the finger rolls.
-  To make room, **joint 0's clusters are narrower** (lugs 1.2, blade 1.6,
-  5.2 wide instead of 6.0) and pushed out to the band's edges: the gap
-  between them is 5.8 instead of 4.2. Every other joint is unchanged.
-- **The thread** is about M3 (2.9 mm, 1.3 pitch, 45° flanks), because the
-  band is 4.2 thick: the hole leaves 0.53 of socket over and under it. The
-  45° flanks are so the socket's half, printed lying, hangs no flatter than
-  that. The far wall is 4.5 thick (3.0 before), so locked, 2 turns still
-  hold. The buckle is 0.6 longer than the lipped one: 25.0 mm.
-- **It prints separately** (`lock-screw`), standing on its head. To fit it,
-  bend joint 0 right over (bar 1 down, the way it bends on the wrist): bar 1
-  swings clear and the screw goes in from behind bar 0, tip first.
-- **To close:** screw back, push the ends together and push the knob **up
-  into the way-in from below** (the roof is over its front), pull it forward,
-  screw out. **To open:** screw back, push the ends together and push the
-  knob out downwards. It cannot come out the top.
+- **The screw is an upright thumbscrew** (since 2026-10-30) in the low roof,
+  right behind the knob. **Screwed down** (1.4 turns), its tip stands in the
+  gap behind the knob, 0.3 over the bed: the knob can go back only 0.5 (it
+  needs 2.11 to drop out). **Screwed up**, the tip rises 2.0, over the knob's
+  low back half, and the knob is free to drop in and out.
+- **The head** is a 9 mm ribbed disc, 2.2 mm tall, on top of the buckle, for
+  a finger. Screwed down it sits on the top face; tightened, it clamps there,
+  so it does not shake loose. Locked, the buckle is 7.0 mm high at the head
+  (the band is 4.8). Screwed up, the head stands 2.0 higher. It stays 0.3
+  short of joint 0.
+- **The tip shows only from underneath**, from the wrist side: the way-in is
+  open below, because the knob goes in from there.
+- **The thread** is 3.4 mm, 1.4 pitch, 45° flanks. The hole goes right through
+  the band and prints upright, like the screw: both are vertical threads.
+  Screwed up, 1.8 turns still hold in the low roof. The buckle is 25.1 mm.
+- **It prints separately** (`lock-screw`), standing on its head. It goes in
+  from the top, at any time.
+- **To close:** screw up, push the ends together and push the knob **up
+  into the way-in from below**, pull it forward, screw down. **To open:**
+  screw up, push the ends together and push the knob out downwards. It
+  cannot come out the top.
+- **Before 2026-10-30** the screw lay along the band in the far wall, with a
+  5 mm head between joint 0's hinge clusters, which were narrowed for it.
+  On the 4.8 band that head stood only 0.1 proud, too little for a finger to
+  turn, and the tip showed in the open way-in. Joint 0 is a plain joint
+  again.
 
 ```sh
 openscad -D 'buckle="screw"' -o exports/bracelet-bracelet-screw.stl models/bracelet/bracelet.scad
@@ -359,15 +364,14 @@ openscad -o exports/lock-screw-lock-screw.stl models/lock-screw/lock-screw.scad
 
 | test | reads |
 |---|---|
-| screw in its hole, along its path (turned as it moves), 0 … 2.0 back from locked | empty |
-| ... moved 1.0 straight, not turned / half a turn out of phase (controls) | hit |
-| locked, knob home / wedged into the roof / pushed 0.5 | empty |
-| locked, knob pushed 0.65 / to its drop point | the screw's tip: it cannot open |
-| released, knob dropping out at 0 / −2 / −4.3 | empty |
-| half out (1.5 back), knob at its drop point (control) | hit |
-| head vs joint 0's knuckles, locked and released / moved 0.35 / 0.45 sideways | empty / empty / hit |
-| head vs bar 1, joint 0 bent 24 … 60° either way | empty, but released at 60° backwards (bar 1 up) the head's top touches |
-| joint 0, narrowed, bent ±24 / ±100 / ±110 | empty / empty / binds, as every joint |
+| screw in its hole, along its path (turned as it rises), 0 … 2.5 up from locked | empty (locked: the head's contact sheet on the top face) |
+| ... raised 0.7 straight, not turned / pushed 0.1 further down (controls) | hit |
+| locked, knob home / pushed back 0.3 / 0.45 | empty |
+| locked, knob pushed back 0.6 / 1.0 / to its drop point (2.11) | the screw's tip: it cannot open |
+| released, knob at its drop point, dropping 0 / −1 / −2 / −3 / −4.8 | empty, against the screw and the socket |
+| half released (1.0 up), knob at its drop point (control) | hit |
+| knob home / lifted 0.2 / 0.3 | contact sheet on the dovetail / empty / the roof |
+| head vs bar 1, joint 0 bent ±24 / ±60 / ±100°, locked and released | empty, but released at 100° backwards (bar 1 up) bar 1 touches the head |
 
 ### Alternative: the puzzle key (`buckle = "puzzle"`) — unprinted
 
@@ -835,7 +839,7 @@ printed in place.
 | `bracelet` | `bracelet` | 151.9 × 16.2 × 4.8 mm | all 11 bars' own flat feet |
 | `cone-pin` | `cone-pin` | 6.3 × 6.3 × 9.4 mm, standing | its foot, a ring round the hex socket, 20 mm² |
 | `screwdriver` | `screwdriver` | 65.0 × 32.0 × 8.0 mm, lying flat | its paddle and shaft, 1033 mm² in one piece |
-| `lock-screw` | `lock-screw` | 5.0 × 5.0 × 8.0 mm, standing | its ribbed head, 17 mm² |
+| `lock-screw` | `lock-screw` | 9.0 × 9.0 × 6.7 mm, standing on its head | its ribbed head, 54 mm² |
 | `puzzle-key` | `puzzle-key` | 8.6 × 16.2 × 3.0 mm, lying top down | its top face, 133 mm² |
 | `puzzle-key` | `puzzle-key-elephant` | 8.6 × 16.2 × 6.5 mm, upright | its two legs' feet, 86 mm² |
 | `butterfly-charm` | `butterfly-charm` | 16.1 × 19.8 × 9.3 mm | its own bottom, 104 mm² in one piece |

@@ -434,17 +434,17 @@ assert(h - tb_far <= 1.6,
 //
 //   * A ROOF over the block's front end, from its front face to the step:
 //     it covers the knob's front half, and the neck's way in, as a tunnel.
-//     The knob's front half and the neck are `dv_h` tall to pass under it;
-//     the back half stays the band's full height, flush with it in the
-//     way-in.
+//     The knob's front half and the neck are `dv_h` tall to pass under it.
+//     The roof runs on over the way-in, lower behind the knob (see the lock
+//     screw), so the buckle's top is closed.
 //   * A DOVETAIL instead of the V: the knob's front edge WIDENS TO THE TOP,
 //     at `dv_a` from vertical, over the niche's lower lip, which reaches in
 //     `tb_lip` under it, as before. No upper lip: the roof is the stop.
 //     The band's pull wedges the knob out along that face, so up into the
 //     roof: it seats between lip and roof without play.
 //   * To close: push the ends together, push the knob UP into the way-in
-//     from BELOW (the roof is over its front), pull it forward, screw the
-//     lock out. To open: screw it in, push together, push the knob out
+//     from BELOW (the roof is over it), pull it forward, screw the lock
+//     down. To open: screw it up, push together, push the knob out
 //     downwards.
 //
 // The lip's reach is the V's (`tb_lip`, `tb_tfit`, `tb_vfit`, `tb_wfit`),
@@ -500,33 +500,46 @@ assert(tb_clear + dv_back - dv_rfit * tan(dv_a) >= 0.15,
 
 // -------------------------------------------- the LOCK SCREW (`buckle = "screw"`)
 // The roofed niche above, without clicks (a plain round knob, solid way-in
-// walls), locked by a separately printed SCREW along the band's middle, in the far
-// wall (the user's sketch, 2026-10-25). Its thread, head and travel are in
-// lib/lock-screw.scad; see there. Here, what the band does for it:
-//   * the far wall is `sk_far` thick instead of `tb_far`: the thread runs in it;
-//   * joint 0's two knuckle clusters are narrowed (`sk_lug`, `sk_blade`) and
-//     pushed out to the band's edges, to open the gap between them for the
-//     ribbed head (`sk_head_d`), which turns there.
-// The cross bolt that came before it (same day) printed and failed: "parts
-// are too small". Its nub, bridges and detent leaf were 0.5–0.6 thick.
-sk_lug    = 1.2;      // joint 0's lugs (`lug_w` elsewhere, 1.4; asserted >= 1.2)
-sk_blade  = 1.6;      // ... and its blade (`blade_w`, 2.0)
-sk_head_fit = 0.4;    // the head <-> joint 0's knuckles, either side
-sk_cw     = 2*sk_lug + sk_blade + 2*axial_fit;      // 5.2 — a narrowed cluster
-sk_shift  = (body - sk_cw) / 2;                     // pushed out this far
-sk_gap    = (row_pitch - body) + 2*(body - sk_cw);  // 5.8 — the gap for the head
-// Locked, how far the knob can still go back before it meets the tip.
-sk_play   = tb_slide + tb_drop_fit - sk_ext;
+// walls), locked by a separately printed UPRIGHT THUMBSCREW right behind the
+// knob (lib/lock-screw.scad; see there). Here, what the band does for it:
+//   * the roof runs on over the WHOLE way-in: the buckle's top is closed,
+//     and the screw's tip shows only from the wrist side;
+//   * behind the knob's front half the knob is only `sk_kb` tall, so the
+//     roof over the screw is LOW (thick) there: the thread runs in it;
+//   * the threaded hole goes right through, `sk_play` behind the knob.
+// Until 2026-10-30 the screw lay along the band in the far wall, its 5 mm
+// head between joint 0's knuckle clusters (narrowed for it): only 0.1 proud
+// of the 4.8 band, it could not be turned by a finger, and its tip showed in
+// the open way-in. Joint 0 is a plain joint again.
+sk_kb     = 2.0;      // the knob behind its front half: the screw's tip
+                      //   stands behind it locked, and rises over it released
+sk_play   = 0.5;      // locked: the knob's back <-> the screw
+sk_ux     = tb_uc + tb_r + sk_play + sk_maj/2;   // the screw's axis, along the band
+sk_uhole  = sk_ux + sk_hole_maj/2;               // the hole's far side
+sk_ulow   = sk_ux - sk_hole_maj/2 - 0.3;         // the low roof starts
+sk_zlow   = sk_kb + dv_rfit;                     // ... its underside
+sk_engage = (thick - sk_zlow) / sk_pitch;        // released, turns in the roof
+sk_uhead  = sk_ux + sk_head_d/2;                 // the head's far edge
 
 if (buckle == "screw") {
-    assert(rows == 2, "the lock screw's head sits between joint 0's two clusters: rows must be 2");
-    assert(sk_lug >= 1.2, "joint 0's lugs too narrow");
-    assert(sk_gap >= sk_head_d + 2*sk_head_fit - 1e-9,
-           str("the head (", sk_head_d, ") does not fit between joint 0's clusters (", sk_gap, ")"));
+    assert(abs(sk_len - (thick - sk_tip_z)) < 1e-9,
+           str("the screw is drawn for a ", sk_len + sk_tip_z, " band; it is ", thick));
     assert(sk_play >= 0.3 && sk_play <= tb_slide - 1.2,
            str("locked, the knob's play ", sk_play, " must clear the tip and stop it well short of dropping out"));
-    assert(sk_hole_maj <= thick - 2*0.5, "the screw's hole leaves too thin a skin over it");
+    // released, the tip clears the knob's back half as it drops in and out
+    assert(sk_tip_z + sk_travel >= sk_zlow + 0.05,
+           "released, the screw's tip still stands in the knob's way");
+    // the knob's tall front half never reaches the low roof, even at its
+    // drop point
+    assert(sk_ulow >= dv_ub + 1 + tb_slide + 0.25, "the knob's front half runs under the low roof");
+    assert(sk_ulow >= tb_uc + tb_r, "at home the knob's back sits under the low roof");
+    assert(sk_engage >= 1.7, str("released, only ", sk_engage, " turns hold the screw"));
+    assert(sk_kb >= 1.5, "the knob's back half is too thin for the tip to stop it");
+    assert(sk_head_d <= tb_band_w - 2, "the head hangs over the band's edges");
 }
+// ... and over joint 0, where bar 1's knuckles rise as the band bends.
+assert(buckle != "screw" || sk_uhead <= h - x_f - 0.2,
+       str("the screw's head reaches ", sk_uhead - (h - x_f), " past bar 0's +x face"));
 
 // ------------------------------------------------------------ length budget
 // Clasped, the loop runs: bar 0's +x face -> band -> last bar's +x face ->
@@ -537,7 +550,7 @@ if (buckle == "screw") {
 // `tb_far` short of bar 0's +x face, so it runs on into bar 0 itself, and the
 // block reaches `blk_ext` past bar 0's -x face.
 x_f       = buckle == "puzzle" ? pz_reach - pz_dmax           // the block's front face
-          : buckle == "screw" ? (h - sk_far) - tb_uend
+          : buckle == "screw" ? (h - tb_far) - max(tb_uend, sk_uhole)
                               : (h - tb_far) - max(tb_uend, cl_uslot);
 blk_ext   = -h - x_f;
 
@@ -701,9 +714,10 @@ echo(str("cols=", cols, " rows=", rows,
                    ", ridges ", pz_ridge, " leaning ", pz_a, "deg, leaf ", pz_lt, " x ", pz_ll,
                    ", click ", pz_click, ", strain ", pz_strain, "%")
          : buckle != "lips"
-             ? str(" LOCK SCREW ", sk_maj, " x ", sk_pitch, ", head ", sk_head_d,
-                   ", travel ", sk_travel, " (", sk_turns, " turns), knob play locked ",
-                   sk_play, ", far wall ", sk_far, ", joint 0 gap ", sk_gap, ";",
+             ? str(" LOCK SCREW upright ", sk_maj, " x ", sk_pitch, ", head ", sk_head_d,
+                   " x ", sk_head_l, ", travel ", sk_travel, " (", sk_turns, " turns), knob play locked ",
+                   sk_play, ", low roof ", thick - sk_zlow, " (", sk_engage, " turns), head ",
+                   (h - x_f) - sk_uhead, " short of bar 0's +x face;",
                    " ROOF ", dv_roof, " over the front half, knob front ", dv_h,
                    " tall, dovetail ", tb_lip, " at ", dv_a, "deg")
              : str(" lips ", tb_lip, " at ", tb_lip_a, "deg"),
@@ -797,22 +811,22 @@ module pin(pl = blade_w + 2*axial_fit + 2*lug_w) {   // == body
 }
 
 // The +x half of a joint: two lugs straddling the neighbour's blade, plus the
-// pin they both carry. (`lw`, `bw`: narrower at joint 0 for the lock screw.)
-module fork(lw = lug_w, bw = blade_w) {
+// pin they both carry.
+module fork() {
     for (s = [-1, 1])
-        xz_extrude(s > 0 ? bw/2 + axial_fit
-                         : -(bw/2 + axial_fit + lw), lw)
+        xz_extrude(s > 0 ? blade_w/2 + axial_fit
+                         : -(blade_w/2 + axial_fit + lug_w), lug_w)
             knuckle_2d(pitch/2, +1, h - 1.0);
-    pin(bw + 2*axial_fit + 2*lw);
+    pin();
 }
 
 // The -x half: one central blade with a closed bore. Closed, not hooked — a
 // hook opening toward the neighbour would simply pull off the pin.
-module blade(bw = blade_w) {
+module blade() {
     difference() {
-        xz_extrude(-bw/2, bw) knuckle_2d(-pitch/2, -1, -(h - 1.0));
-        translate([-pitch/2, -bw, pin_z]) rotate([-90, 0, 0])
-            cylinder(h = 2*bw, r = bore_r);
+        xz_extrude(-blade_w/2, blade_w) knuckle_2d(-pitch/2, -1, -(h - 1.0));
+        translate([-pitch/2, -blade_w, pin_z]) rotate([-90, 0, 0])
+            cylinder(h = 2*blade_w, r = bore_r);
     }
 }
 
@@ -820,20 +834,13 @@ module blade(bw = blade_w) {
 // The joint is spread into `rows` knuckle clusters along the bar — one at each
 // old tile centre — so a wide band is held by several knuckles rather than
 // one, and the bar cannot twist about a single pin.
-// With the lock screw, joint 0 (bar 0's fork, bar 1's blade) has narrowed
-// clusters pushed out to the band's edges: the screw's head turns between them.
 module bar(col) {
     translate([col*pitch, band_cy, 0]) bar_body();
-    for (row = [0 : rows - 1]) {
-        j0 = buckle == "screw";
-        dy = row == 0 ? -sk_shift : sk_shift;
+    for (row = [0 : rows - 1])
         translate([col*pitch, row*row_pitch, 0]) {
-            if (col > 0)
-                if (j0 && col == 1) translate([0, dy, 0]) blade(sk_blade); else blade();
-            if (col < cols - 1)
-                if (j0 && col == 0) translate([0, dy, 0]) fork(sk_lug, sk_blade); else fork();
+            if (col > 0) blade();
+            if (col < cols - 1) fork();
         }
-    }
 }
 
 // The clasp, in the print frame: `tb_x0` is where the block's front face lands
@@ -892,9 +899,9 @@ module clasp_tab() if (buckle == "puzzle") pz_tab(); else if (buckle != "lips") 
 }
 
 // The roofed knob: the front half (to the step, `tb_clear` past it) and the
-// neck `dv_h` tall with the dovetail foot; the back half full height. The
-// neck is low all the way: pushed to open it travels `tb_slide` under the
-// roof, and the seam is only that wide.
+// neck `dv_h` tall with the dovetail foot; the back half `sk_kb`, under the
+// lock screw's tip. The neck is low all the way: pushed to open it travels
+// `tb_slide` under the roof, and the seam is only that wide.
 module clasp_tab_roofed() {
     translate([x_r - 1.0, band_cy - tb_neck/2, 0])
         cube([tb_x0 + tb_ua + tb_lip + 0.5 - (x_r - 1.0), tb_neck, dv_h]);
@@ -905,7 +912,7 @@ module clasp_tab_roofed() {
                 // overlapping the back half: merely touching it, the two
                 // kept a seam (a non-manifold edge on the bed)
                 translate([-50, -50, 0]) cube([50 + dv_ub + 1, 100, dv_h]);
-                translate([dv_ub, -50, 0]) cube([50, 100, thick]);
+                translate([dv_ub, -50, 0]) cube([50, 100, sk_kb]);
             }
         }
         intersection() {
@@ -971,10 +978,15 @@ module clasp_pocket() if (buckle == "puzzle") pz_pocket(); else translate([x_f, 
         }
         if (roof) tb_lips() dv_lips_2d(); else tb_lips() tb_lips_2d();
     }
-    translate([0, 0, -1]) linear_extrude(thick + 2) difference() {
+    // the way-in: roofed (screw) under the front roof's height, and from
+    // `sk_ulow` on under the low roof that holds the screw
+    for (part = roof ? [0, 1] : [0])
+    translate([0, 0, -1]) linear_extrude(!roof ? thick + 2 : part == 0 ? ct : 1 + sk_zlow) difference() {
         intersection() {
             tb_way_in_2d();
-            translate([tb_ustep, -50]) square([100, 100]);
+            if (!roof) translate([tb_ustep, -50]) square([100, 100]);
+            else if (part == 0) translate([tb_ustep, -50]) square([sk_ulow - tb_ustep, 100]);
+            else translate([sk_ulow, -50]) square([100, 100]);
         }
         // the bumps, on the leaves' inner faces
         if (buckle == "lips") for (m = [0, 1]) mirror([0, m]) hull() {
@@ -984,10 +996,8 @@ module clasp_pocket() if (buckle == "puzzle") pz_pocket(); else translate([x_f, 
     }
     // the slots that free the leaves: behind each, and its mouth in front
     // of its tip, into the way-in; the root end rounded
-    // the lock screw's threaded hole: from bar 0's +x face, through the far
-    // wall, out into the way-in
-    if (buckle == "screw")
-        translate([h - x_f, 0, thick/2]) rotate([0, -90, 0]) sk_female(sk_far);
+    // the lock screw's threaded hole, upright, right through
+    if (buckle == "screw") translate([sk_ux, 0, 0]) sk_hole(thick);
     if (buckle == "lips") translate([0, 0, -1]) linear_extrude(thick + 2) for (m = [0, 1]) mirror([0, m]) {
         translate([tb_uc + cl_tip - cl_gap, cl_wy + cl_t])
             square([cl_root - (cl_tip - cl_gap), cl_slot]);

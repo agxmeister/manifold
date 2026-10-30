@@ -3,6 +3,46 @@
 Project-specific guidance for AI agents. The repo-root `CLAUDE.md` still
 applies; the rules here are bracelet-only and win where they add detail.
 
+## UPRIGHT THUMBSCREW (`buckle = "screw"`) — 2026-10-30, UNPRINTED
+
+User: "make the screw head bigger, with rubbers [ribs], so it can be turned
+by a finger; the back of the screw shouldn't be visible outside". On the
+4.8 band the old 5 mm head (between joint 0's narrowed clusters, gap 5.8)
+stood only 0.1 proud, and the locked tip showed in the open way-in. The head
+lying along the band is capped at ~5.2 by that gap wherever it sits. User
+chose "thicker buckle" over a longer one (window in the block, +7 mm), then
+the UPRIGHT THUMBSCREW (preview). Also found: the old head's `hull()` of a
+star polygon filled its ribs, so it was a plain disc all along. The new head
+intersects the fluted extrusion with a chamfered cylinder instead.
+- lib: `sk_maj` 3.4, depth 0.35, pitch 1.4 (socket ridge 0.31), fit 0.12;
+  `sk_len` 4.5 = thick − `sk_tip_z` 0.3 (asserted in the band); travel 2.0
+  (1.43 turns); head 9.0 × 2.2, 18 round flutes r 0.7 × 0.5 deep, 0.4
+  chamfers; `sk_hole()` = female through + 0.4 mouth chamfer. Gone:
+  `sk_far/ext/rec/hgap/engaged`, the narrowed joint 0 (`sk_lug/blade/
+  shift/gap`, `fork/blade/pin` width args): joint 0 is plain again.
+- Band: roof over the WHOLE way-in (top closed). Knob back half (from `dv_ub`)
+  `sk_kb` 2.0 tall; way-in cut to 3.6 (front roof height) up to `sk_ulow`,
+  and to `sk_zlow` 2.25 behind it (low roof 2.55, 1.82 turns released).
+  Axis `sk_ux` = knob back + `sk_play` 0.5 + maj/2; `x_f` uses
+  max(`tb_uend`, `sk_uhole`) with `tb_far` 3.0. Buckle 25.13, head 0.32
+  short of bar 0's +x face (asserted ≥ 0.2). Locked height 7.0.
+- Genus 31 at 130 (formula 30 + the screw hole; the old 32 had the open
+  way-in too). 11 pieces. 42 BRIDGE (40 hinge + roofs at z 3.6 and 2.25), no
+  SUPPORT. Socket-end walls: every thin point within 2.3 of the axis (thread
+  run-out). Screw: 1 piece, 54 mm², no overhang, thin flags only on the
+  thread. lips/w180/c3/puzzle `cmp`-identical.
+- Harness (scratch fit.scad, band frame, screw =
+  `translate([x_f + sk_ux, band_cy, thick + head_l + D]) rotate(PH + D/pitch·360)
+  rotate([180,0,0]) sk_screw()` — ROTATE, never mirror, or the thread's hand
+  flips; meshing phase window 150–240, used 195): path D 0…2.5 EMPTY;
+  CONTROLS straight 0.7 1.37, D −0.1 3.79. Locked knob back 0/0.3/0.45
+  EMPTY, 0.6 0.013, drop 4.86. Released (D 2) knob at drop, dz 0…−4.8 EMPTY
+  vs screw and socket; D 1.0 at drop 1.86 (CTRL). Knob home 0.001 sheet
+  (dovetail), up 0.2 EMPTY, 0.3 roof. Head vs bar 1 ±24/±60/±100 EMPTY
+  locked; released +100 (bar 1 up) 0.07.
+- Not run: slicer; the real thread fit; tip strength (knob pushed back on
+  a 2.7 core, ~1.5 lever).
+
 ## STRONGER JOINTS: the 4.8 band — 2026-10-29, UNPRINTED
 
 User: the blade's RING (bore wall) cracked at joints all over the band while
